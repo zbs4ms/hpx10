@@ -1,6 +1,8 @@
 package com.jishi.reservation.service;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.mapper.DoctorMapper;
@@ -57,24 +59,22 @@ public class DoctorService {
      */
     public List<Doctor> queryDoctor(Long doctorId, String doctorName, String type,Integer enable) throws Exception {
         log.info("查询科室 doctorId:"+doctorId+" doctorName"+doctorName+" type:"+type +" enable:"+enable);
-        if(Helpers.isNullOrEmpty(doctorId) && Helpers.isNullOrEmpty(doctorName) && Helpers.isNullOrEmpty(type))
-            throw new Exception("查询参数不能全部为空");
         Doctor queryDoctor = new Doctor();
         queryDoctor.setType(type);
         queryDoctor.setName(doctorName);
         queryDoctor.setId(doctorId);
         queryDoctor.setEnable(enable);
-        return doctorMapper.select(queryDoctor);
+        return doctorMapper.queryByAttr(queryDoctor);
     }
 
     /**
      * 查询全部科室
      */
-    public List<Doctor> queryAllDoctor(Paging paging) throws Exception {
+    public PageInfo<Doctor> queryDoctorPageInfo(Long doctorId, String doctorName, String type,Integer enable,Paging paging) throws Exception {
         log.info("查询全部科室.");
         if(!Helpers.isNullOrEmpty(paging))
             PageHelper.startPage(paging.getPageSize(),paging.getPageNum(),paging.getOrderBy());
-        return doctorMapper.selectAll();
+        return new PageInfo(queryDoctor(doctorId,doctorName,type,enable));
     }
 
     /**

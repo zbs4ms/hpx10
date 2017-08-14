@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: doraemon:base:1.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/doraemon/base/1.0-SNAPSHOT/base-1.0-20170730.065351-2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/doraemon/base/1.0-SNAPSHOT/base-1.0-20170730.065351-2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/doraemon/base/1.0-SNAPSHOT/base-1.0-20170730.065351-2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
