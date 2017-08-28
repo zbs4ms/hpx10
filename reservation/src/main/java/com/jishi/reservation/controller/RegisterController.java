@@ -77,7 +77,7 @@ public class RegisterController extends BaseController {
         List<Register> registerList = pageInfo.getList();
         for (Register register : registerList) {
             RegisterVO registerVO = new RegisterVO();
-            List<Doctor> doctors = doctorService.queryDoctor(register.getDoctorId(), null, null, null);
+            List<Doctor> doctors = doctorService.queryDoctor(register.getDoctorId(), null, null,null, null);
             List<Department> departments = departmentService.queryDepartment(register.getDepartmentId(), null);
             List<Account> accounts = accountService.queryAccount(register.getAccountId(), null, null);
             List<PatientInfo> patientInfos = patientInfoService.queryPatientInfo(register.getPatientinfoId(), null, null);

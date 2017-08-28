@@ -50,7 +50,7 @@ public class RegisterService {
             throw new Exception("就诊人信息为空.");
         if(Helpers.isNullOrEmpty(departmentId)  || departmentService.queryDepartment(departmentId,null) == null)
             throw new Exception("科室信息为空.");
-        if(Helpers.isNullOrEmpty(doctorId)  || doctorService.queryDoctor(doctorId,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
+        if(Helpers.isNullOrEmpty(doctorId)  || doctorService.queryDoctor(doctorId,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
             throw new Exception("医生信息为空.");
         Register register = new Register();
         register.setAccountId(accountId);
@@ -132,7 +132,7 @@ public class RegisterService {
             throw new Exception("就诊人信息为空.");
         if(!Helpers.isNullOrEmpty(departmentId) && departmentService.queryDepartment(departmentId,null) == null)
             throw new Exception("科室信息为空.");
-        if(!Helpers.isNullOrEmpty(doctorId) && doctorService.queryDoctor(doctorId,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
+        if(!Helpers.isNullOrEmpty(doctorId) && doctorService.queryDoctor(doctorId,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
             throw new Exception("医生信息为空.");
         Register newRegister = new Register();
         newRegister.setId(registerId);

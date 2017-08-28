@@ -10,6 +10,8 @@
 		</encoder>
 	</appender>
 
+	<!-- 控制台显示sql -->
+	<!--<logger name="com.jishi.reservation.dao" level="DEBUG"/>-->
 	<!-- 按照每天生成日志文件 -->
 	<appender name="ALL"  class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

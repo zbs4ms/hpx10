@@ -57,7 +57,7 @@ public class DepartmentService {
      * @return
      * @throws Exception
      */
-    public List<Department> batchQueryDepartment(String ... departmentIds) throws Exception {
+    public List<Department> batchQueryDepartment(List<String>  departmentIds) throws Exception {
         List<Department> departmentIdList = new ArrayList<>();
         for(String id : departmentIds)
             departmentIdList.addAll(queryDepartment(Long.valueOf(id),null));

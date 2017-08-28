@@ -1,5 +1,6 @@
 package com.jishi.reservation.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.doraemon.base.redis.RedisOperation;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.dao.mapper.AccountMapper;
@@ -211,5 +212,17 @@ public class AccountService {
         if(queryAccount(accountId, phone, null).size() == 0)
             throw new Exception("没有查到该账号");
         modifyAccountInfo(accountId,null,null,null,null,phone,EnableEnum.INVALID.getCode());
+    }
+
+    public Account loginByTelephoneAndPassword(String accountInput, String password) throws NoSuchAlgorithmException {
+
+//        Account account = new Account();
+//        account.setPasswd(MD5Encryption.getMD5(password));
+//        account.setAccount(accountInput);
+        String md5 = MD5Encryption.getMD5(password);
+        Account queryAccount = accountMapper.selectByAccountAndPassword(accountInput,MD5Encryption.getMD5(password));
+
+        log.info("查询结果"+ JSONObject.toJSONString(queryAccount));
+        return queryAccount;
     }
 }

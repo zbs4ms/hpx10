@@ -55,17 +55,20 @@ public class DoctorController extends BaseController{
     @RequestMapping(value = "queryAllDoctor", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryAllDoctor(
+            @ApiParam(value = "科室ID", required = false) @RequestParam(value = "departmentId", required = false) Long departmentId,
+            @ApiParam(value = "查询的名字", required = false) @RequestParam(value = "name", required = false) String name,
             @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
             @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
             @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
         List<DoctorVO> doctorVOList = new ArrayList<>();
-        PageInfo doctors = doctorService.queryDoctorPageInfo(null,null,null,null,Paging.create(pageNum,pageSize,orderBy,desc));
+        PageInfo doctors = doctorService.queryDoctorPageInfo(null,name,String.valueOf(departmentId),null,EnableEnum.EFFECTIVE.getCode(),Paging.create(pageNum,pageSize,orderBy,desc));
         List<Doctor> doctorList = doctors.getList();
         for(Doctor doctor : doctorList){
             DoctorVO doctorVO = new DoctorVO();
             doctorVO.setDoctor(doctor);
-            doctorVO.setDepartmentList(departmentService.batchQueryDepartment(doctor.getDepartmentIds().split(",")));
+            doctorVO.setDepartmentList(departmentService.batchQueryDepartment(JSONObject.parseArray(doctor.getDepartmentIds(),String.class)));
+                    //doctor.getDepartmentIds().split(",")));
             doctorVOList.add(doctorVO);
         }
         doctors.setList(doctorVOList);
@@ -82,13 +85,40 @@ public class DoctorController extends BaseController{
         if(Helpers.isNullOrEmpty(doctorId) && Helpers.isNullOrEmpty(doctorName) && Helpers.isNullOrEmpty(type))
             throw new Exception("查询参数不能全部为空");
         DoctorVO doctorVO = new DoctorVO();
-        List<Doctor> doctors = doctorService.queryDoctor(doctorId,doctorName,null,EnableEnum.EFFECTIVE.getCode());
+        List<Doctor> doctors = doctorService.queryDoctor(doctorId,doctorName,null,null,EnableEnum.EFFECTIVE.getCode());
         if(doctors.size()>0){
             doctorVO.setDoctor(doctors.get(0));
-            doctorVO.setDepartmentList(departmentService.batchQueryDepartment(doctors.get(0).getDepartmentIds().split(",")));
+            doctorVO.setDepartmentList(departmentService.batchQueryDepartment(JSONObject.parseArray(doctors.get(0).getDepartmentIds(),String.class)));
         }
         return ResponseWrapper().addData(doctorVO).ExeSuccess();
     }
+
+
+    @ApiOperation(value = "根据科室查找医生 支持分页",response=DoctorVO.class)
+    @RequestMapping(value = "queryDoctorByDepartment", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject queryDoctorByDepartment(
+            @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
+            @ApiParam(value = "查询的名字", required = false) @RequestParam(value = "name", required = false) String name,
+            @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
+            @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
+            @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
+            @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
+        if(Helpers.isNullOrEmpty(departmentId))
+            throw new Exception("请传入有效的参数");
+        PageInfo doctors = doctorService.queryDoctorPageInfo(null,name,String.valueOf(departmentId),null,EnableEnum.EFFECTIVE.getCode(),Paging.create(pageNum,pageSize,orderBy,desc));
+        List<Doctor> doctorList = doctors.getList();
+
+
+        DoctorVO doctorVO = new DoctorVO();
+   //     List<Doctor> doctors = doctorService.queryDoctorByDepartment(doctorList,departmentId,EnableEnum.EFFECTIVE.getCode());
+//        if(doctors.size()>0){
+//            doctorVO.setDoctor(doctors.get(0));
+//            doctorVO.setDepartmentList(departmentService.batchQueryDepartment(doctors.get(0).getDepartmentIds().split(",")));
+//        }
+        return ResponseWrapper().addData(doctors).ExeSuccess();
+    }
+
 
     @ApiOperation(value = "修改医生信息")
     @RequestMapping(value = "modifyDoctor", method = RequestMethod.POST)
@@ -112,6 +142,7 @@ public class DoctorController extends BaseController{
     public JSONObject failureDoctor(
             @ApiParam(value = "医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId
     ) throws Exception {
+        //todo 这儿其他信息都传null的话，那信息都更新为空了？？
         doctorService.modifyDoctor(doctorId,null,null,null,null,null,null,null, EnableEnum.INVALID.getCode());
         return ResponseWrapper().addData("ok").ExeSuccess();
     }

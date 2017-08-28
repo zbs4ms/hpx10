@@ -37,6 +37,18 @@ public class AccountController extends BaseController{
         return ResponseWrapper().addData("ok").ExeSuccess();
     }
 
+    @ApiOperation(value = "账号密码登陆")
+    @RequestMapping(value = "loginByPassword", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject loginByAccountAndPassword(
+            @ApiParam(value = "账号", required = true) @RequestParam(value = "account", required = true) String account,
+            @ApiParam(value = "密码", required = true) @RequestParam(value = "password", required = true) String password) throws Exception {
+        Account result = accountService.loginByTelephoneAndPassword(account,password);
+        return ResponseWrapper().addData("ok").addData(result).ExeSuccess();
+    }
+
+
+
     @ApiOperation(value = "发送动态验证码")
     @RequestMapping(value = "sendDynamicCode", method = RequestMethod.POST)
     @ResponseBody
