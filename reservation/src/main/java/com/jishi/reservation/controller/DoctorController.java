@@ -62,7 +62,7 @@ public class DoctorController extends BaseController{
             @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
             @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
         List<DoctorVO> doctorVOList = new ArrayList<>();
-        PageInfo doctors = doctorService.queryDoctorPageInfo(null,name,String.valueOf(departmentId),null,EnableEnum.EFFECTIVE.getCode(),Paging.create(pageNum,pageSize,orderBy,desc));
+        PageInfo doctors = doctorService.queryDoctorPageInfo(null,name,departmentId != null?String.valueOf(departmentId):null,null,EnableEnum.EFFECTIVE.getCode(),Paging.create(pageNum,pageSize,orderBy,desc));
         List<Doctor> doctorList = doctors.getList();
         for(Doctor doctor : doctorList){
             DoctorVO doctorVO = new DoctorVO();

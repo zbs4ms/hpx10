@@ -72,7 +72,7 @@ public class DoctorService {
         log.info("查询科室 doctorId:"+doctorId+" doctorName:"+doctorName+" type:"+type +" enable:"+enable);
         Doctor queryDoctor = new Doctor();
         queryDoctor.setType(type);
-        if(departmentId!=null && !"".equals(departmentId)){
+        if(departmentId!=null &&!"null".equals(departmentId)&& !"".equals(departmentId)){
             queryDoctor.setDepartmentIds("\""+departmentId+"\"");
         }
         queryDoctor.setName(doctorName);
