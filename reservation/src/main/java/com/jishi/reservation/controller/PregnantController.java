@@ -72,7 +72,7 @@ public class PregnantController extends BaseController {
         return  ResponseWrapper().addMessage("孕妇信息修改成功.").ExeSuccess();
     }
 
-    @ApiOperation(value = "查询指定孕妇信息 还没看到姓名的模糊搜索要求，所以是精确匹配姓名")
+    @ApiOperation(value = "查询指定孕妇信息 还没看到姓名的模糊搜索要求，所以是精确匹配姓名",response = Pregnant.class)
     @RequestMapping(value = "queryPregnant", method =RequestMethod.GET )
     @ResponseBody
     public JSONObject queryPregnant(

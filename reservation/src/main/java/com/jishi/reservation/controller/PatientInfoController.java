@@ -46,7 +46,7 @@ public class PatientInfoController extends BaseController {
         return ResponseWrapper().addData("ok").ExeSuccess();
     }
 
-    @ApiOperation(value = "查询就诊人信息", response = Doctor.class)
+    @ApiOperation(value = "查询就诊人信息", response = PatientInfo.class)
     @RequestMapping(value = "queryPatientInfo", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryPatientInfo(
@@ -62,7 +62,7 @@ public class PatientInfoController extends BaseController {
         return ResponseWrapper().addData(patientInfos).ExeSuccess();
     }
 
-    @ApiOperation(value = "查询全部就诊人信息", response = Doctor.class)
+    @ApiOperation(value = "查询全部就诊人信息", response = PatientInfo.class)
     @RequestMapping(value = "queryAllPatientInfo", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryAllPatientInfo(
@@ -76,7 +76,7 @@ public class PatientInfoController extends BaseController {
     }
 
 
-    @ApiOperation(value = "修改就诊人信息", response = Doctor.class)
+    @ApiOperation(value = "修改就诊人信息")
     @RequestMapping(value = "modifyPatientInfo", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject modifyPatientInfo(
