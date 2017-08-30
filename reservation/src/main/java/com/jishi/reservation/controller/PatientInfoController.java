@@ -30,7 +30,7 @@ public class PatientInfoController extends BaseController {
     @Autowired
     PatientInfoService patientInfoService;
 
-    @ApiOperation(value = "增加就诊人信息")
+    @ApiOperation(value = "增加就诊人信息  8月30号提出 一个账号最多有5个")
     @RequestMapping(value = "addPatientInfo", method = RequestMethod.PUT)
     @ResponseBody
     public JSONObject addPatientInfo(

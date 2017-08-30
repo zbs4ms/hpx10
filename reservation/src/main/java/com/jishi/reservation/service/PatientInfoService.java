@@ -43,6 +43,10 @@ public class PatientInfoService {
             log.error(errorInfo);
             throw new Exception("无效的身份证信息");
         }
+        //判断一个账号最大病号数是否超过5个
+        if(!this.checkMaxPatientNum(accountId)){
+            throw new Exception("该账号最大病号数已达最大5个");
+        }
         PatientInfo newPatientInfo = new PatientInfo();
         newPatientInfo.setAccountId(accountId);
         newPatientInfo.setName(name);
@@ -50,6 +54,15 @@ public class PatientInfoService {
         newPatientInfo.setIdCard(idCard);
         newPatientInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
         patientInfoMapper.insert(newPatientInfo);
+    }
+
+    /**
+     * 判断账号下病号数是否达到最大值5
+     * @param accountId
+     * @return
+     */
+    private boolean checkMaxPatientNum(Long accountId) {
+        return patientInfoMapper.findMaxPatientNum(accountId) < 5;
     }
 
 
