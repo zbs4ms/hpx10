@@ -18,8 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by zbs on 2017/8/10.
@@ -146,4 +146,79 @@ public class DoctorController extends BaseController{
         doctorService.modifyDoctor(doctorId,null,null,null,null,null,null,null, EnableEnum.INVALID.getCode());
         return ResponseWrapper().addData("ok").ExeSuccess();
     }
+
+
+    @ApiOperation(value = "返回时间列表  最近五天的（暂时）")
+    @RequestMapping(value = "dateList", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject dateList(){
+
+        //判断当前时间，和当天的八点和当天的十四点比较
+        Date now = new Date();
+
+        Calendar morring = Calendar.getInstance();
+        morring.set(Calendar.HOUR_OF_DAY, 8);
+        morring.set(Calendar.MINUTE, 0);
+        morring.set(Calendar.SECOND, 0);
+        Date morringTime = morring.getTime();
+
+        Calendar afternoon = Calendar.getInstance();
+        afternoon.set(Calendar.HOUR_OF_DAY, 14);
+        afternoon.set(Calendar.MINUTE, 0);
+        afternoon.set(Calendar.SECOND, 0);
+        Date afternoonTime = morring.getTime();
+
+        List<Date> dateList = new ArrayList<>();
+
+        if(now.getTime() < morringTime.getTime()){
+            //当天早上八点之前
+            log.info("当天早上八点之前");
+            dateList.add(getMorringTime(0));
+            dateList.add(getAfternoonTime(0));
+        }
+        if(now.getTime() > morringTime.getTime() && now.getTime()<afternoonTime.getTime()){
+            //当天八点到14点之间
+            log.info("当天八点到14点之间");
+
+            dateList.add(getAfternoonTime(0));
+
+        }
+        if(now.getTime()>afternoonTime.getTime()){
+            //当天14点之后
+            log.info("当天14点之后");
+
+        }
+        for(int i = 1;i<6;i++){
+            dateList.add(getMorringTime(i));
+            dateList.add(getAfternoonTime(i));
+        }
+
+        log.info(JSONObject.toJSONString(dateList));
+
+        return ResponseWrapper().addMessage("返回时间列表").addData(dateList).ExeSuccess();
+
+    }
+
+    public static Date getMorringTime(Integer days) {
+        Calendar calendar = Calendar.getInstance();
+        //calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 8);
+        calendar.set(Calendar.MINUTE,0);
+        calendar.set(Calendar.SECOND,0);
+        calendar.add(Calendar.DAY_OF_MONTH, days);
+        Date date = calendar.getTime();
+        return date;
+    }
+
+    public static Date getAfternoonTime(Integer days) {
+        Calendar calendar = Calendar.getInstance();
+        //calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 14);
+        calendar.set(Calendar.MINUTE,0);
+        calendar.set(Calendar.SECOND,0);
+        calendar.add(Calendar.DAY_OF_MONTH, days);
+        Date date = calendar.getTime();
+        return date;
+    }
+
 }
