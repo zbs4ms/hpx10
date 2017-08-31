@@ -157,19 +157,23 @@ public class DoctorController extends BaseController{
 
         //判断当前时间，和当天的八点和当天的十四点比较
         Date now = new Date();
-        log.info("當前時間："+now.toLocaleString());
+        log.info(now.getTime()+"當前時間："+now.toLocaleString());
 
         Calendar morring = Calendar.getInstance();
         morring.set(Calendar.HOUR_OF_DAY, 8);
         morring.set(Calendar.MINUTE, 0);
         morring.set(Calendar.SECOND, 0);
         Date morringTime = morring.getTime();
+        log.info("上午："+morringTime.getTime());
+
 
         Calendar afternoon = Calendar.getInstance();
         afternoon.set(Calendar.HOUR_OF_DAY, 14);
         afternoon.set(Calendar.MINUTE, 0);
         afternoon.set(Calendar.SECOND, 0);
         Date afternoonTime = morring.getTime();
+        log.info("下午："+afternoonTime.getTime());
+
 
         List<Date> dateList = new ArrayList<>();
 
