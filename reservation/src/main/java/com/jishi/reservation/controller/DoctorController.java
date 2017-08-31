@@ -9,6 +9,7 @@ import com.jishi.reservation.service.DepartmentService;
 import com.jishi.reservation.service.DoctorService;
 import com.jishi.reservation.service.PatientInfoService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.util.Common;
 import com.jishi.reservation.util.DateTool;
 import com.jishi.reservation.util.Helpers;
 import com.us.base.common.controller.BaseController;
@@ -167,7 +168,7 @@ public class DoctorController extends BaseController{
         Date morringTime = morring.getTime();
         log.info("上午："+morringTime.getTime());
 
-        Date afternoonTime = new Date(morringTime.getTime() + 6*60*60);
+        Date afternoonTime = new Date(morringTime.getTime() + Common.SIX_HOURS);
 
 
         log.info("下午："+afternoonTime.getTime());

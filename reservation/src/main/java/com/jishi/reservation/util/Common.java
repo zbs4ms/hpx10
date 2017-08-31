@@ -9,4 +9,5 @@ public class Common {
     public final static String SMS_TYPE="SystemWarning";
     public final static String SMS_shopId="jskj";
     public final static int SMS_NUMBER=1;
+    public final static int SIX_HOURS = 6*60*60*1000;
 }
