@@ -149,12 +149,15 @@ public class DoctorController extends BaseController{
 
 
     @ApiOperation(value = "返回时间列表  最近五天的（暂时）")
-    @RequestMapping(value = "dateList", method = RequestMethod.GET)
+    @RequestMapping(value = "dateList", method = RequestMethod.GET
+
+    )
     @ResponseBody
     public JSONObject dateList(){
 
         //判断当前时间，和当天的八点和当天的十四点比较
         Date now = new Date();
+        log.info("當前時間："+now.toLocaleString());
 
         Calendar morring = Calendar.getInstance();
         morring.set(Calendar.HOUR_OF_DAY, 8);
