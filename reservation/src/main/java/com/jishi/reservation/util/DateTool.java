@@ -36,6 +36,30 @@ public class DateTool {
  //       System.out.print(DateTool.create().diffDay(dateBean.getStartDate(),dateBean.getStopDate()));
  //   }
 
+    public static Date getMorringTime(Integer days) {
+        Calendar calendar = Calendar.getInstance();
+        //calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 8);
+        calendar.set(Calendar.MINUTE,0);
+        calendar.set(Calendar.SECOND,0);
+        calendar.add(Calendar.DAY_OF_MONTH, days);
+        Date date = calendar.getTime();
+        return date;
+    }
+
+    public static Date getAfternoonTime(Integer days) {
+        Calendar calendar = Calendar.getInstance();
+        //calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 14);
+        calendar.set(Calendar.MINUTE,0);
+        calendar.set(Calendar.SECOND,0);
+        calendar.add(Calendar.DAY_OF_MONTH, days);
+        Date date = calendar.getTime();
+        return date;
+    }
+
+
+
     public DateBean getLastMonth() {
         Calendar lastMonthCalendar = Calendar.getInstance();
         lastMonthCalendar.add(Calendar.MONTH, -1);

@@ -9,6 +9,7 @@ import com.jishi.reservation.service.DepartmentService;
 import com.jishi.reservation.service.DoctorService;
 import com.jishi.reservation.service.PatientInfoService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.util.DateTool;
 import com.jishi.reservation.util.Helpers;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
@@ -166,12 +167,9 @@ public class DoctorController extends BaseController{
         Date morringTime = morring.getTime();
         log.info("上午："+morringTime.getTime());
 
+        Date afternoonTime = new Date(morringTime.getTime() + 6*60*60);
 
-        Calendar afternoon = Calendar.getInstance();
-        afternoon.set(Calendar.HOUR_OF_DAY, 14);
-        afternoon.set(Calendar.MINUTE, 0);
-        afternoon.set(Calendar.SECOND, 0);
-        Date afternoonTime = morring.getTime();
+
         log.info("下午："+afternoonTime.getTime());
 
 
@@ -180,14 +178,14 @@ public class DoctorController extends BaseController{
         if(now.getTime() < morringTime.getTime()){
             //当天早上八点之前
             log.info("当天早上八点之前");
-            dateList.add(getMorringTime(0));
-            dateList.add(getAfternoonTime(0));
+            dateList.add(DateTool.getMorringTime(0));
+            dateList.add(DateTool.getAfternoonTime(0));
         }
         if(now.getTime() > morringTime.getTime() && now.getTime()<afternoonTime.getTime()){
             //当天八点到14点之间
             log.info("当天八点到14点之间");
 
-            dateList.add(getAfternoonTime(0));
+            dateList.add(DateTool.getAfternoonTime(0));
 
         }
         if(now.getTime()>afternoonTime.getTime()){
@@ -195,9 +193,9 @@ public class DoctorController extends BaseController{
             log.info("当天14点之后");
 
         }
-        for(int i = 1;i<6;i++){
-            dateList.add(getMorringTime(i));
-            dateList.add(getAfternoonTime(i));
+        for(int i = 1;i<8;i++){
+            dateList.add(DateTool.getMorringTime(i));
+            dateList.add(DateTool.getAfternoonTime(i));
         }
 
         log.info(JSONObject.toJSONString(dateList));
@@ -206,26 +204,6 @@ public class DoctorController extends BaseController{
 
     }
 
-    public static Date getMorringTime(Integer days) {
-        Calendar calendar = Calendar.getInstance();
-        //calendar.setTime(date);
-        calendar.set(Calendar.HOUR_OF_DAY, 8);
-        calendar.set(Calendar.MINUTE,0);
-        calendar.set(Calendar.SECOND,0);
-        calendar.add(Calendar.DAY_OF_MONTH, days);
-        Date date = calendar.getTime();
-        return date;
-    }
 
-    public static Date getAfternoonTime(Integer days) {
-        Calendar calendar = Calendar.getInstance();
-        //calendar.setTime(date);
-        calendar.set(Calendar.HOUR_OF_DAY, 14);
-        calendar.set(Calendar.MINUTE,0);
-        calendar.set(Calendar.SECOND,0);
-        calendar.add(Calendar.DAY_OF_MONTH, days);
-        Date date = calendar.getTime();
-        return date;
-    }
 
 }
