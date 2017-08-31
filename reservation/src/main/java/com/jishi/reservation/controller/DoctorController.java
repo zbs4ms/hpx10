@@ -3,6 +3,7 @@ package com.jishi.reservation.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.jishi.reservation.controller.base.Paging;
+import com.jishi.reservation.controller.protocol.DateVO;
 import com.jishi.reservation.controller.protocol.DoctorVO;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.service.DepartmentService;
@@ -151,46 +152,35 @@ public class DoctorController extends BaseController{
 
 
     @ApiOperation(value = "返回时间列表  最近五天的（暂时）")
-    @RequestMapping(value = "dateList", method = RequestMethod.GET
-
-    )
+    @RequestMapping(value = "dateList", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject dateList(){
 
+        List<DateVO> voList = new ArrayList<>();
         //判断当前时间，和当天的八点和当天的十四点比较
         Date now = new Date();
-        log.info(now.getTime()+"當前時間："+now.toLocaleString());
 
         Calendar morring = Calendar.getInstance();
         morring.set(Calendar.HOUR_OF_DAY, 8);
         morring.set(Calendar.MINUTE, 0);
         morring.set(Calendar.SECOND, 0);
         Date morringTime = morring.getTime();
-        log.info("上午："+morringTime.getTime());
 
         Date afternoonTime = new Date(morringTime.getTime() + Common.SIX_HOURS);
-
-
-        log.info("下午："+afternoonTime.getTime());
-
 
         List<Date> dateList = new ArrayList<>();
 
         if(now.getTime() < morringTime.getTime()){
-            //当天早上八点之前
             log.info("当天早上八点之前");
             dateList.add(DateTool.getMorringTime(0));
             dateList.add(DateTool.getAfternoonTime(0));
         }
         if(now.getTime() > morringTime.getTime() && now.getTime()<afternoonTime.getTime()){
-            //当天八点到14点之间
             log.info("当天八点到14点之间");
-
             dateList.add(DateTool.getAfternoonTime(0));
 
         }
         if(now.getTime()>afternoonTime.getTime()){
-            //当天14点之后
             log.info("当天14点之后");
 
         }
@@ -199,9 +189,20 @@ public class DoctorController extends BaseController{
             dateList.add(DateTool.getAfternoonTime(i));
         }
 
-        log.info(JSONObject.toJSONString(dateList));
+        SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日hh");
 
-        return ResponseWrapper().addMessage("返回时间列表").addData(dateList).ExeSuccess();
+        for (Date date : dateList) {
+           DateVO vo = new DateVO();
+           vo.setDate(date.getTime()/1000);
+            String timeStr = sdf.format(date);
+            vo.setDay(timeStr.substring(0,5));
+           vo.setDuring(timeStr.substring(6).equals("08")?Common.MORNING:Common.AFTERNOON);
+
+           voList.add(vo);
+
+        }
+
+        return ResponseWrapper().addMessage("返回时间列表").addData(voList).ExeSuccess();
 
     }
 
