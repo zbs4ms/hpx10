@@ -3,6 +3,7 @@ package com.jishi.reservation.controller.protocol;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by sloan on 2017/8/31.
@@ -11,8 +12,9 @@ import java.util.Date;
 @Data
 public class DateVO {
 
-    private Long date;
     private String day;
-    private String during;
+    private List<TimeIntervalVO> during;
 
 }
+
+
