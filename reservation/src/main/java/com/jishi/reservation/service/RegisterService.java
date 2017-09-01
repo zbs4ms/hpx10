@@ -60,6 +60,11 @@ public class RegisterService {
         register.setAgreedTime(agreedTime);
         register.setStatus(StatusEnum.REGISTER_STATUS_NO_PAYMENT.getCode());
         register.setEnable(EnableEnum.EFFECTIVE.getCode());
+
+
+        //added csrr  添加排班表的数据
+
+
         registerMapper.insert(register);
     }
 

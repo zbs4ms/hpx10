@@ -39,7 +39,7 @@ public class PatientInfoService {
         if (Helpers.isNullOrEmpty(accountId))
             throw new Exception("账号ID为空");
         String errorInfo = CheckIdCard.IDCardValidate(idCard);
-        if (errorInfo != null || !"".equals(errorInfo)) {
+        if (errorInfo != null && !"".equals(errorInfo)) {
             log.error(errorInfo);
             throw new Exception("无效的身份证信息");
         }
@@ -112,7 +112,7 @@ public class PatientInfoService {
             throw new Exception("没有查询到就诊人");
         if(idCard != null){
             String errorInfo = CheckIdCard.IDCardValidate(idCard);
-            if (errorInfo != null || !"".equals(errorInfo)) {
+            if (errorInfo != null && !"".equals(errorInfo)) {
                 log.error(errorInfo);
                 throw new Exception("无效的身份证信息");
             }

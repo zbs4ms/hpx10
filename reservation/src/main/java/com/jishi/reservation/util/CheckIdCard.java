@@ -67,7 +67,7 @@ public class CheckIdCard {
         String strYear = Ai.substring(6, 10);// 年份
         String strMonth = Ai.substring(10, 12);// 月份
         String strDay = Ai.substring(12, 14);// 月份
-        if (isDate(strYear + "-" + strMonth + "-" + strDay) == false) {
+        if (!isDate(strYear + "-" + strMonth + "-" + strDay)) {
             errorInfo = "身份证生日无效。";
             return errorInfo;
         }
