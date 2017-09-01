@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.DateVO;
 import com.jishi.reservation.controller.protocol.DoctorVO;
+import com.jishi.reservation.controller.protocol.TimeIntervalVO;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.service.DepartmentService;
 import com.jishi.reservation.service.DoctorService;
@@ -191,18 +192,39 @@ public class DoctorController extends BaseController{
 
         SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日hh");
 
+        List<String> dayList = new ArrayList<>() ;
         for (Date date : dateList) {
-           DateVO vo = new DateVO();
-           vo.setDate(date.getTime()/1000);
-            String timeStr = sdf.format(date);
-            vo.setDay(timeStr.substring(0,5));
-           vo.setDuring(timeStr.substring(6).equals("08")?Common.MORNING:Common.AFTERNOON);
-
-           voList.add(vo);
+            String format = sdf.format(date).substring(0,6);
+            dayList.add(format);
 
         }
+        ArrayList<String> result = new ArrayList<String>();
 
-        return ResponseWrapper().addMessage("返回时间列表").addData(voList).ExeSuccess();
+        for(String s: dayList){
+            if(Collections.frequency(result, s) < 1) result.add(s);
+        }
+
+        List<DateVO> dateVOList = new ArrayList<>();
+        for (String day : result) {
+            DateVO dateVO = new DateVO();
+            dateVO.setDay(day);
+            List<TimeIntervalVO> timeIntervalVOList = new ArrayList<>();
+            for (Date date : dateList) {
+                String format = sdf.format(date).substring(0,6);
+                if(day.equals(format)){
+                    TimeIntervalVO timeIntervalVO = new TimeIntervalVO();
+                    timeIntervalVO.setType(sdf.format(date).substring(6,8).equals("08")?1:2);
+                    timeIntervalVO.setDate(date.getTime()/1000);
+                    timeIntervalVOList.add(timeIntervalVO);
+
+                }
+
+            }
+            dateVO.setDuring(timeIntervalVOList);
+            dateVOList.add(dateVO);
+        }
+
+        return ResponseWrapper().addMessage("返回时间列表").addData(dateVOList).ExeSuccess();
 
     }
 
