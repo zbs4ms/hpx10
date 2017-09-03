@@ -25,7 +25,7 @@ public class Common {
     public final static String REGION = "oss-cn-shenzhen";
     public final static String BUCKET_NAME = "jishikeji-hospital";
     public final static String BATH_ALI_URL = "http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/";
-    public final static String BANNER_PATH = "/image/banner/";
-    public final static String DOCTOR_PATH = "/image/doctor/";
+    public final static String BANNER_PATH = "image/banner/";
+    public final static String DOCTOR_PATH = "image/doctor/";
 
 }
