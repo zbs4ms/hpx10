@@ -10,7 +10,10 @@ import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.service.DepartmentService;
 import com.jishi.reservation.service.DoctorService;
 import com.jishi.reservation.service.PatientInfoService;
+import com.jishi.reservation.service.enumPackage.DateEnum;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.support.AliOssSupport;
+import com.jishi.reservation.service.support.DateSupport;
 import com.jishi.reservation.util.Common;
 import com.jishi.reservation.util.DateTool;
 import com.jishi.reservation.util.Helpers;
@@ -21,6 +24,7 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -39,18 +43,23 @@ public class DoctorController extends BaseController{
     @Autowired
     DepartmentService departmentService;
 
+    @Autowired
+    AliOssSupport ossSupport;
+
     @ApiOperation(value = "增加医生")
     @RequestMapping(value = "addDoctor", method = RequestMethod.PUT)
     @ResponseBody
     public JSONObject addDoctor(
             @ApiParam(value = "医生名称", required = true) @RequestParam(value = "doctorName", required = true) String doctorName,
             @ApiParam(value = "类型（0 普通医生 1 专家", required = true) @RequestParam(value = "type", required = true) String type,
-            @ApiParam(value = "头像", required = true) @RequestParam(value = "headPortrait", required = true) String headPortrait,
+            @ApiParam(value = "医生的图片"  )@RequestParam(value = "file")MultipartFile file,
             @ApiParam(value = "科室", required = true) @RequestParam(value = "departmentIds", required = true) String departmentIds,
             @ApiParam(value = "医生简介", required = false) @RequestParam(value = "about", required = false) String about,
             @ApiParam(value = "职称", required = false) @RequestParam(value = "title", required = false) String title,
             @ApiParam(value = "毕业学校", required = false) @RequestParam(value = "school", required = false) String school,
             @ApiParam(value = "擅长的介绍", required = false) @RequestParam(value = "goodDescribe", required = false) String goodDescribe) throws Exception {
+
+        String headPortrait = ossSupport.uploadImage(file,Common.DOCTOR_PATH);
         doctorService.addDoctor(doctorName,type,headPortrait,departmentIds,about,title,school,goodDescribe);
         return ResponseWrapper().addData("ok").ExeSuccess();
     }
@@ -131,11 +140,13 @@ public class DoctorController extends BaseController{
             @ApiParam(value = "医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId,
             @ApiParam(value = "医生名称", required = false) @RequestParam(value = "doctorName", required = false) String doctorName,
             @ApiParam(value = "类型（0 普通医生 1 专家", required = false) @RequestParam(value = "type", required = false) String type,
-            @ApiParam(value = "头像", required = false) @RequestParam(value = "headPortrait", required = false) String headPortrait,
+            @ApiParam(value = "医生的图片"  )@RequestParam(value = "file")MultipartFile file,
             @ApiParam(value = "医生简介", required = false) @RequestParam(value = "describe", required = false) String describe,
             @ApiParam(value = "职称", required = false) @RequestParam(value = "title", required = false) String title,
             @ApiParam(value = "毕业学校", required = false) @RequestParam(value = "school", required = false) String school,
             @ApiParam(value = "擅长的介绍", required = false) @RequestParam(value = "goodDescribe", required = false) String goodDescribe) throws Exception {
+
+        String headPortrait = ossSupport.uploadImage(file, Common.DOCTOR_PATH);
         doctorService.modifyDoctor(doctorId,doctorName,type,headPortrait,describe,title,school,goodDescribe,null);
         return ResponseWrapper().addData("ok").ExeSuccess();
     }
@@ -157,72 +168,21 @@ public class DoctorController extends BaseController{
     @ResponseBody
     public JSONObject dateList(){
 
-        List<DateVO> voList = new ArrayList<>();
-        //判断当前时间，和当天的八点和当天的十四点比较
-        Date now = new Date();
+        List<DateVO> dateVOList = DateSupport.generateTimeInteval();
 
-        Calendar morring = Calendar.getInstance();
-        morring.set(Calendar.HOUR_OF_DAY, 8);
-        morring.set(Calendar.MINUTE, 0);
-        morring.set(Calendar.SECOND, 0);
-        Date morringTime = morring.getTime();
 
-        Date afternoonTime = new Date(morringTime.getTime() + Common.SIX_HOURS);
 
-        List<Date> dateList = new ArrayList<>();
+        return ResponseWrapper().addMessage("返回时间列表").addData(dateVOList).ExeSuccess();
 
-        if(now.getTime() < morringTime.getTime()){
-            log.info("当天早上八点之前");
-            dateList.add(DateTool.getMorringTime(0));
-            dateList.add(DateTool.getAfternoonTime(0));
-        }
-        if(now.getTime() > morringTime.getTime() && now.getTime()<afternoonTime.getTime()){
-            log.info("当天八点到14点之间");
-            dateList.add(DateTool.getAfternoonTime(0));
+    }
 
-        }
-        if(now.getTime()>afternoonTime.getTime()){
-            log.info("当天14点之后");
+    @ApiOperation(value = "根据返回时间列表  最近五天的（暂时）")
+    @RequestMapping(value = "dateListByDoctorId", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject dateList(@ApiParam(value = "医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId){
 
-        }
-        for(int i = 1;i<8;i++){
-            dateList.add(DateTool.getMorringTime(i));
-            dateList.add(DateTool.getAfternoonTime(i));
-        }
+        List<DateVO> dateVOList = DateSupport.generateTimeInteval();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日hh");
-
-        List<String> dayList = new ArrayList<>() ;
-        for (Date date : dateList) {
-            String format = sdf.format(date).substring(0,6);
-            dayList.add(format);
-
-        }
-        ArrayList<String> result = new ArrayList<String>();
-
-        for(String s: dayList){
-            if(Collections.frequency(result, s) < 1) result.add(s);
-        }
-
-        List<DateVO> dateVOList = new ArrayList<>();
-        for (String day : result) {
-            DateVO dateVO = new DateVO();
-            dateVO.setDay(day);
-            List<TimeIntervalVO> timeIntervalVOList = new ArrayList<>();
-            for (Date date : dateList) {
-                String format = sdf.format(date).substring(0,6);
-                if(day.equals(format)){
-                    TimeIntervalVO timeIntervalVO = new TimeIntervalVO();
-                    timeIntervalVO.setType(sdf.format(date).substring(6,8).equals("08")?1:2);
-                    timeIntervalVO.setDate(date.getTime()/1000);
-                    timeIntervalVOList.add(timeIntervalVO);
-
-                }
-
-            }
-            dateVO.setDuring(timeIntervalVOList);
-            dateVOList.add(dateVO);
-        }
 
         return ResponseWrapper().addMessage("返回时间列表").addData(dateVOList).ExeSuccess();
 

@@ -25,7 +25,6 @@ spring:
         testOnReturn: false
         poolPreparedStatements: true
         maxOpenPreparedStatements: 20
-
 management:
     address: 127.0.0.1
 mybatis:
@@ -33,10 +32,8 @@ mybatis:
         beanPath: com.jishi.reservation.dao.models
         mapperXmlPath: classpath:mapper/*.xml
         mapperPath: com.jishi.reservation.dao.mapper
-
-
 redis:
-    host: 10.28.100.80
+    host: 39.108.117.235
     port: 6379
 
 constant:

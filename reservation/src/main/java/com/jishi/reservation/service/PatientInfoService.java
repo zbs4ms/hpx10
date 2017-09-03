@@ -44,6 +44,7 @@ public class PatientInfoService {
             throw new Exception("无效的身份证信息");
         }
         //判断一个账号最大病号数是否超过5个
+        //todo 判断身份证不能重复
         if(!this.checkMaxPatientNum(accountId)){
             throw new Exception("该账号最大病号数已达最大5个");
         }

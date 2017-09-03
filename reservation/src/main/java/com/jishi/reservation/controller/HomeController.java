@@ -1,10 +1,14 @@
 package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.aliyun.oss.OSSClient;
+import com.aliyun.oss.model.PutObjectResult;
 import com.github.pagehelper.PageInfo;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.models.Banner;
 import com.jishi.reservation.service.HomeService;
+import com.jishi.reservation.service.support.AliOssSupport;
+import com.jishi.reservation.util.Common;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,7 +16,10 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -27,14 +34,20 @@ public class HomeController extends BaseController {
     @Autowired
     HomeService homeService;
 
+    @Autowired
+    AliOssSupport ossSupport;
+
     //*******************  banner  *********************************
     @ApiOperation(value = "增加banner")
     @RequestMapping(value = "addBanner", method = RequestMethod.PUT)
     @ResponseBody
     public JSONObject addBanner(
-            @ApiParam(value = "banner的图片路径", required = true) @RequestParam(value = "bannerUrl", required = true) String bannerUrl,
-            @ApiParam(value = "序号", required = true) @RequestParam(value = "orderNumbe", required = true) String orderNumbe) throws Exception {
-        homeService.addBanner(bannerUrl, orderNumbe);
+            @ApiParam(value = "banner 图片"  )@RequestParam(value = "file")MultipartFile file,
+            @ApiParam(value = "序号", required = true) @RequestParam(value = "orderNumbe", required = true) String orderNumbe
+             ) throws Exception {
+
+        String fileUrl = ossSupport.uploadImage(file,Common.BANNER_PATH);
+        homeService.addBanner(fileUrl, orderNumbe);
         return ResponseWrapper().addData("ok").ExeSuccess();
     }
 
@@ -43,9 +56,10 @@ public class HomeController extends BaseController {
     @ResponseBody
     public JSONObject modifyBanner(
             @ApiParam(value = "banner的图片ID", required = true) @RequestParam(value = "bannerId", required = true) Long bannerId,
-            @ApiParam(value = "banner的图片路径", required = false) @RequestParam(value = "bannerUrl", required = false) String bannerUrl,
+            @ApiParam(value = "banner 图片"  )@RequestParam(value = "file")MultipartFile file,
             @ApiParam(value = "序号", required = false) @RequestParam(value = "orderNumbe", required = false) String orderNumbe) throws Exception {
-        homeService.modifyBanner(bannerId, bannerUrl, orderNumbe);
+        String fileUrl = ossSupport.uploadImage(file,Common.BANNER_PATH);
+        homeService.modifyBanner(bannerId, fileUrl, orderNumbe);
         return ResponseWrapper().addData("ok").ExeSuccess();
     }
 
@@ -54,7 +68,7 @@ public class HomeController extends BaseController {
     @ResponseBody
     public JSONObject queryBanner(
             @ApiParam(value = "有效否(为空 查询全部  0 正常 1 禁用 99 删除)", required = false) @RequestParam(value = "enable", required = false) Integer enable,
-            @ApiParam(value = "banner的图片ID", required = true) @RequestParam(value = "bannerId", required = true) Long bannerId) throws Exception {
+            @ApiParam(value = "banner的ID", required = true) @RequestParam(value = "bannerId", required = true) Long bannerId) throws Exception {
         List<Banner> bannerList = homeService.queryBanner(bannerId,enable);
         Banner banner = bannerList ==null || bannerList.size() == 0 ? null : bannerList.get(0);
         return ResponseWrapper().addData(banner).ExeSuccess();
