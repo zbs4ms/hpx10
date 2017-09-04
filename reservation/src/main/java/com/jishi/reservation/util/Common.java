@@ -6,6 +6,7 @@ package com.jishi.reservation.util;
 public class Common {
 
     public final static String TOKEN_HEADER = "token_";
+    public final static String TOKEN = "token";
 
     public final static String SMS_URL="http://121.40.152.170:9087/system-sms/api/send";
     public final static String SMS_TYPE="SystemWarning";

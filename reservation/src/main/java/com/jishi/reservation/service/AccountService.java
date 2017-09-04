@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
@@ -91,7 +92,8 @@ public class AccountService {
     private String generateToken(String phone) throws Exception {
         Random r = new Random((new Date().getTime()));
         String token = Common.TOKEN_HEADER + MD5Encryption.getMD5(phone + (new Date()).getTime() + String.valueOf(r.nextInt(100000000)));
-        redisOperation.set(token,phone);
+        Account account = accountMapper.queryByTelephone(phone);
+        redisOperation.set(token,String.valueOf(account.getId()));
 
         return token;
 
@@ -256,5 +258,12 @@ public class AccountService {
 
         log.info("查询结果"+ JSONObject.toJSONString(queryAccount));
         return queryAccount;
+    }
+
+
+    public Long returnIdByToken(HttpServletRequest request) throws Exception {
+        Long accountId = Long.valueOf(redisOperation.get(request.getHeader(Common.TOKEN)));
+        log.info("token："+request.getHeader(Common.TOKEN)+",id:"+accountId);
+        return Long.valueOf(redisOperation.get(request.getHeader(Common.TOKEN)));
     }
 }

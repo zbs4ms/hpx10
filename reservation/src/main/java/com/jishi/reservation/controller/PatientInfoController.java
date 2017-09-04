@@ -5,7 +5,9 @@ import com.github.pagehelper.PageInfo;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.dao.models.PatientInfo;
+import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.PatientInfoService;
+import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.util.Helpers;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
@@ -15,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -29,6 +32,9 @@ public class PatientInfoController extends BaseController {
 
     @Autowired
     PatientInfoService patientInfoService;
+
+    @Autowired
+    AccountService accountService;
 
     @ApiOperation(value = "增加就诊人信息  8月30号提出 一个账号最多有5个")
     @RequestMapping(value = "addPatientInfo", method = RequestMethod.PUT)
@@ -72,6 +78,18 @@ public class PatientInfoController extends BaseController {
             @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
             @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
         PageInfo<PatientInfo> patientInfo = patientInfoService.queryPatientInfoPagaInfo(null, null, enable, Paging.create(pageNum,pageSize,orderBy,desc));
+        return ResponseWrapper().addData(patientInfo).ExeSuccess();
+    }
+
+    @ApiOperation(value = "app 通过token查询该用户所有就诊人信息", response = PatientInfo.class)
+    @RequestMapping(value = "queryPatientInfoByToken", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject queryPatientInfoByToken(HttpServletRequest request,
+            @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
+            @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
+            @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
+            @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
+        PageInfo<PatientInfo> patientInfo = patientInfoService.queryPatientInfoPagaInfo(null, accountService.returnIdByToken(request), EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum,pageSize,orderBy,desc));
         return ResponseWrapper().addData(patientInfo).ExeSuccess();
     }
 
