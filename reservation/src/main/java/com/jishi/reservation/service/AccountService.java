@@ -6,6 +6,9 @@ import com.google.common.base.Preconditions;
 import com.jishi.reservation.dao.mapper.AccountMapper;
 import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.enumPackage.SmsEnum;
+import com.jishi.reservation.service.support.AliDayuSupport;
+import com.jishi.reservation.util.Common;
 import com.jishi.reservation.util.Helpers;
 import com.jishi.reservation.util.NewRandomUtil;
 import com.us.base.util.MD5Encryption;
@@ -15,7 +18,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by zbs on 2017/8/10.
@@ -28,23 +33,27 @@ public class AccountService {
     AccountMapper accountMapper;
     @Autowired
     RedisOperation redisOperation;
+    @Autowired
+    AliDayuSupport dayuSupport;
 
     @Value("constant.dynamic_code_key")
     public String dynamic_code_key;
 
 
     /**
-     * 发送手机动态码
+     * 发送登陆/注册手机动态码
      *
      * @param phone
      * @return
      * @throws Exception
      */
-    public String sendDynamicCode(String phone) throws Exception {
+    public String sendLoginOrRegisterDynamicCode(String phone) throws Exception {
         log.info("发送手机动态登陆码!");
         String code = NewRandomUtil.getRandomNum(6);
+
         redisOperation.set(dynamic_code_key + "_" + phone, code);
         redisOperation.expire(dynamic_code_key + "_" + phone,5 * 60);
+        dayuSupport.sendynamicCode(phone, code,SmsEnum.LOGIN_REGISTER.getTemplateCode());
         return code;
     }
 
@@ -56,7 +65,7 @@ public class AccountService {
      * @return
      * @throws Exception
      */
-    public void loginOrRegisterThroughPhone(String phone, String dynamicCode) throws Exception {
+    public String loginOrRegisterThroughPhone(String phone, String dynamicCode) throws Exception {
         log.info("账号采用手机进行登陆: phone:" + phone + " dynamicCode:" + dynamicCode);
         String code = redisOperation.get(dynamic_code_key + "_" + phone);
         if (!dynamicCode.equals(code))
@@ -64,6 +73,29 @@ public class AccountService {
         List<Account> account = queryAccount(null, phone, null);
         if (account.size() == 0)
             addAccount(phone, phone, null, phone, phone, null);
+
+        //删除已核对的验证码
+        redisOperation.del(dynamic_code_key + "_" + phone);
+        log.info("删除已核对的验证码："+dynamic_code_key + "_" + phone);
+
+        return generateToken(phone);
+
+    }
+
+    /**
+     * 创建token值
+     * @param phone
+     * @return
+     * @throws Exception
+     */
+    private String generateToken(String phone) throws Exception {
+        Random r = new Random((new Date().getTime()));
+        String token = Common.TOKEN_HEADER + MD5Encryption.getMD5(phone + (new Date()).getTime() + String.valueOf(r.nextInt(100000000)));
+        redisOperation.set(token,phone);
+
+        return token;
+
+
     }
 
     /**

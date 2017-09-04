@@ -14,12 +14,19 @@ public class Banner {
     @Id
     @ApiModelProperty("banner的ID")
     private Long id;
+    @ApiModelProperty("名称")
+    private String name;
     @ApiModelProperty("banner的url")
     private String bannerUrl;
+    @ApiModelProperty("跳转的url")
+    private String jumpUrl;
     @ApiModelProperty("排序")
-    private String orderNumbe;
+    private String orderNumber;
     @ApiModelProperty("状态标示:0:正常 1:禁用  99:删除")
     private Integer enable;
+    @ApiModelProperty("隐藏/显示 标示:0:显示 1:隐藏 ")
+    private Integer display;
+
 
 
 }

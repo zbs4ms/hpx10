@@ -6,6 +6,7 @@ import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.mapper.BannerMapper;
 import com.jishi.reservation.dao.models.Banner;
+import com.jishi.reservation.service.enumPackage.DisplayEnum;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.log4j.Log4j;
@@ -30,13 +31,15 @@ public class HomeService {
      * @param bannerUrl
      * @param orderNumbe
      */
-    public void addBanner(String bannerUrl, String orderNumbe) {
+    public void addBanner(String name,String bannerUrl, String jumpUrl,String orderNumbe) {
         log.info("增加banner"+" url:"+bannerUrl+" orderNumber:"+orderNumbe);
-        if(Helpers.isNull(bannerUrl) || Helpers.isNull(orderNumbe))
+        if(Helpers.isNull(bannerUrl) || Helpers.isNull(orderNumbe) || Helpers.isNull(name))
             return;
         Banner addBanner = new Banner();
+        addBanner.setName(name);
         addBanner.setBannerUrl(bannerUrl);
-        addBanner.setOrderNumbe(orderNumbe);
+        addBanner.setJumpUrl(jumpUrl);
+        addBanner.setOrderNumber(orderNumbe);
         addBanner.setEnable(EnableEnum.EFFECTIVE.getCode());
         bannerMapper.insert(addBanner);
     }
@@ -45,17 +48,19 @@ public class HomeService {
      * 修改banner
      * @param bannerId
      * @param bannerUrl
-     * @param orderNumbe
+     * @param orderNumber
      */
-    public void modifyBanner(Long bannerId, String bannerUrl, String orderNumbe) {
-        log.info("修改banner:"+bannerId+" url:"+bannerUrl+" orderNumber:"+orderNumbe);
+    public void modifyBanner(Long bannerId, String name,String bannerUrl,String jumpUrl, String orderNumber) {
+        log.info("修改banner:"+bannerId+" ,url:"+bannerUrl+",jumpUrl:"+jumpUrl+" ,orderNumber:"+orderNumber);
         if(Helpers.isNull(bannerId))
             return;
         Banner oldBanner = bannerMapper.selectByPrimaryKey(bannerId);
         if (!Helpers.isNull(oldBanner)) {
             Banner newBanner = new Banner();
             newBanner.setId(bannerId);
-            newBanner.setOrderNumbe(Helpers.isNullOrEmpty(orderNumbe) ? oldBanner.getOrderNumbe() : orderNumbe);
+            newBanner.setName(Helpers.isNullOrEmpty(name)?oldBanner.getName():name);
+            newBanner.setJumpUrl(Helpers.isNullOrEmpty(jumpUrl)?oldBanner.getJumpUrl():jumpUrl);
+            newBanner.setOrderNumber(Helpers.isNullOrEmpty(orderNumber) ? oldBanner.getOrderNumber() : orderNumber);
             newBanner.setBannerUrl(Helpers.isNullOrEmpty(bannerUrl) ? oldBanner.getBannerUrl() : bannerUrl);
             Preconditions.checkState(bannerMapper.updateByPrimaryKeySelective(newBanner) ==1,"更新失败");
         }
@@ -66,12 +71,16 @@ public class HomeService {
      * @param bannerId
      * @return
      */
-    public List<Banner> queryBanner(Long bannerId,Integer enable) {
+    public List<Banner> queryBanner(Long bannerId,String name,Integer enable) {
         log.info("查询banner:"+bannerId);
-        Banner queryBanner = new Banner();
-        queryBanner.setEnable(enable);
-        queryBanner.setId(bannerId);
-        return bannerMapper.select(queryBanner);
+
+        return bannerMapper.queryBanner(bannerId,name,enable);
+
+//        Banner queryBanner = new Banner();
+//        queryBanner.setName(name);
+//        queryBanner.setEnable(enable);
+//        queryBanner.setId(bannerId);
+//        return bannerMapper.select(queryBanner);
     }
 
     /**
@@ -80,10 +89,10 @@ public class HomeService {
      * @param paging
      * @return
      */
-    public PageInfo<Banner> queryBannerPageInfo(Long bannerId,Integer enable, Paging paging){
+    public PageInfo<Banner> queryBannerPageInfo(Long bannerId,String name,Integer enable, Paging paging){
         if(paging != null)
             PageHelper.startPage(paging.getPageNum(),paging.getPageSize(),paging.getOrderBy());
-        return new PageInfo(queryBanner(bannerId,enable));
+        return new PageInfo(queryBanner(bannerId,name,enable));
     }
 
     /**
@@ -95,5 +104,28 @@ public class HomeService {
         if(Helpers.isNull(bannerId))
             return;
         bannerMapper.deleteByPrimaryKey(bannerId);
+    }
+
+    public void deleteBannerBatch(String bannerIdList) {
+        log.info("删除banner:"+bannerIdList);
+        String[] split = bannerIdList.split(",");
+        List<Long> idList = new ArrayList<>();
+        for (String id : split) {
+            idList.add(Long.valueOf(id));
+        }
+
+        bannerMapper.deleteBannerBatch(idList);
+
+    }
+
+    public void hideOrShowBanner(Long bannerId) {
+        log.info("显示/隐藏banner:"+bannerId);
+        List<Banner> bannerList = this.queryBanner(bannerId, null, null);
+        if(Helpers.isNull(bannerId) || Helpers.isNull(bannerList))
+            return;
+        bannerList.get(0).setDisplay(bannerList.get(0).getDisplay().equals(0)?DisplayEnum.HIDE.getCode():
+                DisplayEnum.SHOW.getCode());
+        bannerMapper.updateByPrimaryKey(bannerList.get(0));
+
     }
 }

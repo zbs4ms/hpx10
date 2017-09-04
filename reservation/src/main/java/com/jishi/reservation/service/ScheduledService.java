@@ -7,6 +7,7 @@ import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.mapper.RegisterMapper;
 import com.jishi.reservation.dao.mapper.ScheduledMapper;
 import com.jishi.reservation.dao.models.Register;
+import com.jishi.reservation.dao.models.Scheduled;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.StatusEnum;
 import com.jishi.reservation.util.Helpers;
@@ -28,5 +29,17 @@ public class ScheduledService {
     private ScheduledMapper scheduledMapper;
 
 
+    public void addRegister(Long doctorId, Long patientinfoId, Date agreedTime) {
 
+        Scheduled param = new Scheduled();
+        param.setDoctorId(doctorId);
+        param.setPatientId(patientinfoId);
+        param.setStartTime(agreedTime);
+        Date endTime = new Date(agreedTime.getTime()+60*60*2);
+        param.setEndTime(endTime);
+        param.setEnable(EnableEnum.EFFECTIVE.getCode());
+        param.setStatus(StatusEnum.REGISTER_STATUS_NO_PAYMENT.getCode());
+
+        scheduledMapper.insert(param);
+    }
 }

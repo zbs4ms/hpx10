@@ -12,6 +12,7 @@ import com.jishi.reservation.util.Helpers;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -33,6 +34,8 @@ public class RegisterService {
     DepartmentService departmentService;
     @Autowired
     DoctorService doctorService;
+    @Autowired
+    ScheduledService scheduledService;
 
     /**
      * 增加一条预约
@@ -43,6 +46,7 @@ public class RegisterService {
      * @param agreedTime
      * @throws Exception
      */
+    @Transactional
     public void addRegister(Long accountId,Long patientinfoId,Long departmentId,Long doctorId,Date agreedTime) throws Exception {
         if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
             throw new Exception("账户信息为空.");
@@ -63,6 +67,7 @@ public class RegisterService {
 
 
         //added csrr  添加排班表的数据
+        scheduledService.addRegister(doctorId,patientinfoId,agreedTime);
 
 
         registerMapper.insert(register);

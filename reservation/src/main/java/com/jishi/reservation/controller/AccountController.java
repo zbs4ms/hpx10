@@ -1,6 +1,13 @@
 package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.aliyun.oss.ClientException;
+import com.aliyuncs.DefaultAcsClient;
+import com.aliyuncs.IAcsClient;
+
+import com.aliyuncs.http.MethodType;
+import com.aliyuncs.profile.DefaultProfile;
+import com.aliyuncs.profile.IClientProfile;
 import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
@@ -33,29 +40,18 @@ public class AccountController extends BaseController{
     public JSONObject loginOrRegisterThroughPhone(
             @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone,
             @ApiParam(value = "动态码", required = true) @RequestParam(value = "dynamicCode", required = true) String dynamicCode) throws Exception {
-        accountService.loginOrRegisterThroughPhone(phone,dynamicCode);
+        String token = accountService.loginOrRegisterThroughPhone(phone, dynamicCode);
 
-        return ResponseWrapper().addData("ok").ExeSuccess();
-    }
-
-    @ApiOperation(value = "账号密码登陆")
-    @RequestMapping(value = "loginByPassword", method = RequestMethod.POST)
-    @ResponseBody
-    public JSONObject loginByAccountAndPassword(
-            @ApiParam(value = "账号", required = true) @RequestParam(value = "account", required = true) String account,
-            @ApiParam(value = "密码", required = true) @RequestParam(value = "password", required = true) String password) throws Exception {
-        Account result = accountService.loginByTelephoneAndPassword(account,password);
-        return ResponseWrapper().addData("ok").addData(result).ExeSuccess();
+        return ResponseWrapper().addData(token).addMessage("ok").ExeSuccess();
     }
 
 
-
-    @ApiOperation(value = "发送动态验证码")
+    @ApiOperation(value = "发送登陆/注册动态验证码")
     @RequestMapping(value = "sendDynamicCode", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject sendDynamicCode(
             @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone) throws Exception {
-        String code = accountService.sendDynamicCode(phone);
+        String code = accountService.sendLoginOrRegisterDynamicCode(phone);
         return ResponseWrapper().addData(code).ExeSuccess();
     }
 
@@ -139,36 +135,5 @@ public class AccountController extends BaseController{
         return ResponseWrapper().addData("ok").ExeSuccess();
     }
 
-//    public static void main(String[] args) throws ClientException {
-//        //初始化ascClient需要的几个参数
-//        final String product = "Dysmsapi";//短信API产品名称（短信产品名固定，无需修改）
-//        final String domain = "dysmsapi.aliyuncs.com";//短信API产品域名（接口地址固定，无需修改）
-//        //替换成你的AK
-//        final String accessKeyId = "LTAIm15EE0fsgUe7";//你的accessKeyId,参考本文档步骤2
-//        final String accessKeySecret = "rSGj1egwmEovEnLVSLQKVLlc6OfeBW";//你的accessKeySecret，参考本文档步骤2
-//
-//        IClientProfile profile = DefaultProfile.getProfile("cn-shenzhen", accessKeyId,
-//                accessKeySecret);
-//        DefaultProfile.addEndpoint("cn-shenzhen", "cn-shenzhen", product, domain);
-//        IAcsClient acsClient = new DefaultAcsClient(profile);
-//
-//        //组装请求对象
-//        SendSmsRequest request = new SendSmsRequest();
-//        //使用post提交
-//        request.setMethod(MethodType.POST);
-//
-//        //短信推荐使用单条调用的方式
-//        request.setPhoneNumbers("17360036991");
-//        //必填:短信签名-可在短信控制台中找到
-//        request.setSignName("泸州锦欣妇产医院");
-//        //必填:短信模板-可在短信控制台中找到
-//        request.setTemplateCode("SMS_90995042");
-//        request.setTemplateParam("{\"name\":\"csrr\", \"code\":\"666666\"}");
-//
-//        SendSmsResponse sendSmsResponse = acsClient.getAcsResponse(request);
-//        log.info("返回结果："+JSONObject.toJSONString(sendSmsResponse));
-//        if(sendSmsResponse.getCode() != null && sendSmsResponse.getCode().equals("OK")) {
-////请求成功
-//        }
-//    }
+
 }
