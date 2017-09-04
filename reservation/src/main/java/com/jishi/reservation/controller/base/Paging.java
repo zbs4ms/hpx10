@@ -23,7 +23,7 @@ public class Paging {
             return new Paging(1,10000,null);
         Paging paging = new Paging();
         if(!Helpers.isNull(desc) && !Helpers.isNull(orderBy))
-            paging.setOrderBy(orderBy + (desc ? " dese" : ""));
+            paging.setOrderBy(orderBy + (desc ? " desc" : ""));
         else
             paging.setOrderBy(orderBy);
         return paging;
