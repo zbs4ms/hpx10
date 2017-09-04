@@ -14,4 +14,10 @@ public interface AccountMapper extends MyMapper<Account>{
             "SELECT * FROM account where account = ${account} and passwd = ${password}"
     })
     Account selectByAccountAndPassword(@Param("account") String account,@Param("password") String password);
+
+
+    @Select({
+            "select * from account where account = #{phone}"
+    })
+    Account queryByTelephone(@Param("phone") String phone);
 }
