@@ -18,9 +18,8 @@
  */
 package com.jishi.reservation.util.extra.transform.v20170525;
 
-import com.aliyuncs.dysmsapi.model.v20170525.QueryInterSmsIsoInfoResponse;
-import com.aliyuncs.dysmsapi.model.v20170525.QueryInterSmsIsoInfoResponse.IsoSupportDTO;
 import com.aliyuncs.transform.UnmarshallerContext;
+import com.jishi.reservation.util.extra.model.v20170525.QueryInterSmsIsoInfoResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +34,9 @@ public class QueryInterSmsIsoInfoResponseUnmarshaller {
 		queryInterSmsIsoInfoResponse.setMessage(context.stringValue("QueryInterSmsIsoInfoResponse.Message"));
 		queryInterSmsIsoInfoResponse.setTotalCount(context.stringValue("QueryInterSmsIsoInfoResponse.TotalCount"));
 
-		List<IsoSupportDTO> isoSupportDTOs = new ArrayList<IsoSupportDTO>();
+		List<QueryInterSmsIsoInfoResponse.IsoSupportDTO> isoSupportDTOs = new ArrayList<QueryInterSmsIsoInfoResponse.IsoSupportDTO>();
 		for (int i = 0; i < context.lengthValue("QueryInterSmsIsoInfoResponse.IsoSupportDTOs.Length"); i++) {
-			IsoSupportDTO isoSupportDTO = new IsoSupportDTO();
+			QueryInterSmsIsoInfoResponse.IsoSupportDTO isoSupportDTO = new QueryInterSmsIsoInfoResponse.IsoSupportDTO();
 			isoSupportDTO.setCountryName(context.stringValue("QueryInterSmsIsoInfoResponse.IsoSupportDTOs["+ i +"].CountryName"));
 			isoSupportDTO.setCountryCode(context.stringValue("QueryInterSmsIsoInfoResponse.IsoSupportDTOs["+ i +"].CountryCode"));
 			isoSupportDTO.setIsoCode(context.stringValue("QueryInterSmsIsoInfoResponse.IsoSupportDTOs["+ i +"].IsoCode"));

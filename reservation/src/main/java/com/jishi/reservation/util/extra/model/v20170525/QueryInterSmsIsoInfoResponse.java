@@ -20,8 +20,8 @@ package com.jishi.reservation.util.extra.model.v20170525;
 
 import java.util.List;
 import com.aliyuncs.AcsResponse;
-import com.aliyuncs.dysmsapi.transform.v20170525.QueryInterSmsIsoInfoResponseUnmarshaller;
 import com.aliyuncs.transform.UnmarshallerContext;
+import com.jishi.reservation.util.extra.transform.v20170525.QueryInterSmsIsoInfoResponseUnmarshaller;
 
 /**
  * @author auto create

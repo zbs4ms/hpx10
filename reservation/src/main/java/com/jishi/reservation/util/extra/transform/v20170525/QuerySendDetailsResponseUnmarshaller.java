@@ -18,9 +18,8 @@
  */
 package com.jishi.reservation.util.extra.transform.v20170525;
 
-import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsResponse;
-import com.aliyuncs.dysmsapi.model.v20170525.QuerySendDetailsResponse.SmsSendDetailDTO;
 import com.aliyuncs.transform.UnmarshallerContext;
+import com.jishi.reservation.util.extra.model.v20170525.QuerySendDetailsResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +34,9 @@ public class QuerySendDetailsResponseUnmarshaller {
 		querySendDetailsResponse.setMessage(context.stringValue("QuerySendDetailsResponse.Message"));
 		querySendDetailsResponse.setTotalCount(context.stringValue("QuerySendDetailsResponse.TotalCount"));
 
-		List<SmsSendDetailDTO> smsSendDetailDTOs = new ArrayList<SmsSendDetailDTO>();
+		List<QuerySendDetailsResponse.SmsSendDetailDTO> smsSendDetailDTOs = new ArrayList<QuerySendDetailsResponse.SmsSendDetailDTO>();
 		for (int i = 0; i < context.lengthValue("QuerySendDetailsResponse.SmsSendDetailDTOs.Length"); i++) {
-			SmsSendDetailDTO smsSendDetailDTO = new SmsSendDetailDTO();
+			QuerySendDetailsResponse.SmsSendDetailDTO smsSendDetailDTO = new QuerySendDetailsResponse.SmsSendDetailDTO();
 			smsSendDetailDTO.setPhoneNum(context.stringValue("QuerySendDetailsResponse.SmsSendDetailDTOs["+ i +"].PhoneNum"));
 			smsSendDetailDTO.setSendStatus(context.longValue("QuerySendDetailsResponse.SmsSendDetailDTOs["+ i +"].SendStatus"));
 			smsSendDetailDTO.setErrCode(context.stringValue("QuerySendDetailsResponse.SmsSendDetailDTOs["+ i +"].ErrCode"));

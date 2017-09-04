@@ -18,8 +18,8 @@
  */
 package com.jishi.reservation.util.extra.transform.v20170525;
 
-import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.transform.UnmarshallerContext;
+import com.jishi.reservation.util.extra.model.v20170525.SendSmsResponse;
 
 
 public class SendSmsResponseUnmarshaller {

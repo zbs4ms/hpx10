@@ -19,7 +19,6 @@
 package com.jishi.reservation.util.extra.model.v20170525;
 
 import com.aliyuncs.RpcAcsRequest;
-import com.aliyuncs.dysmsapi.model.v20170525.SendInterSmsResponse;
 
 /**
  * @author auto create

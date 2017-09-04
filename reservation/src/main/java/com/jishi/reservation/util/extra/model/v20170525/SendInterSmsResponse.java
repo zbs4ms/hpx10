@@ -19,8 +19,8 @@
 package com.jishi.reservation.util.extra.model.v20170525;
 
 import com.aliyuncs.AcsResponse;
-import com.aliyuncs.dysmsapi.transform.v20170525.SendInterSmsResponseUnmarshaller;
 import com.aliyuncs.transform.UnmarshallerContext;
+import com.jishi.reservation.util.extra.transform.v20170525.SendInterSmsResponseUnmarshaller;
 
 /**
  * @author auto create
