@@ -262,8 +262,10 @@ public class AccountService {
 
 
     public Long returnIdByToken(HttpServletRequest request) throws Exception {
+        String token = request.getHeader(Common.TOKEN);
+        log.info("token："+token);
         Long accountId = Long.valueOf(redisOperation.get(request.getHeader(Common.TOKEN)));
-        log.info("token："+request.getHeader(Common.TOKEN)+",id:"+accountId);
+        log.info("id:"+accountId);
         return Long.valueOf(redisOperation.get(request.getHeader(Common.TOKEN)));
     }
 }

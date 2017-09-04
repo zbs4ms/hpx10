@@ -39,4 +39,9 @@ public interface BannerMapper extends MyMapper<Banner> {
                     "</script>"
     })
     List<Banner> queryBanner(@Param("bannerId") Long bannerId,@Param("name") String name,@Param("enable") Integer enable);
+
+    @Select({
+            "SELECT max(order_number) from banner"
+    })
+    Integer queryMaxTop();
 }

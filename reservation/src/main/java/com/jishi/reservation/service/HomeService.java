@@ -29,17 +29,17 @@ public class HomeService {
     /**
      * 增加banner
      * @param bannerUrl
-     * @param orderNumbe
+     * @param orderNumber
      */
-    public void addBanner(String name,String bannerUrl, String jumpUrl,String orderNumbe) {
-        log.info("增加banner"+" url:"+bannerUrl+" orderNumber:"+orderNumbe);
-        if(Helpers.isNull(bannerUrl) || Helpers.isNull(orderNumbe) || Helpers.isNull(name))
+    public void addBanner(String name,String bannerUrl, String jumpUrl,Integer orderNumber) {
+        log.info("增加banner"+" url:"+bannerUrl+" orderNumber:"+orderNumber);
+        if(Helpers.isNull(bannerUrl) || Helpers.isNull(orderNumber) || Helpers.isNull(name))
             return;
         Banner addBanner = new Banner();
         addBanner.setName(name);
         addBanner.setBannerUrl(bannerUrl);
         addBanner.setJumpUrl(jumpUrl);
-        addBanner.setOrderNumber(orderNumbe);
+        addBanner.setOrderNumber(orderNumber);
         addBanner.setEnable(EnableEnum.EFFECTIVE.getCode());
         addBanner.setDisplay(DisplayEnum.SHOW.getCode());
         bannerMapper.insert(addBanner);
@@ -51,7 +51,7 @@ public class HomeService {
      * @param bannerUrl
      * @param orderNumber
      */
-    public void modifyBanner(Long bannerId, String name,String bannerUrl,String jumpUrl, String orderNumber) {
+    public void modifyBanner(Long bannerId, String name,String bannerUrl,String jumpUrl, Integer orderNumber) {
         log.info("修改banner:"+bannerId+" ,url:"+bannerUrl+",jumpUrl:"+jumpUrl+" ,orderNumber:"+orderNumber);
         if(Helpers.isNull(bannerId))
             return;
@@ -127,6 +127,20 @@ public class HomeService {
         bannerList.get(0).setDisplay(bannerList.get(0).getDisplay().equals(0)?DisplayEnum.HIDE.getCode():
                 DisplayEnum.SHOW.getCode());
         bannerMapper.updateByPrimaryKey(bannerList.get(0));
+
+    }
+
+    public void topBanner(Long bannerId) {
+        Banner queryBanner = new Banner();
+        queryBanner.setId(bannerId);
+        Banner select = bannerMapper.selectOne(queryBanner);
+
+        if( Helpers.isNull(select))
+            return;
+        Integer maxTop = bannerMapper.queryMaxTop();
+        select.setOrderNumber(maxTop+1);
+        bannerMapper.updateByPrimaryKeySelective(select);
+
 
     }
 }
