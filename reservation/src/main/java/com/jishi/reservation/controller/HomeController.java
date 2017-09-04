@@ -126,8 +126,9 @@ public class HomeController extends BaseController {
     @RequestMapping(value = "topBanner", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject topBanner(
-            @ApiParam(value = "banner的ID ", required = true) @RequestParam(value = "bannerId", required = true) Long bannerId) throws Exception {
-        homeService.topBanner(bannerId);
+            @ApiParam(value = "banner的ID ", required = true) @RequestParam(value = "bannerId", required = true) Long bannerId,
+            @ApiParam(value = "用户输入的排序  越大越靠前", required = true) @RequestParam(value = "sort", required = true) Integer sort ) throws Exception {
+        homeService.sortBanner(bannerId,sort);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 

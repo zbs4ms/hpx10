@@ -130,15 +130,15 @@ public class HomeService {
 
     }
 
-    public void topBanner(Long bannerId) {
+    public void sortBanner(Long bannerId,Integer sort) {
         Banner queryBanner = new Banner();
         queryBanner.setId(bannerId);
         Banner select = bannerMapper.selectOne(queryBanner);
 
         if( Helpers.isNull(select))
             return;
-        Integer maxTop = bannerMapper.queryMaxTop();
-        select.setOrderNumber(maxTop+1);
+       // Integer maxTop = bannerMapper.queryMaxTop();
+        select.setOrderNumber(sort);
         bannerMapper.updateByPrimaryKeySelective(select);
 
 
