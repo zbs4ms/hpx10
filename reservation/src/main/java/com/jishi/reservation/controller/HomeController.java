@@ -46,7 +46,7 @@ public class HomeController extends BaseController {
             @ApiParam(value = "banner 名称", required = true) @RequestParam(value = "name", required = true) String name,
             @ApiParam(value = "banner 图片"  )@RequestParam(value = "file")MultipartFile file,
             @ApiParam(value = "跳转的url", required = true) @RequestParam(value = "jumpUrl", required = true) String jumpUrl,
-            @ApiParam(value = "序号", required = true) @RequestParam(value = "orderNumber", required = true) String orderNumber
+            @ApiParam(value = "序号", required = true) @RequestParam(value = "orderNumber", required = true) Integer orderNumber
              ) throws Exception {
 
         String fileUrl = ossSupport.uploadImage(file,Common.BANNER_PATH);
@@ -62,7 +62,7 @@ public class HomeController extends BaseController {
             @ApiParam(value = "banner 名称", required = true) @RequestParam(value = "name", required = true) String name,
             @ApiParam(value = "跳转的url", required = true) @RequestParam(value = "jumpUrl", required = true) String jumpUrl,
             @ApiParam(value = "banner 图片"  )@RequestParam(value = "file")MultipartFile file,
-            @ApiParam(value = "序号", required = false) @RequestParam(value = "orderNumber", required = false) String orderNumber) throws Exception {
+            @ApiParam(value = "序号", required = false) @RequestParam(value = "orderNumber", required = false) Integer orderNumber) throws Exception {
         String fileUrl = ossSupport.uploadImage(file,Common.BANNER_PATH);
         homeService.modifyBanner(bannerId, name,fileUrl, jumpUrl,orderNumber);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
@@ -121,4 +121,16 @@ public class HomeController extends BaseController {
         homeService.deleteBannerBatch(bannerIdList);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
+
+    @ApiOperation(value = "置顶banner")
+    @RequestMapping(value = "topBanner", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject topBanner(
+            @ApiParam(value = "banner的ID ", required = true) @RequestParam(value = "bannerId", required = true) Long bannerId) throws Exception {
+        homeService.topBanner(bannerId);
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+
+
 }
