@@ -41,6 +41,7 @@ public class HomeService {
         addBanner.setJumpUrl(jumpUrl);
         addBanner.setOrderNumber(orderNumbe);
         addBanner.setEnable(EnableEnum.EFFECTIVE.getCode());
+        addBanner.setDisplay(DisplayEnum.SHOW.getCode());
         bannerMapper.insert(addBanner);
     }
 
