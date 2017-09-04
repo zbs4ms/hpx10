@@ -7,6 +7,7 @@ import com.jishi.reservation.controller.protocol.RegisterVO;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.*;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -49,7 +50,7 @@ public class PregnantController extends BaseController {
 
         pregnantService.addPregnant(accountId,patientinfoId,name,new Date(birth),livingAddress,new Date(lastMenses),telephone,husbandName,husbandTelephone,remark);
 
-        return  ResponseWrapper().addMessage("孕妇信息添加成功.").ExeSuccess();
+        return  ResponseWrapper().addMessage("孕妇信息添加成功.").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 
@@ -69,7 +70,7 @@ public class PregnantController extends BaseController {
 
         pregnantService.updatePregnant(pregnantId,name,new Date(birth),livingAddress,new Date(lastMenses),telephone,husbandName,husbandTelephone,EnableEnum.EFFECTIVE.getCode());
 
-        return  ResponseWrapper().addMessage("孕妇信息修改成功.").ExeSuccess();
+        return  ResponseWrapper().addMessage("孕妇信息修改成功.").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "查询指定孕妇信息 还没看到姓名的模糊搜索要求，所以是精确匹配姓名",response = Pregnant.class)
@@ -83,7 +84,7 @@ public class PregnantController extends BaseController {
 
         List<Pregnant> list = pregnantService.queryPregnant(pregnantId,patientinfoId,name,EnableEnum.EFFECTIVE.getCode());
 
-        return  ResponseWrapper().addMessage("查询成功.").addData(list).ExeSuccess();
+        return  ResponseWrapper().addMessage("查询成功.").addData(list).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 
@@ -96,7 +97,7 @@ public class PregnantController extends BaseController {
 
         pregnantService.updatePregnant(pregnantId,null,null,null,null,null,null,null,EnableEnum.DELETE.getCode());
 
-        return  ResponseWrapper().addMessage("操作成功.").ExeSuccess();
+        return  ResponseWrapper().addMessage("操作成功.").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 

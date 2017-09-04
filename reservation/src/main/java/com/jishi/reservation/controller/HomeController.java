@@ -7,6 +7,7 @@ import com.github.pagehelper.PageInfo;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.models.Banner;
 import com.jishi.reservation.service.HomeService;
+import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.support.AliOssSupport;
 import com.jishi.reservation.util.Common;
 import com.us.base.common.controller.BaseController;
@@ -50,7 +51,7 @@ public class HomeController extends BaseController {
 
         String fileUrl = ossSupport.uploadImage(file,Common.BANNER_PATH);
         homeService.addBanner(name,fileUrl, jumpUrl,orderNumber);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "修改banner")
@@ -64,7 +65,7 @@ public class HomeController extends BaseController {
             @ApiParam(value = "序号", required = false) @RequestParam(value = "orderNumber", required = false) String orderNumber) throws Exception {
         String fileUrl = ossSupport.uploadImage(file,Common.BANNER_PATH);
         homeService.modifyBanner(bannerId, name,fileUrl, jumpUrl,orderNumber);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "查询单个banner", response = Banner.class)
@@ -75,7 +76,7 @@ public class HomeController extends BaseController {
             @ApiParam(value = "banner的ID", required = true) @RequestParam(value = "bannerId", required = true) Long bannerId) throws Exception {
         List<Banner> bannerList = homeService.queryBanner(bannerId,null,enable);
         Banner banner = bannerList ==null || bannerList.size() == 0 ? null : bannerList.get(0);
-        return ResponseWrapper().addData(banner).ExeSuccess();
+        return ResponseWrapper().addData(banner).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "查询全部banner", response = Banner.class)
@@ -91,7 +92,7 @@ public class HomeController extends BaseController {
 
     {
         PageInfo<Banner> bannerList = homeService.queryBannerPageInfo(null,name,enable, Paging.create(pageNum,pageSize,orderBy,desc));
-        return ResponseWrapper().addData(bannerList).ExeSuccess();
+        return ResponseWrapper().addData(bannerList).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "删除单个banner")
@@ -100,7 +101,7 @@ public class HomeController extends BaseController {
     public JSONObject deleteBanner(
             @ApiParam(value = "banner的图片ID", required = true) @RequestParam(value = "bannerId", required = true) Long bannerId) throws Exception {
         homeService.deleteBanner(bannerId);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "隐藏/显示 单个banner")
@@ -109,7 +110,7 @@ public class HomeController extends BaseController {
     public JSONObject hideOrShowBanner(
             @ApiParam(value = "banner的图片ID", required = true) @RequestParam(value = "bannerId", required = true) Long bannerId) throws Exception {
         homeService.hideOrShowBanner(bannerId);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "批量删除banner")
@@ -118,6 +119,6 @@ public class HomeController extends BaseController {
     public JSONObject deleteBannerBatch(
             @ApiParam(value = "banner的ID  ','分隔", required = true) @RequestParam(value = "bannerIdList", required = true) String bannerIdList) throws Exception {
         homeService.deleteBannerBatch(bannerIdList);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 }

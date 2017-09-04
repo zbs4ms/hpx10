@@ -12,6 +12,7 @@ import com.jishi.reservation.service.DoctorService;
 import com.jishi.reservation.service.PatientInfoService;
 import com.jishi.reservation.service.enumPackage.DateEnum;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.support.AliOssSupport;
 import com.jishi.reservation.service.support.DateSupport;
 import com.jishi.reservation.util.Common;
@@ -61,7 +62,7 @@ public class DoctorController extends BaseController{
 
         String headPortrait = ossSupport.uploadImage(file,Common.DOCTOR_PATH);
         doctorService.addDoctor(doctorName,type,headPortrait,departmentIds,about,title,school,goodDescribe);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "查询全部医生",response=DoctorVO.class)
@@ -85,7 +86,7 @@ public class DoctorController extends BaseController{
             doctorVOList.add(doctorVO);
         }
         doctors.setList(doctorVOList);
-        return ResponseWrapper().addData(doctors).ExeSuccess();
+        return ResponseWrapper().addData(doctors).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "查询医生",response=DoctorVO.class)
@@ -103,7 +104,7 @@ public class DoctorController extends BaseController{
             doctorVO.setDoctor(doctors.get(0));
             doctorVO.setDepartmentList(departmentService.batchQueryDepartment(JSONObject.parseArray(doctors.get(0).getDepartmentIds(),String.class)));
         }
-        return ResponseWrapper().addData(doctorVO).ExeSuccess();
+        return ResponseWrapper().addData(doctorVO).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 
@@ -129,7 +130,7 @@ public class DoctorController extends BaseController{
 //            doctorVO.setDoctor(doctors.get(0));
 //            doctorVO.setDepartmentList(departmentService.batchQueryDepartment(doctors.get(0).getDepartmentIds().split(",")));
 //        }
-        return ResponseWrapper().addData(doctors).ExeSuccess();
+        return ResponseWrapper().addData(doctors).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 
@@ -148,7 +149,7 @@ public class DoctorController extends BaseController{
 
         String headPortrait = ossSupport.uploadImage(file, Common.DOCTOR_PATH);
         doctorService.modifyDoctor(doctorId,doctorName,type,headPortrait,describe,title,school,goodDescribe,null);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "失效医生")
@@ -159,7 +160,7 @@ public class DoctorController extends BaseController{
     ) throws Exception {
         //todo 这儿其他信息都传null的话，那信息都更新为空了？？
         doctorService.modifyDoctor(doctorId,null,null,null,null,null,null,null, EnableEnum.INVALID.getCode());
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 
@@ -172,7 +173,7 @@ public class DoctorController extends BaseController{
 
 
 
-        return ResponseWrapper().addMessage("返回时间列表").addData(dateVOList).ExeSuccess();
+        return ResponseWrapper().addMessage("返回时间列表").addData(dateVOList).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
     }
 
@@ -184,7 +185,7 @@ public class DoctorController extends BaseController{
         List<DateVO> dateVOList = DateSupport.generateTimeInteval();
 
 
-        return ResponseWrapper().addMessage("返回时间列表").addData(dateVOList).ExeSuccess();
+        return ResponseWrapper().addMessage("返回时间列表").addData(dateVOList).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
     }
 

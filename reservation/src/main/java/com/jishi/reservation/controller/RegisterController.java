@@ -8,6 +8,7 @@ import com.jishi.reservation.controller.protocol.RegisterVO;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.*;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -54,7 +55,7 @@ public class RegisterController extends BaseController {
             accountId = accountId;
         }
         registerService.addRegister(accountId, patientinfoId, departmentId, doctorId, new Date(agreedTime));
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "查询预约信息", response = RegisterVO.class)
@@ -89,7 +90,7 @@ public class RegisterController extends BaseController {
             registerVOList.add(registerVO);
         }
         pageInfo.setList(registerVOList);
-        return ResponseWrapper().addData(pageInfo).ExeSuccess();
+        return ResponseWrapper().addData(pageInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "修改预约信息")
@@ -104,7 +105,7 @@ public class RegisterController extends BaseController {
             @ApiParam(value = "预约的医生ID", required = false) @RequestParam(value = "doctorId", required = false) Long doctorId,
             @ApiParam(value = "预约时间", required = false) @RequestParam(value = "agreedTime", required = false) String agreedTime) throws Exception {
         registerService.modifyRegister(registerId, accountId, patientinfoId, departmentId, doctorId, status, new Date(agreedTime), null);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "预约信息置为无效")
@@ -114,6 +115,6 @@ public class RegisterController extends BaseController {
             @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId
     ) throws Exception {
         registerService.failureRegister(registerId);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 }

@@ -3,6 +3,7 @@ package com.jishi.reservation.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.service.DepartmentService;
+import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,7 +32,7 @@ public class DepartmentController extends BaseController{
     public JSONObject addDepartment(
             @ApiParam(value = "科室名称", required = true) @RequestParam(value = "departmentName", required = true) String departmentName) throws Exception {
         departmentService.addDepartment(departmentName);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "查询全部科室",response=Department.class)
@@ -43,7 +44,7 @@ public class DepartmentController extends BaseController{
             @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
             @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
         List<Department> departmentList = departmentService.queryAllDepartment();
-        return ResponseWrapper().addData(departmentList).ExeSuccess();
+        return ResponseWrapper().addData(departmentList).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "修改科室")
@@ -53,7 +54,7 @@ public class DepartmentController extends BaseController{
             @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
             @ApiParam(value = "科室名称", required = true) @RequestParam(value = "departmentName", required = true) String departmentName) throws Exception {
         departmentService.modifyDepartment(departmentId,departmentName,null);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "失效科室")
@@ -63,7 +64,7 @@ public class DepartmentController extends BaseController{
             @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId
     ) throws Exception {
         departmentService.failureDepartment(departmentId);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 }

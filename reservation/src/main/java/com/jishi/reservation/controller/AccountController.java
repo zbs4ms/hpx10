@@ -11,6 +11,7 @@ import com.aliyuncs.profile.IClientProfile;
 import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,7 +43,7 @@ public class AccountController extends BaseController{
             @ApiParam(value = "动态码", required = true) @RequestParam(value = "dynamicCode", required = true) String dynamicCode) throws Exception {
         String token = accountService.loginOrRegisterThroughPhone(phone, dynamicCode);
 
-        return ResponseWrapper().addData(token).addMessage("ok").ExeSuccess();
+        return ResponseWrapper().addData(token).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 
@@ -52,7 +53,7 @@ public class AccountController extends BaseController{
     public JSONObject sendDynamicCode(
             @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone) throws Exception {
         String code = accountService.sendLoginOrRegisterDynamicCode(phone);
-        return ResponseWrapper().addData(code).ExeSuccess();
+        return ResponseWrapper().addData(code).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "传统的增加账号")
@@ -66,7 +67,7 @@ public class AccountController extends BaseController{
             @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone,
             @ApiParam(value = "邮箱", required = false) @RequestParam(value = "email", required = false) String email) throws Exception {
         accountService.addAccount(account,passwd,headPortrait,nick,phone,email);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "修改账号信息")
@@ -78,7 +79,7 @@ public class AccountController extends BaseController{
             @ApiParam(value = "头像", required = false) @RequestParam(value = "headPortrait", required = false) String headPortrait,
             @ApiParam(value = "邮箱", required = false) @RequestParam(value = "email", required = false) String email) throws Exception {
         accountService.modifyAccountInfo(accountId,null,nick,headPortrait,email,null,null);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "修改账号的密码")
@@ -90,7 +91,7 @@ public class AccountController extends BaseController{
             @ApiParam(value = "老密码", required = true) @RequestParam(value = "oldPasswd", required = true) String oldPasswd,
             @ApiParam(value = "新密码", required = true) @RequestParam(value = "newPasswd", required = true) String newPasswd) throws Exception {
         accountService.modifyAccountPasswd(accountId,phone,oldPasswd,newPasswd);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "修改账号绑定手机")
@@ -100,7 +101,7 @@ public class AccountController extends BaseController{
             @ApiParam(value = "账号ID", required = true) @RequestParam(value = "accountId", required = true) Long accountId,
             @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone) throws Exception {
         accountService.modifyAccountPhone(accountId,phone);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "查询单个账号",response=Account.class)
@@ -110,7 +111,7 @@ public class AccountController extends BaseController{
             @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "电话", required = false) @RequestParam(value = "phone", required = false) String phone) throws Exception {
         List<Account> accountList = accountService.queryAccount(accountId,phone, EnableEnum.EFFECTIVE.getCode());
-        return ResponseWrapper().addData(accountList).ExeSuccess();
+        return ResponseWrapper().addData(accountList).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "查询全部账号",response=Account.class)
@@ -122,7 +123,7 @@ public class AccountController extends BaseController{
             @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
             @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
         List<Account> accountList = accountService.queryAllAccount();
-        return ResponseWrapper().addData(accountList).ExeSuccess();
+        return ResponseWrapper().addData(accountList).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "禁用单个账号")
@@ -132,7 +133,7 @@ public class AccountController extends BaseController{
             @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "电话", required = false) @RequestParam(value = "phone", required = false) String phone) throws Exception {
         accountService.failureAccount(accountId,phone);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 

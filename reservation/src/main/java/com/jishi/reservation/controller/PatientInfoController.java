@@ -8,6 +8,7 @@ import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.PatientInfoService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.util.Helpers;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
@@ -49,7 +50,7 @@ public class PatientInfoController extends BaseController {
             accountId = accountId;
         }
         patientInfoService.addPatientInfo(accountId, name, phone, idCard);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "查询就诊人信息", response = PatientInfo.class)
@@ -65,7 +66,7 @@ public class PatientInfoController extends BaseController {
         if (Helpers.isNullOrEmpty(patientInfoId) && Helpers.isNullOrEmpty(accountId))
             throw new Exception("查询条件不能都为空");
         List<PatientInfo> patientInfos = patientInfoService.queryPatientInfo(accountId, patientInfoId, null);
-        return ResponseWrapper().addData(patientInfos).ExeSuccess();
+        return ResponseWrapper().addData(patientInfos).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "查询全部就诊人信息", response = PatientInfo.class)
@@ -78,7 +79,7 @@ public class PatientInfoController extends BaseController {
             @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
             @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
         PageInfo<PatientInfo> patientInfo = patientInfoService.queryPatientInfoPagaInfo(null, null, enable, Paging.create(pageNum,pageSize,orderBy,desc));
-        return ResponseWrapper().addData(patientInfo).ExeSuccess();
+        return ResponseWrapper().addData(patientInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "app 通过token查询该用户所有就诊人信息", response = PatientInfo.class)
@@ -90,7 +91,7 @@ public class PatientInfoController extends BaseController {
             @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
             @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
         PageInfo<PatientInfo> patientInfo = patientInfoService.queryPatientInfoPagaInfo(null, accountService.returnIdByToken(request), EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum,pageSize,orderBy,desc));
-        return ResponseWrapper().addData(patientInfo).ExeSuccess();
+        return ResponseWrapper().addData(patientInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 
@@ -103,7 +104,7 @@ public class PatientInfoController extends BaseController {
             @ApiParam(value = "病人电话", required = true) @RequestParam(value = "phone", required = true) String phone,
             @ApiParam(value = "病人身份证", required = true) @RequestParam(value = "idCard", required = true) String idCard) throws Exception {
         patientInfoService.modifyPatientInfo(patientInfoId, name, phone, idCard, null);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "删除就诊人")
@@ -113,6 +114,6 @@ public class PatientInfoController extends BaseController {
             @ApiParam(value = "就诊人ID", required = true) @RequestParam(value = "patientInfoId", required = true) Long patientInfoId
     ) throws Exception {
         patientInfoService.deletePatientInfo(patientInfoId);
-        return ResponseWrapper().addData("ok").ExeSuccess();
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 }
