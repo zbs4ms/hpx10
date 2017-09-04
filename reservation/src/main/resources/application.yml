@@ -33,7 +33,7 @@ mybatis:
         mapperXmlPath: classpath:mapper/*.xml
         mapperPath: com.jishi.reservation.dao.mapper
 redis:
-    host: 39.108.117.235
+    host: 119.29.108.150
     port: 6379
 
 constant:
