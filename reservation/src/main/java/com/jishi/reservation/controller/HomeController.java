@@ -61,10 +61,16 @@ public class HomeController extends BaseController {
             @ApiParam(value = "banner的ID", required = true) @RequestParam(value = "bannerId", required = true) Long bannerId,
             @ApiParam(value = "banner 名称", required = true) @RequestParam(value = "name", required = true) String name,
             @ApiParam(value = "跳转的url", required = true) @RequestParam(value = "jumpUrl", required = true) String jumpUrl,
-            @ApiParam(value = "banner 图片"  )@RequestParam(value = "file")MultipartFile file,
+            @ApiParam(value = "banner 图片"  )@RequestParam(value = "file",required = false)MultipartFile file,
             @ApiParam(value = "序号", required = false) @RequestParam(value = "orderNumber", required = false) Integer orderNumber) throws Exception {
-        String fileUrl = ossSupport.uploadImage(file,Common.BANNER_PATH);
-        homeService.modifyBanner(bannerId, name,fileUrl, jumpUrl,orderNumber);
+        if(file != null) {
+            String fileUrl = ossSupport.uploadImage(file, Common.BANNER_PATH);
+            homeService.modifyBanner(bannerId, name,fileUrl, jumpUrl,orderNumber);
+        }else {
+            homeService.modifyBanner(bannerId, name,null, jumpUrl,orderNumber);
+
+        }
+
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
