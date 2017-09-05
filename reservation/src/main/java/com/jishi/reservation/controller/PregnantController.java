@@ -65,10 +65,12 @@ public class PregnantController extends BaseController {
             @ApiParam(value = "末次月经时间", required = true) @RequestParam(value = "lastMenses", required = true) Long lastMenses,
             @ApiParam(value = "联系电话", required = true) @RequestParam(value = "telephone", required = true) String telephone,
             @ApiParam(value = "丈夫姓名", required = true) @RequestParam(value = "husbandName", required = true) String  husbandName,
-            @ApiParam(value = "丈夫电话", required = true) @RequestParam(value = "husbandTelephone", required = true) String husbandTelephone
+            @ApiParam(value = "丈夫电话", required = true) @RequestParam(value = "husbandTelephone", required = true) String husbandTelephone,
+            @ApiParam(value = "备注", required = false) @RequestParam(value = "remark", required = false) String remark
+
     ) throws Exception {
 
-        pregnantService.updatePregnant(patientId,name,new Date(birth),livingAddress,new Date(lastMenses),telephone,husbandName,husbandTelephone,EnableEnum.EFFECTIVE.getCode());
+        pregnantService.updatePregnant(patientId,name,new Date(birth),livingAddress,new Date(lastMenses),telephone,husbandName,husbandTelephone,EnableEnum.EFFECTIVE.getCode(),remark);
 
         return  ResponseWrapper().addMessage("孕妇信息修改成功.").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }

@@ -62,7 +62,7 @@ public class PregnantService {
 
     }
 
-    public void updatePregnant(Long patientId, String name, Date birth, String livingAddress, Date lastMenses, String telephone, String husbandName, String husbandTelephone,Integer enable) throws Exception {
+    public void updatePregnant(Long patientId, String name, Date birth, String livingAddress, Date lastMenses, String telephone, String husbandName, String husbandTelephone,Integer enable,String remark) throws Exception {
 
         log.info("修改孕妇信息  patientId:"+patientId+",name :"+name+",birth:"+birth.toLocaleString()+",livingAddress:"+livingAddress+
                 ",lastMenses:"+lastMenses.toLocaleString()+ ",telephone:"+telephone+",husbandName:"+husbandName+",husbandTelephone:"+husbandTelephone);
@@ -80,6 +80,7 @@ public class PregnantService {
         pregnant.setTelephone(telephone);
         pregnant.setHusbandName(husbandName);
         pregnant.setHusbandTelephone(husbandTelephone);
+        pregnant.setRemark(remark);
 
         Preconditions.checkState(pregnantMapper.updateByPrimaryKeySelective(pregnant) == 1,"更新失败");
 
