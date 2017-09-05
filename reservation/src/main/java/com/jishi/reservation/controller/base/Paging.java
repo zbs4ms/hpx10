@@ -26,6 +26,8 @@ public class Paging {
             paging.setOrderBy(orderBy + (desc ? " desc" : ""));
         else
             paging.setOrderBy(orderBy);
+        paging.setPageNum(pageNum!=null?pageNum:1);
+        paging.setPageSize(pageSize!=null?pageSize:1000);
         return paging;
     }
 

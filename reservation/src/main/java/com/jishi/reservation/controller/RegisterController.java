@@ -71,7 +71,7 @@ public class RegisterController extends BaseController {
             @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
             @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
         if (accountId == null) {
-            //todo:从登陆信息中获取登陆者ID
+            //从登陆信息中获取登陆者ID
             accountId = accountService.returnIdByToken(request);
         }
         List<RegisterVO> registerVOList = new ArrayList<>();

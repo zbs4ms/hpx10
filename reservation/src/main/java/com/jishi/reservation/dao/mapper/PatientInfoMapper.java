@@ -4,7 +4,10 @@ import com.jishi.reservation.dao.models.PatientInfo;
 import com.us.base.mybatis.base.MyMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Repository;
 
+
+@Repository
 public interface PatientInfoMapper extends MyMapper<PatientInfo> {
 
 

@@ -39,7 +39,7 @@ public class DoctorService {
      * @param school
      * @param goodDescribe
      */
-    public void addDoctor(String doctorName, String type,String headPortrait, String departmentIds,String about, String title,String school,String goodDescribe){
+    public void addDoctor(String doctorName, String type,String headPortrait, String departmentIds,String about, String title,String school,String goodDescribe,String position){
         log.info("增加科室 doctorName:"+doctorName+" type:"+type+" headPortrait:"+headPortrait+" about:"+about+" title:"+title+" school:"+school+" goodDescribe:"+goodDescribe);
         Doctor newDoctor = new Doctor();
         List<String> list = new ArrayList<>();
@@ -58,6 +58,7 @@ public class DoctorService {
         newDoctor.setTitle(title);
         newDoctor.setSchool(school);
         newDoctor.setGoodDescribe(goodDescribe);
+        newDoctor.setPosition(position);
         newDoctor.setEnable(EnableEnum.EFFECTIVE.getCode());
         doctorMapper.insert(newDoctor);
     }
@@ -108,7 +109,7 @@ public class DoctorService {
      * @param goodDescribe
      * @param enable
      */
-    public void modifyDoctor(Long doctorId,String doctorName, String type,String headPortrait, String about, String title,String school,String goodDescribe,Integer enable) throws Exception {
+    public void modifyDoctor(Long doctorId,String doctorName, String type,String headPortrait, String about, String title,String school,String goodDescribe,Integer enable,String position) throws Exception {
         log.info("修改科室信息 doctorId:"+doctorId+" doctorName:"+doctorName+" type:"+type+" headPortrait:"+headPortrait+" about:"+about+" title:"+title+" school:"+school+" goodDescribe:"+goodDescribe);
         if(Helpers.isNullOrEmpty(doctorId))
             throw new Exception("医生ID不能为空.");
@@ -124,6 +125,7 @@ public class DoctorService {
         modifyDoctor.setSchool(school);
         modifyDoctor.setGoodDescribe(goodDescribe);
         modifyDoctor.setEnable(enable);
+        modifyDoctor.setPosition(position);
         Preconditions.checkState(doctorMapper.updateByPrimaryKeySelective(modifyDoctor) == 1,"更新失败!");
     }
 
@@ -143,5 +145,20 @@ public class DoctorService {
         }
 
         return  list;
+    }
+
+    public void topDoctor(Long doctorId) throws Exception {
+        if(Helpers.isNullOrEmpty(doctorId))
+            throw new Exception("医生ID不能为空.");
+        List<Doctor> doctorList = this.queryDoctor(doctorId, null, null, null, EnableEnum.EFFECTIVE.getCode());
+        if(doctorList.size()==0)
+            throw new Exception("没有查询到医生");
+
+
+        Integer maxOrderNumber = doctorMapper.queryMaxOrderNumber();
+        doctorList.get(0).setOrderNumber(maxOrderNumber+1);
+
+        doctorMapper.updateByPrimaryKeySelective(doctorList.get(0));
+
     }
 }

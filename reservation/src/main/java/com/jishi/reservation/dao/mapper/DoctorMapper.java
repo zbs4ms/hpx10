@@ -4,10 +4,12 @@ import com.jishi.reservation.dao.models.Doctor;
 import com.us.base.mybatis.base.MyMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Repository
 public interface DoctorMapper extends MyMapper<Doctor> {
 
     @Select({" <script>" +
@@ -37,4 +39,10 @@ public interface DoctorMapper extends MyMapper<Doctor> {
             "SELECT * FROM doctor WHERE "
     })
     List<Doctor> queryByDepartment(@Param("departmentId") String departmentId, @Param("enable") Integer enable);
+
+
+    @Select({
+            "select max(order_number ) from doctor"
+    })
+    Integer queryMaxOrderNumber();
 }
