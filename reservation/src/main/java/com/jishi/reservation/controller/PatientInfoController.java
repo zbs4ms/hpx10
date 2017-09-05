@@ -41,13 +41,14 @@ public class PatientInfoController extends BaseController {
     @RequestMapping(value = "addPatientInfo", method = RequestMethod.PUT)
     @ResponseBody
     public JSONObject addPatientInfo(HttpServletRequest request,
-            //@ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "就诊人名称", required = true) @RequestParam(value = "name", required = true) String name,
             @ApiParam(value = "病人电话", required = true) @RequestParam(value = "phone", required = true) String phone,
             @ApiParam(value = "病人身份证", required = true) @RequestParam(value = "idCard", required = true) String idCard) throws Exception {
-            //todo:从登陆信息中获取登陆者ID
-
-        Long  accountId = accountService.returnIdByToken(request);
+        if (accountId == null) {
+            //从登陆信息中获取登陆者ID
+            accountId = accountService.returnIdByToken(request);
+        }
         patientInfoService.addPatientInfo(accountId, name, phone, idCard);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }

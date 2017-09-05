@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,7 +45,7 @@ public class RegisterController extends BaseController {
     @ApiOperation(value = "增加预约信息")
     @RequestMapping(value = "addRegister", method = RequestMethod.PUT)
     @ResponseBody
-    public JSONObject addRegister(
+    public JSONObject addRegister(HttpServletRequest request,
             @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "病人ID", required = true) @RequestParam(value = "patientinfoId", required = true) Long patientinfoId,
             @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
@@ -52,7 +53,7 @@ public class RegisterController extends BaseController {
             @ApiParam(value = "预约时间", required = true) @RequestParam(value = "agreedTime", required = true) Long agreedTime) throws Exception {
         if (accountId == null) {
             //todo:从登陆信息中获取登陆者ID
-            accountId = accountId;
+            accountId = accountService.returnIdByToken(request);
         }
         registerService.addRegister(accountId, patientinfoId, departmentId, doctorId, new Date(agreedTime));
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
@@ -61,7 +62,7 @@ public class RegisterController extends BaseController {
     @ApiOperation(value = "查询预约信息", response = RegisterVO.class)
     @RequestMapping(value = "queryRegister", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryRegister(
+    public JSONObject queryRegister(HttpServletRequest request,
             @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "预约ID", required = false) @RequestParam(value = "registerId", required = false) Long registerId,
             @ApiParam(value = "状态", required = false) @RequestParam(value = "status", required = false) Integer status,
@@ -71,7 +72,7 @@ public class RegisterController extends BaseController {
             @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
         if (accountId == null) {
             //todo:从登陆信息中获取登陆者ID
-            accountId = accountId;
+            accountId = accountService.returnIdByToken(request);
         }
         List<RegisterVO> registerVOList = new ArrayList<>();
         PageInfo pageInfo = registerService.queryRegisterPageInfo(registerId, accountId, status, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum, pageSize, orderBy, desc));
@@ -96,14 +97,15 @@ public class RegisterController extends BaseController {
     @ApiOperation(value = "修改预约信息")
     @RequestMapping(value = "modifyRegister", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject modifyRegister(
+    public JSONObject modifyRegister(HttpServletRequest request,
             @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId,
-            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+            //@ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "病人ID", required = false) @RequestParam(value = "patientinfoId", required = false) Long patientinfoId,
             @ApiParam(value = "状态", required = false) @RequestParam(value = "status", required = false) Integer status,
             @ApiParam(value = "科室ID", required = false) @RequestParam(value = "departmentId", required = false) Long departmentId,
             @ApiParam(value = "预约的医生ID", required = false) @RequestParam(value = "doctorId", required = false) Long doctorId,
             @ApiParam(value = "预约时间", required = false) @RequestParam(value = "agreedTime", required = false) String agreedTime) throws Exception {
+        Long accountId = accountService.returnIdByToken(request);
         registerService.modifyRegister(registerId, accountId, patientinfoId, departmentId, doctorId, status, new Date(agreedTime), null);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
