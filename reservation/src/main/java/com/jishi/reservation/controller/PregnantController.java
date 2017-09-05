@@ -97,7 +97,7 @@ public class PregnantController extends BaseController {
             @ApiParam(value = "孕妇信息ID", required = true) @RequestParam(value = "pregnantId", required = true) Long pregnantId
     ) throws Exception {
 
-        pregnantService.updatePregnant(pregnantId,null,null,null,null,null,null,null,EnableEnum.DELETE.getCode());
+        pregnantService.updatePregnant(pregnantId,null,null,null,null,null,null,null,EnableEnum.DELETE.getCode(),null);
 
         return  ResponseWrapper().addMessage("操作成功.").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
