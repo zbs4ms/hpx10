@@ -5,15 +5,19 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.mapper.PatientInfoMapper;
+import com.jishi.reservation.dao.mapper.PregnantMapper;
 import com.jishi.reservation.dao.models.PatientInfo;
+import com.jishi.reservation.dao.models.Pregnant;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.util.CheckIdCard;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -27,6 +31,9 @@ public class PatientInfoService {
     @Autowired
     PatientInfoMapper patientInfoMapper;
 
+    @Autowired
+    PregnantMapper pregnantMapper;
+
     /**
      * 增加就诊人信息
      * @param accountId
@@ -35,6 +42,8 @@ public class PatientInfoService {
      * @param idCard
      * @throws Exception
      */
+
+    @Transactional
     public void addPatientInfo(Long accountId, String name, String phone, String idCard) throws Exception {
         if (Helpers.isNullOrEmpty(accountId))
             throw new Exception("账号ID为空");
@@ -54,7 +63,17 @@ public class PatientInfoService {
         newPatientInfo.setPhone(phone);
         newPatientInfo.setIdCard(idCard);
         newPatientInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
-        patientInfoMapper.insert(newPatientInfo);
+
+        patientInfoMapper.insertReturnId(newPatientInfo);
+
+        Pregnant newPregnant = new Pregnant();
+        newPregnant.setAccountId(accountId);
+        newPregnant.setCreateTime(new Date());
+        newPregnant.setEnable(EnableEnum.EFFECTIVE.getCode());
+        newPregnant.setPatientId(newPatientInfo.getId());
+
+        pregnantMapper.insert(newPregnant);
+
     }
 
     /**

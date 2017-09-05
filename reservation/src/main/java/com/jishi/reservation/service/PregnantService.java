@@ -62,14 +62,17 @@ public class PregnantService {
 
     }
 
-    public void updatePregnant(Long pregnantId, String name, Date birth, String livingAddress, Date lastMenses, String telephone, String husbandName, String husbandTelephone,Integer enable) throws Exception {
+    public void updatePregnant(Long patientId, String name, Date birth, String livingAddress, Date lastMenses, String telephone, String husbandName, String husbandTelephone,Integer enable) throws Exception {
 
-        log.info("修改孕妇信息  pregnantId:"+pregnantId+",name :"+name+",birth:"+birth.toLocaleString()+",livingAddress:"+livingAddress+
+        log.info("修改孕妇信息  patientId:"+patientId+",name :"+name+",birth:"+birth.toLocaleString()+",livingAddress:"+livingAddress+
                 ",lastMenses:"+lastMenses.toLocaleString()+ ",telephone:"+telephone+",husbandName:"+husbandName+",husbandTelephone:"+husbandTelephone);
-        if(Helpers.isNullOrEmpty(pregnantId) || queryPregnant(pregnantId,null,null,EnableEnum.EFFECTIVE.getCode()) == null)
+
+        List<Pregnant> pregnantList = queryPregnant(patientId, null, null, EnableEnum.EFFECTIVE.getCode());
+        if(Helpers.isNullOrEmpty(patientId) || pregnantList.get(0) == null)
             throw new Exception("孕妇信息为空.");
         Pregnant pregnant = new Pregnant();
-        pregnant.setId(pregnantId);
+        pregnant.setId(pregnantList.get(0).getId());
+        pregnant.setPatientId(patientId);
         pregnant.setName(name);
         pregnant.setBirth(birth);
         pregnant.setLivingAddress(livingAddress);
@@ -84,12 +87,12 @@ public class PregnantService {
     }
 
 
-    public List<Pregnant> queryPregnant(Long pregnantId, Long patientinfoId, String name, Integer enable) {
+    public List<Pregnant> queryPregnant(Long patientId, Long patientinfoId, String name, Integer enable) {
 
-        log.info("查询孕妇 pregnantId:"+pregnantId+" patientinfoId:"+patientinfoId+" name:"+name +" enable:"+enable);
+        log.info("查询孕妇 patientId:"+patientId+" patientinfoId:"+patientinfoId+" name:"+name +" enable:"+enable);
         Pregnant queryPregnant = new Pregnant();
 
-        queryPregnant.setId(pregnantId);
+        queryPregnant.setPatientId(patientId);
         queryPregnant.setPatientId(patientinfoId);
         queryPregnant.setName(name);
         queryPregnant.setEnable(enable);

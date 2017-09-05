@@ -58,7 +58,7 @@ public class PregnantController extends BaseController {
     @RequestMapping(value = "updatePregnant", method =RequestMethod.POST )
     @ResponseBody
     public JSONObject updatePregnant(
-            @ApiParam(value = "孕妇信息ID", required = true) @RequestParam(value = "pregnantId", required = true) Long pregnantId,
+            @ApiParam(value = "就诊人的ID", required = true) @RequestParam(value = "patientId", required = true) Long patientId,
             @ApiParam(value = "孕妇姓名", required = true) @RequestParam(value = "name", required = true) String  name,
             @ApiParam(value = "出生年月", required = true) @RequestParam(value = "birth", required = true) Long birth,
             @ApiParam(value = "现居地址", required = true) @RequestParam(value = "livingAddress", required = true) String livingAddress,
@@ -68,7 +68,7 @@ public class PregnantController extends BaseController {
             @ApiParam(value = "丈夫电话", required = true) @RequestParam(value = "husbandTelephone", required = true) String husbandTelephone
     ) throws Exception {
 
-        pregnantService.updatePregnant(pregnantId,name,new Date(birth),livingAddress,new Date(lastMenses),telephone,husbandName,husbandTelephone,EnableEnum.EFFECTIVE.getCode());
+        pregnantService.updatePregnant(patientId,name,new Date(birth),livingAddress,new Date(lastMenses),telephone,husbandName,husbandTelephone,EnableEnum.EFFECTIVE.getCode());
 
         return  ResponseWrapper().addMessage("孕妇信息修改成功.").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
