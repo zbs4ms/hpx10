@@ -104,7 +104,7 @@ public class RegisterService {
      */
     public PageInfo queryRegisterPageInfo(Long registerId,Long accountId ,Integer status,Integer enable,Paging paging) throws Exception {
         if(!Helpers.isNullOrEmpty(paging))
-            PageHelper.startPage(paging.getPageSize(),paging.getPageNum(),paging.getOrderBy());
+            PageHelper.startPage(paging.getPageNum(),paging.getPageSize(),paging.getOrderBy());
         return new PageInfo(queryRegister(registerId,accountId,status,enable));
     }
 

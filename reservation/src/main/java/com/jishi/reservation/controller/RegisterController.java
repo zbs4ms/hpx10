@@ -77,6 +77,8 @@ public class RegisterController extends BaseController {
         List<RegisterVO> registerVOList = new ArrayList<>();
         PageInfo pageInfo = registerService.queryRegisterPageInfo(registerId, accountId, status, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum, pageSize, orderBy, desc));
         List<Register> registerList = pageInfo.getList();
+
+
         for (Register register : registerList) {
             RegisterVO registerVO = new RegisterVO();
             List<Doctor> doctors = doctorService.queryDoctor(register.getDoctorId(), null, null,null, null);
