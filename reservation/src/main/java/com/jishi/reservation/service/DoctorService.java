@@ -154,7 +154,7 @@ public class DoctorService {
 
 
         Integer maxOrderNumber = doctorMapper.queryMaxOrderNumber();
-        doctorList.get(0).setOrderNumber(maxOrderNumber+1);
+        doctorList.get(0).setOrderNumber(doctorList.get(0).getOrderNumber().equals(0)?maxOrderNumber+1:0);
 
         doctorMapper.updateByPrimaryKeySelective(doctorList.get(0));
 

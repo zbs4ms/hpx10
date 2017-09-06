@@ -80,6 +80,7 @@ public class DoctorController extends BaseController{
         PageInfo doctors = doctorService.queryDoctorPageInfo(null,name,departmentId != null?String.valueOf(departmentId):null,null,EnableEnum.EFFECTIVE.getCode(),Paging.create(pageNum,pageSize,orderBy,desc));
         List<Doctor> doctorList = doctors.getList();
         for(Doctor doctor : doctorList){
+            doctor.setIsTop(doctor.getOrderNumber().equals(0)?0:1);
             DoctorVO doctorVO = new DoctorVO();
             doctorVO.setDoctor(doctor);
             doctorVO.setDepartmentList(departmentService.batchQueryDepartment(JSONObject.parseArray(doctor.getDepartmentIds(),String.class)));
@@ -191,7 +192,7 @@ public class DoctorController extends BaseController{
     }
 
 
-    @ApiOperation(value = "置顶 医生")
+    @ApiOperation(value = "置顶/取消置顶 医生")
     @RequestMapping(value = "topDoctor", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject topDoctor(@ApiParam(value = "医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {

@@ -6,6 +6,7 @@ import lombok.Data;
 import javax.persistence.Id;
 
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Data
 @ApiModel("医生信息")
@@ -35,5 +36,8 @@ public class Doctor {
 
     @ApiModelProperty("排序")
     private Integer orderNumber;
+
+    @Transient
+    private Integer isTop;
 
 }
