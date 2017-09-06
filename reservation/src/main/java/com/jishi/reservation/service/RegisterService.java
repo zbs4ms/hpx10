@@ -59,7 +59,7 @@ public class RegisterService {
      * @throws Exception
      */
     @Transactional
-    public RegisterCompleteVO addRegister(Long accountId,Long patientinfoId,Long departmentId,Long doctorId,Date agreedTime,Integer timeInterval) throws Exception {
+    public RegisterCompleteVO addRegister(Long accountId,Long patientinfoId,Long departmentId,Long doctorId,Date agreedTime,String timeInterval) throws Exception {
         if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
             throw new Exception("账户信息为空.");
         if(Helpers.isNullOrEmpty(patientinfoId)  || patientInfoService.queryPatientInfo(patientinfoId,null, EnableEnum.EFFECTIVE.getCode()) == null)

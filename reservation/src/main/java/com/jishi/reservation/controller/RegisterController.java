@@ -51,7 +51,7 @@ public class RegisterController extends BaseController {
             @ApiParam(value = "病人ID", required = true) @RequestParam(value = "patientinfoId", required = true) Long patientinfoId,
             @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
             @ApiParam(value = "预约的医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId,
-            @ApiParam(value = "预约的时间段", required = true) @RequestParam(value = "timeInterval", required = true) Integer timeInterval,
+            @ApiParam(value = "预约的时间段", required = true) @RequestParam(value = "timeInterval", required = true) String timeInterval,
             @ApiParam(value = "预约时间", required = true) @RequestParam(value = "agreedTime", required = true) Long agreedTime
             ) throws Exception {
         if (accountId == null) {

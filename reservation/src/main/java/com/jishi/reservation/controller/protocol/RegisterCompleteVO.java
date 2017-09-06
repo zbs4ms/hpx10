@@ -18,5 +18,5 @@ public class RegisterCompleteVO {
     private String patient;
     private String position;
     private Date agreeTime;
-    private Integer timeInterval;
+    private String timeInterval;
 }
