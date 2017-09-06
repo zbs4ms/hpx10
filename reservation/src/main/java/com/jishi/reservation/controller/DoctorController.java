@@ -34,7 +34,7 @@ import java.util.*;
  * Created by zbs on 2017/8/10.
  */
 @RestController
-@RequestMapping("/doctor")
+@RequestMapping("/doctor_i")
 @Slf4j
 @Api(description = "医生相关接口")
 public class DoctorController extends BaseController{
