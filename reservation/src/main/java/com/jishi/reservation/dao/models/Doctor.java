@@ -30,8 +30,6 @@ public class Doctor {
     private String school;
     @ApiModelProperty("医生的擅长")
     private String goodDescribe;
-    @ApiModelProperty("医生的位置")
-    private String position;
     @ApiModelProperty("状态标示:0:正常 1:禁用  99:删除")
     private Integer enable;
 

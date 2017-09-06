@@ -27,12 +27,13 @@ public class DepartmentService {
      * @param departmentName
      * @throws Exception
      */
-    public void addDepartment(String departmentName) throws Exception {
+    public void addDepartment(String departmentName,String position) throws Exception {
         log.info("增加科室 departmentName:"+departmentName);
         if(queryDepartment(null,departmentName).size()>0)
             throw new Exception("科室名称重复!");
         Department department = new Department();
         department.setName(departmentName);
+        department.setPosition(position);
         department.setEnable(EnableEnum.EFFECTIVE.getCode());
         departmentMapper.insert(department);
     }
@@ -48,6 +49,7 @@ public class DepartmentService {
         Department queryDepartment = new Department();
         queryDepartment.setId(departmentId);
         queryDepartment.setName(departmentName);
+
         return departmentMapper.select(queryDepartment);
     }
 
@@ -80,7 +82,7 @@ public class DepartmentService {
      * @param enable
      * @throws Exception
      */
-    public void modifyDepartment(Long departmentId,String departmentName,Integer enable) throws Exception {
+    public void modifyDepartment(Long departmentId,String departmentName,String position,Integer enable) throws Exception {
         log.info("修改科室 departmentId:"+departmentId+" departmentName:"+departmentName+" enable:"+enable);
         if(Helpers.isNullOrEmpty(departmentId))
             throw new Exception("科室ID不能为空!");
@@ -89,6 +91,7 @@ public class DepartmentService {
         Department newDepartment = new Department();
         newDepartment.setName(departmentName);
         newDepartment.setId(departmentId);
+        newDepartment.setPosition(position);
         newDepartment.setEnable(enable);
         Preconditions.checkState(departmentMapper.updateByPrimaryKeySelective(newDepartment) == 1,"更新失败");
     }
@@ -102,6 +105,6 @@ public class DepartmentService {
         log.info("把科室置为无效 departmentId:"+departmentId);
         if(queryDepartment(departmentId,null).size()==0)
             throw new Exception("科室不存在!");
-        modifyDepartment(departmentId,null, EnableEnum.INVALID.getCode());
+        modifyDepartment(departmentId,null,null, EnableEnum.INVALID.getCode());
     }
 }

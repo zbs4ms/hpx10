@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import com.jishi.reservation.controller.base.Paging;
+import com.jishi.reservation.controller.protocol.RegisterCompleteVO;
 import com.jishi.reservation.controller.protocol.RegisterVO;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.*;
@@ -50,13 +51,15 @@ public class RegisterController extends BaseController {
             @ApiParam(value = "病人ID", required = true) @RequestParam(value = "patientinfoId", required = true) Long patientinfoId,
             @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
             @ApiParam(value = "预约的医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId,
-            @ApiParam(value = "预约时间", required = true) @RequestParam(value = "agreedTime", required = true) Long agreedTime) throws Exception {
+            @ApiParam(value = "预约的时间段", required = true) @RequestParam(value = "timeInterval", required = true) Integer timeInterval,
+            @ApiParam(value = "预约时间", required = true) @RequestParam(value = "agreedTime", required = true) Long agreedTime
+            ) throws Exception {
         if (accountId == null) {
             //todo:从登陆信息中获取登陆者ID
             accountId = accountService.returnIdByToken(request);
         }
-        registerService.addRegister(accountId, patientinfoId, departmentId, doctorId, new Date(agreedTime));
-        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        RegisterCompleteVO completeVO = registerService.addRegister(accountId, patientinfoId, departmentId, doctorId, new Date(agreedTime),timeInterval);
+        return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "查询预约信息", response = RegisterVO.class)

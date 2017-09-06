@@ -30,8 +30,10 @@ public class DepartmentController extends BaseController{
     @RequestMapping(value = "addDepartment", method = RequestMethod.PUT)
     @ResponseBody
     public JSONObject addDepartment(
-            @ApiParam(value = "科室名称", required = true) @RequestParam(value = "departmentName", required = true) String departmentName) throws Exception {
-        departmentService.addDepartment(departmentName);
+            @ApiParam(value = "科室名称", required = true) @RequestParam(value = "departmentName", required = true) String departmentName,
+            @ApiParam(value = "科室位置", required = true) @RequestParam(value = "position", required = true) String position
+            ) throws Exception {
+        departmentService.addDepartment(departmentName,position);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
@@ -52,8 +54,10 @@ public class DepartmentController extends BaseController{
     @ResponseBody
     public JSONObject modifyDepartment(
             @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
-            @ApiParam(value = "科室名称", required = true) @RequestParam(value = "departmentName", required = true) String departmentName) throws Exception {
-        departmentService.modifyDepartment(departmentId,departmentName,null);
+            @ApiParam(value = "科室名称", required = true) @RequestParam(value = "departmentName", required = true) String departmentName,
+            @ApiParam(value = "科室位置", required = true) @RequestParam(value = "position", required = true) String position
+            ) throws Exception {
+        departmentService.modifyDepartment(departmentId,departmentName,position,null);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 

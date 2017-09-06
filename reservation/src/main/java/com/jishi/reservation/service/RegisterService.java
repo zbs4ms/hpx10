@@ -4,7 +4,12 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
+import com.jishi.reservation.controller.protocol.RegisterCompleteVO;
+import com.jishi.reservation.dao.mapper.DepartmentMapper;
+import com.jishi.reservation.dao.mapper.DoctorMapper;
+import com.jishi.reservation.dao.mapper.PatientInfoMapper;
 import com.jishi.reservation.dao.mapper.RegisterMapper;
+import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.dao.models.Register;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.StatusEnum;
@@ -26,6 +31,13 @@ public class RegisterService {
 
     @Autowired
     RegisterMapper registerMapper;
+
+    @Autowired
+    DoctorMapper doctorMapper;
+    @Autowired
+    DepartmentMapper departmentMapper;
+    @Autowired
+    PatientInfoMapper patientInfoMapper;
     @Autowired
     AccountService accountService;
     @Autowired
@@ -47,7 +59,7 @@ public class RegisterService {
      * @throws Exception
      */
     @Transactional
-    public void addRegister(Long accountId,Long patientinfoId,Long departmentId,Long doctorId,Date agreedTime) throws Exception {
+    public RegisterCompleteVO addRegister(Long accountId,Long patientinfoId,Long departmentId,Long doctorId,Date agreedTime,Integer timeInterval) throws Exception {
         if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
             throw new Exception("账户信息为空.");
         if(Helpers.isNullOrEmpty(patientinfoId)  || patientInfoService.queryPatientInfo(patientinfoId,null, EnableEnum.EFFECTIVE.getCode()) == null)
@@ -69,8 +81,22 @@ public class RegisterService {
         //added csrr  添加排班表的数据
         scheduledService.addRegister(doctorId,patientinfoId,agreedTime);
 
+        registerMapper.insertReturnId(register);
+        RegisterCompleteVO completeVO = new RegisterCompleteVO();
+        completeVO.setRegisterId(register.getId());
+        completeVO.setDoctor(doctorMapper.queryById(doctorId).getName());
+        Department department = departmentMapper.queryById(departmentId);
+        completeVO.setDepartment(department.getName());
+        completeVO.setAgreeTime(agreedTime);
+        completeVO.setPosition(department.getPosition());
+        completeVO.setTimeInterval(timeInterval);
+        completeVO.setPatient(patientInfoMapper.queryById(patientinfoId).getName());
 
-        registerMapper.insert(register);
+        return completeVO;
+
+
+
+
     }
 
     /**

@@ -15,4 +15,9 @@ public interface PatientInfoMapper extends MyMapper<PatientInfo> {
             "select count(*) from patientInfo where account_id = #{accountId}"
     })
     Integer findMaxPatientNum(@Param("accountId") Long accountId);
+
+    @Select({
+            "select * from patientInfo where id = #{id}"
+    })
+    PatientInfo queryById(@Param("id") Long id);
 }

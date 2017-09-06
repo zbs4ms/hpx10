@@ -45,4 +45,10 @@ public interface DoctorMapper extends MyMapper<Doctor> {
             "select max(order_number ) from doctor"
     })
     Integer queryMaxOrderNumber();
+
+
+    @Select({
+            "select * from doctor where id = #{doctorId}"
+    })
+    Doctor queryById(@Param("doctorId") Long doctorId);
 }

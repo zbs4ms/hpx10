@@ -16,6 +16,8 @@ public class Department {
     private Long id;
     @ApiModelProperty("科室名称")
     private String name;
+    @ApiModelProperty("科室位置")
+    private String position;
     @ApiModelProperty("状态标示:0:正常 1:禁用  99:删除")
     private Integer enable;
 

@@ -62,7 +62,7 @@ public class DoctorController extends BaseController{
             @ApiParam(value = "擅长的介绍", required = false) @RequestParam(value = "goodDescribe", required = false) String goodDescribe) throws Exception {
 
         String headPortrait = ossSupport.uploadImage(file,Common.DOCTOR_PATH);
-        doctorService.addDoctor(doctorName,type,headPortrait,departmentIds,about,title,school,goodDescribe,position);
+        doctorService.addDoctor(doctorName,type,headPortrait,departmentIds,about,title,school,goodDescribe);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
@@ -146,11 +146,10 @@ public class DoctorController extends BaseController{
             @ApiParam(value = "医生简介", required = false) @RequestParam(value = "describe", required = false) String describe,
             @ApiParam(value = "职称", required = false) @RequestParam(value = "title", required = false) String title,
             @ApiParam(value = "毕业学校", required = false) @RequestParam(value = "school", required = false) String school,
-            @ApiParam(value = "位置", required = false) @RequestParam(value = "position", required = false) String position,
             @ApiParam(value = "擅长的介绍", required = false) @RequestParam(value = "goodDescribe", required = false) String goodDescribe) throws Exception {
 
         String headPortrait = ossSupport.uploadImage(file, Common.DOCTOR_PATH);
-        doctorService.modifyDoctor(doctorId,doctorName,type,headPortrait,describe,title,school,goodDescribe,null,position);
+        doctorService.modifyDoctor(doctorId,doctorName,type,headPortrait,describe,title,school,goodDescribe,null);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
@@ -161,7 +160,7 @@ public class DoctorController extends BaseController{
             @ApiParam(value = "医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId
     ) throws Exception {
         //todo 这儿其他信息都传null的话，那信息都更新为空了？？
-        doctorService.modifyDoctor(doctorId,null,null,null,null,null,null,null, EnableEnum.INVALID.getCode(),null);
+        doctorService.modifyDoctor(doctorId,null,null,null,null,null,null,null, EnableEnum.INVALID.getCode());
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
