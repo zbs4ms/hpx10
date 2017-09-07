@@ -8,6 +8,7 @@ import com.aliyuncs.IAcsClient;
 import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
+import com.jishi.reservation.controller.protocol.LoginData;
 import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
@@ -41,9 +43,17 @@ public class AccountController extends BaseController{
     public JSONObject loginOrRegisterThroughPhone(
             @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone,
             @ApiParam(value = "动态码", required = true) @RequestParam(value = "dynamicCode", required = true) String dynamicCode) throws Exception {
-        String token = accountService.loginOrRegisterThroughPhone(phone, dynamicCode);
+        LoginData loginData = accountService.loginOrRegisterThroughPhone(phone, dynamicCode);
+        return ResponseWrapper().addData(loginData).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
 
-        return ResponseWrapper().addData(token).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+
+    @ApiOperation(value = "退出登陆  token放在header里面进行传递")
+    @RequestMapping(value = "logout", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject logout(HttpServletRequest request) throws Exception {
+         accountService.logout(request);
+         return ResponseWrapper().addMessage("退出成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 

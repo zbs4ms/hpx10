@@ -3,6 +3,7 @@ package com.jishi.reservation.service;
 import com.alibaba.fastjson.JSONObject;
 import com.doraemon.base.redis.RedisOperation;
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.controller.protocol.LoginData;
 import com.jishi.reservation.dao.mapper.AccountMapper;
 import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
@@ -66,7 +67,7 @@ public class AccountService {
      * @return
      * @throws Exception
      */
-    public String loginOrRegisterThroughPhone(String phone, String dynamicCode) throws Exception {
+    public LoginData loginOrRegisterThroughPhone(String phone, String dynamicCode) throws Exception {
         log.info("账号采用手机进行登陆: phone:" + phone + " dynamicCode:" + dynamicCode);
         String code = redisOperation.get(dynamic_code_key + "_" + phone);
         if (!dynamicCode.equals(code))
@@ -79,7 +80,14 @@ public class AccountService {
         redisOperation.del(dynamic_code_key + "_" + phone);
         log.info("删除已核对的验证码："+dynamic_code_key + "_" + phone);
 
-        return generateToken(phone);
+        String token = generateToken(phone);
+        LoginData loginData = new LoginData();
+        loginData.setToken(token);
+        loginData.setHeadPortrait(account.get(0).getHeadPortrait());
+        loginData.setNickname(account.get(0).getNick());
+        loginData.setTelephone(account.get(0).getPhone());
+
+        return loginData;
 
     }
 
@@ -267,5 +275,10 @@ public class AccountService {
         Long accountId = Long.valueOf(redisOperation.get(request.getHeader(Common.TOKEN)));
         log.info("id:"+accountId);
         return Long.valueOf(redisOperation.get(request.getHeader(Common.TOKEN)));
+    }
+
+    public void logout(HttpServletRequest request) throws Exception {
+        redisOperation.del(request.getHeader(Common.TOKEN));
+
     }
 }
