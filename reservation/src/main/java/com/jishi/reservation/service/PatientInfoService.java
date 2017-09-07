@@ -44,7 +44,7 @@ public class PatientInfoService {
      */
 
     @Transactional
-    public void addPatientInfo(Long accountId, String name, String phone, String idCard) throws Exception {
+    public Long addPatientInfo(Long accountId, String name, String phone, String idCard) throws Exception {
         if (Helpers.isNullOrEmpty(accountId))
             throw new Exception("账号ID为空");
         String errorInfo = CheckIdCard.IDCardValidate(idCard);
@@ -64,15 +64,16 @@ public class PatientInfoService {
         newPatientInfo.setIdCard(idCard);
         newPatientInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
 
-        patientInfoMapper.insertReturnId(newPatientInfo);
 
         Pregnant newPregnant = new Pregnant();
         newPregnant.setAccountId(accountId);
         newPregnant.setCreateTime(new Date());
         newPregnant.setEnable(EnableEnum.EFFECTIVE.getCode());
         newPregnant.setPatientId(newPatientInfo.getId());
-
+        patientInfoMapper.insertReturnId(newPatientInfo);
         pregnantMapper.insert(newPregnant);
+
+        return newPatientInfo.getId();
 
     }
 

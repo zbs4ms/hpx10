@@ -49,8 +49,8 @@ public class PatientInfoController extends BaseController {
             //从登陆信息中获取登陆者ID
             accountId = accountService.returnIdByToken(request);
         }
-        patientInfoService.addPatientInfo(accountId, name, phone, idCard);
-        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+       Long id =  patientInfoService.addPatientInfo(accountId, name, phone, idCard);
+        return ResponseWrapper().addData(id).addMessage("添加成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "查询就诊人信息", response = PatientInfo.class)
