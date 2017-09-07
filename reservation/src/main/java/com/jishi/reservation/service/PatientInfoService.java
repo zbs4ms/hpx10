@@ -63,6 +63,7 @@ public class PatientInfoService {
         newPatientInfo.setPhone(phone);
         newPatientInfo.setIdCard(idCard);
         newPatientInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
+        patientInfoMapper.insertReturnId(newPatientInfo);
 
 
         Pregnant newPregnant = new Pregnant();
@@ -70,7 +71,6 @@ public class PatientInfoService {
         newPregnant.setCreateTime(new Date());
         newPregnant.setEnable(EnableEnum.EFFECTIVE.getCode());
         newPregnant.setPatientId(newPatientInfo.getId());
-        patientInfoMapper.insertReturnId(newPatientInfo);
         pregnantMapper.insert(newPregnant);
 
         return newPatientInfo.getId();
