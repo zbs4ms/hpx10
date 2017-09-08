@@ -48,7 +48,7 @@ public class AccountController extends BaseController{
     }
 
 
-    @ApiOperation(value = "退出登陆  token放在header里面进行传递")
+    @ApiOperation(value = "退出登陆  token放在param里面进行传递")
     @RequestMapping(value = "logout", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject logout(@RequestParam(value = "token") String token) throws Exception {
