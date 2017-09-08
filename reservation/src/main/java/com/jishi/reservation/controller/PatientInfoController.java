@@ -114,7 +114,7 @@ public class PatientInfoController extends BaseController {
                 return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
             }
         }
-        patientInfoService.modifyPatientInfo(patientInfoId, name, phone, idCard, null);
+        patientInfoService.modifyPatientInfo(accountId,patientInfoId, name, phone, idCard, null);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 

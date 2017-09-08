@@ -121,13 +121,12 @@ public class PatientInfoService {
 
     /**
      * 修改就诊人信息
-     * @param patientInfoId
      * @param name
      * @param phone
      * @param idCard
      * @throws Exception
      */
-    public void modifyPatientInfo(Long patientInfoId, String name, String phone, String idCard,Integer enable) throws Exception {
+    public void modifyPatientInfo(Long accountId,Long patientInfoId, String name, String phone, String idCard,Integer enable) throws Exception {
         if (Helpers.isNullOrEmpty(patientInfoId))
             throw new Exception("就诊人ID为空");
         if(queryPatientInfo(patientInfoId,null,null) == null)
@@ -140,12 +139,14 @@ public class PatientInfoService {
             }
         }
         PatientInfo modifyPatientInfo = new PatientInfo();
+
         modifyPatientInfo.setId(patientInfoId);
+        //modifyPatientInfo.setAccountId(accountId);
         modifyPatientInfo.setName(name);
         modifyPatientInfo.setPhone(phone);
         modifyPatientInfo.setIdCard(idCard);
         modifyPatientInfo.setEnable(enable);
-        Preconditions.checkState(patientInfoMapper.updateByPrimaryKey(modifyPatientInfo) == 1,"更新失败!");
+        Preconditions.checkState(patientInfoMapper.updateByPrimaryKeySelective(modifyPatientInfo) == 1,"更新失败!");
     }
 
     /**
