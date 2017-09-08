@@ -84,7 +84,7 @@ public class AccountController extends BaseController{
     @RequestMapping(value = "modifyAccountInfo", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject modifyAccountInfo(HttpServletRequest request,
-            @ApiParam(value = "账号ID", required = true) @RequestParam(value = "accountId", required = false) Long accountId,
+            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "昵称", required = false) @RequestParam(value = "nick", required = false) String nick,
             @ApiParam(value = "头像", required = false) @RequestParam(value = "headPortrait", required = false) String headPortrait,
             @ApiParam(value = "邮箱", required = false) @RequestParam(value = "email", required = false) String email) throws Exception {
