@@ -59,7 +59,7 @@ public class PatientInfoController extends BaseController {
     @RequestMapping(value = "queryPatientInfo", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryPatientInfo(HttpServletRequest request,
-            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+                                       @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "就诊人ID", required = false) @RequestParam(value = "patientInfoId", required = false) Long patientInfoId) throws Exception {
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
@@ -102,11 +102,18 @@ public class PatientInfoController extends BaseController {
     @ApiOperation(value = "修改就诊人信息")
     @RequestMapping(value = "modifyPatientInfo", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject modifyPatientInfo(
+    public JSONObject modifyPatientInfo(HttpServletRequest request,
+            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "就诊人ID", required = true) @RequestParam(value = "patientInfoId", required = true) Long patientInfoId,
             @ApiParam(value = "就诊人名称", required = true) @RequestParam(value = "name", required = true) String name,
             @ApiParam(value = "病人电话", required = true) @RequestParam(value = "phone", required = true) String phone,
             @ApiParam(value = "病人身份证", required = true) @RequestParam(value = "idCard", required = true) String idCard) throws Exception {
+        if (accountId == null) {
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1L)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+            }
+        }
         patientInfoService.modifyPatientInfo(patientInfoId, name, phone, idCard, null);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
