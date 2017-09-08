@@ -101,9 +101,9 @@ public class AccountService {
         String token = login(phone);
         LoginData loginData = new LoginData();
         loginData.setToken(token);
-        loginData.setHeadPortrait(account.get(0).getHeadPortrait());
-        loginData.setNickname(account.get(0).getNick());
-        loginData.setTelephone(account.get(0).getPhone());
+        loginData.setHeadPortrait(Common.DEFAULT_AVATAR);
+        loginData.setNickname(phone);
+        loginData.setTelephone(phone);
 
         return loginData;
 
