@@ -51,8 +51,8 @@ public class AccountController extends BaseController{
     @ApiOperation(value = "退出登陆  token放在header里面进行传递")
     @RequestMapping(value = "logout", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject logout(HttpServletRequest request) throws Exception {
-         accountService.logout(request);
+    public JSONObject logout(@RequestParam(value = "token") String token) throws Exception {
+         accountService.logout(token);
          return ResponseWrapper().addMessage("退出成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
@@ -83,11 +83,18 @@ public class AccountController extends BaseController{
     @ApiOperation(value = "修改账号信息")
     @RequestMapping(value = "modifyAccountInfo", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject modifyAccountInfo(
-            @ApiParam(value = "账号ID", required = true) @RequestParam(value = "accountId", required = true) Long accountId,
+    public JSONObject modifyAccountInfo(HttpServletRequest request,
+            @ApiParam(value = "账号ID", required = true) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "昵称", required = false) @RequestParam(value = "nick", required = false) String nick,
             @ApiParam(value = "头像", required = false) @RequestParam(value = "headPortrait", required = false) String headPortrait,
             @ApiParam(value = "邮箱", required = false) @RequestParam(value = "email", required = false) String email) throws Exception {
+
+        if (accountId == null) {
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+            }
+        }
         accountService.modifyAccountInfo(accountId,null,nick,headPortrait,email,null,null);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -96,10 +103,17 @@ public class AccountController extends BaseController{
     @RequestMapping(value = "modifyAccountPasswd", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject modifyAccountPasswd(
+            HttpServletRequest request,
             @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "电话", required = false) @RequestParam(value = "phone", required = false) String phone,
             @ApiParam(value = "老密码", required = true) @RequestParam(value = "oldPasswd", required = true) String oldPasswd,
             @ApiParam(value = "新密码", required = true) @RequestParam(value = "newPasswd", required = true) String newPasswd) throws Exception {
+        if (accountId == null) {
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+            }
+        }
         accountService.modifyAccountPasswd(accountId,phone,oldPasswd,newPasswd);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }

@@ -55,8 +55,10 @@ public class RegisterController extends BaseController {
             @ApiParam(value = "预约时间", required = true) @RequestParam(value = "agreedTime", required = true) Long agreedTime
             ) throws Exception {
         if (accountId == null) {
-            //todo:从登陆信息中获取登陆者ID
             accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+            }
         }
         RegisterCompleteVO completeVO = registerService.addRegister(accountId, patientinfoId, departmentId, doctorId, new Date(agreedTime),timeInterval);
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
@@ -76,6 +78,9 @@ public class RegisterController extends BaseController {
         if (accountId == null) {
             //从登陆信息中获取登陆者ID
             accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+            }
         }
         List<RegisterVO> registerVOList = new ArrayList<>();
         PageInfo pageInfo = registerService.queryRegisterPageInfo(registerId, accountId, status, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum, pageSize, orderBy, desc));
@@ -99,6 +104,7 @@ public class RegisterController extends BaseController {
         return ResponseWrapper().addData(pageInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
+    //todo  accountid还有问题..
     @ApiOperation(value = "修改预约信息")
     @RequestMapping(value = "modifyRegister", method = RequestMethod.POST)
     @ResponseBody

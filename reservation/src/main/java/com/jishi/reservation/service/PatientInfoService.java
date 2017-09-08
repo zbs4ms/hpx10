@@ -67,6 +67,7 @@ public class PatientInfoService {
 
 
         Pregnant newPregnant = new Pregnant();
+        newPregnant.setName(name);
         newPregnant.setAccountId(accountId);
         newPregnant.setCreateTime(new Date());
         newPregnant.setEnable(EnableEnum.EFFECTIVE.getCode());

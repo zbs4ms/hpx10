@@ -36,4 +36,5 @@ public class Common {
     public final static String DOMAIN = "dysmsapi.aliyuncs.com";//短信API产品域名（接口地址固定，无需修改）
     public final static String REGION_ID =  "cn-shenzhen";
 
+    public final static String DEFAULT_AVATAR = "http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/user/icon.png";
 }

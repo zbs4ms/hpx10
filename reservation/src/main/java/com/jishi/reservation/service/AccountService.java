@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -40,6 +41,23 @@ public class AccountService {
 
     @Value("constant.dynamic_code_key")
     public String dynamic_code_key;
+
+    //保存登陆信息
+    public final static String ADD_TOKEN = ""
+            + " local token = redis.call('get', KEYS[1]); "
+            + " if token then "
+            + "     redis.call('del',token); "
+            + " end "
+            + " redis.call('set',KEYS[1],KEYS[2]); "
+            + " redis.call('set',KEYS[2],KEYS[1]); "
+            + " return 1 ";
+
+    //注销用户
+    public final static String DEL_TOKEN = ""
+            + " local token = redis.call('get',KEYS[1]); "
+            + " redis.call('del',token); "
+            + " redis.call('del',KEYS[1]); "
+            + " return 1 ";
 
 
     /**
@@ -74,13 +92,13 @@ public class AccountService {
             throw new Exception("登陆失败!");
         List<Account> account = queryAccount(null, phone, null);
         if (account.size() == 0)
-            addAccount(phone, phone, null, phone, phone, null);
+            addAccount(phone, phone, Common.DEFAULT_AVATAR, phone, phone, null);
 
         //删除已核对的验证码
         redisOperation.del(dynamic_code_key + "_" + phone);
         log.info("删除已核对的验证码："+dynamic_code_key + "_" + phone);
 
-        String token = generateToken(phone);
+        String token = login(phone);
         LoginData loginData = new LoginData();
         loginData.setToken(token);
         loginData.setHeadPortrait(account.get(0).getHeadPortrait());
@@ -97,15 +115,28 @@ public class AccountService {
      * @return
      * @throws Exception
      */
-    private String generateToken(String phone) throws Exception {
-        Random r = new Random((new Date().getTime()));
-        String token = Common.TOKEN_HEADER + MD5Encryption.getMD5(phone + (new Date()).getTime() + String.valueOf(r.nextInt(100000000)));
-        Account account = accountMapper.queryByTelephone(phone);
-        redisOperation.set(token,String.valueOf(account.getId()));
+    private String login(String phone) throws Exception {
 
+        Account account = accountMapper.queryByTelephone(phone);
+
+        String token =Common.TOKEN_HEADER + createToken(account.getId());
+        List<String> keys = new ArrayList<String>();
+        keys.add(String.valueOf(account.getId()));
+        keys.add(token);
+        Preconditions.checkState(Integer.valueOf(String.valueOf(redisOperation.eval(ADD_TOKEN,keys,new ArrayList<String>()))) == 1,"保存登陆信息失败.");
         return token;
 
+    }
 
+    /**
+     * 创建token值
+     * @param user
+     * @return
+     * @throws Exception
+     */
+    private static String createToken(Long user) throws Exception {
+        Random r = new Random((new Date().getTime()));
+        return MD5Encryption.getMD5(user + (new Date()).getTime() + String.valueOf(r.nextInt(100000000)));
     }
 
     /**
@@ -272,13 +303,19 @@ public class AccountService {
     public Long returnIdByToken(HttpServletRequest request) throws Exception {
         String token = request.getHeader(Common.TOKEN);
         log.info("token："+token);
-        Long accountId = Long.valueOf(redisOperation.get(request.getHeader(Common.TOKEN)));
-        log.info("id:"+accountId);
-        return Long.valueOf(redisOperation.get(request.getHeader(Common.TOKEN)));
-    }
+        Long accountId = redisOperation.usePool().get(token)!=null?
+                Long.valueOf(redisOperation.usePool().get(token)) : Long.valueOf(-1);
+        return accountId;
 
-    public void logout(HttpServletRequest request) throws Exception {
-        redisOperation.del(request.getHeader(Common.TOKEN));
+        //    return Long.valueOf(redisOperation.get(request.getHeader(Common.TOKEN)));
+
+
+           }
+
+    public void logout(String token) throws Exception {
+        List<String> keys = new ArrayList<String>();
+        keys.add(token);
+        Preconditions.checkState(Integer.valueOf(String.valueOf(redisOperation.eval(DEL_TOKEN,keys,new ArrayList<String>()))) == 1,"注销用户登陆信息失败.");
 
     }
 }

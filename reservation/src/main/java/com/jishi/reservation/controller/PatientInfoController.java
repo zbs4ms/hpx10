@@ -46,8 +46,10 @@ public class PatientInfoController extends BaseController {
             @ApiParam(value = "病人电话", required = true) @RequestParam(value = "phone", required = true) String phone,
             @ApiParam(value = "病人身份证", required = true) @RequestParam(value = "idCard", required = true) String idCard) throws Exception {
         if (accountId == null) {
-            //从登陆信息中获取登陆者ID
             accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+            }
         }
        Long id =  patientInfoService.addPatientInfo(accountId, name, phone, idCard);
         return ResponseWrapper().addData(id).addMessage("添加成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
@@ -56,12 +58,14 @@ public class PatientInfoController extends BaseController {
     @ApiOperation(value = "查询就诊人信息", response = PatientInfo.class)
     @RequestMapping(value = "queryPatientInfo", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryPatientInfo(
+    public JSONObject queryPatientInfo(HttpServletRequest request,
             @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "就诊人ID", required = false) @RequestParam(value = "patientInfoId", required = false) Long patientInfoId) throws Exception {
         if (accountId == null) {
-            //todo:从登陆信息中获取登陆者ID
-            accountId = accountId;
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+            }
         }
         if (Helpers.isNullOrEmpty(patientInfoId) && Helpers.isNullOrEmpty(accountId))
             throw new Exception("查询条件不能都为空");
