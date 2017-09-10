@@ -143,14 +143,19 @@ public class DoctorController extends BaseController{
             @ApiParam(value = "医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId,
             @ApiParam(value = "医生名称", required = false) @RequestParam(value = "doctorName", required = false) String doctorName,
             @ApiParam(value = "类型（0 普通医生 1 专家", required = false) @RequestParam(value = "type", required = false) String type,
-            @ApiParam(value = "医生的图片"  )@RequestParam(value = "file")MultipartFile file,
+            @ApiParam(value = "医生的图片" ,required = false)@RequestParam(value = "file",required = false)MultipartFile file,
             @ApiParam(value = "医生简介", required = false) @RequestParam(value = "describe", required = false) String describe,
             @ApiParam(value = "职称", required = false) @RequestParam(value = "title", required = false) String title,
             @ApiParam(value = "毕业学校", required = false) @RequestParam(value = "school", required = false) String school,
             @ApiParam(value = "擅长的介绍", required = false) @RequestParam(value = "goodDescribe", required = false) String goodDescribe) throws Exception {
 
-        String headPortrait = ossSupport.uploadImage(file, Common.DOCTOR_PATH);
-        doctorService.modifyDoctor(doctorId,doctorName,type,headPortrait,describe,title,school,goodDescribe,null);
+        if(file!=null){
+            String headPortrait = ossSupport.uploadImage(file, Common.DOCTOR_PATH);
+            doctorService.modifyDoctor(doctorId,doctorName,type,headPortrait,describe,title,school,goodDescribe,null);
+        }else {
+            doctorService.modifyDoctor(doctorId,doctorName,type,null,describe,title,school,goodDescribe,null);
+
+        }
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 

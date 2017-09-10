@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.mapper.DoctorMapper;
+import com.jishi.reservation.dao.models.Banner;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.util.Helpers;
@@ -114,16 +115,17 @@ public class DoctorService {
             throw new Exception("医生ID不能为空.");
         if(this.queryDoctor(doctorId,null,null,null, EnableEnum.EFFECTIVE.getCode()).size()==0)
             throw new Exception("没有查询到医生");
+        Doctor oldDoctor = doctorMapper.queryById(doctorId);
         Doctor modifyDoctor = new Doctor();
         modifyDoctor.setId(doctorId);
-        modifyDoctor.setName(doctorName);
-        modifyDoctor.setType(type);
-        modifyDoctor.setHeadPortrait(headPortrait);
-        modifyDoctor.setAbout(about);
-        modifyDoctor.setTitle(title);
-        modifyDoctor.setSchool(school);
-        modifyDoctor.setGoodDescribe(goodDescribe);
-        modifyDoctor.setEnable(enable);
+        modifyDoctor.setName(doctorName!=null?doctorName:oldDoctor.getName());
+        modifyDoctor.setType(type!=null?type:oldDoctor.getType());
+        modifyDoctor.setHeadPortrait(headPortrait!=null?headPortrait:oldDoctor.getHeadPortrait());
+        modifyDoctor.setAbout(about!=null?about:oldDoctor.getAbout());
+        modifyDoctor.setTitle(title!=null?title:oldDoctor.getTitle());
+        modifyDoctor.setSchool(school!=null?school:oldDoctor.getSchool());
+        modifyDoctor.setGoodDescribe(goodDescribe!=null?goodDescribe:oldDoctor.getGoodDescribe());
+        modifyDoctor.setEnable(enable!=null?enable:oldDoctor.getEnable());
         Preconditions.checkState(doctorMapper.updateByPrimaryKeySelective(modifyDoctor) == 1,"更新失败!");
     }
 
