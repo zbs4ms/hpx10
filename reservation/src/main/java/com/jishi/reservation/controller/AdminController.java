@@ -43,7 +43,6 @@ public class AdminController extends BaseController {
     @ResponseBody
     public JSONObject login(@ApiParam(value = "账号 示例数据:admin") @RequestParam(value = "account") String account,
                             @ApiParam(value = "密码 示例数据:admin") @RequestParam(value = "password") String password,
-                            @RequestParam(value = "appKey", required = false) String appKey,
                             HttpServletRequest request,
                             HttpServletResponse response) throws Exception {
 
