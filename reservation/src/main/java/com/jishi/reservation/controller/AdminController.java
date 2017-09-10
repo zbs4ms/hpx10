@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.protocol.AdminLogInfoData;
 import com.jishi.reservation.dao.models.*;
-import com.jishi.reservation.service.support.ManagerService;
+import com.jishi.reservation.service.ManagerService;
 import com.jishi.reservation.util.Common;
 import com.jishi.reservation.util.CookieUtil;
 import com.jishi.reservation.util.SessionUtil;
