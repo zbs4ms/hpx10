@@ -37,4 +37,5 @@ public class Common {
     public final static String REGION_ID =  "cn-shenzhen";
 
     public final static String DEFAULT_AVATAR = "http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/user/icon.png";
+    public final static String ADMIN_TOKEN = "admin_token";
 }

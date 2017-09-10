@@ -33,4 +33,14 @@ public class SessionUtil {
 
 
 
+    /**
+     * 根据属性名删除session中的值
+     * @param request
+     * @param name
+     */
+    public static void deleteSession(HttpServletRequest request,String name){
+        request.getSession().removeAttribute(name);
+    }
+
+
 }

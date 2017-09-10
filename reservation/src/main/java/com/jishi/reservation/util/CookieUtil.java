@@ -43,6 +43,29 @@ public class CookieUtil {
         }
     }
 
+    /**
+     * 根据名字删除cookie
+     * @param request
+     * @param name
+     */
+    public static void  deleteCookieByName(HttpServletRequest request,HttpServletResponse response,String name){
+        Cookie cookies[] = request.getCookies();
+        if (cookies != null)
+        {
+            for (Cookie cookie : cookies) {
+                if (name.equals(cookie.getName())) {
+                    cookie.setMaxAge(0);
+                    cookie.setValue("");
+                    cookie.setPath("/");
+                    response.addCookie(cookie);
+                    break;
+
+                }
+            }
+        }
+    }
+
+
 
 
     /**

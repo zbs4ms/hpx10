@@ -1,4 +1,4 @@
-package com.jishi.reservation.service.support;
+package com.jishi.reservation.service;
 
 import com.doraemon.base.redis.RedisOperation;
 import com.google.common.base.Preconditions;
@@ -42,6 +42,15 @@ public class ManagerService {
             + " redis.call('set',KEYS[2],KEYS[1]); "
             + " return 1 ";
 
+
+    //注销用户
+    public final static String DEL_TOKEN = ""
+            + " local token = redis.call('get',KEYS[1]); "
+            + " redis.call('del',token); "
+            + " redis.call('del',KEYS[1]); "
+            + " return 1 ";
+
+
     public Manager findAccountByAccount(String account) {
 
         Manager manager =  managerMapper.findAccountByUserName(account);
@@ -72,5 +81,16 @@ public class ManagerService {
     private static String createToken(Long user) throws Exception {
         Random r = new Random((new Date().getTime()));
         return MD5Encryption.getMD5(user + (new Date()).getTime() + String.valueOf(r.nextInt(100000000)));
+    }
+
+    /**
+     * 注销用户
+     * @param user
+     * @throws Exception
+     */
+    public  void logout(String user) throws Exception {
+        List<String> keys = new ArrayList<String>();
+        keys.add(user);
+        Preconditions.checkState(Integer.valueOf(String.valueOf(redisOperation.usePool().eval(DEL_TOKEN,keys,new ArrayList<String>()))) == 1,"注销用户登陆信息失败.");
     }
 }
