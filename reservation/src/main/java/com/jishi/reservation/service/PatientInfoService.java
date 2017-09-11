@@ -162,4 +162,19 @@ public class PatientInfoService {
         patientInfoMapper.deleteByPrimaryKey(patientInfoId);
     }
 
+    public void wrapPregnant(List<PatientInfo> patientInfos) {
+
+        for (PatientInfo patientInfo : patientInfos) {
+            Pregnant pregnant = pregnantMapper.queryByPatientId(patientInfo.getId());
+            patientInfo.setRemark(pregnant.getRemark());
+            patientInfo.setBirth(pregnant.getBirth());
+            patientInfo.setPregnantEnable(pregnant.getEnable());
+            patientInfo.setHusbandName(pregnant.getHusbandName());
+            patientInfo.setHusbandTelephone(pregnant.getHusbandTelephone());
+            patientInfo.setLastMenses(pregnant.getLastMenses());
+            patientInfo.setLivingAddress(pregnant.getLivingAddress());
+            patientInfo.setPregnantId(pregnant.getId());
+
+        }
+    }
 }

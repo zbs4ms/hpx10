@@ -70,6 +70,7 @@ public class PatientInfoController extends BaseController {
         if (Helpers.isNullOrEmpty(patientInfoId) && Helpers.isNullOrEmpty(accountId))
             throw new Exception("查询条件不能都为空");
         List<PatientInfo> patientInfos = patientInfoService.queryPatientInfo(accountId, patientInfoId, null);
+        patientInfoService.wrapPregnant(patientInfos);
         return ResponseWrapper().addData(patientInfos).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
@@ -95,6 +96,7 @@ public class PatientInfoController extends BaseController {
             @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
             @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
         PageInfo<PatientInfo> patientInfo = patientInfoService.queryPatientInfoPagaInfo(null, accountService.returnIdByToken(request), EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum,pageSize,orderBy,desc));
+        patientInfoService.wrapPregnant(patientInfo.getList());
         return ResponseWrapper().addData(patientInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 

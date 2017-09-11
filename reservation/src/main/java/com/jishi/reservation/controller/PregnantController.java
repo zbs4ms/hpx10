@@ -58,19 +58,19 @@ public class PregnantController extends BaseController {
     @RequestMapping(value = "updatePregnant", method =RequestMethod.POST )
     @ResponseBody
     public JSONObject updatePregnant(
-            @ApiParam(value = "就诊人的ID", required = true) @RequestParam(value = "patientId", required = true) Long patientId,
-            @ApiParam(value = "孕妇姓名", required = true) @RequestParam(value = "name", required = true) String  name,
-            @ApiParam(value = "出生年月", required = true) @RequestParam(value = "birth", required = true) Long birth,
-            @ApiParam(value = "现居地址", required = true) @RequestParam(value = "livingAddress", required = true) String livingAddress,
-            @ApiParam(value = "末次月经时间", required = true) @RequestParam(value = "lastMenses", required = true) Long lastMenses,
-            @ApiParam(value = "联系电话", required = true) @RequestParam(value = "telephone", required = true) String telephone,
-            @ApiParam(value = "丈夫姓名", required = true) @RequestParam(value = "husbandName", required = true) String  husbandName,
-            @ApiParam(value = "丈夫电话", required = true) @RequestParam(value = "husbandTelephone", required = true) String husbandTelephone,
+            @ApiParam(value = "就诊人的ID", required = false) @RequestParam(value = "patientId", required = false) Long patientId,
+            @ApiParam(value = "孕妇姓名", required = false) @RequestParam(value = "name", required = false) String  name,
+            @ApiParam(value = "出生年月", required = false) @RequestParam(value = "birth", required = false) Long birth,
+            @ApiParam(value = "现居地址", required = false) @RequestParam(value = "livingAddress", required = false) String livingAddress,
+            @ApiParam(value = "末次月经时间", required = false) @RequestParam(value = "lastMenses", required = false) Long lastMenses,
+            @ApiParam(value = "联系电话", required = false) @RequestParam(value = "telephone", required = false) String telephone,
+            @ApiParam(value = "丈夫姓名", required = false) @RequestParam(value = "husbandName", required = false) String  husbandName,
+            @ApiParam(value = "丈夫电话", required = false) @RequestParam(value = "husbandTelephone", required = false) String husbandTelephone,
             @ApiParam(value = "备注", required = false) @RequestParam(value = "remark", required = false) String remark
 
     ) throws Exception {
 
-        pregnantService.updatePregnant(patientId,name,new Date(birth),livingAddress,new Date(lastMenses),telephone,husbandName,husbandTelephone,EnableEnum.EFFECTIVE.getCode(),remark);
+        pregnantService.updatePregnant(patientId,name,birth,livingAddress,lastMenses,telephone,husbandName,husbandTelephone,EnableEnum.EFFECTIVE.getCode(),remark);
 
         return  ResponseWrapper().addMessage("孕妇信息修改成功.").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }

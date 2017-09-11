@@ -62,10 +62,10 @@ public class PregnantService {
 
     }
 
-    public void updatePregnant(Long patientId, String name, Date birth, String livingAddress, Date lastMenses, String telephone, String husbandName, String husbandTelephone,Integer enable,String remark) throws Exception {
+    public void updatePregnant(Long patientId, String name, Long birth, String livingAddress, Long lastMenses, String telephone, String husbandName, String husbandTelephone,Integer enable,String remark) throws Exception {
 
-        log.info("修改孕妇信息  patientId:"+patientId+",name :"+name+",birth:"+birth.toLocaleString()+",livingAddress:"+livingAddress+
-                ",lastMenses:"+lastMenses.toLocaleString()+ ",telephone:"+telephone+",husbandName:"+husbandName+",husbandTelephone:"+husbandTelephone);
+        log.info("修改孕妇信息  patientId:"+patientId+",name :"+name+",birth:"+birth+",livingAddress:"+livingAddress+
+                ",lastMenses:"+lastMenses+ ",telephone:"+telephone+",husbandName:"+husbandName+",husbandTelephone:"+husbandTelephone);
 
         List<Pregnant> pregnantList = queryPregnant(patientId, null, null, EnableEnum.EFFECTIVE.getCode());
         if(Helpers.isNullOrEmpty(patientId) || pregnantList.get(0) == null)
@@ -73,14 +73,14 @@ public class PregnantService {
         Pregnant pregnant = new Pregnant();
         pregnant.setId(pregnantList.get(0).getId());
         pregnant.setPatientId(patientId);
-        pregnant.setName(name);
-        pregnant.setBirth(birth);
-        pregnant.setLivingAddress(livingAddress);
-        pregnant.setLastMenses(lastMenses);
-        pregnant.setTelephone(telephone);
-        pregnant.setHusbandName(husbandName);
-        pregnant.setHusbandTelephone(husbandTelephone);
-        pregnant.setRemark(remark);
+        pregnant.setName(name!=null?name:pregnantList.get(0).getName());
+        pregnant.setBirth(birth!=null?new Date(birth):pregnantList.get(0).getBirth());
+        pregnant.setLivingAddress(livingAddress!=null?livingAddress:pregnantList.get(0).getLivingAddress());
+        pregnant.setLastMenses(lastMenses!=null?new Date(lastMenses):pregnantList.get(0).getLastMenses());
+        pregnant.setTelephone(telephone!=null?telephone:pregnantList.get(0).getTelephone());
+        pregnant.setHusbandName(husbandName!=null?husbandName:pregnantList.get(0).getHusbandName());
+        pregnant.setHusbandTelephone(husbandTelephone!=null?husbandTelephone:pregnantList.get(0).getHusbandTelephone());
+        pregnant.setRemark(remark!=null?remark:pregnantList.get(0).getRemark());
 
         Preconditions.checkState(pregnantMapper.updateByPrimaryKeySelective(pregnant) == 1,"更新失败");
 
