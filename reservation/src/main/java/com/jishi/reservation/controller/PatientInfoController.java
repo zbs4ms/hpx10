@@ -60,7 +60,7 @@ public class PatientInfoController extends BaseController {
     @ResponseBody
     public JSONObject queryPatientInfo(HttpServletRequest request,
                                        @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-            @ApiParam(value = "就诊人ID", required = false) @RequestParam(value = "patientInfoId", required = false) Long patientInfoId) throws Exception {
+                                       @ApiParam(value = "就诊人ID", required = false) @RequestParam(value = "patientInfoId", required = false) Long patientInfoId) throws Exception {
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1)){
@@ -69,7 +69,7 @@ public class PatientInfoController extends BaseController {
         }
         if (Helpers.isNullOrEmpty(patientInfoId) && Helpers.isNullOrEmpty(accountId))
             throw new Exception("查询条件不能都为空");
-        List<PatientInfo> patientInfos = patientInfoService.queryPatientInfo(accountId, patientInfoId, null);
+        List<PatientInfo> patientInfos = patientInfoService.queryPatientInfo( patientInfoId,accountId, EnableEnum.EFFECTIVE.getCode());
         patientInfoService.wrapPregnant(patientInfos);
         return ResponseWrapper().addData(patientInfos).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
