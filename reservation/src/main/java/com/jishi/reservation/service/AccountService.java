@@ -39,8 +39,9 @@ public class AccountService {
     @Autowired
     AliDayuSupport dayuSupport;
 
-    @Value("constant.dynamic_code_key")
-    public String dynamic_code_key;
+
+
+
 
     //保存登陆信息
     public final static String ADD_TOKEN = ""
@@ -67,12 +68,12 @@ public class AccountService {
      * @return
      * @throws Exception
      */
-    public String sendDynamicCode(String phone,String templateCode) throws Exception {
+    public String sendDynamicCode(String phone,String prefix,String templateCode) throws Exception {
         log.info("发送手机登陆动态登陆码!");
         String code = NewRandomUtil.getRandomNum(6);
 
-        redisOperation.set(dynamic_code_key + "_" + phone, code);
-        redisOperation.expire(dynamic_code_key + "_" + phone,5 * 60);
+        redisOperation.set(prefix + "_" + phone, code);
+        redisOperation.expire(prefix + "_" + phone,5 * 60);
         dayuSupport.sendynamicCode(phone, code,templateCode);
         return code;
     }
@@ -86,9 +87,9 @@ public class AccountService {
      * @return
      * @throws Exception
      */
-    public LoginData loginOrRegisterThroughPhone(String phone, String dynamicCode) throws Exception {
+    public LoginData loginOrRegisterThroughPhone(String phone, String  prefix,String dynamicCode) throws Exception {
         log.info("账号采用手机进行登陆: phone:" + phone + " dynamicCode:" + dynamicCode);
-        String code = redisOperation.get(dynamic_code_key + "_" + phone);
+        String code = redisOperation.get(prefix + "_" + phone);
         if (!dynamicCode.equals(code))
             throw new Exception("登陆失败!");
         List<Account> account = queryAccount(null, phone, null);
@@ -96,8 +97,8 @@ public class AccountService {
             addAccount(phone, phone, Common.DEFAULT_AVATAR, phone, phone, null);
 
         //删除已核对的验证码
-        redisOperation.del(dynamic_code_key + "_" + phone);
-        log.info("删除已核对的验证码："+dynamic_code_key + "_" + phone);
+        redisOperation.del(prefix + "_" + phone);
+        log.info("删除已核对的验证码："+prefix + "_" + phone);
 
         String token = login(phone);
         LoginData loginData = new LoginData();
@@ -108,6 +109,37 @@ public class AccountService {
 
         return loginData;
 
+    }
+
+
+    public boolean checkOriginalPhoneCode(String phone, String prefix,String dynamicCode) throws Exception {
+        log.info("账号进行换绑操作: oldPhone:" + phone + " dynamicCode:" + dynamicCode);
+        String code = redisOperation.get(prefix + "_" + phone);
+        if (!dynamicCode.equals(code)){
+            return  false;
+        }else {
+            redisOperation.del(prefix + "_" + phone);
+            log.info("删除已核对的验证码："+prefix + "_" + phone);
+            return true;
+        }
+
+    }
+
+
+    public boolean changePhone(String originalPhone, String prefix, String newPhone, String dynamicCode) throws Exception {
+        log.info("账号进行换绑操作: oldPhone:" + originalPhone + "newPhone:" + newPhone + " dynamicCode:" + dynamicCode);
+        String code = redisOperation.get(prefix + "_" + newPhone);
+        if (!dynamicCode.equals(code)) {
+            return false;
+        } else {
+            redisOperation.del(prefix + "_" + newPhone);
+            log.info("删除已核对的验证码：" + prefix + "_" + newPhone);
+
+            Account account = accountMapper.queryByTelephone(originalPhone);
+            account.setPhone(newPhone);
+            account.setAccount(newPhone);
+            return accountMapper.updateByPrimaryKeySelective(account) == 1;
+        }
     }
 
     /**
@@ -321,7 +353,4 @@ public class AccountService {
     }
 
 
-    public boolean checkOriginalPhoneCode(String phone, String dynamicCode) {
-        return false;
-    }
 }

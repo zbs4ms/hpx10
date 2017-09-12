@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +40,14 @@ public class AccountController extends BaseController{
     @Autowired
     AccountService accountService;
 
+
+    @Value("constant.dynamic_code_key.login_or_register")
+    public String loginOrRegister;
+    @Value("constant.dynamic_code_key.change_phone_origin")
+    public String changePhoneOrigin;
+    @Value("constant.dynamic_code_key.change_phone_new")
+    public String changePhoneNew;
+
     @ApiOperation(value = "采用手机进行动态码登陆和注册(如果已经注册就走登陆,如果没有注册,先注册再登陆)")
     @RequestMapping(value = "loginOrRegisterThroughPhone", method = RequestMethod.POST)
     @ResponseBody
@@ -49,7 +58,7 @@ public class AccountController extends BaseController{
         Preconditions.checkNotNull(phone,"请传入所需要的参数：dynamicCode");
 
 
-        LoginData loginData = accountService.loginOrRegisterThroughPhone(phone, dynamicCode);
+        LoginData loginData = accountService.loginOrRegisterThroughPhone(phone,loginOrRegister ,dynamicCode);
         return ResponseWrapper().addData(loginData).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
@@ -72,7 +81,7 @@ public class AccountController extends BaseController{
             @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone) throws Exception {
         Preconditions.checkNotNull(phone,"请传入所需要的参数：phone");
 
-        String code = accountService.sendDynamicCode(phone, SmsEnum.LOGIN_REGISTER.getTemplateCode());
+        String code = accountService.sendDynamicCode(phone, loginOrRegister,SmsEnum.LOGIN_REGISTER.getTemplateCode());
         return ResponseWrapper().addData(code).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
@@ -83,8 +92,8 @@ public class AccountController extends BaseController{
     public JSONObject sendChangePhoneDynamicCode(
             @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone) throws Exception {
         Preconditions.checkNotNull(phone,"请传入所需要的参数：电话号码");
-
-        String code = accountService.sendDynamicCode(phone,SmsEnum.CHANGE_BOUNDLE_TELEPHONE.getTemplateCode());
+        Preconditions.checkNotNull(accountService.queryAccount(null,phone,EnableEnum.EFFECTIVE.getCode()),"该手机用户不存在");
+        String code = accountService.sendDynamicCode(phone,changePhoneOrigin,SmsEnum.CHANGE_BUNDLE_TELEPHONE_OLD.getTemplateCode());
         return ResponseWrapper().addData(code).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
@@ -94,12 +103,12 @@ public class AccountController extends BaseController{
     public JSONObject checkOriginalPhoneCode(
             @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone,
             @ApiParam(value = "动态码", required = true) @RequestParam(value = "dynamicCode", required = true) String dynamicCode) throws Exception {
-        Preconditions.checkNotNull(phone,"请传入所需要的参数：电话号码");
+            Preconditions.checkNotNull(phone,"请传入所需要的参数：电话号码");
             Preconditions.checkNotNull(dynamicCode,"请传入所需要的参数：动态码");
 
 
-        return accountService.checkOriginalPhoneCode(phone,dynamicCode)?ResponseWrapper().addMessage("验证成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()):
-                    ResponseWrapper().addMessage("验证失败!").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+            return accountService.checkOriginalPhoneCode(phone,changePhoneOrigin,dynamicCode)?ResponseWrapper().addMessage("验证成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()):
+            ResponseWrapper().addMessage("验证失败!").ExeFaild(ReturnCodeEnum.FAILED.getCode());
     }
 
     @ApiOperation(value = "发送换绑手机的动态验证码   发给第二个手机")
@@ -109,8 +118,25 @@ public class AccountController extends BaseController{
             @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone) throws Exception {
         Preconditions.checkNotNull(phone,"请传入所需要的参数：电话号码");
 
-        String code = accountService.sendDynamicCode(phone,SmsEnum.CHANGE_BOUNDLE_TELEPHONE.getTemplateCode());
+        String code = accountService.sendDynamicCode(phone,changePhoneNew,SmsEnum.CHANGE_BUNDLE_TELEPHONE_NEW.getTemplateCode());
         return ResponseWrapper().addData(code).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+    @ApiOperation(value = "换绑最后一步")
+    @RequestMapping(value = "changePhone", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject changePhone(
+            @ApiParam(value = "原电话", required = true) @RequestParam(value = "originalPhone", required = true) String originalPhone,
+            @ApiParam(value = "新电话", required = true) @RequestParam(value = "newPhone", required = true) String newPhone,
+            @ApiParam(value = "新电话收到的验证码", required = true) @RequestParam(value = "dynamicCode", required = true) String dynamicCode
+    ) throws Exception {
+        Preconditions.checkNotNull(originalPhone,"请传入所需要的参数：originalPhone");
+        Preconditions.checkNotNull(newPhone,"请传入所需要的参数：newPhone");
+        Preconditions.checkNotNull(dynamicCode,"请传入所需要的参数：dynamicCode");
+
+
+        return accountService.changePhone(originalPhone,changePhoneNew,newPhone,dynamicCode)?ResponseWrapper().addMessage("换绑成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()):
+                ResponseWrapper().addMessage("手机号和验证码不对应,换绑失败").ExeFaild(ReturnCodeEnum.FAILED.getCode()) ;
     }
 
 
