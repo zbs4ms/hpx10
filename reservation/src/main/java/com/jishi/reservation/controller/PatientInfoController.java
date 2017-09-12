@@ -101,7 +101,12 @@ public class PatientInfoController extends BaseController {
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
             @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
             @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
-        PageInfo<PatientInfo> patientInfo = patientInfoService.queryPatientInfoPagaInfo(null, accountService.returnIdByToken(request), EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum,pageSize,orderBy,desc));
+
+        Long accountId = accountService.returnIdByToken(request);
+        if(accountId.equals(-1L)){
+            return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+        }
+        PageInfo<PatientInfo> patientInfo = patientInfoService.queryPatientInfoPagaInfo(null, accountId, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum,pageSize,orderBy,desc));
         patientInfoService.wrapPregnant(patientInfo.getList());
         return ResponseWrapper().addData(patientInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
