@@ -67,15 +67,16 @@ public class AccountService {
      * @return
      * @throws Exception
      */
-    public String sendLoginOrRegisterDynamicCode(String phone) throws Exception {
-        log.info("发送手机动态登陆码!");
+    public String sendDynamicCode(String phone,String templateCode) throws Exception {
+        log.info("发送手机登陆动态登陆码!");
         String code = NewRandomUtil.getRandomNum(6);
 
         redisOperation.set(dynamic_code_key + "_" + phone, code);
         redisOperation.expire(dynamic_code_key + "_" + phone,5 * 60);
-        dayuSupport.sendynamicCode(phone, code,SmsEnum.LOGIN_REGISTER.getTemplateCode());
+        dayuSupport.sendynamicCode(phone, code,templateCode);
         return code;
     }
+
 
     /**
      * 采用手机进行动态码登陆和注册(如果已经注册就走登陆,如果没有注册,先注册再登陆)
@@ -317,5 +318,10 @@ public class AccountService {
         keys.add(token);
         Preconditions.checkState(Integer.valueOf(String.valueOf(redisOperation.eval(DEL_TOKEN,keys,new ArrayList<String>()))) == 1,"注销用户登陆信息失败.");
 
+    }
+
+
+    public boolean checkOriginalPhoneCode(String phone, String dynamicCode) {
+        return false;
     }
 }

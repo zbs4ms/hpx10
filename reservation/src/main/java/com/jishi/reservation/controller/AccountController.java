@@ -8,11 +8,13 @@ import com.aliyuncs.IAcsClient;
 import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
+import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.protocol.LoginData;
 import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.enumPackage.SmsEnum;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -43,6 +45,10 @@ public class AccountController extends BaseController{
     public JSONObject loginOrRegisterThroughPhone(
             @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone,
             @ApiParam(value = "动态码", required = true) @RequestParam(value = "dynamicCode", required = true) String dynamicCode) throws Exception {
+        Preconditions.checkNotNull(phone,"请传入所需要的参数：phone");
+        Preconditions.checkNotNull(phone,"请传入所需要的参数：dynamicCode");
+
+
         LoginData loginData = accountService.loginOrRegisterThroughPhone(phone, dynamicCode);
         return ResponseWrapper().addData(loginData).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -52,7 +58,9 @@ public class AccountController extends BaseController{
     @RequestMapping(value = "logout", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject logout(@RequestParam(value = "token") String token) throws Exception {
-         accountService.logout(token);
+        Preconditions.checkNotNull(token,"请传入所需要的参数：token");
+
+        accountService.logout(token);
          return ResponseWrapper().addMessage("退出成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
@@ -62,9 +70,49 @@ public class AccountController extends BaseController{
     @ResponseBody
     public JSONObject sendDynamicCode(
             @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone) throws Exception {
-        String code = accountService.sendLoginOrRegisterDynamicCode(phone);
+        Preconditions.checkNotNull(phone,"请传入所需要的参数：phone");
+
+        String code = accountService.sendDynamicCode(phone, SmsEnum.LOGIN_REGISTER.getTemplateCode());
         return ResponseWrapper().addData(code).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
+
+
+    @ApiOperation(value = "发送换绑手机的动态验证码   发给原手机")
+    @RequestMapping(value = "originalPhoneCode", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject sendChangePhoneDynamicCode(
+            @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone) throws Exception {
+        Preconditions.checkNotNull(phone,"请传入所需要的参数：电话号码");
+
+        String code = accountService.sendDynamicCode(phone,SmsEnum.CHANGE_BOUNDLE_TELEPHONE.getTemplateCode());
+        return ResponseWrapper().addData(code).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+    @ApiOperation(value = "验证原手机和原手机收到的验证码是否一致")
+    @RequestMapping(value = "checkOriginalPhoneCode", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject checkOriginalPhoneCode(
+            @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone,
+            @ApiParam(value = "动态码", required = true) @RequestParam(value = "dynamicCode", required = true) String dynamicCode) throws Exception {
+        Preconditions.checkNotNull(phone,"请传入所需要的参数：电话号码");
+            Preconditions.checkNotNull(dynamicCode,"请传入所需要的参数：动态码");
+
+
+        return accountService.checkOriginalPhoneCode(phone,dynamicCode)?ResponseWrapper().addMessage("验证成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()):
+                    ResponseWrapper().addMessage("验证失败!").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+    }
+
+    @ApiOperation(value = "发送换绑手机的动态验证码   发给第二个手机")
+    @RequestMapping(value = "newPhoneCode", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject sendSurePhoneDynamicCode(
+            @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone) throws Exception {
+        Preconditions.checkNotNull(phone,"请传入所需要的参数：电话号码");
+
+        String code = accountService.sendDynamicCode(phone,SmsEnum.CHANGE_BOUNDLE_TELEPHONE.getTemplateCode());
+        return ResponseWrapper().addData(code).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
 
     @ApiOperation(value = "传统的增加账号")
     @RequestMapping(value = "addAccount", method = RequestMethod.PUT)
@@ -108,6 +156,10 @@ public class AccountController extends BaseController{
             @ApiParam(value = "电话", required = false) @RequestParam(value = "phone", required = false) String phone,
             @ApiParam(value = "老密码", required = true) @RequestParam(value = "oldPasswd", required = true) String oldPasswd,
             @ApiParam(value = "新密码", required = true) @RequestParam(value = "newPasswd", required = true) String newPasswd) throws Exception {
+        Preconditions.checkNotNull(oldPasswd,"请传入所需要的参数：oldPasswd");
+        Preconditions.checkNotNull(newPasswd,"请传入所需要的参数：newPasswd");
+
+
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1)){
@@ -124,6 +176,10 @@ public class AccountController extends BaseController{
     public JSONObject modifyAccountPhone(
             @ApiParam(value = "账号ID", required = true) @RequestParam(value = "accountId", required = true) Long accountId,
             @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone) throws Exception {
+
+        Preconditions.checkNotNull(accountId,"请传入所需要的参数：accountId");
+        Preconditions.checkNotNull(phone,"请传入所需要的参数：phone");
+
         accountService.modifyAccountPhone(accountId,phone);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }

@@ -1,6 +1,7 @@
 package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Preconditions;
 import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.service.DepartmentService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
@@ -33,6 +34,8 @@ public class DepartmentController extends BaseController{
             @ApiParam(value = "科室名称", required = true) @RequestParam(value = "departmentName", required = true) String departmentName,
             @ApiParam(value = "科室位置", required = true) @RequestParam(value = "position", required = true) String position
             ) throws Exception {
+        Preconditions.checkNotNull(departmentName,"请传入必须的参数：departmentName");
+        Preconditions.checkNotNull(departmentName,"请传入必须的参数：position");
         departmentService.addDepartment(departmentName,position);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -57,6 +60,10 @@ public class DepartmentController extends BaseController{
             @ApiParam(value = "科室名称", required = true) @RequestParam(value = "departmentName", required = true) String departmentName,
             @ApiParam(value = "科室位置", required = true) @RequestParam(value = "position", required = true) String position
             ) throws Exception {
+        Preconditions.checkNotNull(departmentId,"请传入必须的参数：departmentId");
+        Preconditions.checkNotNull(departmentName,"请传入必须的参数：departmentName");
+        Preconditions.checkNotNull(position,"请传入必须的参数：position");
+
         departmentService.modifyDepartment(departmentId,departmentName,position,null);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -67,6 +74,9 @@ public class DepartmentController extends BaseController{
     public JSONObject failureDepartment(
             @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId
     ) throws Exception {
+
+        Preconditions.checkNotNull(departmentId,"请传入必须的参数：departmentId");
+
         departmentService.failureDepartment(departmentId);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }

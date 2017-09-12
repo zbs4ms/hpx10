@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.PutObjectResult;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.models.Banner;
 import com.jishi.reservation.service.HomeService;
@@ -48,6 +49,9 @@ public class HomeController extends BaseController {
             @ApiParam(value = "跳转的url", required = true) @RequestParam(value = "jumpUrl", required = true) String jumpUrl,
             @ApiParam(value = "序号", required = true) @RequestParam(value = "orderNumber", required = true) Integer orderNumber
              ) throws Exception {
+        Preconditions.checkNotNull(name,"请传入必须的参数：name");
+        Preconditions.checkNotNull(jumpUrl,"请传入必须的参数：jumpUrl");
+        Preconditions.checkNotNull(orderNumber,"请传入必须的参数：orderNumber");
 
         String fileUrl = ossSupport.uploadImage(file,Common.BANNER_PATH);
         homeService.addBanner(name,fileUrl, jumpUrl,orderNumber);
@@ -63,6 +67,12 @@ public class HomeController extends BaseController {
             @ApiParam(value = "跳转的url", required = true) @RequestParam(value = "jumpUrl", required = true) String jumpUrl,
             @ApiParam(value = "banner 图片"  )@RequestParam(value = "file",required = false)MultipartFile file,
             @ApiParam(value = "序号", required = false) @RequestParam(value = "orderNumber", required = false) Integer orderNumber) throws Exception {
+
+        Preconditions.checkNotNull(bannerId,"请传入必须的参数：bannerId");
+        Preconditions.checkNotNull(name,"请传入必须的参数：name");
+        Preconditions.checkNotNull(jumpUrl,"请传入必须的参数：jumpUrl");
+
+
         if(file != null) {
             String fileUrl = ossSupport.uploadImage(file, Common.BANNER_PATH);
             homeService.modifyBanner(bannerId, name,fileUrl, jumpUrl,orderNumber);
@@ -80,6 +90,8 @@ public class HomeController extends BaseController {
     public JSONObject queryBanner(
             @ApiParam(value = "有效否(为空 查询全部  0 正常 1 禁用 99 删除)", required = false) @RequestParam(value = "enable", required = false) Integer enable,
             @ApiParam(value = "banner的ID", required = true) @RequestParam(value = "bannerId", required = true) Long bannerId) throws Exception {
+
+        Preconditions.checkNotNull(bannerId,"请传入必须的参数：bannerId");
         List<Banner> bannerList = homeService.queryBanner(bannerId,null,enable);
         Banner banner = bannerList ==null || bannerList.size() == 0 ? null : bannerList.get(0);
         return ResponseWrapper().addData(banner).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
@@ -115,6 +127,8 @@ public class HomeController extends BaseController {
     @ResponseBody
     public JSONObject hideOrShowBanner(
             @ApiParam(value = "banner的图片ID", required = true) @RequestParam(value = "bannerId", required = true) Long bannerId) throws Exception {
+        Preconditions.checkNotNull(bannerId,"请传入必须的参数：bannerId");
+
         homeService.hideOrShowBanner(bannerId);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -124,6 +138,8 @@ public class HomeController extends BaseController {
     @ResponseBody
     public JSONObject deleteBannerBatch(
             @ApiParam(value = "banner的ID  ','分隔", required = true) @RequestParam(value = "bannerIdList", required = true) String bannerIdList) throws Exception {
+        Preconditions.checkNotNull(bannerIdList,"请传入必须的参数：bannerIdList");
+
         homeService.deleteBannerBatch(bannerIdList);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -134,6 +150,9 @@ public class HomeController extends BaseController {
     public JSONObject topBanner(
             @ApiParam(value = "banner的ID ", required = true) @RequestParam(value = "bannerId", required = true) Long bannerId,
             @ApiParam(value = "用户输入的排序  越大越靠前", required = true) @RequestParam(value = "sort", required = true) Integer sort ) throws Exception {
+
+        Preconditions.checkNotNull(bannerId,"请传入必须的参数：bannerId");
+        Preconditions.checkNotNull(sort,"请传入必须的参数：sort");
         homeService.sortBanner(bannerId,sort);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }

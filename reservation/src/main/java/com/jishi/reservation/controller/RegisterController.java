@@ -3,6 +3,7 @@ package com.jishi.reservation.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.RegisterCompleteVO;
 import com.jishi.reservation.controller.protocol.RegisterVO;
@@ -54,12 +55,20 @@ public class RegisterController extends BaseController {
             @ApiParam(value = "预约的时间段", required = true) @RequestParam(value = "timeInterval", required = true) String timeInterval,
             @ApiParam(value = "预约时间", required = true) @RequestParam(value = "agreedTime", required = true) Long agreedTime
             ) throws Exception {
+
+        Preconditions.checkNotNull(patientinfoId,"请传入必须的参数：patientinfoId");
+        Preconditions.checkNotNull(departmentId,"请传入必须的参数：departmentId");
+        Preconditions.checkNotNull(doctorId,"请传入必须的参数：doctorId");
+        Preconditions.checkNotNull(timeInterval,"请传入必须的参数：timeInterval");
+        Preconditions.checkNotNull(agreedTime,"请传入必须的参数：agreedTime");
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1)){
                 return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
             }
         }
+
+
         RegisterCompleteVO completeVO = registerService.addRegister(accountId, patientinfoId, departmentId, doctorId, new Date(agreedTime),timeInterval);
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -104,19 +113,26 @@ public class RegisterController extends BaseController {
         return ResponseWrapper().addData(pageInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
-    //todo  accountid还有问题..
     @ApiOperation(value = "修改预约信息")
     @RequestMapping(value = "modifyRegister", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject modifyRegister(HttpServletRequest request,
             @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId,
-            //@ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "病人ID", required = false) @RequestParam(value = "patientinfoId", required = false) Long patientinfoId,
             @ApiParam(value = "状态", required = false) @RequestParam(value = "status", required = false) Integer status,
             @ApiParam(value = "科室ID", required = false) @RequestParam(value = "departmentId", required = false) Long departmentId,
             @ApiParam(value = "预约的医生ID", required = false) @RequestParam(value = "doctorId", required = false) Long doctorId,
             @ApiParam(value = "预约时间", required = false) @RequestParam(value = "agreedTime", required = false) String agreedTime) throws Exception {
-        Long accountId = accountService.returnIdByToken(request);
+        Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
+
+        if (accountId == null) {
+            //从登陆信息中获取登陆者ID
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+            }
+        }
         registerService.modifyRegister(registerId, accountId, patientinfoId, departmentId, doctorId, status, new Date(agreedTime), null);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -127,6 +143,8 @@ public class RegisterController extends BaseController {
     public JSONObject failureRegister(
             @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId
     ) throws Exception {
+        Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
+
         registerService.failureRegister(registerId);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }

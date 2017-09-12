@@ -2,6 +2,7 @@ package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.dao.models.PatientInfo;
@@ -45,6 +46,11 @@ public class PatientInfoController extends BaseController {
             @ApiParam(value = "就诊人名称", required = true) @RequestParam(value = "name", required = true) String name,
             @ApiParam(value = "病人电话", required = true) @RequestParam(value = "phone", required = true) String phone,
             @ApiParam(value = "病人身份证", required = true) @RequestParam(value = "idCard", required = true) String idCard) throws Exception {
+
+        Preconditions.checkNotNull(name,"请传入必须的参数：name");
+        Preconditions.checkNotNull(phone,"请传入必须的参数：phone");
+        Preconditions.checkNotNull(idCard,"请传入必须的参数：idCard");
+
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1)){
@@ -110,6 +116,11 @@ public class PatientInfoController extends BaseController {
             @ApiParam(value = "就诊人名称", required = true) @RequestParam(value = "name", required = true) String name,
             @ApiParam(value = "病人电话", required = true) @RequestParam(value = "phone", required = true) String phone,
             @ApiParam(value = "病人身份证", required = true) @RequestParam(value = "idCard", required = true) String idCard) throws Exception {
+        Preconditions.checkNotNull(patientInfoId,"请传入必须的参数：patientInfoId");
+        Preconditions.checkNotNull(name,"请传入必须的参数：name");
+        Preconditions.checkNotNull(idCard,"请传入必须的参数：idCard");
+        Preconditions.checkNotNull(phone,"请传入必须的参数：phone");
+
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1L)){
@@ -126,6 +137,8 @@ public class PatientInfoController extends BaseController {
     public JSONObject deletePatientInfo(
             @ApiParam(value = "就诊人ID", required = true) @RequestParam(value = "patientInfoId", required = true) Long patientInfoId
     ) throws Exception {
+        Preconditions.checkNotNull(patientInfoId,"请传入必须的参数：patientInfoId");
+
         patientInfoService.deletePatientInfo(patientInfoId);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }

@@ -2,6 +2,7 @@ package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.DateVO;
 import com.jishi.reservation.controller.protocol.DoctorVO;
@@ -61,6 +62,9 @@ public class DoctorController extends BaseController{
             @ApiParam(value = "位置", required = false) @RequestParam(value = "position", required = false) String position,
             @ApiParam(value = "擅长的介绍", required = false) @RequestParam(value = "goodDescribe", required = false) String goodDescribe) throws Exception {
 
+        Preconditions.checkNotNull(doctorName,"请传入必须的参数：doctorName");
+        Preconditions.checkNotNull(file,"请传入必须的参数：file");
+        Preconditions.checkNotNull(departmentIds,"请传入必须的参数：departmentIds");
         String headPortrait = ossSupport.uploadImage(file,Common.DOCTOR_PATH);
         doctorService.addDoctor(doctorName,type,headPortrait,departmentIds,about,title,school,goodDescribe);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
@@ -148,6 +152,7 @@ public class DoctorController extends BaseController{
             @ApiParam(value = "职称", required = false) @RequestParam(value = "title", required = false) String title,
             @ApiParam(value = "毕业学校", required = false) @RequestParam(value = "school", required = false) String school,
             @ApiParam(value = "擅长的介绍", required = false) @RequestParam(value = "goodDescribe", required = false) String goodDescribe) throws Exception {
+        Preconditions.checkNotNull(doctorId,"请传入必须的参数：doctorId");
 
         if(file!=null){
             String headPortrait = ossSupport.uploadImage(file, Common.DOCTOR_PATH);
@@ -202,7 +207,7 @@ public class DoctorController extends BaseController{
     @ResponseBody
     public JSONObject topDoctor(@ApiParam(value = "医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
 
-
+        Preconditions.checkNotNull(doctorId,"请传入必须的参数：doctorId");
 
         doctorService.topDoctor(doctorId);
 

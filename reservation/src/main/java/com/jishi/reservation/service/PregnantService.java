@@ -100,4 +100,8 @@ public class PregnantService {
 
         return pregnantMapper.select(queryPregnant);
     }
+
+    public void deleteById(Long pregnantId) {
+        pregnantMapper.delete(pregnantId);
+    }
 }
