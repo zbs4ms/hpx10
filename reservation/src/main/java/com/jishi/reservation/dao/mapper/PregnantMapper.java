@@ -21,5 +21,5 @@ public interface PregnantMapper extends MyMapper<Pregnant> {
     @Delete({
             "delete from pregnant where id = #{id}"
     })
-    void delete(@Param("id") Long id);
+    void deleteById(@Param("id") Long id);
 }

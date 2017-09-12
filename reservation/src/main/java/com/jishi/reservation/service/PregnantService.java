@@ -102,6 +102,6 @@ public class PregnantService {
     }
 
     public void deleteById(Long pregnantId) {
-        pregnantMapper.delete(pregnantId);
+        pregnantMapper.deleteById(pregnantId);
     }
 }
