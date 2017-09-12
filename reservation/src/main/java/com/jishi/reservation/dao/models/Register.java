@@ -6,6 +6,8 @@ import lombok.Data;
 import javax.persistence.Id;
 
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -29,5 +31,15 @@ public class Register {
     private Integer status;
     @ApiModelProperty("状态标示:0:正常 1:禁用  99:删除")
     private Integer enable;
+
+
+    @Transient
+    private Integer payType;
+    @Transient
+    private BigDecimal price;
+    @Transient
+    private Date payTime;
+    @Transient
+    private Date completeTime;
 
 }

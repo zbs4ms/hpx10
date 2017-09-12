@@ -10,6 +10,7 @@ import com.jishi.reservation.controller.protocol.RegisterVO;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.*;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.enumPackage.PayEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
@@ -102,6 +103,10 @@ public class RegisterController extends BaseController {
             List<Department> departments = departmentService.queryDepartment(register.getDepartmentId(), null);
             List<Account> accounts = accountService.queryAccount(register.getAccountId(), null, null);
             List<PatientInfo> patientInfos = patientInfoService.queryPatientInfo(register.getPatientinfoId(), null, null);
+            //todo 还没对接支付，所以就先搞几个假数据，供前段解析展示
+            register.setPayType(PayEnum.WEIXIN.getCode());
+            register.setPayTime(new Date());
+            register.setCompleteTime(new Date());
             registerVO.setRegister(register);
             registerVO.setDoctor(doctors.size() > 0 ? doctors.get(0) : null);
             registerVO.setAccount(accounts.size() > 0 ? accounts.get(0) : null);
