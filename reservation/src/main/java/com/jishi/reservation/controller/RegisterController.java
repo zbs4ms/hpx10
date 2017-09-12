@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -107,6 +108,7 @@ public class RegisterController extends BaseController {
             register.setPayType(PayEnum.WEIXIN.getCode());
             register.setPayTime(new Date());
             register.setCompleteTime(new Date());
+            register.setPrice(BigDecimal.valueOf(23.88));
             registerVO.setRegister(register);
             registerVO.setDoctor(doctors.size() > 0 ? doctors.get(0) : null);
             registerVO.setAccount(accounts.size() > 0 ? accounts.get(0) : null);
