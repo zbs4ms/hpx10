@@ -31,15 +31,21 @@ public class Register {
     private Integer status;
     @ApiModelProperty("状态标示:0:正常 1:禁用  99:删除")
     private Integer enable;
+    @ApiModelProperty("创建时间")
+    private Date createTime;
 
 
     @Transient
-    private Integer payType;
+    private Integer payType;  //支付方式
     @Transient
-    private BigDecimal price;
+    private BigDecimal price;  //支付金额
     @Transient
-    private Date payTime;
+    private Date payTime;       //支付时间
     @Transient
-    private Date completeTime;
+    private Date completeTime;  //完成时间
+    @Transient
+    private String orderCode;     //订单编号
+    @Transient
+    private Long countDownTime;     //支付倒计时
 
 }
