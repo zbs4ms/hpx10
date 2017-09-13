@@ -34,6 +34,9 @@ public class Register {
     @ApiModelProperty("创建时间")
     private Date createTime;
 
+    @ApiModelProperty("序列号")
+    private String serialNumber;
+
 
     @Transient
     private Integer payType;  //支付方式

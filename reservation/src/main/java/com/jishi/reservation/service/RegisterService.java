@@ -15,6 +15,7 @@ import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.PayEnum;
 import com.jishi.reservation.service.enumPackage.StatusEnum;
 import com.jishi.reservation.util.Helpers;
+import com.jishi.reservation.util.NewRandomUtil;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by zbs on 2017/8/10.
@@ -76,9 +78,11 @@ public class RegisterService {
         register.setDoctorId(doctorId);
         register.setPatientinfoId(patientinfoId);
         register.setAgreedTime(agreedTime);
-        register.setStatus(StatusEnum.REGISTER_STATUS_NO_PAYMENT.getCode());
+        register.setStatus(StatusEnum.REGISTER_STATUS_PAYMENT.getCode());
         register.setEnable(EnableEnum.EFFECTIVE.getCode());
         register.setCreateTime(new Date());
+        String serialCode = NewRandomUtil.getRandomNum(4);
+        register.setSerialNumber(serialCode);
 
         //added csrr  添加排班表的数据
         scheduledService.addRegister(doctorId,patientinfoId,agreedTime);
@@ -101,6 +105,7 @@ public class RegisterService {
         completeVO.setPrice(BigDecimal.valueOf(23.88));
         completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
         completeVO.setOrderCode("wx568254965");
+        completeVO.setSerialNumber(serialCode);
 
         return completeVO;
 

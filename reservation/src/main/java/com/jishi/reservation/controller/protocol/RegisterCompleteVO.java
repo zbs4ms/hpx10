@@ -27,4 +27,5 @@ public class RegisterCompleteVO {
     private Date completeTime;  //完成时间
     private String orderCode;     //订单编号
     private Long countDownTime;     //支付倒计时
+    private String serialNumber;     //序列号
 }

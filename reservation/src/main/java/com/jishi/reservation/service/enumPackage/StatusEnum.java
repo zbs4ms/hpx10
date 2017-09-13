@@ -6,8 +6,8 @@ package com.jishi.reservation.service.enumPackage;
 public enum  StatusEnum {
 
     REGISTER_STATUS_NO_PAYMENT(0, "预约未支付"),
-    REGISTER_STATUS_PAYMENT(-1, "预约支付"),
-    REGISTER_STATUS_CANCEL(-1, "预约取消");
+    REGISTER_STATUS_PAYMENT(2, "预约成功已支付"),
+    REGISTER_STATUS_CANCEL(1, "预约取消");
 
     private int code;
     private String desc;
