@@ -12,6 +12,7 @@ import com.jishi.reservation.dao.mapper.RegisterMapper;
 import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.dao.models.Register;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.enumPackage.PayEnum;
 import com.jishi.reservation.service.enumPackage.StatusEnum;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.log4j.Log4j;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -76,7 +78,7 @@ public class RegisterService {
         register.setAgreedTime(agreedTime);
         register.setStatus(StatusEnum.REGISTER_STATUS_NO_PAYMENT.getCode());
         register.setEnable(EnableEnum.EFFECTIVE.getCode());
-
+        register.setCreateTime(new Date());
 
         //added csrr  添加排班表的数据
         scheduledService.addRegister(doctorId,patientinfoId,agreedTime);
@@ -91,6 +93,14 @@ public class RegisterService {
         completeVO.setPosition(department.getPosition());
         completeVO.setTimeInterval(timeInterval);
         completeVO.setPatient(patientInfoMapper.queryById(patientinfoId).getName());
+
+        //todo 还没对接支付，所以就先搞几个假数据，供前段解析展示
+        completeVO.setPayType(PayEnum.WEIXIN.getCode());
+        completeVO.setPayTime(new Date());
+        completeVO.setCompleteTime(new Date());
+        completeVO.setPrice(BigDecimal.valueOf(23.88));
+        completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
+        completeVO.setOrderCode("wx568254965");
 
         return completeVO;
 

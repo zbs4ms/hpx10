@@ -54,7 +54,7 @@ public class PatientInfoController extends BaseController {
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1)){
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
        Long id =  patientInfoService.addPatientInfo(accountId, name, phone, idCard);
@@ -70,7 +70,7 @@ public class PatientInfoController extends BaseController {
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1)){
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
         if (Helpers.isNullOrEmpty(patientInfoId) && Helpers.isNullOrEmpty(accountId))
@@ -104,7 +104,7 @@ public class PatientInfoController extends BaseController {
 
         Long accountId = accountService.returnIdByToken(request);
         if(accountId.equals(-1L)){
-            return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+            return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
         }
         PageInfo<PatientInfo> patientInfo = patientInfoService.queryPatientInfoPagaInfo(null, accountId, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum,pageSize,orderBy,desc));
         patientInfoService.wrapPregnant(patientInfo.getList());
@@ -129,7 +129,7 @@ public class PatientInfoController extends BaseController {
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1L)){
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+                return ResponseWrapper().addMessage("登陆信息 已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
         patientInfoService.modifyPatientInfo(accountId,patientInfoId, name, phone, idCard, null);

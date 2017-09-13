@@ -2,6 +2,8 @@ package com.jishi.reservation.controller.protocol;
 
 import lombok.Data;
 
+import javax.persistence.Transient;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -19,4 +21,10 @@ public class RegisterCompleteVO {
     private String position;
     private Date agreeTime;
     private String timeInterval;
+    private Integer payType;  //支付方式
+    private BigDecimal price;  //支付金额
+    private Date payTime;       //支付时间
+    private Date completeTime;  //完成时间
+    private String orderCode;     //订单编号
+    private Long countDownTime;     //支付倒计时
 }

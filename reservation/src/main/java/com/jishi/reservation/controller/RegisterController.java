@@ -66,7 +66,7 @@ public class RegisterController extends BaseController {
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1)){
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
 
@@ -90,7 +90,7 @@ public class RegisterController extends BaseController {
             //从登陆信息中获取登陆者ID
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1)){
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
         List<RegisterVO> registerVOList = new ArrayList<>();
@@ -109,6 +109,10 @@ public class RegisterController extends BaseController {
             register.setPayTime(new Date());
             register.setCompleteTime(new Date());
             register.setPrice(BigDecimal.valueOf(23.88));
+            register.setCountDownTime(register.getCreateTime().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
+            register.setOrderCode("wx568254965");
+
+
             registerVO.setRegister(register);
             registerVO.setDoctor(doctors.size() > 0 ? doctors.get(0) : null);
             registerVO.setAccount(accounts.size() > 0 ? accounts.get(0) : null);
@@ -137,7 +141,7 @@ public class RegisterController extends BaseController {
             //从登陆信息中获取登陆者ID
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1)){
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
         registerService.modifyRegister(registerId, accountId, patientinfoId, departmentId, doctorId, status, new Date(agreedTime), null);

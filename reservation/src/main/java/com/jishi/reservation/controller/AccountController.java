@@ -165,8 +165,8 @@ public class AccountController extends BaseController{
 
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1)){
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+            if(accountId.equals(-1L)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
         accountService.modifyAccountInfo(accountId,null,nick,headPortrait,email,null,null);
@@ -189,7 +189,7 @@ public class AccountController extends BaseController{
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1)){
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
         accountService.modifyAccountPasswd(accountId,phone,oldPasswd,newPasswd);

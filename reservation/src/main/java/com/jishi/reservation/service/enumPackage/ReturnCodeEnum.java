@@ -7,6 +7,7 @@ package com.jishi.reservation.service.enumPackage;
 public enum ReturnCodeEnum {
 
     SUCCESS(200, "成功"),
+    NOT_LOGIN(401, "登录信息过期"),
     FAILED(406, "失败"),
     ERR(500, "系统错误");
 

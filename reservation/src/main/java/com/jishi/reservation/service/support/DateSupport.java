@@ -74,7 +74,7 @@ public class DateSupport {
                 if(day.equals(format)){
                     TimeIntervalVO timeIntervalVO = new TimeIntervalVO();
                     timeIntervalVO.setType(sdf.format(date).substring(6,8).equals("08")? DateEnum.MORNING.getCode():DateEnum.AFTERNOON.getCode());
-                    timeIntervalVO.setDate(date.getTime()/1000);
+                    timeIntervalVO.setDate(date.getTime());
                     timeIntervalVOList.add(timeIntervalVO);
 
                 }
