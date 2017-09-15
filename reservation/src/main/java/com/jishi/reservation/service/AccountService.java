@@ -115,7 +115,9 @@ public class AccountService {
     public boolean checkOriginalPhoneCode(String phone, String prefix,String dynamicCode) throws Exception {
         log.info("账号进行换绑操作: oldPhone:" + phone + " dynamicCode:" + dynamicCode);
         String code = redisOperation.get(prefix + "_" + phone);
+        log.info("原验证码："+code);
         if (!dynamicCode.equals(code)){
+            log.info("验证码验证失败..");
             return  false;
         }else {
             redisOperation.del(prefix + "_" + phone);
@@ -336,14 +338,16 @@ public class AccountService {
     public Long returnIdByToken(HttpServletRequest request) throws Exception {
         String token = request.getHeader(Common.TOKEN);
         log.info("token："+token);
-        Long accountId = redisOperation.usePool().get(token)!=null?
+        if(token == null || "".equals(token) || "null".equals(token)){
+            log.info("token為空...");
+            return -1L;
+
+        }
+        return redisOperation.usePool().get(token)!=null?
                 Long.valueOf(redisOperation.usePool().get(token)) : Long.valueOf(-1);
-        return accountId;
-
-        //    return Long.valueOf(redisOperation.get(request.getHeader(Common.TOKEN)));
 
 
-           }
+    }
 
     public void logout(String token) throws Exception {
         List<String> keys = new ArrayList<String>();
