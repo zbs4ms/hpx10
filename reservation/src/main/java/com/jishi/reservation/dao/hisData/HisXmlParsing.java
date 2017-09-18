@@ -1,4 +1,4 @@
-package com.jishi.reservation.dao.othenData;
+package com.jishi.reservation.dao.hisData;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;

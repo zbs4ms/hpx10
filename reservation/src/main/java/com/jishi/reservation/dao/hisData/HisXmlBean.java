@@ -1,4 +1,4 @@
-package com.jishi.reservation.dao.othenData;
+package com.jishi.reservation.dao.hisData;
 
 import lombok.Data;
 
