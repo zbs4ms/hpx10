@@ -69,9 +69,9 @@ public class AccountService {
      * @throws Exception
      */
     public String sendDynamicCode(String phone,String prefix,String templateCode) throws Exception {
-        log.info("发送手机登陆动态登陆码!");
+        log.info("发送手机动态验证码!"+prefix);
         String code = NewRandomUtil.getRandomNum(6);
-
+        log.info("redis key:"+prefix + "_" + phone+",value:"+code);
         redisOperation.set(prefix + "_" + phone, code);
         redisOperation.expire(prefix + "_" + phone,5 * 60);
         dayuSupport.sendynamicCode(phone, code,templateCode);

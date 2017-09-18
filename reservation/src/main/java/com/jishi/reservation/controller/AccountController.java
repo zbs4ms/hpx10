@@ -15,6 +15,7 @@ import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.enumPackage.SmsEnum;
+import com.jishi.reservation.util.Common;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -133,7 +134,9 @@ public class AccountController extends BaseController{
         Preconditions.checkNotNull(originalPhone,"请传入所需要的参数：originalPhone");
         Preconditions.checkNotNull(newPhone,"请传入所需要的参数：newPhone");
         Preconditions.checkNotNull(dynamicCode,"请传入所需要的参数：dynamicCode");
-
+        if(originalPhone.equals(newPhone)){
+            return  ResponseWrapper().addMessage("换绑的新旧手机号不能相等").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+        }
 
         return accountService.changePhone(originalPhone,changePhoneNew,newPhone,dynamicCode)?ResponseWrapper().addMessage("换绑成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()):
                 ResponseWrapper().addMessage("手机号和验证码不对应,换绑失败").ExeFaild(ReturnCodeEnum.FAILED.getCode()) ;
