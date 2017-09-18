@@ -1,6 +1,7 @@
 package com.jishi.reservation.dao.hisData;
 
 import lombok.Data;
+import org.dom4j.Element;
 
 /**
  * Created by zbs on 2017/9/18.
@@ -8,6 +9,6 @@ import lombok.Data;
 @Data
 public class HisXmlBean {
     String state;
-    String data;
+    Element data;
     HisErrorBean error;
 }

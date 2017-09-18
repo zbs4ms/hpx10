@@ -10,10 +10,25 @@ import org.dom4j.Element;
  */
 public class HisXmlParsing {
 
-    public void parsing(String xmlStr) throws DocumentException {
+    public HisXmlBean parsing(String xmlStr) throws DocumentException {
         Document document = DocumentHelper.parseText(xmlStr);
         //获取根节点
         Element root = document.getRootElement();
-        Element student1Node = root.element("student1");
+        String state = root.element("STATE").asXML();
+        HisXmlBean hisXmlBean = new HisXmlBean();
+        if("F".equals(state)){
+            String errorcode = root.element("ERROR_ERRCODE").asXML();
+            String msg = root.element("ERROR_MSG").asXML();
+            HisErrorBean hisErrorBean = new HisErrorBean();
+            hisErrorBean.setCode(errorcode);
+            hisErrorBean.setMsg(msg);
+            hisXmlBean.setState(state);
+            hisXmlBean.setError(hisErrorBean);
+            return hisXmlBean;
+        }
+        Element data = root.element("DATAPARAM");
+        hisXmlBean.setState(state);
+        hisXmlBean.setData(data);
+        return hisXmlBean;
     }
 }
