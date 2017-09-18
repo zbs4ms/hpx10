@@ -127,15 +127,19 @@ public class AccountController extends BaseController{
     @RequestMapping(value = "changePhone", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject changePhone(
-            @ApiParam(value = "原电话", required = true) @RequestParam(value = "originalPhone", required = true) String originalPhone,
-            @ApiParam(value = "新电话", required = true) @RequestParam(value = "newPhone", required = true) String newPhone,
-            @ApiParam(value = "新电话收到的验证码", required = true) @RequestParam(value = "dynamicCode", required = true) String dynamicCode
+            @ApiParam(value = "原电话") @RequestParam(value = "originalPhone") String originalPhone,
+            @ApiParam(value = "新电话") @RequestParam(value = "newPhone") String newPhone,
+            @ApiParam(value = "新电话收到的验证码") @RequestParam(value = "dynamicCode") String dynamicCode
     ) throws Exception {
         Preconditions.checkNotNull(originalPhone,"请传入所需要的参数：originalPhone");
         Preconditions.checkNotNull(newPhone,"请传入所需要的参数：newPhone");
         Preconditions.checkNotNull(dynamicCode,"请传入所需要的参数：dynamicCode");
         if(originalPhone.equals(newPhone)){
             return  ResponseWrapper().addMessage("换绑的新旧手机号不能相等").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+        }
+        if(accountService.queryAccountByTelephone(newPhone)!=null){
+            return  ResponseWrapper().addMessage("新号码已存在，不能换绑").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+
         }
 
         return accountService.changePhone(originalPhone,changePhoneNew,newPhone,dynamicCode)?ResponseWrapper().addMessage("换绑成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()):

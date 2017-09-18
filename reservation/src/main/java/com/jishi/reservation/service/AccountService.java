@@ -357,4 +357,8 @@ public class AccountService {
     }
 
 
+    public Account queryAccountByTelephone(String phone) {
+
+        return accountMapper.queryByTelephone(phone);
+    }
 }
