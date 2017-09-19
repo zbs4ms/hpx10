@@ -93,8 +93,13 @@ public class AccountService {
         if (!dynamicCode.equals(code))
             throw new Exception("登陆失败!");
         List<Account> account = queryAccount(null, phone, null);
-        if (account.size() == 0)
-            addAccount(phone, phone, Common.DEFAULT_AVATAR, phone, phone, null);
+        Account accountLogin;
+        if (account.size() == 0){
+             accountLogin = addAccount(phone, phone, Common.DEFAULT_AVATAR, phone, phone, null);
+
+        }else {
+            accountLogin = account.get(0);
+        }
 
         //删除已核对的验证码
         redisOperation.del(prefix + "_" + phone);
@@ -103,9 +108,9 @@ public class AccountService {
         String token = login(phone);
         LoginData loginData = new LoginData();
         loginData.setToken(token);
-        loginData.setHeadPortrait(Common.DEFAULT_AVATAR);
-        loginData.setNickname(phone);
-        loginData.setTelephone(phone);
+        loginData.setHeadPortrait(accountLogin.getHeadPortrait());
+        loginData.setNickname(accountLogin.getNick());
+        loginData.setTelephone(accountLogin.getPhone());
 
         return loginData;
 
@@ -185,7 +190,7 @@ public class AccountService {
      * @param email
      * @throws NoSuchAlgorithmException
      */
-    public void addAccount(String account, String passwd, String headPortrait, String nick, String phone, String email) throws Exception {
+    public Account addAccount(String account, String passwd, String headPortrait, String nick, String phone, String email) throws Exception {
         log.info("账号注册 account:" + account + " passwd:" + passwd + " phone:" + phone);
         if (Helpers.isNullOrEmpty(account) || Helpers.isNullOrEmpty(passwd))
             throw new Exception("账号密码不能为空!");
@@ -200,7 +205,9 @@ public class AccountService {
         insertAccount.setPhone(phone);
         insertAccount.setEmail(email);
         insertAccount.setEnable(EnableEnum.EFFECTIVE.getCode());
-        accountMapper.insert(insertAccount);
+        accountMapper.insertReturnId(insertAccount);
+
+        return insertAccount;
     }
 
     /**
