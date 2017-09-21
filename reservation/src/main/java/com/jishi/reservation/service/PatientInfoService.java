@@ -131,7 +131,7 @@ public class PatientInfoService {
             throw new Exception("就诊人ID为空");
         if(queryPatientInfo(patientInfoId,null,null) == null)
             throw new Exception("没有查询到就诊人");
-        if(idCard != null || !"".equals(idCard)){
+        if(idCard != null && !"".equals(idCard)){
             String errorInfo = CheckIdCard.IDCardValidate(idCard);
             if (errorInfo != null && !"".equals(errorInfo)) {
                 log.error(errorInfo);
