@@ -97,15 +97,19 @@ public class PatientInfoController extends BaseController {
     @RequestMapping(value = "queryPatientInfoByToken", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryPatientInfoByToken(HttpServletRequest request,
-            @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                              @ApiParam(value = "用户id", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+                                              @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
             @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
             @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
 
-        Long accountId = accountService.returnIdByToken(request);
-        if(accountId.equals(-1L)){
-            return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+        if(accountId == null){
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1L)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+            }
         }
+
         PageInfo<PatientInfo> patientInfo = patientInfoService.queryPatientInfoPagaInfo(null, accountId, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum,pageSize,orderBy,desc));
         patientInfoService.wrapPregnant(patientInfo.getList());
         return ResponseWrapper().addData(patientInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());

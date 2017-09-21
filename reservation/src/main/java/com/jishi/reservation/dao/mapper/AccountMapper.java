@@ -20,4 +20,6 @@ public interface AccountMapper extends MyMapper<Account>{
             "select * from account where account = #{phone}"
     })
     Account queryByTelephone(@Param("phone") String phone);
+
+
 }

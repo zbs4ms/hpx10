@@ -67,7 +67,7 @@ public class PregnantService {
         log.info("修改孕妇信息  patientId:"+patientId+",name :"+name+",birth:"+birth+",livingAddress:"+livingAddress+
                 ",lastMenses:"+lastMenses+ ",telephone:"+telephone+",husbandName:"+husbandName+",husbandTelephone:"+husbandTelephone);
 
-        List<Pregnant> pregnantList = queryPregnant(patientId, null, null, EnableEnum.EFFECTIVE.getCode());
+        List<Pregnant> pregnantList = queryPregnant(null, patientId, null, EnableEnum.EFFECTIVE.getCode());
         if(Helpers.isNullOrEmpty(patientId) || pregnantList.get(0) == null)
             throw new Exception("孕妇信息为空.");
         Pregnant pregnant = new Pregnant();
@@ -88,12 +88,12 @@ public class PregnantService {
     }
 
 
-    public List<Pregnant> queryPregnant(Long patientId, Long patientinfoId, String name, Integer enable) {
+    public List<Pregnant> queryPregnant(Long id, Long patientinfoId, String name, Integer enable) {
 
-        log.info("查询孕妇 patientId:"+patientId+" patientinfoId:"+patientinfoId+" name:"+name +" enable:"+enable);
+        log.info("查询孕妇 id:"+id+" patientinfoId:"+patientinfoId+" name:"+name +" enable:"+enable);
         Pregnant queryPregnant = new Pregnant();
 
-        queryPregnant.setPatientId(patientId);
+        queryPregnant.setId(id);
         queryPregnant.setPatientId(patientinfoId);
         queryPregnant.setName(name);
         queryPregnant.setEnable(enable);
