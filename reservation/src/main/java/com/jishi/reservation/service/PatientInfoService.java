@@ -131,21 +131,21 @@ public class PatientInfoService {
             throw new Exception("就诊人ID为空");
         if(queryPatientInfo(patientInfoId,null,null) == null)
             throw new Exception("没有查询到就诊人");
-        if(idCard != null){
+        if(idCard != null || !"".equals(idCard)){
             String errorInfo = CheckIdCard.IDCardValidate(idCard);
             if (errorInfo != null && !"".equals(errorInfo)) {
                 log.error(errorInfo);
                 throw new Exception("无效的身份证信息");
             }
         }
+        PatientInfo oldPatient = patientInfoMapper.queryById(patientInfoId);
         PatientInfo modifyPatientInfo = new PatientInfo();
 
         modifyPatientInfo.setId(patientInfoId);
-        //modifyPatientInfo.setAccountId(accountId);
-        modifyPatientInfo.setName(name);
-        modifyPatientInfo.setPhone(phone);
-        modifyPatientInfo.setIdCard(idCard);
-        modifyPatientInfo.setEnable(enable);
+        modifyPatientInfo.setName(name!=null?name:oldPatient.getName());
+        modifyPatientInfo.setPhone(phone !=null?phone:oldPatient.getPhone());
+        modifyPatientInfo.setIdCard(idCard!=null?idCard:oldPatient.getIdCard());
+        modifyPatientInfo.setEnable(enable!=null?enable:oldPatient.getEnable());
         Preconditions.checkState(patientInfoMapper.updateByPrimaryKeySelective(modifyPatientInfo) == 1,"更新失败!");
     }
 

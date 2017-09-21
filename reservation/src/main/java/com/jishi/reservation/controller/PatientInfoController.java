@@ -121,14 +121,11 @@ public class PatientInfoController extends BaseController {
     @ResponseBody
     public JSONObject modifyPatientInfo(HttpServletRequest request,
             @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-            @ApiParam(value = "就诊人ID", required = true) @RequestParam(value = "patientInfoId", required = true) Long patientInfoId,
-            @ApiParam(value = "就诊人名称", required = true) @RequestParam(value = "name", required = true) String name,
-            @ApiParam(value = "病人电话", required = true) @RequestParam(value = "phone", required = true) String phone,
-            @ApiParam(value = "病人身份证", required = true) @RequestParam(value = "idCard", required = true) String idCard) throws Exception {
-        Preconditions.checkNotNull(patientInfoId,"请传入必须的参数：patientInfoId");
-        Preconditions.checkNotNull(name,"请传入必须的参数：name");
-        Preconditions.checkNotNull(idCard,"请传入必须的参数：idCard");
-        Preconditions.checkNotNull(phone,"请传入必须的参数：phone");
+            @ApiParam(value = "就诊人ID") @RequestParam(value = "patientInfoId", required = true) Long patientInfoId,
+            @ApiParam(value = "就诊人名称") @RequestParam(value = "name", required = false) String name,
+            @ApiParam(value = "病人电话") @RequestParam(value = "phone", required = false) String phone,
+            @ApiParam(value = "病人身份证") @RequestParam(value = "idCard", required = false) String idCard) throws Exception {
+
 
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
