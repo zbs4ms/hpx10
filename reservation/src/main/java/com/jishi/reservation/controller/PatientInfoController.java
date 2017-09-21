@@ -122,9 +122,9 @@ public class PatientInfoController extends BaseController {
     public JSONObject modifyPatientInfo(HttpServletRequest request,
             @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "就诊人ID") @RequestParam(value = "patientInfoId", required = true) Long patientInfoId,
-            @ApiParam(value = "就诊人名称") @RequestParam(value = "name", required = false) String name,
-            @ApiParam(value = "病人电话") @RequestParam(value = "phone", required = false) String phone,
-            @ApiParam(value = "病人身份证") @RequestParam(value = "idCard", required = false) String idCard) throws Exception {
+            @ApiParam(value = "就诊人名称",required = false) @RequestParam(value = "name", required = false) String name,
+            @ApiParam(value = "病人电话",required = false) @RequestParam(value = "phone", required = false) String phone,
+            @ApiParam(value = "病人身份证",required = false) @RequestParam(value = "idCard", required = false) String idCard) throws Exception {
 
 
         if (accountId == null) {
