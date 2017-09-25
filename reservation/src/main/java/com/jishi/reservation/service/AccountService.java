@@ -111,6 +111,7 @@ public class AccountService {
         loginData.setHeadPortrait(accountLogin.getHeadPortrait());
         loginData.setNickname(accountLogin.getNick());
         loginData.setTelephone(accountLogin.getPhone());
+        loginData.setPushId(accountLogin.getPushId());
 
         return loginData;
 
@@ -204,6 +205,7 @@ public class AccountService {
         insertAccount.setNick(nick);
         insertAccount.setPhone(phone);
         insertAccount.setEmail(email);
+        insertAccount.setPushId("hpx10_"+NewRandomUtil.getRandomNum(6));
         insertAccount.setEnable(EnableEnum.EFFECTIVE.getCode());
         accountMapper.insertReturnId(insertAccount);
 
