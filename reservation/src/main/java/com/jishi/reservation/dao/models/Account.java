@@ -14,6 +14,8 @@ public class Account {
     @Id
     @ApiModelProperty("账号ID")
     private Long id;
+    @ApiModelProperty("推送ID")
+    private String pushId ;
     @ApiModelProperty("账号")
     private String account;
     @ApiModelProperty("账号密码")
