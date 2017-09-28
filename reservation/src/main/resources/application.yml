@@ -37,4 +37,7 @@ redis:
     port: 6379
 
 constant:
-    dynamic_code_key: dynamic_code_key
+    dynamic_code_key:
+        login_or_register: login_or_register
+        change_phone_origin: change_phone_origin
+        change_phone_new: change_phone_new

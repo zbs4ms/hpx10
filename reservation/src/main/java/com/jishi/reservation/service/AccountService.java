@@ -370,4 +370,9 @@ public class AccountService {
 
         return accountMapper.queryByTelephone(phone);
     }
+
+    public Account queryAccountById(Long accountId) {
+
+        return accountMapper.queryById(accountId);
+    }
 }

@@ -12,6 +12,8 @@ import com.jishi.reservation.service.*;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.PayEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.support.JpushSupport;
+import com.jishi.reservation.util.Common;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -47,6 +49,9 @@ public class RegisterController extends BaseController {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    JpushSupport jpushSupport;
+
     @ApiOperation(value = "增加预约信息")
     @RequestMapping(value = "addRegister", method = RequestMethod.PUT)
     @ResponseBody
@@ -75,7 +80,10 @@ public class RegisterController extends BaseController {
         }
 
 
+
         RegisterCompleteVO completeVO = registerService.addRegister(accountId, patientinfoId, departmentId, doctorId, new Date(agreedTime),timeInterval);
+
+        jpushSupport.sendPush(accountService.queryAccountById(accountId).getPushId(), Common.REGISTER_SUCCESS_MGS);
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 

@@ -22,4 +22,8 @@ public interface AccountMapper extends MyMapper<Account>{
     Account queryByTelephone(@Param("phone") String phone);
 
 
+    @Select({
+            "select * from account where id = #{accountId}"
+    })
+    Account queryById(@Param("accountId") Long accountId);
 }
