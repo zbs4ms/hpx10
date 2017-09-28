@@ -45,8 +45,8 @@ public class HisOutpatient {
         return service.outPatient(reData);
     }
 
-    public static void main(String[] args) throws Exception {
+/*    public static void main(String[] args) throws Exception {
         HisOutpatient outpatient = new HisOutpatient();
         System.out.print(outpatient.selectDepartments("","",""));
-    }
+    }*/
 }
