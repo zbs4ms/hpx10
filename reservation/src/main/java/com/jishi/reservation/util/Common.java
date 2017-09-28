@@ -3,7 +3,12 @@ package com.jishi.reservation.util;
 /**
  * Created by zbs on 2017/7/25.
  */
+
 public class Common {
+
+    public final static String HIS_TOKEN="359894CB16E4B68531A11083F2046B0E";
+    public final static String HIS_KEYS = "929A715701492111";
+
 
     public final static String TOKEN_HEADER = "token_";
     public final static String TOKEN = "token";
