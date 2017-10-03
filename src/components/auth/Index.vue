@@ -46,27 +46,6 @@ export default {
   methods: {
     getList (params) {
       this.tableLoading = true
-//      return getListApi(Object.assign({}, {
-//        name: this.searchKeyword,
-//        enable: '',
-//        pageNum: this.currentPage,
-//        pageSize: this.pageSize,
-//        orderBy: 'order_number',
-//        desc: true
-//      }, params || {})).then((data) => {
-//        let content = data.content || {}
-//        this.tableData = (content.list || []).map((item) => ({
-//          no: item.orderNumber,
-//          id: item.id,
-//          name: item.name,
-//          cover: item.bannerUrl,
-//          link: item.jumpUrl,
-//          visible: !!item.display
-//        }))
-//        this.total = content.total || 0
-//      }).finally(() => {
-//        this.tableLoading = false
-//      })
     },
     // 编辑或新增
     openEditDialog (rowData, isAdd) {

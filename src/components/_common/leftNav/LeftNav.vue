@@ -17,6 +17,9 @@
 //      this.userName = accountInfo.userName
     },
     methods: {
+      handleSelect (index) {
+        this.$refs.elMenu.openedMenus = [] // 关闭打开的子菜单
+      }
     }
   }
 </script>
@@ -25,8 +28,10 @@
   <div id="left-nav">
     <el-menu
       theme="dark"
+      ref="elMenu"
       :unique-opened="true"
       :default-active="$route.path.match(/\/\w+((?=\/)|$)/)[0]"
+      @select="handleSelect"
       router>
       <el-menu-item
         class="menu-index"

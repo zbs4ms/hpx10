@@ -7,7 +7,6 @@ import placeholderImg from '@/assets/images/placeholder.png'
 
 import {
   getListApi,
-//  deleteBannerApi,
   deleteBannerBatchApi,
   addBanenrApi,
   modifyBannerApi,
@@ -266,11 +265,6 @@ export default {
         label="排序"
         min-width="80">
       </el-table-column>
-      <!--<el-table-column-->
-        <!--prop="id"-->
-        <!--label="ID号"-->
-        <!--min-width="120">-->
-      <!--</el-table-column>-->
       <el-table-column
         prop="name"
         label="名称"
