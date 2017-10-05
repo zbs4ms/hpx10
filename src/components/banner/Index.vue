@@ -5,6 +5,8 @@
  */
 import placeholderImg from '@/assets/images/placeholder.png'
 
+import SearchTable from '@/components/_common/searchTable/SearchTable'
+
 import {
   getListApi,
   deleteBannerBatchApi,
@@ -22,23 +24,133 @@ export default {
   name: 'Banner',
   components: {
     EditDialog,
-    ImgZoom
+    ImgZoom,
+    SearchTable
   },
   data () {
+    this.tableAttrs = {
+      'props': {
+        'tooltip-effect': 'dark',
+        'style': 'width: 100%'
+      },
+      'on': {
+        'selection-change': this.handleSelectionChange.bind(this)
+      }
+    }
+    this.columnData = [{
+      attrs: {
+        'type': 'selection',
+        'width': '90'
+      }
+    }, {
+      attrs: {
+        'prop': 'no',
+        'label': '排序',
+        'min-width': '80'
+      }
+    }, {
+      attrs: {
+        'prop': 'name',
+        'label': '名称',
+        'min-width': '140',
+        'show-overflow-tooltip': true
+      }
+    }, {
+      attrs: {
+        'prop': 'cover',
+        'min-width': '120',
+        'label': '封面图'
+      },
+      scopedSlots: {
+        default: (scope) => {
+          return (
+            <img-zoom
+              src={scope.row.cover}
+              style="width: 80px;height: 60px;">
+            </img-zoom>
+          )
+        }
+      }
+    }, {
+      attrs: {
+        'prop': 'link',
+        'label': '跳转链接',
+        'min-width': '160',
+        'show-overflow-tooltip': true
+      },
+      scopedSlots: {
+        default: (scope) => {
+          return (
+            <a href={scope.row.link} target="_blank">{ scope.row.link }</a>
+          )
+        }
+      }
+    }, {
+      attrs: {
+        'min-width': '200',
+        'label': '操作'
+      },
+      scopedSlots: {
+        default: (scope) => {
+          return (
+            <div class="flex--center operations">
+              <span
+                class="operate-item el-icon-edit"
+                onClick={() => this.openEditDialog(scope.row)}>
+              </span>
+              <span
+                class="operate-item el-icon-delete"
+                onClick={() => this.delRow(scope.row)}>
+              </span>
+              <span class="operate-item visible-switch flex--vcenter">
+                <el-switch
+                  {...{props: { 'on-text': '', 'off-text': '' }}}
+                  value={scope.row.visible}
+                  onInput={(visible) => (scope.row.visible = visible)}
+                  onChange={() => this.switchVisible(scope.row)}>
+                </el-switch>
+                { scope.row.visible ? '显示' : '隐藏' }
+              </span>
+            </div>
+          )
+        }
+      }
+    }]
+    this.listApi = {
+      requestFn: getListApi,
+      responseFn (data) {
+        let content = data.content || {}
+        this.tableData = (content.list || []).map((item) => ({
+          no: item.orderNumber,
+          id: item.id,
+          name: item.name,
+          cover: item.bannerUrl,
+          link: item.jumpUrl,
+          visible: !!item.display
+        }))
+        this.total = content.total || 0
+      }
+    }
     return {
       searchKeyword: '',
       currentPage: 1,
       pageSize: 10,
       total: 0,
-      tableLoading: false,
-      tableData: [],
       multipleSelection: [],
       editDialogVisible: false,
-      editData: null
+      editData: null,
+      apiKeysMap: {
+        pageSize: {
+          value: 2,
+          innerKey: 'pageSize' // searchTable组件内部映射的key
+        },
+        name: {
+          value: undefined
+        }
+      }
     }
   },
   created () {
-    this.init()
     this.placeholderImg = placeholderImg
   },
   watch: {
@@ -47,19 +159,9 @@ export default {
         this.editData = null
         adding = false
       }
-    },
-    currentPage (newPageNum) {
-      this.getList({
-        pageNum: newPageNum
-      })
     }
   },
   methods: {
-    init () {
-      this.getList({
-        pageNum: 1
-      })
-    },
     // 修改展示数量
     changeDisplayNum () {
       this.$prompt('新展示个数', '修改展示数量', {
@@ -83,44 +185,21 @@ export default {
       }).then(({ value }) => {
         this.$message({
           type: 'success',
-          message: '你的邮箱是: ' + value
+          message: '修改成功'
         })
-      })
-    },
-    // 获取banner列表
-    getList (params) {
-      this.tableLoading = true
-      return getListApi(Object.assign({}, {
-        name: this.searchKeyword,
-        enable: '',
-        pageNum: this.currentPage,
-        pageSize: this.pageSize,
-        orderBy: 'order_number',
-        desc: true
-      }, params || {})).then((data) => {
-        let content = data.content || {}
-        this.tableData = (content.list || []).map((item) => ({
-          no: item.orderNumber,
-          id: item.id,
-          name: item.name,
-          cover: item.bannerUrl,
-          link: item.jumpUrl,
-          visible: !!item.display
-        }))
-        this.total = content.total || 0
-      }).finally(() => {
-        this.tableLoading = false
       })
     },
     // 搜索banner
     handleSearch (e) {
-      this.getList({
-        name: this.searchKeyword,
-        pageNum: 1
+      this.apiKeysMap = Object.assign({}, this.apiKeysMap, {
+        name: {
+          value: this.searchKeyword
+        }
       })
     },
     // 多选
     handleSelectionChange (val) {
+      console.log('handleSelectionChange')
       this.multipleSelection = val
     },
     // 编辑或新增
@@ -145,7 +224,7 @@ export default {
                 type: 'success',
                 message: '删除成功'
               })
-              this.getList()
+              this.$refs.searchTable.getList()
             })
           } else {
             done()
@@ -162,7 +241,8 @@ export default {
           type: 'success',
           message: '删除成功'
         })
-        this.getList()
+        this.editDialogVisible = false
+        this.$refs.searchTable.getList()
       })
     },
     handleEditCancel () {
@@ -186,6 +266,7 @@ export default {
           type: 'success',
           message: adding ? '添加成功' : '修改成功'
         })
+        this.editDialogVisible = false
         this.init()
         respondCb(true)
       }).catch(() => {
@@ -201,7 +282,7 @@ export default {
           message: rowData.visible ? '显示成功' : '隐藏成功'
         })
       }).finally(() => {
-        this.getList()
+        this.$refs.searchTable.getList()
       })
     }
   }
@@ -223,115 +304,45 @@ export default {
         </span>
       </div>
     </div>
-    <div class="table-tools flex--vcenter">
-      <div class="search-wrap">
-        <span class="search-label">搜索关键字：</span>
-        <el-input
-          class="inline-block search-input"
-          placeholder="请在此输入名称／ID"
-          icon="search"
-          v-model="searchKeyword"
-          @keyup.enter.native="handleSearch"
-          :on-icon-click="handleSearch">
-        </el-input>
+    <search-table
+      ref="searchTable"
+      :table-attrs="tableAttrs"
+      :column-data="columnData"
+      :list-api="listApi"
+      :api-keys-map="apiKeysMap">
+      <div class="table-tools flex--vcenter" slot="table-tools">
+        <div class="search-wrap">
+          <span class="search-label">搜索关键字：</span>
+          <el-input
+            class="inline-block search-input"
+            placeholder="请在此输入名称／ID"
+            icon="search"
+            v-model="searchKeyword"
+            @keyup.enter.native="handleSearch"
+            :on-icon-click="handleSearch">
+          </el-input>
+        </div>
+        <div class="btn-wrap">
+          <el-button
+            class="btn--add"
+            type="primary"
+            @click="openEditDialog(null, true)">
+            新增 <i class="el-icon-plus"></i>
+          </el-button>
+          <el-button
+            :disabled="!multipleSelection.length"
+            @click="batchRemove">
+            批量删除
+          </el-button>
+        </div>
       </div>
-      <div class="btn-wrap">
-        <el-button
-          class="btn--add"
-          type="primary"
-          @click="openEditDialog(null, true)">
-          新增 <i class="el-icon-plus"></i>
-        </el-button>
-        <el-button
-          :disabled="!multipleSelection.length"
-          @click="batchRemove">
-          批量删除
-        </el-button>
-      </div>
-    </div>
-    <el-table
-      v-loading="tableLoading"
-      ref="multipleTable"
-      :data="tableData"
-      tooltip-effect="dark"
-      style="width: 100%"
-      @selection-change="handleSelectionChange">
-      <el-table-column
-        type="selection"
-        width="90">
-      </el-table-column>
-      <el-table-column
-        prop="no"
-        label="排序"
-        min-width="80">
-      </el-table-column>
-      <el-table-column
-        prop="name"
-        label="名称"
-        min-width="140"
-        show-overflow-tooltip>
-      </el-table-column>
-      <el-table-column
-        prop="cover"
-        min-width="120"
-        label="封面图">
-        <template scope="scope">
-          <img-zoom
-            :src="scope.row.cover"
-            style="width: 80px;height: 60px;">
-          </img-zoom>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="link"
-        label="跳转链接"
-        min-width="160"
-        show-overflow-tooltip>
-        <template scope="scope">
-          <a :href="scope.row.link" target="_blank">{{ scope.row.link }}</a>
-        </template>
-      </el-table-column>
-      <el-table-column
-        min-width="200"
-        label="操作">
-        <template scope="scope">
-          <div class="flex--center operations">
-            <span
-              class="operate-item el-icon-edit"
-              @click="openEditDialog(scope.row)">
-            </span>
-            <span
-              class="operate-item el-icon-delete"
-              @click="delRow(scope.row)">
-            </span>
-            <span class="operate-item visible-switch flex--vcenter">
-              <el-switch
-                v-model="scope.row.visible"
-                @change="switchVisible(scope.row)"
-                on-text=""
-                off-text="">
-              </el-switch>
-              {{ scope.row.visible ? '显示' : '隐藏' }}
-            </span>
-          </div>
-        </template>
-      </el-table-column>
-    </el-table>
+    </search-table>
     <edit-dialog
       v-model="editDialogVisible"
       :data="editData"
       @cancel="handleEditCancel"
       @submit="handleEditSubmit">
     </edit-dialog>
-    <div class="pagination-wrap">
-      <el-pagination
-        v-if="total > pageSize"
-        :current-page.sync="currentPage"
-        :page-size="pageSize"
-        layout="prev, pager, next, jumper"
-        :total="total">
-      </el-pagination>
-    </div>
   </div>
 </template>
 
