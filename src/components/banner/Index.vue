@@ -141,7 +141,7 @@ export default {
       editData: null,
       apiKeysMap: {
         pageSize: {
-          value: 2,
+          value: 10,
           innerKey: 'pageSize' // searchTable组件内部映射的key
         },
         name: {
@@ -267,7 +267,7 @@ export default {
           message: adding ? '添加成功' : '修改成功'
         })
         this.editDialogVisible = false
-        this.init()
+        this.$refs.searchTable.init()
         respondCb(true)
       }).catch(() => {
         respondCb()

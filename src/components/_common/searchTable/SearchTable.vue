@@ -22,14 +22,6 @@
       columnData: { // el-table-column组件的配置参数
         type: Array,
         default: () => []
-      },
-      pageCfg: {
-        type: Object,
-        default: () => {
-          return {
-            pageSize: 2
-          }
-        }
       }
     },
     created () {
@@ -126,7 +118,7 @@
             { this.$slots.default }
           </el-table>
           {
-            this.total > this.pageCfg.pageSize && (
+            this.total > this.pageSize && (
             <div
               class="pagination-wrap">
               <el-pagination
