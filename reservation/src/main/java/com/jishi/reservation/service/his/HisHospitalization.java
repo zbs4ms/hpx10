@@ -1,7 +1,6 @@
 package com.jishi.reservation.service.his;
 
 import com.jishi.reservation.mypackage.HospitalizationResponseHospitalizationResult;
-import com.jishi.reservation.mypackage.OutPatientResponseOutPatientResult;
 import com.jishi.reservation.mypackage.ZL_InformationServiceLocator;
 import com.jishi.reservation.mypackage.ZL_InformationServiceSoap_PortType;
 import com.jishi.reservation.service.his.bean.*;
@@ -152,6 +151,42 @@ public class HisHospitalization {
         return null;
     }
 
+    /**
+     * 进行预交款缴款
+     * @param brid 病人ID
+     * @param zycs 住院次数
+     * @param jsklb 结算卡类别，固定传入第三方名称
+     * @param jsje 结算金额
+     * @param jylsh 交易流水号
+     * @param zfbzh 支付帐号
+     * @param zfbxm 支付姓名
+     * @return
+     * @throws Exception
+     */
+    public String  pay(String brid,String zycs,String jsklb,String jsje,String jylsh,String zfbzh,String zfbxm) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<BRID>").append(brid).append("</BRID>");
+        sb.append("<ZYCS>").append(zycs).append("</ZYCS>");
+        sb.append("<SFMZ></SFMZ>");
+        sb.append("<JSLIST><JS>");
+        sb.append("<JSKLB>").append(jsklb).append("</JSKLB>");
+        sb.append("<JSKH></JSKH><JSFS></JSFS>");
+        sb.append("<JSJE>").append(jsje).append("</JSJE>");
+        sb.append("<JYLSH>").append(jylsh).append("</JYLSH>");
+        sb.append("<EXPENDLIST><EXPEND>");
+        sb.append("<JYMC>").append("交易信息").append("</JYMC>");
+        sb.append("<JYLR>").append(zfbzh+"|"+zfbxm).append("</JYLR>");
+        sb.append("</EXPEND></EXPENDLIST>");
+        sb.append("</JS></JSLIST>");
+        String reData = HisTool.toXMLString("PrePayment.Pay.Modify", sb.toString());
+        HospitalizationResponseHospitalizationResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            String xml = HisTool.getHisDataparam(me);
+            return HisTool.getXmlAttribute(xml,"YJDH");
+        }
+        return null;
+    }
+
     public static void main(String[] args) throws Exception {
         HisHospitalization hisHospitalization = new HisHospitalization();
 //        String l1 = hisHospitalization.selectDepositBalance("264", "1");
@@ -177,8 +212,10 @@ public class HisHospitalization {
 //        }
 //
 //
-        DepositBalanceHistoryDetail depositBalanceHistoryDetail = hisHospitalization.selectHistoryDetail("3987", "1","100","1");
-        System.out.println(depositBalanceHistoryDetail);
+     //  DepositBalanceHistoryDetail depositBalanceHistoryDetail = hisHospitalization.selectHistoryDetail("3987", "1","100","1");
+      //  System.out.println(depositBalanceHistoryDetail);
+       hisHospitalization.pay("3987","3","支付宝","1000","111111","1234567","杨杨");
+        hisHospitalization.selectDepositBalanceLog("3987");
     }
 
     private HospitalizationResponseHospitalizationResult execute(String reData) throws RemoteException, ServiceException {
