@@ -1,6 +1,5 @@
 package com.jishi.reservation.service.his;
 
-import com.jishi.reservation.service.his.bean.PatientsList;
 import com.jishi.reservation.util.Codec;
 import com.jishi.reservation.util.Common;
 import com.thoughtworks.xstream.XStream;
@@ -16,24 +15,50 @@ import org.dom4j.Element;
 @Log4j
 public class HisTool {
 
-    public static Object toBean(Class type,String xml){
+    public static Object toBean(Class type, String xml) {
+        if(xml == null || "".equals(xml))
+            return null;
         XStream xstream = new XStream();
         xstream.processAnnotations(type);//显示声明使用注解
         xstream.autodetectAnnotations(true);
         return xstream.fromXML(xml);
     }
 
-    public static String toString(MessageElement messageElement) throws Exception {
-        Document document = DocumentHelper.parseText(messageElement.getAsString());
-        Element root = document.getRootElement();
-        String state = root.elementTextTrim("STATE");
-        String req = null;
-        if ("T".equals(state)) {
-            req = Codec.Decrypt(root.elementTextTrim("DATAPARAM"), Common.HIS_KEYS);
+    /**
+     * 解析his系统返回的xml,提取其中的data param
+     * @param messageElement
+     * @return
+     * @throws Exception
+     */
+    public static String getHisDataparam(MessageElement messageElement) throws Exception {
+        String xml = messageElement.getAsString();
+        log.info("解密前的完整xml为 : "+xml);
+        String state = getXmlAttribute(xml,"STATE");
+        if(!"T".equals(state)){
+            log.error("his系统返回失败信息——>"+xml);
+            return null;
         }
-        log.info(req);
+        String req =  "<ROOT>"+Codec.Decrypt(getXmlAttribute(xml,"DATAPARAM"), Common.HIS_KEYS)+"</ROOT>";
+        log.info("获取到解密后的数据部分为(<ROOT>节点为之后添加)  :  "+req);
         return req;
     }
+
+    /**
+     * 获取xml某个节点的属性
+     *
+     * @param xml
+     * @param attributeName
+     * @return
+     * @throws Exception
+     */
+    public static String getXmlAttribute(String xml, String attributeName) throws Exception {
+        //如果不是以<ROOT>开头的就先加上<ROOT>节点
+        xml = !xml.startsWith("<ROOT") ? "<ROOT>" + xml + "</ROOT>" : xml;
+        Document document = DocumentHelper.parseText(xml);
+        Element root = document.getRootElement();
+        return root.elementTextTrim(attributeName);
+    }
+
 
     public static String toXMLString(String serviceName, String data) throws Exception {
         StringBuffer sb = new StringBuffer();

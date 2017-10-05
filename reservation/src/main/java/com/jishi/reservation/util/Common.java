@@ -5,6 +5,10 @@ package com.jishi.reservation.util;
  */
 public class Common {
 
+    public final static String APPID_WECHAT = "";
+    public final static String MCHID_WECHAT = "";
+    public final static String APP_NAME_WECHAT = "";
+
     public final static String HIS_TOKEN="359894CB16E4B68531A11083F2046B0E";
     public final static String HIS_KEYS = "929A715701492111";
     public final static String TOKEN_HEADER = "token_";

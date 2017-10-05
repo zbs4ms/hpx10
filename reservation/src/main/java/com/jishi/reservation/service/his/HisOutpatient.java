@@ -32,7 +32,7 @@ public class HisOutpatient {
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            String xml = HisTool.toString(me);
+            String xml = HisTool.getHisDataparam(me);
             return (DepartmentList)HisTool.toBean(DepartmentList.class,xml);
         }
         return null;

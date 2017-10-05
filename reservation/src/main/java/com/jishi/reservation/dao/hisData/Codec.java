@@ -8,9 +8,11 @@ import java.util.Base64;
 /**
  * Created by zbs on 2017/9/18.
  */
-public class Encrypt {
+public class Codec {
 
-    public static String Encrypt(String sSrc, String sKey) throws Exception {
+    static final String sKey = "929A715701492111";
+
+    public static String Encrypt(String sSrc) throws Exception {
         if (sKey == null) {
             System.out.print("Key为空null");
             return null;
@@ -35,7 +37,7 @@ public class Encrypt {
     /// <param name="sSrc">密文</param>
     /// <param name="sKey">16位密钥</param>
     /// <returns></returns>
-    public static String Decrypt(String sSrc, String sKey) throws Exception {
+    public static String Decrypt(String sSrc) throws Exception {
         try {
             // 判断Key是否正确
             if (sKey == null) {

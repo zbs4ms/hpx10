@@ -34,7 +34,7 @@ public class HisUserManager {
         UserManagerResponseUserManagerResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            String xml = HisTool.toString(me);
+            String xml = HisTool.getHisDataparam(me);
             return (PatientsList)HisTool.toBean(PatientsList.class,xml);
         }
         return null;
@@ -61,7 +61,7 @@ public class HisUserManager {
         UserManagerResponseUserManagerResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            String xml = HisTool.toString(me);
+            String xml = HisTool.getHisDataparam(me);
             return (PatientsList)HisTool.toBean(PatientsList.class,xml);
         }
         return null;
