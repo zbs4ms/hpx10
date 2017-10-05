@@ -5,6 +5,8 @@ package com.jishi.reservation.util;
  */
 public class Common {
 
+    public final static String HIS_TOKEN="359894CB16E4B68531A11083F2046B0E";
+    public final static String HIS_KEYS = "929A715701492111";
     public final static String TOKEN_HEADER = "token_";
     public final static String TOKEN = "token";
 
@@ -38,4 +40,24 @@ public class Common {
 
     public final static String DEFAULT_AVATAR = "http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/user/icon.png";
     public final static String ADMIN_TOKEN = "admin_token";
+
+
+
+    /**  中联相关 */
+    public final static String BASE_URL = "http://192.168.100.13/ExternalServices/ZL_InformationService.asmx/";
+    //测试连接的服务
+    public final static String TEST_SERVICE = "Basic.MCTest.Query";
+
+    /** 极光相关 */
+    public final static String JPush_Appkey  = "0e3fcd7d467475b43a56f2a0";
+    public final static String JPush_MASTER_SECRET = "52977f5e4b85a5b2e0e257ae";
+
+
+    public final static String REGISTER_SUCCESS_MGS = "您已成功预约医生,记得按时就诊哦~";
+    public final static String REGISTER_TOMORROW_MSG = "明天预约了医生看诊,记得按时就诊哦~";
+    public final static String REGISTER_TODAY_MSG = "今天预约了医生看诊,记得按时就诊哦~";
+    /**
+     * 一天的毫秒值
+     */
+    public final static long DAY_MS = 24*60*60*1000L;
 }

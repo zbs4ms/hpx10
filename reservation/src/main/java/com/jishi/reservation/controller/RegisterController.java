@@ -12,6 +12,8 @@ import com.jishi.reservation.service.*;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.PayEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.support.JpushSupport;
+import com.jishi.reservation.util.Common;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,11 +49,15 @@ public class RegisterController extends BaseController {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    JpushSupport jpushSupport;
+
     @ApiOperation(value = "增加预约信息")
     @RequestMapping(value = "addRegister", method = RequestMethod.PUT)
     @ResponseBody
     public JSONObject addRegister(HttpServletRequest request,
-            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+                                  HttpServletResponse response,
+                                  @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "病人ID", required = true) @RequestParam(value = "patientinfoId", required = true) Long patientinfoId,
             @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
             @ApiParam(value = "预约的医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId,
@@ -65,13 +72,18 @@ public class RegisterController extends BaseController {
         Preconditions.checkNotNull(agreedTime,"请传入必须的参数：agreedTime");
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1)){
+            if(accountId.equals(-1L)){
+                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
+
                 return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
 
 
+
         RegisterCompleteVO completeVO = registerService.addRegister(accountId, patientinfoId, departmentId, doctorId, new Date(agreedTime),timeInterval);
+
+        jpushSupport.sendPush(accountService.queryAccountById(accountId).getPushId(), Common.REGISTER_SUCCESS_MGS);
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
@@ -79,7 +91,8 @@ public class RegisterController extends BaseController {
     @RequestMapping(value = "queryRegister", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryRegister(HttpServletRequest request,
-            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+                                    HttpServletResponse response,
+                                    @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "预约ID", required = false) @RequestParam(value = "registerId", required = false) Long registerId,
             @ApiParam(value = "状态", required = false) @RequestParam(value = "status", required = false) Integer status,
             @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
@@ -89,7 +102,9 @@ public class RegisterController extends BaseController {
         if (accountId == null) {
             //从登陆信息中获取登陆者ID
             accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1)){
+            if(accountId.equals(-1L)){
+                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
+
                 return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
@@ -128,7 +143,9 @@ public class RegisterController extends BaseController {
     @RequestMapping(value = "modifyRegister", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject modifyRegister(HttpServletRequest request,
-            @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId,
+                                     HttpServletResponse response,
+
+                                     @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId,
             @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "病人ID", required = false) @RequestParam(value = "patientinfoId", required = false) Long patientinfoId,
             @ApiParam(value = "状态", required = false) @RequestParam(value = "status", required = false) Integer status,
@@ -140,7 +157,8 @@ public class RegisterController extends BaseController {
         if (accountId == null) {
             //从登陆信息中获取登陆者ID
             accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1)){
+            if(accountId.equals(-1L)){
+                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
                 return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }

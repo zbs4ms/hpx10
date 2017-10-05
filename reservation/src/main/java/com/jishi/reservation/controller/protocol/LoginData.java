@@ -14,4 +14,5 @@ public class LoginData {
     private String nickname;
     private String headPortrait;
     private String telephone;
+    private String pushId;
 }
