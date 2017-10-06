@@ -138,7 +138,6 @@ export default {
     }
   },
   created () {
-//    this.init()
     this.placeholderImg = placeholderImg
   },
   watch: {
