@@ -146,7 +146,8 @@ export default {
         },
         name: {
           value: undefined
-        }
+        },
+        currentPage: 'pageNum'
       }
     }
   },

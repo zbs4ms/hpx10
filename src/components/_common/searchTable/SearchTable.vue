@@ -29,7 +29,6 @@
     },
     data () {
       return {
-        searchKeyword: '',
         loading: false,
         currentPage: 1,
         pageSize: 10,
@@ -54,7 +53,6 @@
     computed: {
       apiKeys () {
         return Object.assign({}, {
-          searchKeyword: 'name',
           currentPage: 'pageNum',
           pageSize: 'pageSize'
         }, this.apiKeysMap)
@@ -125,7 +123,7 @@
                 style="text-align: right; margin-top: 30px"
                 current-page={this.currentPage}
                 {...{on: { 'current-change': this.handlePageChange }}}
-                page-size={this.pageCfg.pageSize}
+                page-size={this.pageSize}
                 layout="prev, pager, next, jumper"
                 total={this.total}>
               </el-pagination>
