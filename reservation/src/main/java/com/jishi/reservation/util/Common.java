@@ -64,4 +64,10 @@ public class Common {
      * 一天的毫秒值
      */
     public final static long DAY_MS = 24*60*60*1000L;
+    //12345678952
+    public final static String DEFAULT_PASSWORD = "def677132701779c74c9bd95dae4de57";
+    /**
+     * 每个账号最大的绑定个数 5
+     */
+    public final static int MAX_BINDING_NUM = 5;
 }

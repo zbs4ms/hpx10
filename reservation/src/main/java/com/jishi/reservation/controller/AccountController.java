@@ -57,7 +57,7 @@ public class AccountController extends BaseController{
             @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone,
             @ApiParam(value = "动态码", required = true) @RequestParam(value = "dynamicCode", required = true) String dynamicCode) throws Exception {
         Preconditions.checkNotNull(phone,"请传入所需要的参数：phone");
-        Preconditions.checkNotNull(phone,"请传入所需要的参数：dynamicCode");
+        Preconditions.checkNotNull(dynamicCode,"请传入所需要的参数：dynamicCode");
 
 
         LoginData loginData = accountService.loginOrRegisterThroughPhone(phone,loginOrRegister ,dynamicCode);
