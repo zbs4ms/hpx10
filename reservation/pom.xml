@@ -22,6 +22,16 @@
     </repositories>
     <dependencies>
         <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <version>3.1.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <version>3.1.8</version>
+        </dependency>
+        <dependency>
        <groupId>org.apache.axis</groupId>
             <artifactId>axis</artifactId>
             <version>1.4</version>
@@ -66,15 +76,6 @@
             <version>1.6.1</version>
         </dependency>
 
-        <!--极光推送-->
-        <dependency>
-            <groupId>cn.jpush.api</groupId>
-            <artifactId>jpush-client</artifactId>
-            <version>3.3.2</version>
-        </dependency>
-
-
-
         <dependency>
             <groupId>cn.jpush.api</groupId>
             <artifactId>jiguang-common</artifactId>
@@ -107,6 +108,12 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.jpush.api</groupId>
+            <artifactId>jpush-client</artifactId>
+            <version>3.3.2</version>
         </dependency>
 
     </dependencies>

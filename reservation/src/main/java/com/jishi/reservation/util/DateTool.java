@@ -124,6 +124,13 @@ public class DateTool {
         return simpleDateFormat.parse(dateStr);
     }
 
+    public static Date format(String dateStr,String format) throws Exception {
+        if(dateStr == null || "".equals(dateStr) || format == null || "".equals(format))
+            return null;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+        return simpleDateFormat.parse(dateStr);
+    }
+
     public class DateBean {
 
         public DateBean() {
