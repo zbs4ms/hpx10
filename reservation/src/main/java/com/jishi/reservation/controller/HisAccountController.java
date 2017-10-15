@@ -54,5 +54,22 @@ public class HisAccountController extends BaseController{
     }
 
 
+    @ApiOperation(value = "通过手机号来查询用户就诊信息")
+    @RequestMapping(value = "query", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject query(
+            @ApiParam(value = "账号") @RequestParam(value = "account") String account,
+            @ApiParam(value = "密码") @RequestParam(value = "password") String password
+    ) throws Exception {
+
+        Preconditions.checkNotNull(account,"请传入所需要的参数：account");
+        //Preconditions.checkNotNull(password,"请传入所需要的参数：password");
+
+
+        LoginData loginData = accountService.queryInfo(account);
+        return ResponseWrapper().addData(loginData).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+
 
 }

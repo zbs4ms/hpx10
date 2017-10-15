@@ -418,6 +418,7 @@ public class AccountService {
             bridAndMzh.setMZH(jzkList.get(0).getMZH());
         }
 
+        List<IdentityInfo> list = new ArrayList<>();
         //看在我们的系统中，该电话是否存在
         Account account = accountMapper.queryByTelephone(phone);
         Account newAccount = new Account();
@@ -439,7 +440,7 @@ public class AccountService {
 
         }else {
             //存在就进行绑定,最多不超过5个
-            List<IdentityInfo> list = identityInfoMapper.queryByAccountId(account.getId());
+            list = identityInfoMapper.queryByAccountId(account.getId());
             Preconditions.checkState(list.size() > Common.MAX_BINDING_NUM,"同一个账号最多只能绑定5个账号");
         }
 
@@ -454,6 +455,7 @@ public class AccountService {
         newIdentityInfo.setIdentityCode(idNumber);
         newIdentityInfo.setBrId(bridAndMzh.getBRID());
         identityInfoMapper.insertReturnId(newIdentityInfo);
+        list.add(newIdentityInfo);
 
         //就诊卡info表
         Credentials newCredentials = new Credentials();
@@ -464,6 +466,40 @@ public class AccountService {
         newCredentials.setIdType(idNumberType);
         credentialsMapper.insertReturnId(newCredentials);
 
-        return null;
+        LoginData loginData = new LoginData();
+        List<Credentials> credentialsList = new ArrayList<>();
+        if(patientsList != null && patientsList.getJzkList()!=null){
+            List<com.jishi.reservation.service.his.bean.Credentials> jzkList = patientsList.getJzkList();
+            for (com.jishi.reservation.service.his.bean.Credentials credentials : jzkList) {
+                Credentials param = new Credentials();
+                param.setIdType(credentials.getIdType());
+                param.setMzh(credentials.getMZH());
+                param.setBrId(credentials.getBRID());
+                param.setIdNumber(credentials.getIdNumber());
+
+                credentialsList.add(param);
+            }
+        }
+        loginData.setCredentialsList(credentialsList);
+        loginData.setIdentityInfoList(list);
+        return loginData;
+    }
+
+    public LoginData queryInfo(String accountStr) {
+
+        Account account = accountMapper.queryByTelephone(accountStr);
+        Preconditions.checkNotNull(account,"该手机号没有对应的用户信息");
+        List<IdentityInfo> identityList = identityInfoMapper.queryByAccountId(account.getId());
+        List<Credentials> credentialsList = new ArrayList<>();
+        for (IdentityInfo identityInfo : identityList) {
+            Credentials credentials = credentialsMapper.queryByBrid(identityInfo.getBrId());
+            credentialsList.add(credentials);
+        }
+
+        LoginData loginData = new LoginData();
+        loginData.setIdentityInfoList(identityList);
+        loginData.setCredentialsList(credentialsList);
+
+        return loginData;
     }
 }

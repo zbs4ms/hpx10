@@ -26,4 +26,6 @@ public interface AccountMapper extends MyMapper<Account>{
             "select * from account where id = #{accountId}"
     })
     Account queryById(@Param("accountId") Long accountId);
+
+
 }
