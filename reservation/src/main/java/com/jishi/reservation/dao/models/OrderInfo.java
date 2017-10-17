@@ -14,9 +14,9 @@ import java.util.Date;
  */
 
 @Data
-@Table(name = "order")
+@Table(name = "order_info")
 @ApiModel("订单信息")
-public class Order {
+public class OrderInfo {
 
     @Id
     private Long id;

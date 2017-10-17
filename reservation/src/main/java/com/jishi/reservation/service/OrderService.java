@@ -6,7 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.mapper.DoctorMapper;
-import com.jishi.reservation.dao.mapper.OrderMapper;
+import com.jishi.reservation.dao.mapper.OrderInfoMapper;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.util.Helpers;
@@ -25,5 +25,5 @@ import java.util.List;
 public class OrderService {
 
     @Autowired
-    OrderMapper orderMapper;
+    OrderInfoMapper orderInfoMapper;
 }

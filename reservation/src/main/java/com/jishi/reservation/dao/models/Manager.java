@@ -19,6 +19,8 @@ public class Manager {
     private String account;
     private String password;
     private Integer enable;
+    private String permission;
+
 
 
 }

@@ -1,7 +1,13 @@
 package com.jishi.reservation.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.doraemon.base.redis.RedisOperation;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.mapper.DepartmentMapper;
 import com.jishi.reservation.dao.mapper.ManagerMapper;
 import com.jishi.reservation.dao.models.Department;
@@ -13,6 +19,7 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -92,5 +99,34 @@ public class ManagerService {
         List<String> keys = new ArrayList<String>();
         keys.add(user);
         Preconditions.checkState(Integer.valueOf(String.valueOf(redisOperation.usePool().eval(DEL_TOKEN,keys,new ArrayList<String>()))) == 1,"注销用户登陆信息失败.");
+    }
+
+    public void create(String account, String password, String permission) throws NoSuchAlgorithmException {
+
+        Manager manager = new Manager();
+        manager.setAccount(account);
+        manager.setEnable(EnableEnum.EFFECTIVE.getCode());
+        manager.setPassword(MD5Encryption.getMD5(password));
+        manager.setPermission(permission);
+
+        managerMapper.insertReturnId(manager);
+
+    }
+
+    public PageInfo<Manager> queryByPage(Paging paging) {
+
+        if(!Helpers.isNullOrEmpty(paging))
+            PageHelper.startPage(paging.getPageNum(),paging.getPageSize(),paging.getOrderBy());
+        return new PageInfo(queryByPage());
+    }
+
+    private List queryByPage() {
+
+        List<Manager> managerList = managerMapper.selectAll();
+        for (Manager manager : managerList) {
+
+        }
+        return managerList;
+
     }
 }

@@ -7,7 +7,7 @@ import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.RegisterCompleteVO;
 import com.jishi.reservation.dao.mapper.*;
 import com.jishi.reservation.dao.models.Department;
-import com.jishi.reservation.dao.models.Order;
+import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.Register;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
@@ -53,7 +53,7 @@ public class RegisterService {
     @Autowired
     ScheduledService scheduledService;
     @Autowired
-    OrderMapper orderMapper;
+    OrderInfoMapper orderInfoMapper;
 
     /**
      * 增加一条预约
@@ -105,7 +105,7 @@ public class RegisterService {
         //todo   此处还没对接his，先把支付调通
         String subject = "神经科预约";
         String des = "欢迎挂号神经科";
-        Order order = new Order();
+        OrderInfo order = new OrderInfo();
         order.setAccountId(accountId);
         order.setBrId("fakerBrid");
         order.setCreateTime(new Date());
@@ -117,7 +117,7 @@ public class RegisterService {
         order.setOrderNumber(orderNumber);
         order.setRegisterId(register.getId());
         order.setStatus(OrderStatusEnum.WAIT_PAYED.getCode());
-        orderMapper.insertReturnId(order);
+        orderInfoMapper.insertReturnId(order);
 
         //todo 还没对接支付，所以就先搞几个假数据，供前段解析展示
         completeVO.setPayType(PayEnum.ALI.getCode());
