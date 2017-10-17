@@ -1,7 +1,6 @@
 package com.jishi.reservation.dao.mapper;
 
 import com.jishi.reservation.dao.models.Diary;
-import com.jishi.reservation.dao.models.Order;
 import com.us.base.mybatis.base.MyMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
