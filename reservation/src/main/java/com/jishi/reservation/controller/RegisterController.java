@@ -81,6 +81,7 @@ public class RegisterController extends BaseController {
 
 
 
+        // 10.17  在此处加入订单。。
         RegisterCompleteVO completeVO = registerService.addRegister(accountId, patientinfoId, departmentId, doctorId, new Date(agreedTime),timeInterval);
 
         jpushSupport.sendPush(accountService.queryAccountById(accountId).getPushId(), Common.REGISTER_SUCCESS_MGS);
