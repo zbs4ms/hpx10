@@ -117,6 +117,7 @@ public class RegisterService {
         order.setOrderNumber(orderNumber);
         order.setRegisterId(register.getId());
         order.setStatus(OrderStatusEnum.WAIT_PAYED.getCode());
+        order.setPayType(PayEnum.ALI.getCode());
         orderInfoMapper.insertReturnId(order);
 
         //todo 还没对接支付，所以就先搞几个假数据，供前段解析展示
