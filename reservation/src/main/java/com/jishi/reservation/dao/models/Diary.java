@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.Date;
 
 /**
@@ -26,5 +27,8 @@ public class Diary {
     private Integer status;
     private Integer enable;
     private Integer sort;
+
+    @Transient
+    private Boolean isTop;
 
 }

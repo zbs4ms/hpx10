@@ -44,7 +44,7 @@ public class PatientInfoController extends BaseController {
     @ResponseBody
     public JSONObject addPatientInfo(HttpServletRequest request,
                                      HttpServletResponse response,
-            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+                                     @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "就诊人名称", required = true) @RequestParam(value = "name", required = true) String name,
             @ApiParam(value = "病人电话", required = true) @RequestParam(value = "phone", required = true) String phone,
             @ApiParam(value = "病人身份证", required = true) @RequestParam(value = "idCard", required = true) String idCard) throws Exception {
