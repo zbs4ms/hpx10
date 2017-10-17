@@ -57,7 +57,7 @@ public class DiaryController extends BaseController {
     }
 
     @ApiOperation(value = "审核日记")
-    @RequestMapping(value = "verify", method = RequestMethod.GET)
+    @RequestMapping(value = "verify", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject verify(
             @ApiParam(value = "日记 的 id") @RequestParam(value = "id") Long id,
@@ -69,7 +69,7 @@ public class DiaryController extends BaseController {
     }
 
     @ApiOperation(value = "上下架 日记")
-    @RequestMapping(value = "show", method = RequestMethod.GET)
+    @RequestMapping(value = "show", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject show(
             @ApiParam(value = "日记的id") @RequestParam(value = "id") Long id
@@ -81,7 +81,7 @@ public class DiaryController extends BaseController {
 
 
     @ApiOperation(value = "置顶 日记")
-    @RequestMapping(value = "top", method = RequestMethod.GET)
+    @RequestMapping(value = "top", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject top(
             @ApiParam(value = "日记的id") @RequestParam(value = "id") Long id
