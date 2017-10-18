@@ -56,6 +56,7 @@ public class DiaryService {
         Diary diary = diaryMapper.queryById(id);
         Preconditions.checkNotNull(diary,"该id没有对应的日记信息");
         diary.setEnable(diary.getEnable() == 1?EnableEnum.EFFECTIVE.getCode():EnableEnum.INVALID.getCode());
+        diaryMapper.updateByPrimaryKeySelective(diary);
     }
 
     public void top(Long id) {
