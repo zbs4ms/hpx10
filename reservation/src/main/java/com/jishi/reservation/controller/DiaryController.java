@@ -63,6 +63,7 @@ public class DiaryController extends BaseController {
             @ApiParam(value = "日记 的 id") @RequestParam(value = "id") Long id,
             @ApiParam(value = "审核的结果 0审核通过 2审核拒绝") @RequestParam(value = "status")Integer status
                 ){
+        log.info("执行日记审核操作。id:"+id+",status:"+status);
         diaryService.verify(id, status);
         return ResponseWrapper().addMessage("操作成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
@@ -74,6 +75,8 @@ public class DiaryController extends BaseController {
     public JSONObject show(
             @ApiParam(value = "日记的id") @RequestParam(value = "id") Long id
     ){
+        log.info("执行日记上下架操作。id:"+id);
+
         diaryService.show(id);
         return ResponseWrapper().addMessage("操作成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
@@ -86,6 +89,9 @@ public class DiaryController extends BaseController {
     public JSONObject top(
             @ApiParam(value = "日记的id") @RequestParam(value = "id") Long id
     ){
+
+        log.info("执行日记置顶操作。id:"+id);
+
         diaryService.top(id);
         return ResponseWrapper().addMessage("操作成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
