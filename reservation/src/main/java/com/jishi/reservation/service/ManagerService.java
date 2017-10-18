@@ -8,10 +8,13 @@ import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jishi.reservation.controller.base.Paging;
+import com.jishi.reservation.dao.hisData.Encrypt;
 import com.jishi.reservation.dao.mapper.DepartmentMapper;
 import com.jishi.reservation.dao.mapper.ManagerMapper;
+import com.jishi.reservation.dao.mapper.PermissionMapper;
 import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.dao.models.Manager;
+import com.jishi.reservation.dao.models.Permission;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.util.Helpers;
 import com.us.base.util.MD5Encryption;
@@ -35,6 +38,8 @@ public class ManagerService {
     @Autowired
     ManagerMapper managerMapper;
 
+    @Autowired
+    PermissionMapper permissionMapper;
 
     @Autowired
     private RedisOperation redisOperation;
@@ -122,11 +127,39 @@ public class ManagerService {
 
     private List queryByPage() {
 
-        List<Manager> managerList = managerMapper.selectAll();
-        for (Manager manager : managerList) {
+        Gson gson = new Gson();
 
+        List<Manager> managerList = managerMapper.selectEnableManager();
+        for (Manager manager : managerList) {
+            manager.setPassword(null);
+            List<Permission> permissionList = new ArrayList<>();
+            List<String> list = gson.fromJson(manager.getPermission(),
+                    new TypeToken<List<String>>() {
+                    }.getType());
+            for (String key : list) {
+                Permission permission = permissionMapper.queryByKey(key);
+                permissionList.add(permission);
+            }
+            manager.setPermissionList(permissionList);
         }
         return managerList;
 
+    }
+
+    public void changeInfo(Long id, String permission, String password) throws NoSuchAlgorithmException {
+
+        Manager manager = managerMapper.findById(id);
+        Preconditions.checkNotNull(manager,"查不到该管理账号");
+
+        manager.setPassword(password!=null&&!"".equals(password)?MD5Encryption.getMD5(password):manager.getPassword());
+        manager.setPermission(permission!=null&&!"".equals(permission)?permission:manager.getPermission());
+    }
+
+    public void deleteSoft(Long id) {
+        Manager manager = managerMapper.findById(id);
+        Preconditions.checkNotNull(manager,"查不到该管理账号");
+
+        manager.setEnable(EnableEnum.DELETE.getCode());
+        managerMapper.updateByPrimaryKeySelective(manager);
     }
 }

@@ -22,8 +22,9 @@ public class SendData {
         sb.append("</ROOT>");
         return sb.toString();
     }
-
-    static final String url = "http://192.168.100.13:8086/EXTERNALSERVICES/ZL_INFORMATIONSERVICE.ASMX/";
+    //todo  切换成可以用的地址...
+    static final String url = "http://hpx10ddns.xicp.io/EXTERNALSERVICES/ZL_INFORMATIONSERVICE.ASMX";
+    //static final String url = "http://192.168.100.13:8086/EXTERNALSERVICES/ZL_INFORMATIONSERVICE.ASMX/";
 
 //    public static void main(String[] args) throws Exception {
 //        String xmlInput =toXml("","Basic.MCTest.Query");

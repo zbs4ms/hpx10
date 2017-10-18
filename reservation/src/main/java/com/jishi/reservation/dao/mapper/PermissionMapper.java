@@ -13,5 +13,8 @@ import java.util.List;
 public interface PermissionMapper extends MyMapper<Permission>{
 
 
-
+    @Select({
+            "select * from permission where permission_id = #{key}"
+    })
+    Permission queryByKey(@Param("key") String key);
 }

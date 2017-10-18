@@ -127,9 +127,9 @@ public class AdminController extends BaseController {
 
 
     @ApiOperation(value = "人员列表接口")
-    @RequestMapping(value = "list", method = RequestMethod.POST)
+    @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject create(
+    public JSONObject list(
             @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
             @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
@@ -137,7 +137,34 @@ public class AdminController extends BaseController {
     ) throws Exception {
 
         PageInfo<Manager> page =  managerService.queryByPage(Paging.create(pageNum,pageSize,orderBy,desc));
-        return ResponseWrapper().addMessage("查询成功").ExeSuccess(200);
+        return ResponseWrapper().addData(page).addMessage("查询成功").ExeSuccess(200);
+
+    }
+
+
+    @ApiOperation(value = "修改管理员账号  权限 密码")
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject update(
+            @ApiParam(value = "人员id") @RequestParam(value = "id") Long id,
+            @ApiParam(value = "权限 json ['m_01','m_01']") @RequestParam(value = "permission", required = false) String permission,
+            @ApiParam(value = "密码") @RequestParam(value = "password", required = false) String password
+    ) throws Exception {
+
+         managerService.changeInfo(id,permission,password);
+        return ResponseWrapper().addMessage("修改成功").ExeSuccess(200);
+
+    }
+
+    @ApiOperation(value = " 删除某个账号")
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject deleteSoft(
+            @ApiParam(value = "人员id") @RequestParam(value = "id") Long id
+    ) throws Exception {
+
+        managerService.deleteSoft(id);
+        return ResponseWrapper().addMessage("删除成功").ExeSuccess(200);
 
     }
 
@@ -156,6 +183,7 @@ public class AdminController extends BaseController {
         managerService.logout(token);
 
         return ResponseWrapper().addMessage("退出成功").ExeSuccess(200);
+
 
     }
 
