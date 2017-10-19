@@ -4,6 +4,8 @@ export const CLEAR_STASH = 'global/clear_stash'
 export const KEEPALIVE = 'global/keepAlive'
 export const CLEAR_KEEPALIVE = 'global/clear_keepAlive'
 
+export const GET_AUTH = 'global/get_auth'
+
 const state = {
   // 暂存的数据
   stash: {
@@ -12,7 +14,8 @@ const state = {
     }
   },
   // 保持状态的组件 (多个之间用','分隔)
-  keepAlive: 'no-match'
+  keepAlive: 'no-match',
+  auth: []
 }
 
 const mutations = {
@@ -27,6 +30,9 @@ const mutations = {
   },
   [CLEAR_KEEPALIVE] (state, componentName) {
     state.keepAlive = 'no-match'
+  },
+  [GET_AUTH] (state, auth) {
+    state.auth = auth
   }
 }
 const actions = {

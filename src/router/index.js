@@ -9,6 +9,10 @@ import bannerRouters from '@/components/banner/router'
 import doctorRouters from '@/components/doctor/router'
 // 权限管理
 import authRouters from '@/components/auth/router'
+// 日记管理
+import logRouters from '@/components/log/router'
+// 预约管理
+import reserveRouters from '@/components/reserve/router'
 
 // 登陆
 const Login = resolve => require(['@/components/login/Login'], resolve)
@@ -30,6 +34,8 @@ const router = new Router({
     ...bannerRouters,
     ...doctorRouters,
     ...authRouters,
+    ...logRouters,
+    ...reserveRouters,
     {
       path: '*',
       name: 'NotFound',

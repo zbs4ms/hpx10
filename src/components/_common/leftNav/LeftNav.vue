@@ -18,7 +18,10 @@
     },
     methods: {
       handleSelect (index) {
-        this.$refs.elMenu.openedMenus = [] // 关闭打开的子菜单
+        if (!this.activePath || this.activePath !== index) {
+          this.activePath = index
+          this.$refs.elMenu.openedMenus = [] // 关闭打开的子菜单
+        }
       }
     }
   }
@@ -43,7 +46,9 @@
           v-if="nav.children"
           :key="nav.label"
           index="nav">
-          <template slot="title"><i v-if="nav.icon" class="nav-icon" :class="nav.icon"></i>{{ nav.label }}</template>
+          <template slot="title">
+            <i v-if="nav.icon" class="nav-icon" :class="nav.icon"></i>{{ nav.label }}
+          </template>
           <el-menu-item
             v-for="subNav in nav.children"
             :key="subNav.label"

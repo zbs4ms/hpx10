@@ -77,15 +77,15 @@ export default {
           return (
             <div class="flex--center operations">
               <span class="operate-item top-switch flex--vcenter">
-              <el-switch
-                value={scope.row.top}
-                onInput={(top) => (scope.row.top = top)}
-                onChange={() => this.switchTop(scope.row)}
-                {...{props: { 'on-text': '', 'off-text': '' }}}>
-              </el-switch>
-              { scope.row.top === 1 ? '置顶' : '取消置顶' }
+                <el-switch
+                  value={scope.row.top}
+                  onInput={(top) => (scope.row.top = top)}
+                  onChange={() => this.switchTop(scope.row)}
+                  {...{props: { 'on-text': '', 'off-text': '' }}}>
+                </el-switch>
+                { scope.row.top === 1 ? '置顶' : '取消置顶' }
               </span>
-                <span
+              <span
                   class="operate-item el-icon-edit"
                   onClick={() => this.openEditDialog(scope.row)}>
               </span>
@@ -293,20 +293,6 @@ export default {
       }
     }
 
-    .table-tools {
-      margin-top: 30px;
-
-      .tool-item {
-        & + .tool-item {
-          margin-left: 20px;
-        }
-      }
-
-      .el-button {
-        width: 80px;
-        border-radius: 18px;
-      }
-    }
     .search-input {
       width: 300px;
       input {

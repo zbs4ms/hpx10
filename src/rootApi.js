@@ -86,86 +86,11 @@ axios.interceptors.response.use((response) => {
   return Promise.reject(error)
 })
 
-// 重置密码
-export const RESET_PSD_URL = '/account/resetPassword'
-export const resetPsdApi = (data) => {
-  return fetchApi({
-    url: RESET_PSD_URL,
-    type: 'post',
-    data,
-    success (data) {
-      Message({
-        type: 'success',
-        message: '密码修改成功'
-      })
-    },
-    error (err) {
-      console.log(err)
-    }
-  })
-}
-
-// 禁用账号
-export const CHANGE_STATE = '/account/changeState'
-export const changeStateApi = (params) => {
-  return fetchApi({
-    url: CHANGE_STATE,
-    type: 'post',
-    params,
-    success (data) {
-      Message({
-        type: 'success',
-        message: '账号状态修改成功'
-      })
-    },
-    error (err) {
-      console.log(err)
-    }
-  })
-}
-
-// 禁用企业
-export const CHANGE_AT_STATE = '/company/changeState'
-export const changeAtStateApi = (params) => {
-  return fetchApi({
-    url: CHANGE_AT_STATE,
-    type: 'post',
-    params,
-    success (data) {
-      Message({
-        type: 'success',
-        message: '账号状态修改成功'
-      })
-    },
-    error (err) {
-      console.log(err)
-    }
-  })
-}
-
-// 获取可选标签数据
-export const GET_LABELS_URL = '/label/findAllLabel'
-export const getLabelsApi = () => {
-  return fetchApi({
-    url: GET_LABELS_URL,
-    type: 'get'
-  })
-}
-
 // 获取账号权限 (通过accountId)
-export const GET_AUTH_URL = '/permission/getPermissionTree/'
-export const getAuthApi = (accountId) => {
+export const GET_AUTH_URL = '/admin/all_permission'
+export const getAuthApi = () => {
   return fetchApi({
-    url: GET_AUTH_URL + accountId,
-    type: 'get'
-  })
-}
-
-// 获取权限树 (通过companyId)
-export const GET_TREE_URL = '/permission/getPermissionTreeOneself/'
-export const getTreeApi = (companyId) => {
-  return fetchApi({
-    url: GET_TREE_URL + companyId,
+    url: GET_AUTH_URL,
     type: 'get'
   })
 }
