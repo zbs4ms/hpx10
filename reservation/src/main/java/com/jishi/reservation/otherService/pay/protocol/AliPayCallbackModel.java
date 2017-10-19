@@ -21,7 +21,7 @@ public class AliPayCallbackModel {
     private String quantity;   //数量
     private String  subject; //商品名称
     private String use_coupon; //是否使用优惠券
-    private String sing; //签名
+    private String sign; //签名
     private String discount;    //优惠金额
     private String body;    //商品描述
     private String buyer_id;    //购买者id
