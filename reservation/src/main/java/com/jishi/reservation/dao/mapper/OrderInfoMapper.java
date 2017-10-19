@@ -10,4 +10,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderInfoMapper extends MyMapper<OrderInfo>{
 
+
+    @Select({
+            "select * from order_info where order_number = #{outTradeNo}"
+    })
+    OrderInfo queryByOutTradeNo(@Param("outTradeNo") String outTradeNo);
 }

@@ -11,6 +11,7 @@ import com.jishi.reservation.dao.mapper.IdentityInfoMapper;
 import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.dao.models.Credentials;
 import com.jishi.reservation.dao.models.IdentityInfo;
+import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.SmsEnum;
 import com.jishi.reservation.service.his.HisUserManager;
@@ -107,7 +108,7 @@ public class AccountService {
         log.info("账号采用手机进行登陆: phone:" + phone + " dynamicCode:" + dynamicCode);
         String code = redisOperation.get(prefix + "_" + phone);
         if (!dynamicCode.equals(code))
-            throw new Exception("登陆失败!");
+            return null;
         List<Account> account = queryAccount(null, phone, null);
         Account accountLogin;
         if (account.size() == 0){
@@ -502,4 +503,6 @@ public class AccountService {
 
         return loginData;
     }
+
+
 }

@@ -43,7 +43,7 @@ public class OrderInfo {
     @ApiModelProperty("创建时间")
     private Date createTime;
     @ApiModelProperty("支付时间")
-    private Date payTime;
+    private String payTime;
 
 
 

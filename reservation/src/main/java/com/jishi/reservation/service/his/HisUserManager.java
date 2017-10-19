@@ -43,7 +43,7 @@ public class HisUserManager {
     }
 
     /**
-     * 获取用户信息2,通过登记号
+     * 获取用户信息2,通过登记号  返回得有brid
      * @param idNumber
      * @param idNumberType
      * @param name

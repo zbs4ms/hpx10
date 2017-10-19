@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.protocol.AdminLogInfoData;
 import com.jishi.reservation.dao.models.Manager;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
+import com.jishi.reservation.otherService.pay.protocol.AliPayCallbackModel;
 import com.jishi.reservation.service.ManagerService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.util.Common;
@@ -46,10 +47,12 @@ public class PayController extends BaseController {
     @ApiOperation(value = "支付回调接口", notes = "")
     @RequestMapping(value = "aliPayCallBack", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject aliPayCallBack() throws Exception {
+    public JSONObject aliPayCallBack(
+            AliPayCallbackModel model
+    ) throws Exception {
 
         //todo  看到时候给我哪些参数...
-        //alibabaPay.aliPay_notify(null);
+        alibabaPay.aliPay_notify(model);
 
         return ResponseWrapper().addMessage("回调成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }

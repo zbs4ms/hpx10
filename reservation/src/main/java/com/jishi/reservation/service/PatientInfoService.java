@@ -9,6 +9,7 @@ import com.jishi.reservation.dao.mapper.PregnantMapper;
 import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.dao.models.Pregnant;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.his.HisUserManager;
 import com.jishi.reservation.util.CheckIdCard;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.log4j.Log4j;
@@ -34,6 +35,9 @@ public class PatientInfoService {
     @Autowired
     PregnantMapper pregnantMapper;
 
+    @Autowired
+    HisUserManager hisUserManager;
+
     /**
      * 增加就诊人信息
      * @param accountId
@@ -44,7 +48,7 @@ public class PatientInfoService {
      */
 
     @Transactional
-    public Long addPatientInfo(Long accountId, String name, String phone, String idCard) throws Exception {
+    public Long addPatientInfo(Long accountId, String name, String phone, String idCard,String idCardType) throws Exception {
         if (Helpers.isNullOrEmpty(accountId))
             throw new Exception("账号ID为空");
         String errorInfo = CheckIdCard.IDCardValidate(idCard);
@@ -57,6 +61,10 @@ public class PatientInfoService {
         if(!this.checkMaxPatientNum(accountId)){
             throw new Exception("该账号最大病号数已达最大5个");
         }
+
+        //添加到his系统
+        hisUserManager.addUserInfo(idCard,idCardType,name,phone);
+
         PatientInfo newPatientInfo = new PatientInfo();
         newPatientInfo.setAccountId(accountId);
         newPatientInfo.setName(name);

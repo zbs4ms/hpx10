@@ -9,11 +9,11 @@ import java.util.Random;
  */
 public class NewRandomUtil extends RandomUtil {
 
-    private static String[] Num = new String[]{ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+    private static String[] Num = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
     public static String getRandomNum(int length) throws Exception {
         Random r = new Random();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         for(int i = 0; i < length; ++i) {
             sb.append(Num[r.nextInt(Num.length)]);
