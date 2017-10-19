@@ -1,6 +1,10 @@
 package com.jishi.reservation.controller.protocol;
 
+import com.jishi.reservation.dao.models.Credentials;
+import com.jishi.reservation.dao.models.IdentityInfo;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * Created by sloan on 2017/9/7.
@@ -15,4 +19,7 @@ public class LoginData {
     private String headPortrait;
     private String telephone;
     private String pushId;
+
+    private List<IdentityInfo> identityInfoList;
+    private List<Credentials> credentialsList;
 }

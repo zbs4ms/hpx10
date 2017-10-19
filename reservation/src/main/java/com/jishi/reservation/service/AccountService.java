@@ -3,11 +3,18 @@ package com.jishi.reservation.service;
 import com.alibaba.fastjson.JSONObject;
 import com.doraemon.base.redis.RedisOperation;
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.controller.protocol.BridAndMzh;
 import com.jishi.reservation.controller.protocol.LoginData;
 import com.jishi.reservation.dao.mapper.AccountMapper;
+import com.jishi.reservation.dao.mapper.CredentialsMapper;
+import com.jishi.reservation.dao.mapper.IdentityInfoMapper;
 import com.jishi.reservation.dao.models.Account;
+import com.jishi.reservation.dao.models.Credentials;
+import com.jishi.reservation.dao.models.IdentityInfo;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.SmsEnum;
+import com.jishi.reservation.service.his.HisUserManager;
+import com.jishi.reservation.service.his.bean.PatientsList;
 import com.jishi.reservation.service.support.AliDayuSupport;
 import com.jishi.reservation.util.Common;
 import com.jishi.reservation.util.Helpers;
@@ -17,6 +24,7 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
@@ -38,6 +46,14 @@ public class AccountService {
     RedisOperation redisOperation;
     @Autowired
     AliDayuSupport dayuSupport;
+
+    @Autowired
+    HisUserManager hisUserManager;
+
+    @Autowired
+    IdentityInfoMapper identityInfoMapper;
+    @Autowired
+    CredentialsMapper credentialsMapper;
 
 
 
@@ -374,5 +390,116 @@ public class AccountService {
     public Account queryAccountById(Long accountId) {
 
         return accountMapper.queryById(accountId);
+    }
+
+    /**
+     * 连接了his系统的注册，如果证件号已存在，就返回相应信息；不然就注册，然后返回相应信息；
+     * 如果手机号已存在，但是证件号不存在，那就把证件号和手机号绑定，最多不超过5个
+     * @param idNumber 证件号
+     * @param idNumberType 证件类型
+     * @param name 姓名
+     * @param phone 手机号
+     * @return
+     */
+    @Transactional
+    public LoginData registerWithHis(String idNumber, String idNumberType, String name, String phone) throws Exception {
+
+
+        PatientsList patientsList = hisUserManager.getUserInfoByCode(idNumber, idNumberType);
+        //如果查询不到，就去注册
+        BridAndMzh bridAndMzh = null ;
+        if(patientsList == null){
+            // todo 现在返回的是假的BRID
+            bridAndMzh = hisUserManager.addUserInfo(idNumber, idNumberType, name, phone);
+        }else {
+            bridAndMzh = new BridAndMzh();
+            List<com.jishi.reservation.service.his.bean.Credentials> jzkList = patientsList.getJzkList();
+            bridAndMzh.setBRID(jzkList.get(0).getBRID());
+            bridAndMzh.setMZH(jzkList.get(0).getMZH());
+        }
+
+        List<IdentityInfo> list = new ArrayList<>();
+        //看在我们的系统中，该电话是否存在
+        Account account = accountMapper.queryByTelephone(phone);
+        Account newAccount = new Account();
+
+        //不存在就注册
+        if(account == null){
+            //账号主表
+            newAccount.setAccount(phone);
+            newAccount.setPhone(phone);
+            newAccount.setHeadPortrait(Common.DEFAULT_AVATAR);
+            newAccount.setPushId("hpx10_"+NewRandomUtil.getRandomNum(6));
+            newAccount.setNick(phone);
+            newAccount.setEnable(EnableEnum.EFFECTIVE.getCode());
+            newAccount.setPasswd(Common.DEFAULT_PASSWORD);
+
+            accountMapper.insertReturnId(newAccount);
+
+
+
+        }else {
+            //存在就进行绑定,最多不超过5个
+            list = identityInfoMapper.queryByAccountId(account.getId());
+            Preconditions.checkState(list.size() > Common.MAX_BINDING_NUM,"同一个账号最多只能绑定5个账号");
+        }
+
+        //判断该就诊人是否已经和该账号已经关联了
+        Preconditions.checkState(identityInfoMapper.queryByAccountIdAndIdentity(account==null?newAccount.getId():account.getId(),idNumber) != null,
+                "病人已经和该账号关联");
+
+        //就诊人表
+        IdentityInfo newIdentityInfo = new IdentityInfo();
+        newIdentityInfo.setAccountId(account==null?newAccount.getId():account.getId());
+        newIdentityInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
+        newIdentityInfo.setIdentityCode(idNumber);
+        newIdentityInfo.setBrId(bridAndMzh.getBRID());
+        identityInfoMapper.insertReturnId(newIdentityInfo);
+        list.add(newIdentityInfo);
+
+        //就诊卡info表
+        Credentials newCredentials = new Credentials();
+        newCredentials.setBrId(bridAndMzh.getBRID());
+        newCredentials.setEnable(EnableEnum.EFFECTIVE.getCode());
+        newCredentials.setIdNumber(idNumber);
+        newCredentials.setMzh(bridAndMzh.getMZH());
+        newCredentials.setIdType(idNumberType);
+        credentialsMapper.insertReturnId(newCredentials);
+
+        LoginData loginData = new LoginData();
+        List<Credentials> credentialsList = new ArrayList<>();
+        if(patientsList != null && patientsList.getJzkList()!=null){
+            List<com.jishi.reservation.service.his.bean.Credentials> jzkList = patientsList.getJzkList();
+            for (com.jishi.reservation.service.his.bean.Credentials credentials : jzkList) {
+                Credentials param = new Credentials();
+                param.setIdType(credentials.getIdType());
+                param.setMzh(credentials.getMZH());
+                param.setBrId(credentials.getBRID());
+                param.setIdNumber(credentials.getIdNumber());
+
+                credentialsList.add(param);
+            }
+        }
+        loginData.setCredentialsList(credentialsList);
+        loginData.setIdentityInfoList(list);
+        return loginData;
+    }
+
+    public LoginData queryInfo(String accountStr) {
+
+        Account account = accountMapper.queryByTelephone(accountStr);
+        Preconditions.checkNotNull(account,"该手机号没有对应的用户信息");
+        List<IdentityInfo> identityList = identityInfoMapper.queryByAccountId(account.getId());
+        List<Credentials> credentialsList = new ArrayList<>();
+        for (IdentityInfo identityInfo : identityList) {
+            Credentials credentials = credentialsMapper.queryByBrid(identityInfo.getBrId());
+            credentialsList.add(credentials);
+        }
+
+        LoginData loginData = new LoginData();
+        loginData.setIdentityInfoList(identityList);
+        loginData.setCredentialsList(credentialsList);
+
+        return loginData;
     }
 }

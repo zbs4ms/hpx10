@@ -1,11 +1,13 @@
 package com.jishi.reservation.service.his;
 
+import com.jishi.reservation.controller.protocol.BridAndMzh;
 import com.jishi.reservation.mypackage.PublicResponsePublicResult;
 import com.jishi.reservation.mypackage.UserManagerResponseUserManagerResult;
 import com.jishi.reservation.mypackage.ZL_InformationServiceLocator;
 import com.jishi.reservation.mypackage.ZL_InformationServiceSoap_PortType;
 import com.jishi.reservation.service.his.bean.PatientsList;
 import com.thoughtworks.xstream.XStream;
+import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.apache.axis.message.MessageElement;
 import org.springframework.stereotype.Service;
@@ -57,7 +59,7 @@ public class HisUserManager {
         sb.append("<XM>").append(name).append("</XM>");
         sb.append("<KH>").append(code).append("</KH>");
         sb.append("<KLB>").append(codeType).append("</KLB>");
-        String reData = HisTool.toXMLString("indCard.UserInfoByRegNO.Query", sb.toString());
+        String reData = HisTool.toXMLString("BindCard.UserInfoByRegNO.Query", sb.toString());
         UserManagerResponseUserManagerResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
@@ -77,20 +79,27 @@ public class HisUserManager {
      * @return
      * @throws Exception
      */
-    public boolean addUserInfo(String idNumber,String idNumberType,String name,String phone) throws Exception {
+    //todo 增加病人信息需要返回BRID和MZH ？？？？
+    public BridAndMzh addUserInfo(String idNumber,String idNumberType,String name,String phone) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<ZJH>").append(idNumber).append("</ZJH>");
         sb.append("<ZJLX>").append(idNumberType).append("</ZJLX>");
         sb.append("<XM>").append(name).append("</XM>");
         sb.append("<SJH>").append(phone).append("</SJH>");
-        String reData = HisTool.toXMLString("indCard.CreateUser.Modify", sb.toString());
+        String reData = HisTool.toXMLString("BindCard.CreateUser.Modify", sb.toString());
         UserManagerResponseUserManagerResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            return true;
+            BridAndMzh param = new BridAndMzh();
+            param.setBRID("this is BRID");
+            param.setMZH("this is MZH");
+
+            return param;
         }
-       return false;
+       return null;
     }
+
+
 
 
 
