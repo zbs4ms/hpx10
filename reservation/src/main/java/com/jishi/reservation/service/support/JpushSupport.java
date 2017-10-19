@@ -8,14 +8,10 @@ import cn.jpush.api.push.PushResult;
 import cn.jpush.api.push.model.Message;
 import cn.jpush.api.push.model.Platform;
 import cn.jpush.api.push.model.PushPayload;
-import cn.jpush.api.push.model.SMS;
 import cn.jpush.api.push.model.audience.Audience;
-import cn.jpush.api.push.model.notification.Notification;
-import com.jishi.reservation.util.Common;
+import com.jishi.reservation.util.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import static org.bouncycastle.jcajce.spec.TLSKeyMaterialSpec.MASTER_SECRET;
 
 /**
  * Created by sloan on 2017/9/23.
@@ -42,7 +38,7 @@ public class JpushSupport {
 
     public void sendPush(String pushId,String message){
 
-        JPushClient jpushClient = new JPushClient(Common.JPush_MASTER_SECRET,Common.JPush_Appkey, null, ClientConfig.getInstance());
+        JPushClient jpushClient = new JPushClient(Constant.JPush_MASTER_SECRET, Constant.JPush_Appkey, null, ClientConfig.getInstance());
 
         // For push, all you need do is to build PushPayload object.
         PushPayload payload = buildPushObj(pushId,message);
@@ -74,7 +70,7 @@ public class JpushSupport {
     //
 //    public static void main(String[] args) {
 //
-//        JPushClient jpushClient = new JPushClient(Common.JPush_MASTER_SECRET,Common.JPush_Appkey, null, ClientConfig.getInstance());
+//        JPushClient jpushClient = new JPushClient(Constant.JPush_MASTER_SECRET,Constant.JPush_Appkey, null, ClientConfig.getInstance());
 //
 //        // For push, all you need do is to build PushPayload object.
 //        PushPayload payload = buildPushObject();

@@ -7,15 +7,13 @@ import com.jishi.reservation.controller.protocol.LoginData;
 import com.jishi.reservation.dao.mapper.AccountMapper;
 import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
-import com.jishi.reservation.service.enumPackage.SmsEnum;
 import com.jishi.reservation.service.support.AliDayuSupport;
-import com.jishi.reservation.util.Common;
+import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
 import com.jishi.reservation.util.NewRandomUtil;
 import com.us.base.util.MD5Encryption;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -95,7 +93,7 @@ public class AccountService {
         List<Account> account = queryAccount(null, phone, null);
         Account accountLogin;
         if (account.size() == 0){
-             accountLogin = addAccount(phone, phone, Common.DEFAULT_AVATAR, phone, phone, null);
+             accountLogin = addAccount(phone, phone, Constant.DEFAULT_AVATAR, phone, phone, null);
 
         }else {
             accountLogin = account.get(0);
@@ -160,7 +158,7 @@ public class AccountService {
 
         Account account = accountMapper.queryByTelephone(phone);
 
-        String token =Common.TOKEN_HEADER + createToken(account.getId());
+        String token = Constant.TOKEN_HEADER + createToken(account.getId());
         List<String> keys = new ArrayList<String>();
         keys.add(String.valueOf(account.getId()));
         keys.add(token);
@@ -345,7 +343,7 @@ public class AccountService {
 
 
     public Long returnIdByToken(HttpServletRequest request) throws Exception {
-        String token = request.getHeader(Common.TOKEN);
+        String token = request.getHeader(Constant.TOKEN);
         log.info("token："+token);
         if(token == null || "".equals(token) || "null".equals(token)){
             log.info("token為空...");

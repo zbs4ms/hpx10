@@ -7,35 +7,28 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * Created by wang on 2017/9/28.
+ * Created by zbs on 2017/10/6.
  */
 @XStreamAlias("ROOT")
 @Data
-public class PatientsList {
+public class UserBindCard {
 
     @XStreamAlias("LIST")
-    LIST list;
+    ListDate listDate;
 
     @Data
-    public class LIST{
+    public class ListDate{
+
         @XStreamImplicit(itemFieldName="JZK")
-        List<Credentials> jzkList;
+        List<Jzk> jzkList;
     }
 
     @Data
-    public class Credentials {
-        //类别
+    public class Jzk{
         @XStreamAlias("LB")
-        String idType;
-        //卡号
+        String lb;
         @XStreamAlias("KH")
-        String idNumber;
-        //his唯一ID
-        @XStreamAlias("BRID")
-        String BRID;
-        //病人门诊号
-        @XStreamAlias("MZH")
-        String MZH;
-    }
+        String kh;
 
+    }
 }

@@ -2,16 +2,14 @@ package com.jishi.reservation.worker;
 
 import com.jishi.reservation.dao.mapper.AccountMapper;
 import com.jishi.reservation.dao.mapper.RegisterMapper;
-import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.dao.models.Register;
 import com.jishi.reservation.service.support.JpushSupport;
-import com.jishi.reservation.util.Common;
+import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.DateTool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.test.annotation.Commit;
 
 import java.util.List;
 
@@ -46,14 +44,14 @@ public class JpushWorker {
                 // 如果预约时间和当前时间相差一天，给当天的提示
                 log.info("id是"+register.getId()+"的预约是今天，发送提醒推送通知");
                 jpushSupport.sendPush(accountMapper.queryById(register.getAccountId()).getPushId(),
-                        Common.REGISTER_TODAY_MSG);
+                        Constant.REGISTER_TODAY_MSG);
 
             }
-            if(DateTool.isToday(register.getAgreedTime().getTime()+ Common.DAY_MS)){
+            if(DateTool.isToday(register.getAgreedTime().getTime()+ Constant.DAY_MS)){
                 // 如果预约时间和当前时间相差两天天，给明天的提示
                 log.info("id是"+register.getId()+"的预约是明天，发送提醒推送通知");
                 jpushSupport.sendPush(accountMapper.queryById(register.getAccountId()).getPushId(),
-                        Common.REGISTER_TOMORROW_MSG);
+                        Constant.REGISTER_TOMORROW_MSG);
 
             }
         }

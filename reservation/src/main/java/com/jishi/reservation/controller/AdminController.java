@@ -5,7 +5,7 @@ import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.protocol.AdminLogInfoData;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.ManagerService;
-import com.jishi.reservation.util.Common;
+import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.CookieUtil;
 import com.jishi.reservation.util.SessionUtil;
 import com.us.base.common.controller.BaseController;
@@ -68,9 +68,9 @@ public class AdminController extends BaseController {
             logInfoData.setAccount(manager.getAccount());
 
             //token存放到cookie,并设置httpOnly为true
-            CookieUtil.addCookie(response, Common.ADMIN_TOKEN, token, 28880, true);
+            CookieUtil.addCookie(response, Constant.ADMIN_TOKEN, token, 28880, true);
             //token存放到session
-            SessionUtil.addSession(request, Common.ADMIN_TOKEN, token);
+            SessionUtil.addSession(request, Constant.ADMIN_TOKEN, token);
 
             return ResponseWrapper().addMessage("登陆成功！").addData(logInfoData).ExeSuccess(200);
         }
@@ -84,7 +84,7 @@ public class AdminController extends BaseController {
     public JSONObject logout(HttpServletRequest request,HttpServletResponse response) throws Exception {
 
 
-        String token = CookieUtil.getCookieByName(request,Common.ADMIN_TOKEN).getValue();
+        String token = CookieUtil.getCookieByName(request, Constant.ADMIN_TOKEN).getValue();
         SessionUtil.deleteSession(request,token);
         CookieUtil.deleteCookieByName(request,response,token);
         managerService.logout(token);

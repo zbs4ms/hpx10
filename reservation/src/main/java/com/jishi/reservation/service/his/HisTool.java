@@ -1,7 +1,7 @@
 package com.jishi.reservation.service.his;
 
 import com.jishi.reservation.util.Codec;
-import com.jishi.reservation.util.Common;
+import com.jishi.reservation.util.Constant;
 import com.thoughtworks.xstream.XStream;
 import lombok.extern.log4j.Log4j;
 import org.apache.axis.message.MessageElement;
@@ -38,7 +38,7 @@ public class HisTool {
             log.error("his系统返回失败信息——>"+xml);
             return null;
         }
-        String req =  "<ROOT>"+Codec.Decrypt(getXmlAttribute(xml,"DATAPARAM"), Common.HIS_KEYS)+"</ROOT>";
+        String req =  "<ROOT>"+Codec.Decrypt(getXmlAttribute(xml,"DATAPARAM"), Constant.HIS_KEYS)+"</ROOT>";
         log.info("获取到解密后的数据部分为(<ROOT>节点为之后添加)  :  "+req);
         return req;
     }
@@ -65,7 +65,7 @@ public class HisTool {
         sb.append("<ROOT>");
         sb.append("<TOKEN>");
         sb.append("<![CDATA[");
-        sb.append(Codec.Encrypt(Common.HIS_TOKEN, Common.HIS_KEYS));
+        sb.append(Codec.Encrypt(Constant.HIS_TOKEN, Constant.HIS_KEYS));
         sb.append("]]></TOKEN>");
         sb.append("<SERVICE>");
         sb.append("<![CDATA[");
@@ -76,7 +76,7 @@ public class HisTool {
         sb.append("]]></INSIDEKEY>");
         sb.append("<DATAPARAM>");
         sb.append("<![CDATA[");
-        sb.append(Codec.Encrypt(data, Common.HIS_KEYS));
+        sb.append(Codec.Encrypt(data, Constant.HIS_KEYS));
         sb.append("]]></DATAPARAM>");
         sb.append("</ROOT>");
         log.info(sb.toString());

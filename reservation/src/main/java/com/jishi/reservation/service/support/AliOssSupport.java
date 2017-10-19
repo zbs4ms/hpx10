@@ -3,7 +3,7 @@ package com.jishi.reservation.service.support;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.PutObjectResult;
-import com.jishi.reservation.util.Common;
+import com.jishi.reservation.util.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,16 +24,16 @@ public class AliOssSupport {
 
 
         // 创建OSSClient实例
-        OSSClient ossClient = new OSSClient(Common.END_POINT, Common.ACCESS_KEY_ID, Common.ACCESS_KEY_SECRET);
+        OSSClient ossClient = new OSSClient(Constant.END_POINT, Constant.ACCESS_KEY_ID, Constant.ACCESS_KEY_SECRET);
 
         InputStream fileInputStream = file.getInputStream();
         String filePath = folderPostition+file.getOriginalFilename();
-        PutObjectResult putObjectResult = ossClient.putObject(Common.BUCKET_NAME, filePath, fileInputStream);
+        PutObjectResult putObjectResult = ossClient.putObject(Constant.BUCKET_NAME, filePath, fileInputStream);
         log.info(JSONObject.toJSONString(putObjectResult));
         // 关闭client
         ossClient.shutdown();
 
-        return Common.BATH_ALI_URL + filePath;
+        return Constant.BATH_ALI_URL + filePath;
     }
 
 

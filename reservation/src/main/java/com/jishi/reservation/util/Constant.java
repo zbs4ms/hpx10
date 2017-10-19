@@ -3,7 +3,28 @@ package com.jishi.reservation.util;
 /**
  * Created by zbs on 2017/7/25.
  */
-public class Common {
+public class Constant {
+
+    /****------------   支付类型   ---------------------------
+    /** 订单支付类型 --> 1 : 阿里 **/
+    public final static String ORDER_PAY_TYPE_AL = "alipay";
+    /** 订单支付类型 --> 2 : 微信 **/
+    public final static String ORDER_PAY_TYPE_WX = "wechat";
+    /****------------   阿里支付   ---------------------------
+     /**  阿里网关 **/
+    public final static String ALIPAY_GATEWAY = "";
+    /**  应用APP_ID **/
+    public final static String ALIPAY_APP_ID = "";
+    /**  应用私钥 **/
+    public final static String ALIPAY_PRIVATE_KEY = "";
+    /**  支付宝公钥 **/
+    public final static String ALIPAY_PUBLIC_KEY = "";
+    /**  签名类型 **/
+    public final static String ALIPAY_SIGN_TYPE = "";
+    /**  编码格式 **/
+    public final static String ALIPAY_CHARSET = "";
+    /****------------   微信支付   ---------------------------
+     /**  微信网关 **/
 
     public final static String APPID_WECHAT = "";
     public final static String MCHID_WECHAT = "";

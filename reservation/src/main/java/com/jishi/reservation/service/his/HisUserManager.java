@@ -4,7 +4,9 @@ import com.jishi.reservation.mypackage.PublicResponsePublicResult;
 import com.jishi.reservation.mypackage.UserManagerResponseUserManagerResult;
 import com.jishi.reservation.mypackage.ZL_InformationServiceLocator;
 import com.jishi.reservation.mypackage.ZL_InformationServiceSoap_PortType;
+import com.jishi.reservation.service.his.bean.DepositBalanceHistoryDetail;
 import com.jishi.reservation.service.his.bean.PatientsList;
+import com.jishi.reservation.service.his.bean.UserBindCard;
 import com.thoughtworks.xstream.XStream;
 import lombok.extern.log4j.Log4j;
 import org.apache.axis.message.MessageElement;
@@ -33,7 +35,6 @@ public class HisUserManager {
         String reData = HisTool.toXMLString("BindCard.UserInfoByCardNO.Query", sb.toString());
         UserManagerResponseUserManagerResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            log.info(me.getAsString());
             String xml = HisTool.getHisDataparam(me);
             return (PatientsList)HisTool.toBean(PatientsList.class,xml);
         }
@@ -83,7 +84,7 @@ public class HisUserManager {
         sb.append("<ZJLX>").append(idNumberType).append("</ZJLX>");
         sb.append("<XM>").append(name).append("</XM>");
         sb.append("<SJH>").append(phone).append("</SJH>");
-        String reData = HisTool.toXMLString("indCard.CreateUser.Modify", sb.toString());
+        String reData = HisTool.toXMLString("BindCard.CreateUser.Modify", sb.toString());
         UserManagerResponseUserManagerResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
@@ -91,8 +92,6 @@ public class HisUserManager {
         }
        return false;
     }
-
-
 
 
     private UserManagerResponseUserManagerResult execute(String reData) throws RemoteException, ServiceException {

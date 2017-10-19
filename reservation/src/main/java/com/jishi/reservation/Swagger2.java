@@ -13,6 +13,8 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,11 @@ import java.util.List;
 @Configuration
 @EnableSwagger2
 public class Swagger2 {
+
+    public static void main(String[] args) throws UnsupportedEncodingException {
+        String a = "%28%29";
+        System.out.print( URLDecoder.decode(a, "UTF-8") );
+    }
 
     @Bean
     public Docket createRestApi() {
