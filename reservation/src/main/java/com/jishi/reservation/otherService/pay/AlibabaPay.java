@@ -86,7 +86,8 @@ public class AlibabaPay {
 
         try {
             boolean flag = AlipaySignature.rsaCheckV1(params, PayConstant.APP_PUBLIC_KEY, PayConstant.CHARSET, PayConstant.ENCRYPT);
-            if(flag){
+            log.info("验证结果："+flag);
+          
                 if("TRADE_SUCCESS".equals(params.get("trade_status"))){
                     //付款金额
                     String amount =  params.get("total_fee");
@@ -111,7 +112,7 @@ public class AlibabaPay {
                     log.info("订单状态修改为已支付。订单id:"+orderInfo.getId());
 
                 }
-            }
+
         } catch (AlipayApiException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
