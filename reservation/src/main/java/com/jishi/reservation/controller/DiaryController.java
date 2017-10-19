@@ -61,7 +61,7 @@ public class DiaryController extends BaseController {
     @ResponseBody
     public JSONObject verify(
             @ApiParam(value = "日记 的 id") @RequestParam(value = "id") Long id,
-            @ApiParam(value = "审核的结果 0审核通过 2审核拒绝") @RequestParam(value = "status")Integer status
+            @ApiParam(value = "审核的结果 0审核通过 1dengdai shenhe  2审核拒绝") @RequestParam(value = "status")Integer status
                 ){
         log.info("执行日记审核操作。id:"+id+",status:"+status);
         diaryService.verify(id, status);

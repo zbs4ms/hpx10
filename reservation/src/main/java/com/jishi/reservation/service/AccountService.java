@@ -11,18 +11,21 @@ import com.jishi.reservation.dao.mapper.IdentityInfoMapper;
 import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.dao.models.Credentials;
 import com.jishi.reservation.dao.models.IdentityInfo;
+import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+<<<<<<< HEAD
+=======
 import com.jishi.reservation.service.enumPackage.SmsEnum;
 import com.jishi.reservation.service.his.HisUserManager;
 import com.jishi.reservation.service.his.bean.PatientsList;
+>>>>>>> e7bc321572438e5047eb8b46df3f4bf8fbb12924
 import com.jishi.reservation.service.support.AliDayuSupport;
-import com.jishi.reservation.util.Common;
+import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
 import com.jishi.reservation.util.NewRandomUtil;
 import com.us.base.util.MD5Encryption;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,11 +110,11 @@ public class AccountService {
         log.info("账号采用手机进行登陆: phone:" + phone + " dynamicCode:" + dynamicCode);
         String code = redisOperation.get(prefix + "_" + phone);
         if (!dynamicCode.equals(code))
-            throw new Exception("登陆失败!");
+            return null;
         List<Account> account = queryAccount(null, phone, null);
         Account accountLogin;
         if (account.size() == 0){
-             accountLogin = addAccount(phone, phone, Common.DEFAULT_AVATAR, phone, phone, null);
+             accountLogin = addAccount(phone, phone, Constant.DEFAULT_AVATAR, phone, phone, null);
 
         }else {
             accountLogin = account.get(0);
@@ -176,7 +179,7 @@ public class AccountService {
 
         Account account = accountMapper.queryByTelephone(phone);
 
-        String token =Common.TOKEN_HEADER + createToken(account.getId());
+        String token = Constant.TOKEN_HEADER + createToken(account.getId());
         List<String> keys = new ArrayList<String>();
         keys.add(String.valueOf(account.getId()));
         keys.add(token);
@@ -361,7 +364,7 @@ public class AccountService {
 
 
     public Long returnIdByToken(HttpServletRequest request) throws Exception {
-        String token = request.getHeader(Common.TOKEN);
+        String token = request.getHeader(Constant.TOKEN);
         log.info("token："+token);
         if(token == null || "".equals(token) || "null".equals(token)){
             log.info("token為空...");
@@ -502,4 +505,6 @@ public class AccountService {
 
         return loginData;
     }
+
+
 }

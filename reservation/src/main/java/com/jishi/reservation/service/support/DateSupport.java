@@ -3,7 +3,7 @@ package com.jishi.reservation.service.support;
 import com.jishi.reservation.controller.protocol.DateVO;
 import com.jishi.reservation.controller.protocol.TimeIntervalVO;
 import com.jishi.reservation.service.enumPackage.DateEnum;
-import com.jishi.reservation.util.Common;
+import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.DateTool;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,7 +27,7 @@ public class DateSupport {
         morring.set(Calendar.SECOND, 0);
         Date morringTime = morring.getTime();
 
-        Date afternoonTime = new Date(morringTime.getTime() + Common.SIX_HOURS);
+        Date afternoonTime = new Date(morringTime.getTime() + Constant.SIX_HOURS);
 
         List<Date> dateList = new ArrayList<>();
 

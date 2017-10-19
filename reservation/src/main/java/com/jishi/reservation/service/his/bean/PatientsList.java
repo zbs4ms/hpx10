@@ -9,10 +9,33 @@ import java.util.List;
 /**
  * Created by wang on 2017/9/28.
  */
-@XStreamAlias("LIST")
+@XStreamAlias("ROOT")
 @Data
 public class PatientsList {
 
-    @XStreamImplicit(itemFieldName="JZK")
-    List<Credentials> jzkList;
+    @XStreamAlias("LIST")
+    LIST list;
+
+    @Data
+    public class LIST{
+        @XStreamImplicit(itemFieldName="JZK")
+        List<Credentials> jzkList;
+    }
+
+    @Data
+    public class Credentials {
+        //类别
+        @XStreamAlias("LB")
+        String idType;
+        //卡号
+        @XStreamAlias("KH")
+        String idNumber;
+        //his唯一ID
+        @XStreamAlias("BRID")
+        String BRID;
+        //病人门诊号
+        @XStreamAlias("MZH")
+        String MZH;
+    }
+
 }

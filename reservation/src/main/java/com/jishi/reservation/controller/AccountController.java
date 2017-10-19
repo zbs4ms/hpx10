@@ -1,13 +1,7 @@
 package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.aliyun.oss.ClientException;
-import com.aliyuncs.DefaultAcsClient;
-import com.aliyuncs.IAcsClient;
 
-import com.aliyuncs.http.MethodType;
-import com.aliyuncs.profile.DefaultProfile;
-import com.aliyuncs.profile.IClientProfile;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.protocol.LoginData;
 import com.jishi.reservation.dao.models.Account;
@@ -15,7 +9,6 @@ import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.enumPackage.SmsEnum;
-import com.jishi.reservation.util.Common;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -61,6 +54,8 @@ public class AccountController extends BaseController{
 
 
         LoginData loginData = accountService.loginOrRegisterThroughPhone(phone,loginOrRegister ,dynamicCode);
+        if(loginData==null)
+            return ResponseWrapper().addMessage("登录失败!").ExeFaild(ReturnCodeEnum.FAILED.getCode());
         return ResponseWrapper().addData(loginData).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 

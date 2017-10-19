@@ -9,8 +9,14 @@ import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.doraemon.base.util.RandomUtil;
+import com.google.common.base.Preconditions;
+import com.jishi.reservation.dao.mapper.OrderInfoMapper;
+import com.jishi.reservation.dao.models.OrderInfo;
+import com.jishi.reservation.otherService.pay.protocol.AliPayCallbackModel;
+import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
 import com.jishi.reservation.util.PayConstant;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -27,6 +33,8 @@ import java.util.*;
 public class AlibabaPay {
 
 
+    @Autowired
+    OrderInfoMapper orderInfoMapper;
 
     public String generateOrder(String subject, BigDecimal price) throws Exception {
         AlipayClient client = new DefaultAlipayClient(
@@ -68,41 +76,43 @@ public class AlibabaPay {
     }
 
 
-    public String aliPay_notify(Map requestParams){
-        System.out.println("支付宝支付结果通知"+requestParams.toString());
+    public String aliPay_notify(AliPayCallbackModel model){
+        System.out.println("支付宝支付结果通知:\n"+JSONObject.toJSONString(model));
+        Map<String, String> params = model.toMap();
+        log.info("转换后的map\n"+JSONObject.toJSONString(params));
         //获取支付宝POST过来反馈信息
-        Map<String,String> params = new HashMap<String,String>();
+       // Map<String,String> params = new HashMap<String,String>();
 
-        for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
-            String name = (String) iter.next();
-            String[] values = (String[]) requestParams.get(name);
-            String valueStr = "";
-            for (int i = 0; i < values.length; i++) {
-                valueStr = (i == values.length - 1) ? valueStr + values[i]
-                        : valueStr + values[i] + ",";
-            }
-            //乱码解决，这段代码在出现乱码时使用。
-            //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
-            params.put(name, valueStr);
-        }
+
         try {
             boolean flag = AlipaySignature.rsaCheckV1(params, PayConstant.APP_PUBLIC_KEY, PayConstant.CHARSET, PayConstant.ENCRYPT);
-            if(flag){
+            log.info("验证结果："+flag);
+
                 if("TRADE_SUCCESS".equals(params.get("trade_status"))){
                     //付款金额
-                    String amount = params.get("buyer_pay_amount");
+                    String amount =  params.get("total_fee");
                     //商户订单号
-                    String out_trade_no = params.get("out_trade_no");
+                    String outTradeNo =  params.get("out_trade_no");
                     //支付宝交易号
-                    String trade_no = params.get("trade_no");
+                    String trade_no =  params.get("trade_no");
+                    //支付时间
+                    String payTime = params.get("notify_time");
                     //附加数据
-                    String passback_params = URLDecoder.decode(params.get("passback_params"));
+                    //String passback_params = URLDecoder.decode(params.get("passback_params"));
 
-                    //todo
+
                     //判断支付金额和商户订单号和自己系统中的信息是否吻合，做判断
+                    OrderInfo orderInfo =  orderInfoMapper.queryByOutTradeNo(outTradeNo);
+                    Preconditions.checkNotNull(orderInfo,"找不到该订单信息");
+                    log.info("订单信息：\n"+JSONObject.toJSONString(orderInfo));
+                    //改变订单状态和支付时间
+                    orderInfo.setStatus(OrderStatusEnum.PAYED.getCode());
+                    orderInfo.setPayTime(payTime);
+                    orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+                    log.info("订单状态修改为已支付。订单id:"+orderInfo.getId());
 
                 }
-            }
+
         } catch (AlipayApiException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

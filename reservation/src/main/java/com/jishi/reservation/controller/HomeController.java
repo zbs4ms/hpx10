@@ -1,8 +1,6 @@
 package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.aliyun.oss.OSSClient;
-import com.aliyun.oss.model.PutObjectResult;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
@@ -10,7 +8,7 @@ import com.jishi.reservation.dao.models.Banner;
 import com.jishi.reservation.service.HomeService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.support.AliOssSupport;
-import com.jishi.reservation.util.Common;
+import com.jishi.reservation.util.Constant;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,8 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -53,7 +49,7 @@ public class HomeController extends BaseController {
         Preconditions.checkNotNull(jumpUrl,"请传入必须的参数：jumpUrl");
         Preconditions.checkNotNull(orderNumber,"请传入必须的参数：orderNumber");
 
-        String fileUrl = ossSupport.uploadImage(file,Common.BANNER_PATH);
+        String fileUrl = ossSupport.uploadImage(file, Constant.BANNER_PATH);
         homeService.addBanner(name,fileUrl, jumpUrl,orderNumber);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -74,7 +70,7 @@ public class HomeController extends BaseController {
 
 
         if(file != null) {
-            String fileUrl = ossSupport.uploadImage(file, Common.BANNER_PATH);
+            String fileUrl = ossSupport.uploadImage(file, Constant.BANNER_PATH);
             homeService.modifyBanner(bannerId, name,fileUrl, jumpUrl,orderNumber);
         }else {
             homeService.modifyBanner(bannerId, name,null, jumpUrl,orderNumber);

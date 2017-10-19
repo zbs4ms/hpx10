@@ -6,18 +6,14 @@ import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.DateVO;
 import com.jishi.reservation.controller.protocol.DoctorVO;
-import com.jishi.reservation.controller.protocol.TimeIntervalVO;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.service.DepartmentService;
 import com.jishi.reservation.service.DoctorService;
-import com.jishi.reservation.service.PatientInfoService;
-import com.jishi.reservation.service.enumPackage.DateEnum;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.support.AliOssSupport;
 import com.jishi.reservation.service.support.DateSupport;
-import com.jishi.reservation.util.Common;
-import com.jishi.reservation.util.DateTool;
+import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
@@ -28,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -65,7 +60,7 @@ public class DoctorController extends BaseController{
         Preconditions.checkNotNull(doctorName,"请传入必须的参数：doctorName");
         Preconditions.checkNotNull(file,"请传入必须的参数：file");
         Preconditions.checkNotNull(departmentIds,"请传入必须的参数：departmentIds");
-        String headPortrait = ossSupport.uploadImage(file,Common.DOCTOR_PATH);
+        String headPortrait = ossSupport.uploadImage(file, Constant.DOCTOR_PATH);
         doctorService.addDoctor(doctorName,type,headPortrait,departmentIds,about,title,school,goodDescribe);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -155,7 +150,7 @@ public class DoctorController extends BaseController{
         Preconditions.checkNotNull(doctorId,"请传入必须的参数：doctorId");
 
         if(file!=null){
-            String headPortrait = ossSupport.uploadImage(file, Common.DOCTOR_PATH);
+            String headPortrait = ossSupport.uploadImage(file, Constant.DOCTOR_PATH);
             doctorService.modifyDoctor(doctorId,doctorName,type,headPortrait,describe,title,school,goodDescribe,null);
         }else {
             doctorService.modifyDoctor(doctorId,doctorName,type,null,describe,title,school,goodDescribe,null);

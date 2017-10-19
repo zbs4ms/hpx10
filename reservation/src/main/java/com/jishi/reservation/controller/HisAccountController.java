@@ -34,24 +34,24 @@ public class HisAccountController extends BaseController{
     @Autowired
     AccountService accountService;
 
-    @ApiOperation(value = "新病人注册登记")
-    @RequestMapping(value = "register", method = RequestMethod.POST)
-    @ResponseBody
-    public JSONObject register(
-            @ApiParam(value = "证件号") @RequestParam(value = "idNumber") String idNumber,
-            @ApiParam(value = "证件类型") @RequestParam(value = "idNumberType") String idNumberType,
-            @ApiParam(value = "姓名") @RequestParam(value = "name") String name,
-            @ApiParam(value = "手机号") @RequestParam(value = "phone") String phone
-            ) throws Exception {
-        Preconditions.checkNotNull(idNumber,"请传入所需要的参数：idNumber");
-        Preconditions.checkNotNull(idNumberType,"请传入所需要的参数：idNumberType");
-        Preconditions.checkNotNull(name,"请传入所需要的参数：name");
-        Preconditions.checkNotNull(phone,"请传入所需要的参数：phone");
-
-
-        LoginData loginData = accountService.registerWithHis(idNumber,idNumberType ,name,phone);
-        return ResponseWrapper().addData(loginData).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-    }
+//    @ApiOperation(value = "新病人注册登记")
+//    @RequestMapping(value = "register", method = RequestMethod.POST)
+//    @ResponseBody
+//    public JSONObject register(
+//            @ApiParam(value = "证件号") @RequestParam(value = "idNumber") String idNumber,
+//            @ApiParam(value = "证件类型") @RequestParam(value = "idNumberType") String idNumberType,
+//            @ApiParam(value = "姓名") @RequestParam(value = "name") String name,
+//            @ApiParam(value = "手机号") @RequestParam(value = "phone") String phone
+//            ) throws Exception {
+//        Preconditions.checkNotNull(idNumber,"请传入所需要的参数：idNumber");
+//        Preconditions.checkNotNull(idNumberType,"请传入所需要的参数：idNumberType");
+//        Preconditions.checkNotNull(name,"请传入所需要的参数：name");
+//        Preconditions.checkNotNull(phone,"请传入所需要的参数：phone");
+//
+//
+//        LoginData loginData = accountService.registerWithHis(idNumber,idNumberType ,name,phone);
+//        return ResponseWrapper().addData(loginData).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+//    }
 
 
     @ApiOperation(value = "通过手机号来查询用户就诊信息")
@@ -69,6 +69,8 @@ public class HisAccountController extends BaseController{
         LoginData loginData = accountService.queryInfo(account);
         return ResponseWrapper().addData(loginData).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
+
+
 
 
 

@@ -1,7 +1,7 @@
 package com.jishi.reservation.otherService.pay.protocol;
 
 import com.jishi.reservation.otherService.pay.WXSignature;
-import com.jishi.reservation.util.Common;
+import com.jishi.reservation.util.Constant;
 import com.us.base.util.tool.RandomTool;
 import lombok.Data;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -21,9 +21,9 @@ import java.util.Map;
 @Data
 public class WXUnifiedOrderPayReqData {
     //应用API
-    private String appid = Common.APPID_WECHAT;
+    private String appid = Constant.APPID_WECHAT;
     //商户号
-    private String mch_id = Common.MCHID_WECHAT;
+    private String mch_id = Constant.MCHID_WECHAT;
     //设备号
     private String device_info = "WEB";
     //随机字符串
@@ -33,7 +33,7 @@ public class WXUnifiedOrderPayReqData {
     //签名类型
     private String sign_type="MD5";
     //商品描述
-    private String body=Common.APP_NAME_WECHAT;
+    private String body= Constant.APP_NAME_WECHAT;
     //商品详情
     private String detail="";
     //附加数据
@@ -74,7 +74,7 @@ public class WXUnifiedOrderPayReqData {
 
 
         setDetail(detail);
-        setOut_trade_no(outTradeNo + Common.APP_NAME_WECHAT+ RandomTool.getRandomStringByLength(6));
+        setOut_trade_no(outTradeNo + Constant.APP_NAME_WECHAT+ RandomTool.getRandomStringByLength(6));
 
         setTotal_fee(totalFee);
         setSpbill_create_ip(spbillCreateIp);

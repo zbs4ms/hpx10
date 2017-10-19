@@ -5,7 +5,9 @@ import com.jishi.reservation.mypackage.PublicResponsePublicResult;
 import com.jishi.reservation.mypackage.UserManagerResponseUserManagerResult;
 import com.jishi.reservation.mypackage.ZL_InformationServiceLocator;
 import com.jishi.reservation.mypackage.ZL_InformationServiceSoap_PortType;
+import com.jishi.reservation.service.his.bean.DepositBalanceHistoryDetail;
 import com.jishi.reservation.service.his.bean.PatientsList;
+import com.jishi.reservation.service.his.bean.UserBindCard;
 import com.thoughtworks.xstream.XStream;
 import lombok.Data;
 import lombok.extern.log4j.Log4j;
@@ -35,7 +37,6 @@ public class HisUserManager {
         String reData = HisTool.toXMLString("BindCard.UserInfoByCardNO.Query", sb.toString());
         UserManagerResponseUserManagerResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            log.info(me.getAsString());
             String xml = HisTool.getHisDataparam(me);
             return (PatientsList)HisTool.toBean(PatientsList.class,xml);
         }
@@ -43,7 +44,7 @@ public class HisUserManager {
     }
 
     /**
-     * 获取用户信息2,通过登记号
+     * 获取用户信息2,通过登记号  返回得有brid
      * @param idNumber
      * @param idNumberType
      * @param name
@@ -100,10 +101,13 @@ public class HisUserManager {
     }
 
 
+<<<<<<< HEAD
+=======
 
 
 
 
+>>>>>>> e7bc321572438e5047eb8b46df3f4bf8fbb12924
     private UserManagerResponseUserManagerResult execute(String reData) throws RemoteException, ServiceException {
         ZL_InformationServiceLocator locator = new ZL_InformationServiceLocator();
         ZL_InformationServiceSoap_PortType service = locator.getZL_InformationServiceSoap();

@@ -54,6 +54,9 @@ public class HospitalizationController extends BaseController {
     }
 
 
+
+
+
     private  HospitalizationInfoVO getHospitalizationInfoVO(DepositBalanceDetail depositBalanceDetail) throws Exception {
         HospitalizationInfoVO hospitalizationInfoVO = new HospitalizationInfoVO();
         hospitalizationInfoVO.setState(depositBalanceDetail.getZyzt());
