@@ -37,4 +37,15 @@
   }
 }
 
+// 操作
+.operations {
+  .operate-item {
+    cursor: pointer;
+
+    & + .operate-item {
+      margin-left: 20px
+    }
+  }
+}
+
 

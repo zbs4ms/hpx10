@@ -94,6 +94,14 @@
       }
     },
     render (h) {
+      const basicColCfg = (prop) => {
+        return {
+          formatter (row, column) {
+            return row[prop] || '--'
+          },
+          'show-overflow-tooltip': true
+        }
+      }
       return (
         <div class="search-table">
           {this.$slots['table-tools']}
@@ -106,7 +114,7 @@
                 return (
                   item.slotName ? this.$slots[item.slotName] : (
                     <el-table-column
-                      {...{props: item.attrs}}
+                      {...{props: Object.assign({}, basicColCfg(item.attrs.prop), item.attrs)}}
                       scopedSlots={item.scopedSlots}>
                     </el-table-column>
                   )

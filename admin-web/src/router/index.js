@@ -11,6 +11,8 @@ import doctorRouters from '@/components/doctor/router'
 import authRouters from '@/components/auth/router'
 // 日记管理
 import logRouters from '@/components/log/router'
+// 预约管理
+import reserveRouters from '@/components/reserve/router'
 
 // 登陆
 const Login = resolve => require(['@/components/login/Login'], resolve)
@@ -33,6 +35,7 @@ const router = new Router({
     ...doctorRouters,
     ...authRouters,
     ...logRouters,
+    ...reserveRouters,
     {
       path: '*',
       name: 'NotFound',

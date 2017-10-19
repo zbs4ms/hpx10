@@ -16,25 +16,22 @@ export default {
   data () {
     return {
       form: {
-        name: '',
-        pickedAuth: [],
-        psd: ''
+        name: '', // 名称
+        pickedAuth: [], // 权限
+        psd: '' // 密码
       },
       authOptions: [{
         value: '选项1',
-        label: '黄金糕'
+        label: '运营管理'
       }, {
         value: '选项2',
-        label: '双皮奶'
+        label: '预约管理'
       }, {
         value: '选项3',
-        label: '蚵仔煎'
+        label: '信息录入'
       }, {
         value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
+        label: '人员管理'
       }],
       pickedAuth: [],
       submitLoading: false
@@ -110,7 +107,7 @@ export default {
           <el-col :span="16">
             <el-form-item
               label="权限"
-              prop="auth"
+              prop="pickedAuth"
               required
               :rules="[
                 { required: true, message: '请选择权限' }
