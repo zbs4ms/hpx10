@@ -4,6 +4,8 @@ import lombok.Data;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.List;
 
 /**
  * Created by sloan on 2017/9/10.
@@ -19,6 +21,11 @@ public class Manager {
     private String account;
     private String password;
     private Integer enable;
+    private String permission;
+
+    @Transient
+    private List<Permission> permissionList;
+
 
 
 }

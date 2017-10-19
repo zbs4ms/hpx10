@@ -1,0 +1,67 @@
+/* element组件样式全局重置 */
+@import "../variables/theme";
+
+.el-form-item__content {
+  .el-select {
+    width: 100%;
+  }
+}
+
+// dialog 水平垂直居中
+.dialog--center {
+  text-align: center;
+
+  &:after {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+  }
+  .el-dialog {
+    margin-bottom: 0;
+    position: static;
+    transform: translate(0);
+    display: inline-block;
+    vertical-align: middle;
+    text-align: left;
+  }
+}
+
+/* input */
+.el-input__inner {
+  background: transparent;
+}
+/* input END */
+
+/* table */
+.el-table {
+  &, tr {
+    background: transparent;
+  }
+}
+/* table END */
+
+/* checkbox */
+.el-checkbox__inner {
+  background: transparent;
+}
+/* checkbox END */
+
+/* pagination */
+.el-pagination {
+  .el-pager li:not(.active), .btn-next, .btn-prev, button.disabled {
+    background: transparent;
+  }
+}
+/* pagination END */
+
+/* loading */
+.el-loading-mask {
+  background-color: rgba(236, 238, 243, .8);
+  @at-root {
+    body > & {
+      background-color: rgba(0,0,0,.5);
+    }
+  }
+}
+/* loading END */

@@ -44,10 +44,12 @@ public class PatientInfoController extends BaseController {
     @ResponseBody
     public JSONObject addPatientInfo(HttpServletRequest request,
                                      HttpServletResponse response,
-            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-            @ApiParam(value = "就诊人名称", required = true) @RequestParam(value = "name", required = true) String name,
-            @ApiParam(value = "病人电话", required = true) @RequestParam(value = "phone", required = true) String phone,
-            @ApiParam(value = "病人身份证", required = true) @RequestParam(value = "idCard", required = true) String idCard) throws Exception {
+                                     @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+                                    @ApiParam(value = "就诊人名称", required = true) @RequestParam(value = "name", required = true) String name,
+                                      @ApiParam(value = "病人电话", required = true) @RequestParam(value = "phone", required = true) String phone,
+                                    @ApiParam(value = "病人身份证", required = true) @RequestParam(value = "idCard", required = true) String idCard,
+                                     @ApiParam(value = "证件类型") @RequestParam(value = "idCardType") String idCardTpye
+                                     ) throws Exception {
 
         Preconditions.checkNotNull(name,"请传入必须的参数：name");
         Preconditions.checkNotNull(phone,"请传入必须的参数：phone");
@@ -59,7 +61,7 @@ public class PatientInfoController extends BaseController {
                 return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
-       Long id =  patientInfoService.addPatientInfo(accountId, name, phone, idCard);
+       Long id =  patientInfoService.addPatientInfo(accountId, name, phone, idCard,idCardTpye);
         return ResponseWrapper().addData(id).addMessage("添加成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 

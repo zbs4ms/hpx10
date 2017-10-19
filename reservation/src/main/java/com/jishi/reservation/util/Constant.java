@@ -69,7 +69,7 @@ public class Constant {
 
 
     /**  中联相关 */
-    public final static String BASE_URL = "http://192.168.100.13/ExternalServices/ZL_InformationService.asmx/";
+    public final static String BASE_URL = "http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx/";
     //测试连接的服务
     public final static String TEST_SERVICE = "Basic.MCTest.Query";
 
@@ -85,4 +85,10 @@ public class Constant {
      * 一天的毫秒值
      */
     public final static long DAY_MS = 24*60*60*1000L;
+    //12345678952
+    public final static String DEFAULT_PASSWORD = "def677132701779c74c9bd95dae4de57";
+    /**
+     * 每个账号最大的绑定个数 5
+     */
+    public final static int MAX_BINDING_NUM = 5;
 }

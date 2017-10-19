@@ -5,13 +5,13 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.RegisterCompleteVO;
-import com.jishi.reservation.dao.mapper.DepartmentMapper;
-import com.jishi.reservation.dao.mapper.DoctorMapper;
-import com.jishi.reservation.dao.mapper.PatientInfoMapper;
-import com.jishi.reservation.dao.mapper.RegisterMapper;
+import com.jishi.reservation.dao.mapper.*;
 import com.jishi.reservation.dao.models.Department;
+import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.Register;
+import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
 import com.jishi.reservation.service.enumPackage.PayEnum;
 import com.jishi.reservation.service.enumPackage.StatusEnum;
 import com.jishi.reservation.util.Helpers;
@@ -52,6 +52,8 @@ public class RegisterService {
     DoctorService doctorService;
     @Autowired
     ScheduledService scheduledService;
+    @Autowired
+    OrderInfoMapper orderInfoMapper;
 
     /**
      * 增加一条预约
@@ -98,19 +100,37 @@ public class RegisterService {
         completeVO.setTimeInterval(timeInterval);
         completeVO.setPatient(patientInfoMapper.queryById(patientinfoId).getName());
 
+
+
+        //todo   此处还没对接his，先把支付调通
+        String subject = "神经科预约";
+        String des = "欢迎挂号神经科";
+        OrderInfo order = new OrderInfo();
+        order.setAccountId(accountId);
+        order.setBrId("fakerBrid");
+        order.setCreateTime(new Date());
+        order.setSubject(subject);
+        order.setDes(des);
+        order.setPrice(BigDecimal.valueOf(0.01));
+        order.setEnable(EnableEnum.EFFECTIVE.getCode());
+        String orderNumber = AlibabaPay.generateUniqueOrderNumber();
+        order.setOrderNumber(orderNumber);
+        order.setRegisterId(register.getId());
+        order.setStatus(OrderStatusEnum.WAIT_PAYED.getCode());
+        order.setPayType(PayEnum.ALI.getCode());
+        orderInfoMapper.insertReturnId(order);
+
         //todo 还没对接支付，所以就先搞几个假数据，供前段解析展示
-        completeVO.setPayType(PayEnum.WEIXIN.getCode());
+        completeVO.setPayType(PayEnum.ALI.getCode());
         completeVO.setPayTime(new Date());
         completeVO.setCompleteTime(new Date());
-        completeVO.setPrice(BigDecimal.valueOf(23.88));
+        completeVO.setPrice(BigDecimal.valueOf(0.01));
         completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
-        completeVO.setOrderCode("wx568254965");
+        completeVO.setOrderCode(orderNumber);
         completeVO.setSerialNumber(serialCode);
-
+        completeVO.setSubject(subject);
+        completeVO.setDes(des);
         return completeVO;
-
-
-
 
     }
 

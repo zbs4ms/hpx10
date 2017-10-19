@@ -1,5 +1,6 @@
 package com.jishi.reservation.service.his;
 
+import com.jishi.reservation.controller.protocol.BridAndMzh;
 import com.jishi.reservation.mypackage.PublicResponsePublicResult;
 import com.jishi.reservation.mypackage.UserManagerResponseUserManagerResult;
 import com.jishi.reservation.mypackage.ZL_InformationServiceLocator;
@@ -8,6 +9,7 @@ import com.jishi.reservation.service.his.bean.DepositBalanceHistoryDetail;
 import com.jishi.reservation.service.his.bean.PatientsList;
 import com.jishi.reservation.service.his.bean.UserBindCard;
 import com.thoughtworks.xstream.XStream;
+import lombok.Data;
 import lombok.extern.log4j.Log4j;
 import org.apache.axis.message.MessageElement;
 import org.springframework.stereotype.Service;
@@ -42,7 +44,7 @@ public class HisUserManager {
     }
 
     /**
-     * 获取用户信息2,通过登记号
+     * 获取用户信息2,通过登记号  返回得有brid
      * @param idNumber
      * @param idNumberType
      * @param name
@@ -58,7 +60,7 @@ public class HisUserManager {
         sb.append("<XM>").append(name).append("</XM>");
         sb.append("<KH>").append(code).append("</KH>");
         sb.append("<KLB>").append(codeType).append("</KLB>");
-        String reData = HisTool.toXMLString("indCard.UserInfoByRegNO.Query", sb.toString());
+        String reData = HisTool.toXMLString("BindCard.UserInfoByRegNO.Query", sb.toString());
         UserManagerResponseUserManagerResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
@@ -78,7 +80,8 @@ public class HisUserManager {
      * @return
      * @throws Exception
      */
-    public boolean addUserInfo(String idNumber,String idNumberType,String name,String phone) throws Exception {
+    //todo 增加病人信息需要返回BRID和MZH ？？？？
+    public BridAndMzh addUserInfo(String idNumber,String idNumberType,String name,String phone) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<ZJH>").append(idNumber).append("</ZJH>");
         sb.append("<ZJLX>").append(idNumberType).append("</ZJLX>");
@@ -88,12 +91,23 @@ public class HisUserManager {
         UserManagerResponseUserManagerResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            return true;
+            BridAndMzh param = new BridAndMzh();
+            param.setBRID("this is BRID");
+            param.setMZH("this is MZH");
+
+            return param;
         }
-       return false;
+       return null;
     }
 
 
+<<<<<<< HEAD
+=======
+
+
+
+
+>>>>>>> e7bc321572438e5047eb8b46df3f4bf8fbb12924
     private UserManagerResponseUserManagerResult execute(String reData) throws RemoteException, ServiceException {
         ZL_InformationServiceLocator locator = new ZL_InformationServiceLocator();
         ZL_InformationServiceSoap_PortType service = locator.getZL_InformationServiceSoap();

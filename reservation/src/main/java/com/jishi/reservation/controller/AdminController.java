@@ -1,11 +1,21 @@
 package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.AdminLogInfoData;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.ManagerService;
+<<<<<<< HEAD
 import com.jishi.reservation.util.Constant;
+=======
+import com.jishi.reservation.service.PermissionService;
+import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.util.Common;
+>>>>>>> e7bc321572438e5047eb8b46df3f4bf8fbb12924
 import com.jishi.reservation.util.CookieUtil;
 import com.jishi.reservation.util.SessionUtil;
 import com.us.base.common.controller.BaseController;
@@ -19,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 
 /**
@@ -32,6 +43,9 @@ public class AdminController extends BaseController {
 
     @Autowired
     ManagerService managerService;
+
+    @Autowired
+    PermissionService permissionService;
 
 
     /**
@@ -66,7 +80,13 @@ public class AdminController extends BaseController {
             logInfoData.setToken(token);
 
             logInfoData.setAccount(manager.getAccount());
+            //处理管理员的权限
+            Gson gson = new Gson();
+            List<String> list = gson.fromJson(manager.getPermission(),
+                    new TypeToken<List<String>>() {
+                    }.getType());
 
+            logInfoData.setPermissionList(list);
             //token存放到cookie,并设置httpOnly为true
             CookieUtil.addCookie(response, Constant.ADMIN_TOKEN, token, 28880, true);
             //token存放到session
@@ -75,6 +95,83 @@ public class AdminController extends BaseController {
             return ResponseWrapper().addMessage("登陆成功！").addData(logInfoData).ExeSuccess(200);
         }
     }
+
+
+
+
+
+
+    @ApiOperation(value = "返回所有权限接口")
+    @RequestMapping(value = "all_permission", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject all_permission(HttpServletRequest request,HttpServletResponse response) throws Exception {
+
+
+        List<Permission> list =  permissionService.queryAll();
+
+        return ResponseWrapper().addData(list).addMessage("查询成功").ExeSuccess(200);
+
+    }
+
+
+    @ApiOperation(value = "创建管理员账号")
+    @RequestMapping(value = "crete", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject create(
+            @ApiParam(value = "账号") @RequestParam(value = "account") String account,
+            @ApiParam(value = "密码") @RequestParam(value = "password") String password,
+            @ApiParam(value = "权限列表  json数组格式 permission_id ['m_01','m_02']") @RequestParam(value = "permission") String permission
+            ) throws Exception {
+
+        managerService.create(account,password,permission);
+        return ResponseWrapper().addMessage("创建成功").ExeSuccess(200);
+
+    }
+
+
+
+    @ApiOperation(value = "人员列表接口")
+    @RequestMapping(value = "list", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject list(
+            @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
+            @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
+            @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
+            @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc
+    ) throws Exception {
+
+        PageInfo<Manager> page =  managerService.queryByPage(Paging.create(pageNum,pageSize,orderBy,desc));
+        return ResponseWrapper().addData(page).addMessage("查询成功").ExeSuccess(200);
+
+    }
+
+
+    @ApiOperation(value = "修改管理员账号  权限 密码")
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject update(
+            @ApiParam(value = "人员id") @RequestParam(value = "id") Long id,
+            @ApiParam(value = "权限 json ['m_01','m_01']") @RequestParam(value = "permission", required = false) String permission,
+            @ApiParam(value = "密码") @RequestParam(value = "password", required = false) String password
+    ) throws Exception {
+
+         managerService.changeInfo(id,permission,password);
+        return ResponseWrapper().addMessage("修改成功").ExeSuccess(200);
+
+    }
+
+    @ApiOperation(value = " 删除某个账号")
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject deleteSoft(
+            @ApiParam(value = "人员id") @RequestParam(value = "id") Long id
+    ) throws Exception {
+
+        managerService.deleteSoft(id);
+        return ResponseWrapper().addMessage("删除成功").ExeSuccess(200);
+
+    }
+
 
 
 
@@ -91,5 +188,12 @@ public class AdminController extends BaseController {
 
         return ResponseWrapper().addMessage("退出成功").ExeSuccess(200);
 
+
     }
+
+
+
+
+
+
 }
