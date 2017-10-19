@@ -87,7 +87,7 @@ public class AlibabaPay {
         try {
             boolean flag = AlipaySignature.rsaCheckV1(params, PayConstant.APP_PUBLIC_KEY, PayConstant.CHARSET, PayConstant.ENCRYPT);
             log.info("验证结果："+flag);
-          
+
                 if("TRADE_SUCCESS".equals(params.get("trade_status"))){
                     //付款金额
                     String amount =  params.get("total_fee");
@@ -98,9 +98,9 @@ public class AlibabaPay {
                     //支付时间
                     String payTime = params.get("notify_time");
                     //附加数据
-                    String passback_params = URLDecoder.decode(params.get("passback_params"));
+                    //String passback_params = URLDecoder.decode(params.get("passback_params"));
 
-                    //todo
+
                     //判断支付金额和商户订单号和自己系统中的信息是否吻合，做判断
                     OrderInfo orderInfo =  orderInfoMapper.queryByOutTradeNo(outTradeNo);
                     Preconditions.checkNotNull(orderInfo,"找不到该订单信息");
