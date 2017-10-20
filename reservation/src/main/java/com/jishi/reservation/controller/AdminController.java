@@ -9,13 +9,9 @@ import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.AdminLogInfoData;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.ManagerService;
-<<<<<<< HEAD
 import com.jishi.reservation.util.Constant;
-=======
 import com.jishi.reservation.service.PermissionService;
-import com.jishi.reservation.service.enumPackage.EnableEnum;
-import com.jishi.reservation.util.Common;
->>>>>>> e7bc321572438e5047eb8b46df3f4bf8fbb12924
+
 import com.jishi.reservation.util.CookieUtil;
 import com.jishi.reservation.util.SessionUtil;
 import com.us.base.common.controller.BaseController;

@@ -40,4 +40,22 @@ public class Doctor {
     @Transient
     private Integer isTop;
 
+    @Transient
+    @ApiModelProperty("his的醫生id")
+    private String ysid;
+
+    @Transient
+    @ApiModelProperty("挂号单价")
+    private String dj;
+
+    @Transient
+    @ApiModelProperty("号源名称")
+    private String hymc;
+
+
+    @Transient
+    @ApiModelProperty("科室名称")
+    private String ksmc;
+
+
 }

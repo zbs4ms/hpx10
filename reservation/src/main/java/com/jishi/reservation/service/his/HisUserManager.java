@@ -5,6 +5,7 @@ import com.jishi.reservation.mypackage.PublicResponsePublicResult;
 import com.jishi.reservation.mypackage.UserManagerResponseUserManagerResult;
 import com.jishi.reservation.mypackage.ZL_InformationServiceLocator;
 import com.jishi.reservation.mypackage.ZL_InformationServiceSoap_PortType;
+import com.jishi.reservation.service.his.bean.Credentials;
 import com.jishi.reservation.service.his.bean.DepositBalanceHistoryDetail;
 import com.jishi.reservation.service.his.bean.PatientsList;
 import com.jishi.reservation.service.his.bean.UserBindCard;
@@ -53,7 +54,7 @@ public class HisUserManager {
      * @return
      * @throws Exception
      */
-    public PatientsList getUserInfoByRegNO(String idNumber,String idNumberType,String name,String code,String codeType) throws Exception {
+    public Credentials getUserInfoByRegNO(String idNumber, String idNumberType, String name, String code, String codeType) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<ZJH>").append(idNumber).append("</ZJH>");
         sb.append("<ZJLX>").append(idNumberType).append("</ZJLX>");
@@ -65,7 +66,7 @@ public class HisUserManager {
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
             String xml = HisTool.getHisDataparam(me);
-            return (PatientsList)HisTool.toBean(PatientsList.class,xml);
+            return (Credentials)HisTool.toBean(Credentials.class,xml);
         }
         return null;
     }
@@ -81,7 +82,7 @@ public class HisUserManager {
      * @throws Exception
      */
     //todo 增加病人信息需要返回BRID和MZH ？？？？
-    public BridAndMzh addUserInfo(String idNumber,String idNumberType,String name,String phone) throws Exception {
+    public Credentials addUserInfo(String idNumber,String idNumberType,String name,String phone) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<ZJH>").append(idNumber).append("</ZJH>");
         sb.append("<ZJLX>").append(idNumberType).append("</ZJLX>");
@@ -91,23 +92,15 @@ public class HisUserManager {
         UserManagerResponseUserManagerResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            BridAndMzh param = new BridAndMzh();
-            param.setBRID("this is BRID");
-            param.setMZH("this is MZH");
 
-            return param;
+            String xml = HisTool.getHisDataparam(me);
+            return (Credentials)HisTool.toBean(Credentials.class,xml);
+
         }
        return null;
     }
 
 
-<<<<<<< HEAD
-=======
-
-
-
-
->>>>>>> e7bc321572438e5047eb8b46df3f4bf8fbb12924
     private UserManagerResponseUserManagerResult execute(String reData) throws RemoteException, ServiceException {
         ZL_InformationServiceLocator locator = new ZL_InformationServiceLocator();
         ZL_InformationServiceSoap_PortType service = locator.getZL_InformationServiceSoap();

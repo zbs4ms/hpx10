@@ -1,5 +1,6 @@
 package com.jishi.reservation.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
@@ -10,6 +11,7 @@ import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.dao.models.Pregnant;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.his.HisUserManager;
+import com.jishi.reservation.service.his.bean.Credentials;
 import com.jishi.reservation.util.CheckIdCard;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.log4j.Log4j;
@@ -63,7 +65,8 @@ public class PatientInfoService {
         }
 
         //添加到his系统
-        hisUserManager.addUserInfo(idCard,idCardType,name,phone);
+        Credentials credentials = hisUserManager.addUserInfo(idCard, idCardType, name, phone);
+        log.info("his系统返回的病人信息：\n"+ JSONObject.toJSONString(credentials));
 
         PatientInfo newPatientInfo = new PatientInfo();
         newPatientInfo.setAccountId(accountId);
@@ -71,6 +74,9 @@ public class PatientInfoService {
         newPatientInfo.setPhone(phone);
         newPatientInfo.setIdCard(idCard);
         newPatientInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
+        newPatientInfo.setBrId(credentials.getBRID());
+        newPatientInfo.setMzh(credentials.getMZH());
+
         patientInfoMapper.insertReturnId(newPatientInfo);
 
 

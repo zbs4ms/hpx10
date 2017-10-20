@@ -27,6 +27,13 @@ public class PatientInfo {
     @ApiModelProperty("状态标示:0:正常 1:禁用  99:删除")
     private Integer enable;
 
+    @ApiModelProperty("病人id")
+    private String brId;
+
+    @ApiModelProperty("门诊号")
+    private String mzh;
+
+
 
     @Transient
     @ApiModelProperty("孕妇id")
