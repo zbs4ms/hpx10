@@ -56,11 +56,7 @@ public class RegisterService {
     OrderInfoMapper orderInfoMapper;
 
 
-    public static void main(String[] args) {
-        String price = "9.5";
-        System.out.println(bd);
 
-    }
 
     /**
      * 增加一条预约
