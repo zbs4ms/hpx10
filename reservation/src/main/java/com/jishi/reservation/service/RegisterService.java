@@ -14,6 +14,7 @@ import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
 import com.jishi.reservation.service.enumPackage.PayEnum;
 import com.jishi.reservation.service.enumPackage.StatusEnum;
+import com.jishi.reservation.service.his.HisUserManager;
 import com.jishi.reservation.util.Helpers;
 import com.jishi.reservation.util.NewRandomUtil;
 import lombok.extern.log4j.Log4j;
@@ -55,6 +56,9 @@ public class RegisterService {
     @Autowired
     OrderInfoMapper orderInfoMapper;
 
+    @Autowired
+    HisUserManager hisUserManager;
+
 
 
 
@@ -70,7 +74,7 @@ public class RegisterService {
     @Transactional
     public RegisterCompleteVO addRegister(Long accountId,String brid,Long departmentId,Long doctorId,
                                           Date agreedTime,String timeInterval,String doctorName,
-                                          String price,String subject) throws Exception {
+                                          String price,String subject,String brName) throws Exception {
         if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
             throw new Exception("账户信息为空.");
         if(Helpers.isNullOrEmpty(departmentId)  || departmentService.queryDepartment(departmentId,null) == null)
@@ -89,6 +93,7 @@ public class RegisterService {
         String serialCode = NewRandomUtil.getRandomNum(4);
         register.setSerialNumber(serialCode);
 
+
         //added csrr  添加排班表的数据
         //scheduledService.addRegister(doctorId,patientinfoId,agreedTime);
 
@@ -101,12 +106,13 @@ public class RegisterService {
         completeVO.setAgreeTime(agreedTime);
         completeVO.setPosition("交子路");
         completeVO.setTimeInterval(timeInterval);
-        completeVO.setPatient("病人名称");
+        completeVO.setPatient(brName);
 
 
 
-        //todo   此处还没对接his，先把支付调通
         BigDecimal bd=new BigDecimal(price);
+
+
 
 
         OrderInfo order = new OrderInfo();
@@ -124,11 +130,11 @@ public class RegisterService {
         order.setPayType(PayEnum.ALI.getCode());
         orderInfoMapper.insertReturnId(order);
 
-        //todo 还没对接支付，所以就先搞几个假数据，供前段解析展示
         completeVO.setPayType(PayEnum.ALI.getCode());
         completeVO.setPayTime(new Date());
         completeVO.setCompleteTime(new Date());
-        completeVO.setPrice(bd);
+        //completeVO.setPrice(bd);
+        completeVO.setPrice(BigDecimal.valueOf(0.01));
         completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
         completeVO.setOrderCode(orderNumber);
         completeVO.setSerialNumber(serialCode);

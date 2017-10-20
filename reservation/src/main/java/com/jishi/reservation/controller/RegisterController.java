@@ -61,7 +61,7 @@ public class RegisterController extends BaseController {
                                   @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
                                   @ApiParam(value = "价格", required = true) @RequestParam(value = "price", required = true) String price,
                                   @ApiParam(value = "支付名称", required = true) @RequestParam(value = "subject", required = true) String subject,
-
+                                  @ApiParam(value = "病人名称", required = true) @RequestParam(value = "brName", required = true) String brName,
                                   @ApiParam(value = "医生名称", required = true) @RequestParam(value = "doctorName", required = true) String doctorName,
                                   @ApiParam(value = "病人ID", required = true) @RequestParam(value = "brid", required = true) String brid,
             @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
@@ -87,7 +87,7 @@ public class RegisterController extends BaseController {
 
 
         // 10.17  在此处加入订单。。
-        RegisterCompleteVO completeVO = registerService.addRegister(accountId, brid, departmentId, doctorId, new Date(agreedTime),timeInterval,doctorName,price,subject);
+        RegisterCompleteVO completeVO = registerService.addRegister(accountId, brid, departmentId, doctorId, new Date(agreedTime),timeInterval,doctorName,price,subject,brName);
 
         jpushSupport.sendPush(accountService.queryAccountById(accountId).getPushId(), Constant.REGISTER_SUCCESS_MGS);
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
