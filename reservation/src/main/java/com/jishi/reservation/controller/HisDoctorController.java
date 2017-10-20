@@ -12,6 +12,7 @@ import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.HisUserManager;
 import com.jishi.reservation.service.his.bean.Credentials;
+import com.jishi.reservation.service.his.bean.DepartmentList;
 import com.jishi.reservation.service.his.bean.PatientsList;
 import com.jishi.reservation.service.his.bean.RegisteredNumberInfo;
 import com.us.base.common.controller.BaseController;
@@ -43,35 +44,40 @@ public class HisDoctorController extends BaseController{
     @Autowired
     HisUserManager hisUserManager;
 
-//    @ApiOperation(value = "新病人注册登记")
-//    @RequestMapping(value = "register", method = RequestMethod.POST)
-//    @ResponseBody
-//    public JSONObject register(
-//            @ApiParam(value = "证件号") @RequestParam(value = "idNumber") String idNumber,
-//            @ApiParam(value = "证件类型") @RequestParam(value = "idNumberType") String idNumberType,
-//            @ApiParam(value = "姓名") @RequestParam(value = "name") String name,
-//            @ApiParam(value = "手机号") @RequestParam(value = "phone") String phone
-//            ) throws Exception {
-//        Preconditions.checkNotNull(idNumber,"请传入所需要的参数：idNumber");
-//        Preconditions.checkNotNull(idNumberType,"请传入所需要的参数：idNumberType");
-//        Preconditions.checkNotNull(name,"请传入所需要的参数：name");
-//        Preconditions.checkNotNull(phone,"请传入所需要的参数：phone");
-//
-//
-//        LoginData loginData = accountService.registerWithHis(idNumber,idNumberType ,name,phone);
-//        return ResponseWrapper().addData(loginData).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-//    }
+
+
+
+    @ApiOperation(value = "查询指定天数内的可挂号科室列表",response = DepartmentList.DepartmentHis.class)
+    @RequestMapping(value = "queryDepartment", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject queryDepartment(
+            @ApiParam(value = "查询天数") @RequestParam(value = "cxts") String cxts
+
+    ) throws Exception {
+
+        DepartmentList departmentList = hisOutpatient.selectDepartments("", cxts, "");
+        log.info(JSONObject.toJSONString(departmentList));
+
+        return ResponseWrapper().addData(departmentList).addMessage("查询成功").ExeSuccess(200);
+    }
+
+
 
 
     @ApiOperation(value = "获取挂号号源",response = Doctor.class)
     @RequestMapping(value = "queryRegister", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryRegister(
+
+            @ApiParam(value = "科室id") @RequestParam(value = "ksid",defaultValue = "") String ksid,
+            @ApiParam(value = "医生id") @RequestParam(value = "ysid",defaultValue = "") String ysid,
+            @ApiParam(value = "医生姓名") @RequestParam(value = "name",defaultValue = "") String name,
+
             @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize
     ) throws Exception {
 
-        RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", "", "", "", "", "");
+        RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", ksid, ysid, name, "", "");
         List<RegisteredNumberInfo.Hb> hbList = info.getGroup().getHblist().get(0).getHbList();
         PageInfo<Doctor> pageInfo = new PageInfo<>();
         List<Doctor> doctorList = new ArrayList<>();
