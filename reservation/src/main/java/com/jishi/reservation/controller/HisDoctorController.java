@@ -51,7 +51,7 @@ public class HisDoctorController extends BaseController{
     @RequestMapping(value = "queryDepartment", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryDepartment(
-            @ApiParam(value = "查询天数") @RequestParam(value = "cxts") String cxts
+            @ApiParam(value = "查询天数 7") @RequestParam(value = "cxts",required = true) String cxts
 
     ) throws Exception {
 
