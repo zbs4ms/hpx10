@@ -55,6 +55,13 @@ public class RegisterService {
     @Autowired
     OrderInfoMapper orderInfoMapper;
 
+
+    public static void main(String[] args) {
+        String price = "9.5";
+        System.out.println(bd);
+
+    }
+
     /**
      * 增加一条预约
      * @param accountId
@@ -123,7 +130,8 @@ public class RegisterService {
         completeVO.setPayType(PayEnum.ALI.getCode());
         completeVO.setPayTime(new Date());
         completeVO.setCompleteTime(new Date());
-        completeVO.setPrice(BigDecimal.valueOf(Long.parseLong(price)));
+        BigDecimal bd=new BigDecimal(price);
+        completeVO.setPrice(bd);
         completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
         completeVO.setOrderCode(orderNumber);
         completeVO.setSerialNumber(serialCode);
