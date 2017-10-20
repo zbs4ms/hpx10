@@ -55,6 +55,7 @@ public class HisDoctorController extends BaseController{
 
     ) throws Exception {
 
+        Preconditions.checkNotNull(cxts,"请传入合适的参数:cxtx");
         DepartmentList departmentList = hisOutpatient.selectDepartments("", cxts, "");
         log.info(JSONObject.toJSONString(departmentList));
 
