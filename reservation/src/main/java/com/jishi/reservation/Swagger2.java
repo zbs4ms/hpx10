@@ -25,10 +25,7 @@ import java.util.List;
 @EnableSwagger2
 public class Swagger2 {
 
-    public static void main(String[] args) throws UnsupportedEncodingException {
-        String a = "%28%29";
-        System.out.print( URLDecoder.decode(a, "UTF-8") );
-    }
+
 
     @Bean
     public Docket createRestApi() {
