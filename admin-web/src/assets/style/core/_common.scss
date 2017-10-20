@@ -1,5 +1,6 @@
 /* 公共样式 */
 @import "../variables/size";
+@import "../variables/theme";
 
 // 页面标题
 .page-top {
@@ -44,6 +45,26 @@
 
     & + .operate-item {
       margin-left: 20px
+    }
+  }
+}
+
+.search-wrap {
+  .search-label {
+    color: $color3;
+
+    & + .el-input {
+      width: auto;
+    }
+  }
+  .table-tools & {
+    input {
+      border-radius: 18px;
+    }
+    .search-label {
+      & + .el-input {
+        width: 300px;
+      }
     }
   }
 }

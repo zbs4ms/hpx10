@@ -41,7 +41,8 @@
       this.tableAttrs = {
         'props': {
           'tooltip-effect': 'dark',
-          'style': 'width: 100%'
+          'style': 'width: 100%',
+          'align': 'center'
         }
       }
       this.columnData = [{
@@ -49,7 +50,6 @@
           'prop': 'estTime',
           'label': '创建时间',
           'min-width': '100',
-          'align': 'center',
           'formatter' (row, col) {
             return row.estTime ? convertDate(row.estTime) : '--'
           }
@@ -58,8 +58,7 @@
         attrs: {
           'prop': 'title',
           'label': '日记标题',
-          'min-width': '120',
-          'align': 'center'
+          'min-width': '120'
         },
         'scopedSlots': {
           default: (scope) => {
@@ -72,21 +71,18 @@
         attrs: {
           'prop': 'nick',
           'label': '用户昵称',
-          'min-width': '80',
-          'align': 'center'
+          'min-width': '80'
         }
       }, {
         attrs: {
           'prop': 'accountId',
           'label': '用户ID',
-          'min-width': '80',
-          'align': 'center'
+          'min-width': '80'
         }
       }, {
         attrs: {
           'prop': 'status',
           'label': '审批状态',
-          'align': 'center',
           'render-header' (h, { column, $index }) {
             return (
               <el-dropdown>
@@ -142,8 +138,7 @@
       }, {
         attrs: {
           'label': '操作',
-          'width': 280,
-          'align': 'left'
+          'width': 280
         },
         scopedSlots: {
           default: (scope) => {

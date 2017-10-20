@@ -31,7 +31,8 @@ export default {
     this.tableAttrs = {
       'props': {
         'tooltip-effect': 'dark',
-        'style': 'width: 100%'
+        'style': 'width: 100%',
+        'align': 'center'
       },
       'on': {
         'selection-change': this.handleSelectionChange.bind(this)
@@ -40,7 +41,8 @@ export default {
     this.columnData = [{
       attrs: {
         'type': 'selection',
-        'width': '90'
+        'width': '90',
+        'align': 'left'
       }
     }, {
       attrs: {
@@ -367,15 +369,6 @@ export default {
       margin-top: 30px;
       justify-content: space-between;
     }
-    .search-input {
-      width: 300px;
-      input {
-        border-radius: 18px;
-      }
-    }
-    .search-label {
-      color: $color3;
-    }
     .btn-wrap {
       .el-button {
         border-radius: 18px;
@@ -391,9 +384,6 @@ export default {
 
     .el-table {
       margin-top: 20px;
-      th + th, td + td {
-        text-align: center;
-      }
       td {
         height: 80px;
       }

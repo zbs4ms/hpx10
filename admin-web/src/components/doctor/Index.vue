@@ -28,7 +28,8 @@ export default {
     this.tableAttrs = {
       'props': {
         'tooltip-effect': 'dark',
-        'style': 'width: 100%'
+        'style': 'width: 100%',
+        'align': 'center'
       }
     }
     this.columnData = [{
@@ -317,9 +318,6 @@ export default {
 
     .el-table {
       margin-top: 20px;
-      th + th, td + td {
-        text-align: center;
-      }
       td {
         height: 80px;
       }
