@@ -56,15 +56,21 @@ public class RegisterController extends BaseController {
     @ResponseBody
     public JSONObject addRegister(HttpServletRequest request,
                                   HttpServletResponse response,
+
+
                                   @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-            @ApiParam(value = "病人ID", required = true) @RequestParam(value = "patientinfoId", required = true) Long patientinfoId,
+                                  @ApiParam(value = "价格", required = true) @RequestParam(value = "price", required = true) String price,
+                                  @ApiParam(value = "支付名称", required = true) @RequestParam(value = "subject", required = true) String subject,
+
+                                  @ApiParam(value = "医生名称", required = true) @RequestParam(value = "doctorName", required = true) String doctorName,
+                                  @ApiParam(value = "病人ID", required = true) @RequestParam(value = "brid", required = true) Long brid,
             @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
             @ApiParam(value = "预约的医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId,
             @ApiParam(value = "预约的时间段", required = true) @RequestParam(value = "timeInterval", required = true) String timeInterval,
             @ApiParam(value = "预约时间", required = true) @RequestParam(value = "agreedTime", required = true) Long agreedTime
             ) throws Exception {
 
-        Preconditions.checkNotNull(patientinfoId,"请传入必须的参数：patientinfoId");
+        Preconditions.checkNotNull(brid,"请传入必须的参数：brid");
         Preconditions.checkNotNull(departmentId,"请传入必须的参数：departmentId");
         Preconditions.checkNotNull(doctorId,"请传入必须的参数：doctorId");
         Preconditions.checkNotNull(timeInterval,"请传入必须的参数：timeInterval");
@@ -81,7 +87,7 @@ public class RegisterController extends BaseController {
 
 
         // 10.17  在此处加入订单。。
-        RegisterCompleteVO completeVO = registerService.addRegister(accountId, patientinfoId, departmentId, doctorId, new Date(agreedTime),timeInterval);
+        RegisterCompleteVO completeVO = registerService.addRegister(accountId, brid, departmentId, doctorId, new Date(agreedTime),timeInterval,doctorName,price,subject);
 
         jpushSupport.sendPush(accountService.queryAccountById(accountId).getPushId(), Constant.REGISTER_SUCCESS_MGS);
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());

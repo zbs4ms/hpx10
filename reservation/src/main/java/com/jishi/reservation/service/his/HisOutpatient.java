@@ -49,6 +49,62 @@ public class HisOutpatient {
         return null;
     }
 
+    /**
+     * 获取挂号限制条件
+     * @param brid 病人id
+     * @param ghhm 挂号号码
+     * @return
+     * @throws Exception
+     */
+    public Boolean checkIsValid(String brid,String ghhm) throws Exception {
+
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("<BRID>").append(brid).append("</BRID>");
+        sb.append("<GHHM>").append(ghhm).append("</GHHM>");
+
+        String reData = HisTool.toXMLString("Register.LimitInfo.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            HisTool.getHisDataparam(me);
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * 对病人住院费用进行结算
+     * @param hm 号码
+     * @param yysj
+     * @param hzdw
+     * @param jqm
+     * @return
+     * @throws Exception
+     */
+    public LockRegister lockRegister(
+            String hm,String yysj,String hzdw,String jqm
+    ) throws Exception {
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("<HM>").append(hm).append("</HM>");
+        sb.append("<YYSJ>").append(yysj).append("</YYSJ>");
+        sb.append("<CZ>").append("1").append("</CZ>");
+        sb.append("<HZDW>").append(hzdw).append("</HZDW>");
+        sb.append("<JQM>").append(jqm).append("</JQM>");
+
+        String reData = HisTool.toXMLString("Register.Lock.Modify", sb.toString());
+
+
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            log.info(me.getAsString());
+            String xml = HisTool.getHisDataparam(me);
+            return (LockRegister)HisTool.toBean(LockRegister.class,xml);
+        }
+
+        return null;
+    }
 
     /**
      * 取消预约
@@ -183,6 +239,30 @@ public class HisOutpatient {
         }
         return null;
     }
+
+
+
+
+
+
+
+    /**
+     * 对号源进行锁定，以保证有足够的付款时间
+     */
+    public DepartmentList lockRegister(String hm,String cxts,String zd) throws Exception {
+
+        return null;
+    }
+
+
+
+
+
+
+
+
+
+
 
     /**
      * 获取缴费单据信息

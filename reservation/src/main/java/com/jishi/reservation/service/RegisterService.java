@@ -58,18 +58,18 @@ public class RegisterService {
     /**
      * 增加一条预约
      * @param accountId
-     * @param patientinfoId
+     * @param brid
      * @param departmentId
      * @param doctorId
      * @param agreedTime
      * @throws Exception
      */
     @Transactional
-    public RegisterCompleteVO addRegister(Long accountId,Long patientinfoId,Long departmentId,Long doctorId,Date agreedTime,String timeInterval) throws Exception {
+    public RegisterCompleteVO addRegister(Long accountId,Long brid,Long departmentId,Long doctorId,
+                                          Date agreedTime,String timeInterval,String doctorName,
+                                          String price,String subject) throws Exception {
         if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
             throw new Exception("账户信息为空.");
-        if(Helpers.isNullOrEmpty(patientinfoId)  || patientInfoService.queryPatientInfo(patientinfoId,null, EnableEnum.EFFECTIVE.getCode()) == null)
-            throw new Exception("就诊人信息为空.");
         if(Helpers.isNullOrEmpty(departmentId)  || departmentService.queryDepartment(departmentId,null) == null)
             throw new Exception("科室信息为空.");
         if(Helpers.isNullOrEmpty(doctorId)  || doctorService.queryDoctor(doctorId,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
@@ -78,7 +78,7 @@ public class RegisterService {
         register.setAccountId(accountId);
         register.setDepartmentId(departmentId);
         register.setDoctorId(doctorId);
-        register.setPatientinfoId(patientinfoId);
+        register.setPatientinfoId(brid);
         register.setAgreedTime(agreedTime);
         register.setStatus(StatusEnum.REGISTER_STATUS_PAYMENT.getCode());
         register.setEnable(EnableEnum.EFFECTIVE.getCode());
@@ -87,31 +87,30 @@ public class RegisterService {
         register.setSerialNumber(serialCode);
 
         //added csrr  添加排班表的数据
-        scheduledService.addRegister(doctorId,patientinfoId,agreedTime);
+        //scheduledService.addRegister(doctorId,patientinfoId,agreedTime);
 
         registerMapper.insertReturnId(register);
         RegisterCompleteVO completeVO = new RegisterCompleteVO();
         completeVO.setRegisterId(register.getId());
-        completeVO.setDoctor(doctorMapper.queryById(doctorId).getName());
-        Department department = departmentMapper.queryById(departmentId);
-        completeVO.setDepartment(department.getName());
+        completeVO.setDoctor(doctorName);
+        //Department department = departmentMapper.queryById(departmentId);
+        //completeVO.setDepartment(department.getName());
         completeVO.setAgreeTime(agreedTime);
-        completeVO.setPosition(department.getPosition());
+        //completeVO.setPosition(department.getPosition());
         completeVO.setTimeInterval(timeInterval);
-        completeVO.setPatient(patientInfoMapper.queryById(patientinfoId).getName());
+        //completeVO.setPatient(patientInfoMapper.queryById(patientinfoId).getName());
 
 
 
         //todo   此处还没对接his，先把支付调通
-        String subject = "神经科预约";
-        String des = "欢迎挂号神经科";
+
         OrderInfo order = new OrderInfo();
         order.setAccountId(accountId);
         order.setBrId("fakerBrid");
         order.setCreateTime(new Date());
         order.setSubject(subject);
-        order.setDes(des);
-        order.setPrice(BigDecimal.valueOf(0.01));
+        order.setDes(subject);
+        order.setPrice(BigDecimal.valueOf(Long.parseLong(price)));
         order.setEnable(EnableEnum.EFFECTIVE.getCode());
         String orderNumber = AlibabaPay.generateUniqueOrderNumber();
         order.setOrderNumber(orderNumber);
@@ -124,12 +123,12 @@ public class RegisterService {
         completeVO.setPayType(PayEnum.ALI.getCode());
         completeVO.setPayTime(new Date());
         completeVO.setCompleteTime(new Date());
-        completeVO.setPrice(BigDecimal.valueOf(0.01));
+        completeVO.setPrice(BigDecimal.valueOf(Long.parseLong(price)));
         completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
         completeVO.setOrderCode(orderNumber);
         completeVO.setSerialNumber(serialCode);
         completeVO.setSubject(subject);
-        completeVO.setDes(des);
+        completeVO.setDes(subject);
         return completeVO;
 
     }
