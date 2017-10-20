@@ -106,6 +106,8 @@ public class RegisterService {
 
 
         //todo   此处还没对接his，先把支付调通
+        BigDecimal bd=new BigDecimal(price);
+
 
         OrderInfo order = new OrderInfo();
         order.setAccountId(accountId);
@@ -113,7 +115,7 @@ public class RegisterService {
         order.setCreateTime(new Date());
         order.setSubject(subject);
         order.setDes(subject);
-        order.setPrice(BigDecimal.valueOf(Long.parseLong(price)));
+        order.setPrice(bd);
         order.setEnable(EnableEnum.EFFECTIVE.getCode());
         String orderNumber = AlibabaPay.generateUniqueOrderNumber();
         order.setOrderNumber(orderNumber);
@@ -126,7 +128,6 @@ public class RegisterService {
         completeVO.setPayType(PayEnum.ALI.getCode());
         completeVO.setPayTime(new Date());
         completeVO.setCompleteTime(new Date());
-        BigDecimal bd=new BigDecimal(price);
         completeVO.setPrice(bd);
         completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
         completeVO.setOrderCode(orderNumber);
