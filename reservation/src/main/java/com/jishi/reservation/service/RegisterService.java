@@ -97,11 +97,11 @@ public class RegisterService {
         completeVO.setRegisterId(register.getId());
         completeVO.setDoctor(doctorName);
         //Department department = departmentMapper.queryById(departmentId);
-        //completeVO.setDepartment(department.getName());
+        completeVO.setDepartment("医院部门");
         completeVO.setAgreeTime(agreedTime);
-        //completeVO.setPosition(department.getPosition());
+        completeVO.setPosition("交子路");
         completeVO.setTimeInterval(timeInterval);
-        //completeVO.setPatient(patientInfoMapper.queryById(patientinfoId).getName());
+        completeVO.setPatient("病人名称");
 
 
 
