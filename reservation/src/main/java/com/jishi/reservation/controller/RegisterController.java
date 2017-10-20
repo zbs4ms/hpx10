@@ -63,7 +63,7 @@ public class RegisterController extends BaseController {
                                   @ApiParam(value = "支付名称", required = true) @RequestParam(value = "subject", required = true) String subject,
 
                                   @ApiParam(value = "医生名称", required = true) @RequestParam(value = "doctorName", required = true) String doctorName,
-                                  @ApiParam(value = "病人ID", required = true) @RequestParam(value = "brid", required = true) Long brid,
+                                  @ApiParam(value = "病人ID", required = true) @RequestParam(value = "brid", required = true) String brid,
             @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
             @ApiParam(value = "预约的医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId,
             @ApiParam(value = "预约的时间段", required = true) @RequestParam(value = "timeInterval", required = true) String timeInterval,
@@ -124,7 +124,7 @@ public class RegisterController extends BaseController {
             List<Doctor> doctors = doctorService.queryDoctor(register.getDoctorId(), null, null,null, null);
             List<Department> departments = departmentService.queryDepartment(register.getDepartmentId(), null);
             List<Account> accounts = accountService.queryAccount(register.getAccountId(), null, null);
-            List<PatientInfo> patientInfos = patientInfoService.queryPatientInfo(register.getPatientinfoId(), null, null);
+            List<PatientInfo> patientInfos = patientInfoService.queryPatientInfo(register.getId(), null, null);
             //todo 还没对接支付，所以就先搞几个假数据，供前段解析展示
             register.setPayType(PayEnum.WEIXIN.getCode());
             register.setPayTime(new Date());

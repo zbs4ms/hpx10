@@ -76,7 +76,6 @@ public class PatientInfoService {
         newPatientInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
         newPatientInfo.setBrId(credentials.getBRID());
         newPatientInfo.setMzh(credentials.getMZH());
-
         patientInfoMapper.insertReturnId(newPatientInfo);
 
 
@@ -104,15 +103,15 @@ public class PatientInfoService {
 
     /**
      * 查询就诊人信息
-     * @param patientInfoId
+     * @param id
      * @param accountId
      * @param enable
      * @return
      * @throws Exception
      */
-    public List<PatientInfo> queryPatientInfo(Long patientInfoId, Long accountId, Integer enable) throws Exception {
+    public List<PatientInfo> queryPatientInfo(Long id, Long accountId, Integer enable) throws Exception {
         PatientInfo queryPatientInfo = new PatientInfo();
-        queryPatientInfo.setId(patientInfoId);
+        queryPatientInfo.setId(id);
         queryPatientInfo.setAccountId(accountId);
         queryPatientInfo.setEnable(enable);
         return patientInfoMapper.select(queryPatientInfo);
@@ -140,10 +139,10 @@ public class PatientInfoService {
      * @param idCard
      * @throws Exception
      */
-    public void modifyPatientInfo(Long accountId,Long patientInfoId, String name, String phone, String idCard,Integer enable) throws Exception {
-        if (Helpers.isNullOrEmpty(patientInfoId))
+    public void modifyPatientInfo(Long accountId,Long id, String name, String phone, String idCard,Integer enable) throws Exception {
+        if (Helpers.isNullOrEmpty(id))
             throw new Exception("就诊人ID为空");
-        if(queryPatientInfo(patientInfoId,null,null) == null)
+        if(queryPatientInfo(id,null,null) == null)
             throw new Exception("没有查询到就诊人");
         if(idCard != null && !"".equals(idCard)){
             String errorInfo = CheckIdCard.IDCardValidate(idCard);
@@ -152,10 +151,10 @@ public class PatientInfoService {
                 throw new Exception("无效的身份证信息");
             }
         }
-        PatientInfo oldPatient = patientInfoMapper.queryById(patientInfoId);
+        PatientInfo oldPatient = patientInfoMapper.queryById(id);
         PatientInfo modifyPatientInfo = new PatientInfo();
 
-        modifyPatientInfo.setId(patientInfoId);
+        modifyPatientInfo.setId(id);
         modifyPatientInfo.setName(name!=null?name:oldPatient.getName());
         modifyPatientInfo.setPhone(phone !=null?phone:oldPatient.getPhone());
         modifyPatientInfo.setIdCard(idCard!=null?idCard:oldPatient.getIdCard());

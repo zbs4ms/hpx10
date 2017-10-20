@@ -35,7 +35,7 @@ public class PayController extends BaseController {
      * @return
      * @throws Exception
      */
-    @ApiOperation(value = "支付回调接口", notes = "")
+    @ApiOperation(value = "阿里支付回调接口", notes = "")
     @RequestMapping(value = "aliPayCallBack", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject aliPayCallBack(
@@ -46,6 +46,23 @@ public class PayController extends BaseController {
         alibabaPay.aliPay_notify(model);
 
         return ResponseWrapper().addMessage("回调成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+
+    /**
+     * @param
+     * @return
+     * @throws Exception
+     */
+    @ApiOperation(value = "微信支付回调接口", notes = "")
+    @RequestMapping(value = "wxPayCallBack", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject wxPayCallBack(
+            AliPayCallbackModel model
+    ) throws Exception {
+
+
+        return null;
     }
 
 

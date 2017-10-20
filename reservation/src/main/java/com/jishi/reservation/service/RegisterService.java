@@ -65,7 +65,7 @@ public class RegisterService {
      * @throws Exception
      */
     @Transactional
-    public RegisterCompleteVO addRegister(Long accountId,Long brid,Long departmentId,Long doctorId,
+    public RegisterCompleteVO addRegister(Long accountId,String brid,Long departmentId,Long doctorId,
                                           Date agreedTime,String timeInterval,String doctorName,
                                           String price,String subject) throws Exception {
         if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
@@ -78,7 +78,7 @@ public class RegisterService {
         register.setAccountId(accountId);
         register.setDepartmentId(departmentId);
         register.setDoctorId(doctorId);
-        register.setPatientinfoId(brid);
+        register.setBrId(brid);
         register.setAgreedTime(agreedTime);
         register.setStatus(StatusEnum.REGISTER_STATUS_PAYMENT.getCode());
         register.setEnable(EnableEnum.EFFECTIVE.getCode());
@@ -106,7 +106,7 @@ public class RegisterService {
 
         OrderInfo order = new OrderInfo();
         order.setAccountId(accountId);
-        order.setBrId("fakerBrid");
+        order.setBrId(brid);
         order.setCreateTime(new Date());
         order.setSubject(subject);
         order.setDes(subject);
@@ -209,7 +209,7 @@ public class RegisterService {
         newRegister.setAccountId(accountId);
         newRegister.setDepartmentId(departmentId);
         newRegister.setDoctorId(doctorId);
-        newRegister.setPatientinfoId(patientinfoId);
+        newRegister.setBrId(String.valueOf(patientinfoId));
         newRegister.setStatus(status);
         newRegister.setAgreedTime(agreedTime);
         newRegister.setStatus(StatusEnum.REGISTER_STATUS_NO_PAYMENT.getCode());
