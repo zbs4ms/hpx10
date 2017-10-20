@@ -257,6 +257,26 @@ public class HisOutpatient {
 
 
 
+    /**
+     * 获取未缴费/已缴费的挂号单据信息。对于已缴费挂号单仅返回指定第三方缴费的挂号单
+     *
+     * @param brid
+     * @param cxts
+     * @return
+     * @throws Exception
+     */
+    public RegisterRegReceiptInfo queryRegisterRegReceipt(String brid, String cxts) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<BRID>").append(brid).append("</BRID>");
+        sb.append("<CXTS>").append(cxts).append("</CXTS>");
+        String reData = HisTool.toXMLString("Register.RegReceipt.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            String xml = HisTool.getHisDataparam(me);
+            return (RegisterRegReceiptInfo)HisTool.toBean(RegisterRegReceiptInfo.class,xml);
+        }
+        return null;
+    }
 
 
 
