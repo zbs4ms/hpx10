@@ -7,3 +7,9 @@ export const INDEX = {
   path: MOUDLE_ROOT,
   name: `${MOUDLE_PREDIX}_root`
 }
+
+// 个人主页
+export const PERSONAL_PAGE = {
+  path: MOUDLE_ROOT + '/personPage',
+  name: `${MOUDLE_PREDIX}_personal_page`
+}

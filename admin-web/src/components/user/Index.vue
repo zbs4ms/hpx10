@@ -25,25 +25,24 @@
         }
       }, {
         attrs: {
-          'prop': 'no',
+          'prop': 'userName',
           'label': '用户名',
           'min-width': '140'
         }
       }, {
         attrs: {
-          'prop': 'no',
+          'prop': 'id',
           'label': '用户ID',
           'min-width': '140'
         }
       }, {
         attrs: {
-          'prop': 'no',
+          'prop': 'tel',
           'label': '手机号',
           'min-width': '100'
         }
       }, {
         attrs: {
-          'prop': 'no',
           'label': '操作',
           'min-width': '80'
         },
