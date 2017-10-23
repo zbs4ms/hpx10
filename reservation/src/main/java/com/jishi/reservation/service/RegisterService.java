@@ -135,7 +135,7 @@ public class RegisterService {
         completeVO.setRegisterId(register.getId());
         completeVO.setDoctor(doctorName);
         //Department department = departmentMapper.queryById(departmentId);
-        completeVO.setDepartment("医院部门");
+        completeVO.setDepartment(department);
         completeVO.setAgreeTime(agreedTime);
         completeVO.setPosition("交子路");
         completeVO.setTimeInterval(timeInterval);
