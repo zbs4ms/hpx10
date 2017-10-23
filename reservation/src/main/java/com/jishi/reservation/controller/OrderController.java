@@ -4,14 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
-import com.jishi.reservation.controller.protocol.DateVO;
-import com.jishi.reservation.controller.protocol.DoctorVO;
-import com.jishi.reservation.controller.protocol.OrderVO;
-import com.jishi.reservation.dao.models.Doctor;
-import com.jishi.reservation.service.DepartmentService;
-import com.jishi.reservation.service.DoctorService;
-import com.jishi.reservation.service.OrderInfoService;
+import com.jishi.reservation.controller.protocol.*;
+import com.jishi.reservation.dao.models.*;
+import com.jishi.reservation.service.*;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.enumPackage.PayEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.bean.ConfirmRegister;
@@ -28,7 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,6 +46,14 @@ public class OrderController extends BaseController{
 
     @Autowired
     HisOutpatient hisOutpatient;
+
+
+    @Autowired
+    AccountService accountService;
+
+    @Autowired
+    RegisterService registerService;
+
 
     @ApiOperation(value = "确认订单")
     @RequestMapping(value = "confirmOrder", method = RequestMethod.DELETE)
@@ -81,6 +90,52 @@ public class OrderController extends BaseController{
         OrderVO orderVO = orderInfoService.queryOrderInfoById(orderId);
 
         return ResponseWrapper().addData(orderVO).addMessage("查询成功").ExeSuccess(200);
+
+    }
+
+
+    @ApiOperation(value = "查询订单列表页  全部，1 待支付，2 已取消，0 预约成功 ",response = OrderListVO.class)
+    @RequestMapping(value = "queryList", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject queryOrderList(
+            HttpServletRequest request,HttpServletResponse response,
+            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+            @ApiParam(value = "状态 全部 不传，1 待支付，2 已取消，0 预约成功 ", required = false)
+            @RequestParam(value = "status", required = false) Integer status,
+            @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
+            @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
+            @ApiParam(value = "排序 ", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
+            @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc
+    ) throws Exception {
+
+        if (accountId == null) {
+            //从登陆信息中获取登陆者ID
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1L)){
+                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
+
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+            }
+        }
+
+
+        List<OrderListVO> voList = new ArrayList<>();
+        PageInfo pageInfo = orderInfoService.queryOrderList(status, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum, pageSize, orderBy, desc));
+        List<OrderInfo> orderList = pageInfo.getList();
+        for (OrderInfo orderInfo : orderList) {
+            Register register = registerService.queryByOrderId(orderInfo.getId());
+            OrderListVO vo = new OrderListVO();
+            vo.setOrderId(orderInfo.getId());
+            vo.setAgreeTime(register.getAgreedTime());
+            vo.setDepartment(register.getDepartment());
+            vo.setStatus(orderInfo.getStatus());
+            vo.setDoctorName(register.getDoctorName());
+            vo.setPatientName(register.getPatientName());
+
+            voList.add(vo);
+        }
+
+        return ResponseWrapper().addData(voList).addMessage("查询成功").ExeSuccess(200);
 
     }
 

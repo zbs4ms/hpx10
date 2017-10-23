@@ -102,18 +102,18 @@ public class RegisterController extends BaseController {
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
-    @ApiOperation(value = "查询预约信息", response = RegisterVO.class)
+    @ApiOperation(value = "查询预约信息  --不用", response = RegisterVO.class)
     @RequestMapping(value = "queryRegister", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryRegister(HttpServletRequest request,
                                     HttpServletResponse response,
                                     @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-            @ApiParam(value = "预约ID", required = false) @RequestParam(value = "registerId", required = false) Long registerId,
-            @ApiParam(value = "状态", required = false) @RequestParam(value = "status", required = false) Integer status,
-            @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
-            @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
-            @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
-            @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
+                                    @ApiParam(value = "预约ID", required = false) @RequestParam(value = "registerId", required = false) Long registerId,
+                                    @ApiParam(value = "状态", required = false) @RequestParam(value = "status", required = false) Integer status,
+                                    @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                    @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
+                                    @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
+                                    @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
         if (accountId == null) {
             //从登陆信息中获取登陆者ID
             accountId = accountService.returnIdByToken(request);

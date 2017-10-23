@@ -267,4 +267,9 @@ public class RegisterService {
         newRegister.setEnable(EnableEnum.INVALID.getCode());
         registerMapper.updateByPrimaryKeySelective(newRegister);
     }
+
+    public Register queryByOrderId(Long orderId) {
+
+        return registerMapper.queryByOrderId(orderId);
+    }
 }

@@ -15,6 +15,7 @@ import com.jishi.reservation.dao.models.Register;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.his.bean.ConfirmRegister;
 import com.jishi.reservation.util.Helpers;
+import io.swagger.models.auth.In;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,5 +82,20 @@ public class OrderInfoService {
         confirmRegister.setJylsh(orderInfo.getOrderNumber());
 
         return confirmRegister;
+    }
+
+    public PageInfo queryOrderList(Integer status, Integer enable, Paging paging) {
+
+        if(!Helpers.isNullOrEmpty(paging))
+            PageHelper.startPage(paging.getPageNum(),paging.getPageSize(),paging.getOrderBy());
+        return new PageInfo(queryOrderList(status,enable));
+
+
+    }
+
+    private List queryOrderList(Integer status, Integer enable) {
+
+        return orderInfoMapper.queryOrderList(status,enable);
+
     }
 }

@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface OrderInfoMapper extends MyMapper<OrderInfo>{
 
@@ -21,4 +23,14 @@ public interface OrderInfoMapper extends MyMapper<OrderInfo>{
             "select * from order_info where id = #{orderId}"
     })
     OrderInfo queryById(@Param("orderId") Long orderId);
+
+
+    @Select({
+            "<script>" +
+                    "select * from order_info where 1 =1 " +
+                    " and enable = #{enable}" +
+                    "<if test = \"status != null\"> AND status = #{status}</if>" +
+                    "</script>"
+    })
+    List queryOrderList(@Param("status") Integer status,@Param("enable") Integer enable);
 }
