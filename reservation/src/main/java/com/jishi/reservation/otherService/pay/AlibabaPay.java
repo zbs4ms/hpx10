@@ -14,6 +14,7 @@ import com.jishi.reservation.dao.mapper.OrderInfoMapper;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.otherService.pay.protocol.AliPayCallbackModel;
 import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
+import com.jishi.reservation.service.enumPackage.PayEnum;
 import com.jishi.reservation.util.PayConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,6 +112,7 @@ public class AlibabaPay {
                     //改变订单状态和支付时间
                     orderInfo.setStatus(OrderStatusEnum.PAYED.getCode());
                     orderInfo.setPayTime(payTime);
+                    orderInfo.setPayType(PayEnum.ALI.getCode());
                     orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
                     log.info("订单状态修改为已支付。订单id:"+orderInfo.getId());
 

@@ -51,6 +51,23 @@ public class RegisterController extends BaseController {
     @Autowired
     JpushSupport jpushSupport;
 
+
+
+    @ApiOperation(value = "确认订单")
+    @RequestMapping(value = "sureOrder", method = RequestMethod.DELETE)
+    @ResponseBody
+    public JSONObject sureOrder(
+            @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId
+    ) throws Exception {
+        Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
+
+        registerService.failureRegister(registerId);
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+
+
+
     @ApiOperation(value = "增加预约信息")
     @RequestMapping(value = "addRegister", method = RequestMethod.PUT)
     @ResponseBody
@@ -64,7 +81,9 @@ public class RegisterController extends BaseController {
                                   @ApiParam(value = "病人名称", required = true) @RequestParam(value = "brName", required = true) String brName,
                                   @ApiParam(value = "医生名称", required = true) @RequestParam(value = "doctorName", required = true) String doctorName,
                                   @ApiParam(value = "病人ID", required = true) @RequestParam(value = "brid", required = true) String brid,
-            @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
+                                  @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
+                                  @ApiParam(value = "科室名称", required = true) @RequestParam(value = "department", required = true) String department,
+
             @ApiParam(value = "预约的医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId,
             @ApiParam(value = "预约的时间段", required = true) @RequestParam(value = "timeInterval", required = true) String timeInterval,
             @ApiParam(value = "预约时间", required = true) @RequestParam(value = "agreedTime", required = true) Long agreedTime
@@ -87,7 +106,7 @@ public class RegisterController extends BaseController {
 
 
         // 10.17  在此处加入订单。。
-        RegisterCompleteVO completeVO = registerService.addRegister(accountId, brid, departmentId, doctorId, new Date(agreedTime),timeInterval,doctorName,price,subject,brName);
+        RegisterCompleteVO completeVO = registerService.addRegister(accountId, brid, departmentId, doctorId, new Date(agreedTime),timeInterval,doctorName,price,subject,brName,department);
 
         jpushSupport.sendPush(accountService.queryAccountById(accountId).getPushId(), Constant.REGISTER_SUCCESS_MGS);
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());

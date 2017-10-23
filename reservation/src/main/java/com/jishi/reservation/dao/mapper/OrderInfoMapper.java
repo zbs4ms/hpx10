@@ -15,4 +15,10 @@ public interface OrderInfoMapper extends MyMapper<OrderInfo>{
             "select * from order_info where order_number = #{outTradeNo}"
     })
     OrderInfo queryByOutTradeNo(@Param("outTradeNo") String outTradeNo);
+
+
+    @Select({
+            "select * from order_info where id = #{orderId}"
+    })
+    OrderInfo queryById(@Param("orderId") Long orderId);
 }

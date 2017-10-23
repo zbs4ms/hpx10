@@ -74,18 +74,42 @@ public class RegisterService {
     @Transactional
     public RegisterCompleteVO addRegister(Long accountId,String brid,Long departmentId,Long doctorId,
                                           Date agreedTime,String timeInterval,String doctorName,
-                                          String price,String subject,String brName) throws Exception {
+                                          String price,String subject,String brName,String department) throws Exception {
         if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
             throw new Exception("账户信息为空.");
         if(Helpers.isNullOrEmpty(departmentId)  || departmentService.queryDepartment(departmentId,null) == null)
             throw new Exception("科室信息为空.");
         if(Helpers.isNullOrEmpty(doctorId)  || doctorService.queryDoctor(doctorId,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
             throw new Exception("医生信息为空.");
+
+
+        BigDecimal bd=new BigDecimal(price);
+
+        OrderInfo order = new OrderInfo();
+        order.setAccountId(accountId);
+        order.setBrId(brid);
+        order.setCreateTime(new Date());
+        order.setSubject(subject);
+        order.setDes(subject);
+        order.setPrice(bd);
+        order.setEnable(EnableEnum.EFFECTIVE.getCode());
+        String orderNumber = AlibabaPay.generateUniqueOrderNumber();
+        order.setOrderNumber(orderNumber);
+        //order.setRegisterId(register.getId());
+        order.setStatus(OrderStatusEnum.WAIT_PAYED.getCode());
+        order.setPayType(PayEnum.ALI.getCode());
+        orderInfoMapper.insertReturnId(order);
+
+
         Register register = new Register();
         register.setAccountId(accountId);
         register.setDepartmentId(departmentId);
         register.setDoctorId(doctorId);
         register.setBrId(brid);
+        register.setDepartment(department);
+        register.setPatientName(brName);
+        register.setDoctorName(doctorName);
+        register.setOrderId(order.getId());
         register.setAgreedTime(agreedTime);
         register.setStatus(StatusEnum.REGISTER_STATUS_PAYMENT.getCode());
         register.setEnable(EnableEnum.EFFECTIVE.getCode());
@@ -98,6 +122,8 @@ public class RegisterService {
         //scheduledService.addRegister(doctorId,patientinfoId,agreedTime);
 
         registerMapper.insertReturnId(register);
+        register.setOrderId(order.getId());
+        registerMapper.updateByPrimaryKeySelective(register);
         RegisterCompleteVO completeVO = new RegisterCompleteVO();
         completeVO.setRegisterId(register.getId());
         completeVO.setDoctor(doctorName);
@@ -108,27 +134,6 @@ public class RegisterService {
         completeVO.setTimeInterval(timeInterval);
         completeVO.setPatient(brName);
 
-
-
-        BigDecimal bd=new BigDecimal(price);
-
-
-
-
-        OrderInfo order = new OrderInfo();
-        order.setAccountId(accountId);
-        order.setBrId(brid);
-        order.setCreateTime(new Date());
-        order.setSubject(subject);
-        order.setDes(subject);
-        order.setPrice(bd);
-        order.setEnable(EnableEnum.EFFECTIVE.getCode());
-        String orderNumber = AlibabaPay.generateUniqueOrderNumber();
-        order.setOrderNumber(orderNumber);
-        order.setRegisterId(register.getId());
-        order.setStatus(OrderStatusEnum.WAIT_PAYED.getCode());
-        order.setPayType(PayEnum.ALI.getCode());
-        orderInfoMapper.insertReturnId(order);
 
         completeVO.setPayType(PayEnum.ALI.getCode());
         completeVO.setPayTime(new Date());

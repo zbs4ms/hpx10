@@ -19,10 +19,18 @@ public class Register {
     private Long id;
     @ApiModelProperty("账号ID")
     private Long accountId;
+    @ApiModelProperty("订单ID")
+    private Long orderId;
     @ApiModelProperty("病人ID")
     private String brId;
+    @ApiModelProperty("病人名称")
+    private String patientName;
+    @ApiModelProperty("医生名称")
+    private String doctorName;
     @ApiModelProperty("科室ID")
     private Long departmentId;
+    @ApiModelProperty("科室名称")
+    private String  department;
     @ApiModelProperty("预约的医生ID")
     private Long doctorId;
     @ApiModelProperty("预约时间")
