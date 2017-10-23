@@ -53,17 +53,6 @@ public class RegisterController extends BaseController {
 
 
 
-    @ApiOperation(value = "确认订单")
-    @RequestMapping(value = "sureOrder", method = RequestMethod.DELETE)
-    @ResponseBody
-    public JSONObject sureOrder(
-            @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId
-    ) throws Exception {
-        Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
-
-        registerService.failureRegister(registerId);
-        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-    }
 
 
 

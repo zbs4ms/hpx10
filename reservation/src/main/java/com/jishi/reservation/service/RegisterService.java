@@ -98,7 +98,6 @@ public class RegisterService {
         //order.setRegisterId(register.getId());
         order.setStatus(OrderStatusEnum.WAIT_PAYED.getCode());
         order.setPayType(PayEnum.ALI.getCode());
-        orderInfoMapper.insertReturnId(order);
 
 
         Register register = new Register();
@@ -122,6 +121,8 @@ public class RegisterService {
         //scheduledService.addRegister(doctorId,patientinfoId,agreedTime);
 
         registerMapper.insertReturnId(register);
+        order.setRegisterId(register.getId());
+        orderInfoMapper.insertReturnId(order);
         register.setOrderId(order.getId());
         registerMapper.updateByPrimaryKeySelective(register);
         RegisterCompleteVO completeVO = new RegisterCompleteVO();

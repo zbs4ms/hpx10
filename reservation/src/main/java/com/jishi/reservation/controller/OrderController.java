@@ -41,6 +41,22 @@ public class OrderController extends BaseController{
     @Autowired
     OrderInfoService orderInfoService;
 
+
+    @ApiOperation(value = "确认订单")
+    @RequestMapping(value = "sureOrder", method = RequestMethod.DELETE)
+    @ResponseBody
+    public JSONObject sureOrder(
+            @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId
+    ) throws Exception {
+        Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
+
+        //执行his确认订单操作..
+        registerService.failureRegister(registerId);
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+
+
     @ApiOperation(value = "通过订单id查询相关信息",response = OrderVO.class)
     @RequestMapping(value = "query", method = RequestMethod.GET)
     @ResponseBody
