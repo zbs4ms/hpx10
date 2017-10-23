@@ -73,8 +73,13 @@ public class OrderInfoService {
         confirmRegister.setYyfs("");  //预约方式 固定传入第三方名称
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         confirmRegister.setYysj(sdf.format(register.getAgreedTime()));
+        confirmRegister.setSm(""); //说明，固定传入第三方名称
+        confirmRegister.setJqm("jxyy+zczh");
+        confirmRegister.setJsklb("");//结算卡类别，固定传入第三方名称
+        confirmRegister.setJsfs("");//结算方式，传空
+        confirmRegister.setJsje(String.valueOf(orderInfo.getPrice()));
+        confirmRegister.setJylsh(orderInfo.getOrderNumber());
 
-
-        return null;
+        return confirmRegister;
     }
 }

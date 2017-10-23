@@ -47,7 +47,7 @@ public class OrderController extends BaseController{
     HisOutpatient hisOutpatient;
 
     @ApiOperation(value = "确认订单")
-    @RequestMapping(value = "sureOrder", method = RequestMethod.DELETE)
+    @RequestMapping(value = "confirmOrder", method = RequestMethod.DELETE)
     @ResponseBody
     public JSONObject sureOrder(
             @ApiParam(value = "订单id", required = true) @RequestParam(value = "orderId", required = true) Long orderId
@@ -56,10 +56,15 @@ public class OrderController extends BaseController{
 
         //执行his确认订单操作..
         //confirm.modify
-        ConfirmRegister confirmRegister = orderInfoService.returnConfirmRegister(orderId);
-        hisOutpatient.confirmRegister(new ConfirmRegister());
+        Preconditions.checkNotNull(orderId,"请传入合适的参数：orderId");
 
-        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        OrderVO orderVO = orderInfoService.queryOrderInfoById(orderId);
+
+        ConfirmRegister confirmRegister = orderInfoService.returnConfirmRegister(orderId);
+        hisOutpatient.confirmRegister(confirmRegister);
+
+        return ResponseWrapper().addData(orderVO).addMessage("查询成功").ExeSuccess(200);
+
     }
 
 
@@ -78,6 +83,8 @@ public class OrderController extends BaseController{
         return ResponseWrapper().addData(orderVO).addMessage("查询成功").ExeSuccess(200);
 
     }
+
+
 
 
 
