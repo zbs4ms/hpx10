@@ -57,5 +57,9 @@ public class Doctor {
     @ApiModelProperty("科室名称")
     private String ksmc;
 
+    @Transient
+    @ApiModelProperty("his的號碼 HM")
+    private String hm;
+
 
 }

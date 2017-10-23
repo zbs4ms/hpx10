@@ -95,6 +95,7 @@ public class HisDoctorController extends BaseController{
             doctor.setGoodDescribe("医生擅长各种疑难杂症");
             doctor.setYsid(hb.getYsid());
             doctor.setKsmc(hb.getKsmc());
+            doctor.setHm(hb.getHm());
 
             doctorList.add(doctor);
 
