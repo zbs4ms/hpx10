@@ -41,6 +41,10 @@ public class Register {
     private Integer enable;
     @ApiModelProperty("创建时间")
     private Date createTime;
+    @ApiModelProperty("his的号码 HM")
+    private String hm;
+    @ApiModelProperty("his的号序 HX")
+    private String hx;
 
     @ApiModelProperty("序列号")
     private String serialNumber;

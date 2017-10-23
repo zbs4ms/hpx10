@@ -13,6 +13,8 @@ import com.jishi.reservation.service.DoctorService;
 import com.jishi.reservation.service.OrderInfoService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.his.HisOutpatient;
+import com.jishi.reservation.service.his.bean.ConfirmRegister;
 import com.jishi.reservation.service.support.AliOssSupport;
 import com.jishi.reservation.service.support.DateSupport;
 import com.jishi.reservation.util.Constant;
@@ -41,17 +43,22 @@ public class OrderController extends BaseController{
     @Autowired
     OrderInfoService orderInfoService;
 
+    @Autowired
+    HisOutpatient hisOutpatient;
 
     @ApiOperation(value = "确认订单")
     @RequestMapping(value = "sureOrder", method = RequestMethod.DELETE)
     @ResponseBody
     public JSONObject sureOrder(
-            @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId
+            @ApiParam(value = "订单id", required = true) @RequestParam(value = "orderId", required = true) Long orderId
     ) throws Exception {
-        Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
+        Preconditions.checkNotNull(orderId,"请传入必须的参数：orderId");
 
         //执行his确认订单操作..
-        //registerService.failureRegister(registerId);
+        //confirm.modify
+        ConfirmRegister confirmRegister = orderInfoService.returnConfirmRegister(orderId);
+        hisOutpatient.confirmRegister(new ConfirmRegister());
+
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 

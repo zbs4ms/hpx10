@@ -63,7 +63,7 @@ public class HisAccountController extends BaseController{
 
 
     @ApiOperation(value = "通过手机号来查询用户就诊信息")
-    @RequestMapping(value = "query", method = RequestMethod.POST)
+    @RequestMapping(value = "query", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject query(
             @ApiParam(value = "账号") @RequestParam(value = "account") String account,
@@ -81,7 +81,7 @@ public class HisAccountController extends BaseController{
 
 
     @ApiOperation(value = "通過身份證去his系统查询就诊人信息")
-    @RequestMapping(value = "queryPatient", method = RequestMethod.POST)
+    @RequestMapping(value = "queryPatient", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryPatient(
             @ApiParam(value = "身份证") @RequestParam(value = "idCard",required = true) String idCard,

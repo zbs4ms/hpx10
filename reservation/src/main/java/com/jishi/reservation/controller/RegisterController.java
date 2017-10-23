@@ -72,6 +72,7 @@ public class RegisterController extends BaseController {
                                   @ApiParam(value = "病人ID", required = true) @RequestParam(value = "brid", required = true) String brid,
                                   @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
                                   @ApiParam(value = "科室名称", required = true) @RequestParam(value = "department", required = true) String department,
+                                  @ApiParam(value = "his的号码 HM", required = true) @RequestParam(value = "hm", required = true) String hm,
 
             @ApiParam(value = "预约的医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId,
             @ApiParam(value = "预约的时间段", required = true) @RequestParam(value = "timeInterval", required = true) String timeInterval,
@@ -95,7 +96,7 @@ public class RegisterController extends BaseController {
 
 
         // 10.17  在此处加入订单。。
-        RegisterCompleteVO completeVO = registerService.addRegister(accountId, brid, departmentId, doctorId, new Date(agreedTime),timeInterval,doctorName,price,subject,brName,department);
+        RegisterCompleteVO completeVO = registerService.addRegister(accountId, brid, departmentId, doctorId, new Date(agreedTime),timeInterval,doctorName,price,subject,brName,department,hm);
 
         jpushSupport.sendPush(accountService.queryAccountById(accountId).getPushId(), Constant.REGISTER_SUCCESS_MGS);
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());

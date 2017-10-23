@@ -13,6 +13,7 @@ import java.util.Date;
 @Data
 public class RegisterCompleteVO {
 
+    private Long orderId;
     private Long registerId;
     private String department;
     private String doctor;

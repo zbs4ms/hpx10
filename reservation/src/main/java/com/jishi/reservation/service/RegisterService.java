@@ -14,7 +14,9 @@ import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
 import com.jishi.reservation.service.enumPackage.PayEnum;
 import com.jishi.reservation.service.enumPackage.StatusEnum;
+import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.HisUserManager;
+import com.jishi.reservation.service.his.bean.LockRegister;
 import com.jishi.reservation.util.Helpers;
 import com.jishi.reservation.util.NewRandomUtil;
 import lombok.extern.log4j.Log4j;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -59,6 +62,9 @@ public class RegisterService {
     @Autowired
     HisUserManager hisUserManager;
 
+    @Autowired
+    HisOutpatient hisOutpatient;
+
 
 
 
@@ -74,7 +80,7 @@ public class RegisterService {
     @Transactional
     public RegisterCompleteVO addRegister(Long accountId,String brid,Long departmentId,Long doctorId,
                                           Date agreedTime,String timeInterval,String doctorName,
-                                          String price,String subject,String brName,String department) throws Exception {
+                                          String price,String subject,String brName,String department,String hm) throws Exception {
         if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
             throw new Exception("账户信息为空.");
         if(Helpers.isNullOrEmpty(departmentId)  || departmentService.queryDepartment(departmentId,null) == null)
@@ -113,6 +119,7 @@ public class RegisterService {
         register.setStatus(StatusEnum.REGISTER_STATUS_PAYMENT.getCode());
         register.setEnable(EnableEnum.EFFECTIVE.getCode());
         register.setCreateTime(new Date());
+        register.setHm(hm);
         String serialCode = NewRandomUtil.getRandomNum(4);
         register.setSerialNumber(serialCode);
 
@@ -124,7 +131,6 @@ public class RegisterService {
         order.setRegisterId(register.getId());
         orderInfoMapper.insertReturnId(order);
         register.setOrderId(order.getId());
-        registerMapper.updateByPrimaryKeySelective(register);
         RegisterCompleteVO completeVO = new RegisterCompleteVO();
         completeVO.setRegisterId(register.getId());
         completeVO.setDoctor(doctorName);
@@ -146,8 +152,22 @@ public class RegisterService {
         completeVO.setSerialNumber(serialCode);
         completeVO.setSubject(subject);
         completeVO.setDes(subject);
+        completeVO.setOrderId(order.getId());
+        // his 锁定号源,返回hx 号序
+        //String hx = this.lockRegister(hm, agreedTime);
+
+        //register.setHx(hx);
+        registerMapper.updateByPrimaryKeySelective(register);
+
         return completeVO;
 
+    }
+
+    private String lockRegister(String hm, Date agreedTime) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+        String timeStr = sdf.format(agreedTime);
+        LockRegister lockRegister = hisOutpatient.lockRegister(hm, timeStr, "", "jxyy+zczh");
+        return lockRegister.getHx();
     }
 
     /**

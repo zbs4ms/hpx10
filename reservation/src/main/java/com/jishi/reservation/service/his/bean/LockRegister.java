@@ -12,6 +12,6 @@ import lombok.Data;
 @Data
 public class LockRegister {
 
-    @XStreamAlias("HM")
-    String hm;
+    @XStreamAlias("HX")
+    String hx;
 }

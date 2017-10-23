@@ -13,6 +13,7 @@ import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.Register;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.his.bean.ConfirmRegister;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,5 +57,24 @@ public class OrderInfoService {
         orderVO.setRegisterTime(register.getAgreedTime());
 
         return orderVO;
+    }
+
+    public ConfirmRegister returnConfirmRegister(Long orderId) {
+
+        ConfirmRegister confirmRegister = new ConfirmRegister();
+        OrderInfo orderInfo = orderInfoMapper.queryById(orderId);
+        Register register = registerMapper.queryByOrderId(orderId);
+        confirmRegister.setBrid(orderInfo.getBrId());
+        confirmRegister.setJe(String.valueOf(orderInfo.getPrice()));
+        confirmRegister.setCzjlid("");
+        confirmRegister.setHm(register.getHm());
+        confirmRegister.setHx(register.getHx());
+        confirmRegister.setHzdw("");   //合作单位 固定传入第三方名称
+        confirmRegister.setYyfs("");  //预约方式 固定传入第三方名称
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        confirmRegister.setYysj(sdf.format(register.getAgreedTime()));
+
+
+        return null;
     }
 }

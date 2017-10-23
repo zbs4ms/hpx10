@@ -74,7 +74,7 @@ public class HisOutpatient {
 
 
     /**
-     * 对病人住院费用进行结算
+     * 锁定号源 返回号序  之后的confirm.modify会用到这个hm
      * @param hm 号码
      * @param yysj
      * @param hzdw
@@ -244,15 +244,6 @@ public class HisOutpatient {
 
 
 
-
-
-    /**
-     * 对号源进行锁定，以保证有足够的付款时间
-     */
-    public DepartmentList lockRegister(String hm,String cxts,String zd) throws Exception {
-
-        return null;
-    }
 
 
 
