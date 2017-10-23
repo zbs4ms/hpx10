@@ -41,7 +41,7 @@ public class OrderController extends BaseController{
     @Autowired
     OrderInfoService orderInfoService;
 
-    @ApiOperation(value = "通过订单id查询相关信息")
+    @ApiOperation(value = "通过订单id查询相关信息",response = OrderVO.class)
     @RequestMapping(value = "query", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryOrder(
