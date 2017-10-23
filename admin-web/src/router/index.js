@@ -15,6 +15,8 @@ import logRouters from '@/components/log/router'
 import reserveRouters from '@/components/reserve/router'
 // 用户管理
 import userRouters from '@/components/user/router'
+// 推送管理
+import pushRouters from '@/components/push/router'
 
 // 登陆
 const Login = resolve => require(['@/components/login/Login'], resolve)
@@ -39,6 +41,7 @@ const router = new Router({
     ...logRouters,
     ...reserveRouters,
     ...userRouters,
+    ...pushRouters,
     {
       path: '*',
       name: 'NotFound',

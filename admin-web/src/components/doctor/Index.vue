@@ -122,7 +122,7 @@ export default {
       editData: {},
       apiKeysMap: {
         pageSize: {
-          value: 2,
+          value: 10,
           innerKey: 'pageSize' // searchTable组件内部映射的key
         },
         departmentId: {
@@ -333,13 +333,6 @@ export default {
     }
 
     .operate-item {
-      color: $color4;
-      font-size: 18px;
-      cursor: pointer;
-      & + .operate-item {
-        margin-left: 20px;
-      }
-
       .el-switch {
         margin-right: 10px;
       }

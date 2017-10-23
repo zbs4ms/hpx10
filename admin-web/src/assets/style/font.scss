@@ -24,18 +24,21 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-access:before {
+.icon-push:before {
   content: "\e900";
 }
-.icon-user:before {
+.icon-access:before {
   content: "\e901";
 }
-.icon-reservation:before {
+.icon-user:before {
   content: "\e902";
 }
-.icon-doctor:before {
+.icon-reservation:before {
   content: "\e903";
 }
-.icon-operate:before {
+.icon-doctor:before {
   content: "\e904";
+}
+.icon-operate:before {
+  content: "\e905";
 }

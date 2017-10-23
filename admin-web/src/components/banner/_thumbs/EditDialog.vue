@@ -116,7 +116,7 @@ export default {
                 { pattern: /^\s*\S{0,30}$/, message: '字体长度不能大于30', trigger: 'change, blur'}
               ]">
               <el-input v-model="form.name" auto-complete="off"></el-input>
-              <span class="name-length">{{ form.name ? form.name.length : 0 }}/30</span>
+              <span class="text-length">{{ form.name ? form.name.length : 0 }}/30</span>
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -235,13 +235,6 @@ export default {
       .el-input__inner {
         padding-right: 50px;
       }
-    }
-    .name-length {
-      position: absolute;
-      top: 50%;
-      right: 10px;
-      transform: translateY(-50%);
-      color: $color5;
     }
   }
 </style>

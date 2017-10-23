@@ -24,4 +24,8 @@ export default [{
   label: '权限管理',
   icon: 'icon-access',
   path: '/auth'
+}, {
+  label: '推送管理',
+  icon: 'icon-push',
+  path: '/push'
 }]

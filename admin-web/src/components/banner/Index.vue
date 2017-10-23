@@ -409,13 +409,6 @@ export default {
     }
 
     .operate-item {
-      color: $color4;
-      font-size: 18px;
-      cursor: pointer;
-      & + .operate-item {
-        margin-left: 20px;
-      }
-
       .el-switch {
         margin-right: 10px;
       }

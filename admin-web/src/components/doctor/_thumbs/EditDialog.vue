@@ -95,7 +95,7 @@ export default {
 </script>
 
 <template>
-  <div class="edit-dialog">
+  <div class="edit-dialog doctor__edit-dialog">
     <el-dialog
       class="dialog--center"
       title="编辑信息"
@@ -128,7 +128,7 @@ export default {
                 :autosize="false"
                 auto-complete="off">
               </el-input>
-              <span class="describe-length">{{ form.describe ? form.describe.trim().length : 0 }}/30</span>
+              <span class="text-length">{{ form.describe ? form.describe.trim().length : 0 }}/30</span>
             </el-form-item>
           </el-col>
         </el-row>
@@ -161,11 +161,7 @@ export default {
 
 <style lang="scss">
   @import "~@/assets/style/variables/index";
-  .edit-dialog {
-    .el-dialog {
-      min-width: 720px;
-    }
-
+  .doctor__edit-dialog {
     .doctor-name {
       .el-form-item__label {
         text-align: left;
@@ -181,18 +177,6 @@ export default {
       .el-input__inner {
         padding-right: 50px;
       }
-    }
-    .describe-length {
-      position: absolute;
-      right: 10px;
-      margin-top: -14px;
-      transform: translateY(-50%);
-      color: $color5;
-    }
-
-    textarea {
-      height: 100px;
-      resize: none;
     }
   }
 </style>
