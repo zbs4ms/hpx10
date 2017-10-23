@@ -51,7 +51,7 @@ public class OrderController extends BaseController{
         Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
 
         //执行his确认订单操作..
-        registerService.failureRegister(registerId);
+        //registerService.failureRegister(registerId);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
