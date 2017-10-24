@@ -56,7 +56,7 @@ public class OrderController extends BaseController{
 
 
     @ApiOperation(value = "确认订单")
-    @RequestMapping(value = "confirmOrder", method = RequestMethod.DELETE)
+    @RequestMapping(value = "confirmOrder", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject sureOrder(
             @ApiParam(value = "订单id", required = true) @RequestParam(value = "orderId", required = true) Long orderId
