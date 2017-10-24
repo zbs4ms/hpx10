@@ -84,7 +84,7 @@ public class HisDoctorController extends BaseController{
         PageInfo<Doctor> pageInfo = new PageInfo<>();
         List<Doctor> doctorList = new ArrayList<>();
         Integer startIndex = (pageNum - 1)*pageSize;
-        Integer endIndex = pageNum*pageSize;
+        Integer endIndex = hbList.size();
         for(int i = startIndex;i<endIndex;i++){
             Doctor doctor = new Doctor();
             RegisteredNumberInfo.Hb hb = hbList.get(i);
