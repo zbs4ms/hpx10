@@ -87,31 +87,34 @@ public class HisDoctorController extends BaseController{
             //log.info("总的医生数："+hbList.size());
             List<Doctor> doctorList = new ArrayList<>();
             Integer startIndex = (startPage - 1)*pageSize;
-            int endRow = hbList.size()<startPage*pageSize-1?hbList.size():startPage*pageSize-1;
-            if(startPage == endRow)
-                endRow+=1;
-            if(endRow == 0)
-                endRow+=1;
+            if(hbList != null ){
+                int endRow = hbList.size()<startPage*pageSize-1?hbList.size():startPage*pageSize-1;
+                if(startPage == endRow)
+                    endRow+=1;
+                if(endRow == 0)
+                    endRow+=1;
 
-            for(int i = startIndex;i<endRow;i++){
-                Doctor doctor = new Doctor();
-                RegisteredNumberInfo.Hb hb = hbList.get(i);
-                doctor.setName(hb.getYs());
-                //TODO his返回的信息没有头像
-                doctor.setHeadPortrait("http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/doctor/hack.png");
-                doctor.setHymc(hb.getHymc());
-                doctor.setDj(hb.getDj());
-                doctor.setGoodDescribe("医生擅长各种疑难杂症");
-                doctor.setYsid(hb.getYsid());
-                doctor.setKsmc(hb.getKsmc());
-                doctor.setHm(hb.getHm());
+                for(int i = startIndex;i<endRow;i++){
+                    Doctor doctor = new Doctor();
+                    RegisteredNumberInfo.Hb hb = hbList.get(i);
+                    doctor.setName(hb.getYs());
+                    //TODO his返回的信息没有头像
+                    doctor.setHeadPortrait("http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/doctor/hack.png");
+                    doctor.setHymc(hb.getHymc());
+                    doctor.setDj(hb.getDj());
+                    doctor.setGoodDescribe("医生擅长各种疑难杂症");
+                    doctor.setYsid(hb.getYsid());
+                    doctor.setKsmc(hb.getKsmc());
+                    doctor.setHm(hb.getHm());
 
-                doctorList.add(doctor);
+                    doctorList.add(doctor);
+            }
+
 
             }
             pageInfo.setList(doctorList);
-            pageInfo.setTotal(hbList.size());
-            pageInfo.setPages(hbList.size()/pageSize +1);
+            pageInfo.setTotal(hbList != null?hbList.size():0);
+            pageInfo.setPages(hbList != null?hbList.size()/pageSize +1:0);
             pageInfo.setPageNum(startPage);
             pageInfo.setPageSize(pageSize);
 
