@@ -74,40 +74,44 @@ public class HisDoctorController extends BaseController{
             @ApiParam(value = "医生id") @RequestParam(value = "ysid",defaultValue = "") String ysid,
             @ApiParam(value = "医生姓名") @RequestParam(value = "name",defaultValue = "") String name,
 
-            @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+            @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize
     ) throws Exception {
+        PageInfo<Doctor> pageInfo = new PageInfo<>();
 
         RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", ksid, ysid, name, "", "");
-        List<RegisteredNumberInfo.Hb> hbList = info.getGroup().getHblist().get(0).getHbList();
-        log.info("总的医生数："+hbList.size());
-        PageInfo<Doctor> pageInfo = new PageInfo<>();
-        List<Doctor> doctorList = new ArrayList<>();
-        Integer startIndex = (pageNum - 1)*pageSize;
-        Integer endIndex = hbList.size();
-        for(int i = startIndex;i<endIndex;i++){
-            Doctor doctor = new Doctor();
-            RegisteredNumberInfo.Hb hb = hbList.get(i);
-            doctor.setName(hb.getYs());
-            //TODO his返回的信息没有头像
-            doctor.setHeadPortrait("http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/doctor/hack.png");
-            doctor.setHymc(hb.getHymc());
-            doctor.setDj(hb.getDj());
-            doctor.setGoodDescribe("医生擅长各种疑难杂症");
-            doctor.setYsid(hb.getYsid());
-            doctor.setKsmc(hb.getKsmc());
-            doctor.setHm(hb.getHm());
+        if(info.getGroup().getHblist().get(0)!=null){
+            List<RegisteredNumberInfo.Hb> hbList = info.getGroup().getHblist().get(0).getHbList();
+            //log.info("总的医生数："+hbList.size());
+            List<Doctor> doctorList = new ArrayList<>();
+            Integer startIndex = (startPage - 1)*pageSize;
+            int endIndex = hbList.size()<startPage*pageSize-1?hbList.size():startPage*pageSize-1;
 
-            doctorList.add(doctor);
+            for(int i = startIndex;i<endIndex;i++){
+                Doctor doctor = new Doctor();
+                RegisteredNumberInfo.Hb hb = hbList.get(i);
+                doctor.setName(hb.getYs());
+                //TODO his返回的信息没有头像
+                doctor.setHeadPortrait("http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/doctor/hack.png");
+                doctor.setHymc(hb.getHymc());
+                doctor.setDj(hb.getDj());
+                doctor.setGoodDescribe("医生擅长各种疑难杂症");
+                doctor.setYsid(hb.getYsid());
+                doctor.setKsmc(hb.getKsmc());
+                doctor.setHm(hb.getHm());
 
+                doctorList.add(doctor);
+
+            }
+            pageInfo.setList(doctorList);
+            pageInfo.setTotal(hbList.size());
+            pageInfo.setPages(hbList.size()/pageSize +1);
+            pageInfo.setPageNum(startPage);
+            pageInfo.setPageSize(pageSize);
+
+            log.info(JSONObject.toJSONString(info));
         }
-        pageInfo.setList(doctorList);
-        pageInfo.setTotal(hbList.size());
-        pageInfo.setPages(hbList.size()/pageSize +1);
-        pageInfo.setPageNum(pageNum);
-        pageInfo.setPageSize(pageSize);
 
-        log.info(JSONObject.toJSONString(info));
         return ResponseWrapper().addData(pageInfo).addMessage("查询成功").ExeSuccess(200);
     }
 

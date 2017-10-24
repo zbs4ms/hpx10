@@ -2,6 +2,7 @@ package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
+import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.HospitalizationInfoVO;
 import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.service.AccountService;
@@ -48,6 +49,7 @@ public class HospitalizationController extends BaseController {
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) throws Exception {
         List<HospitalizationInfoVO> list = new ArrayList<>();
         PageInfo<HospitalizationInfoVO> page = new PageInfo<>();
+
         //供测试数据使用。。。
         if(accountId == 3987){
             List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo("3987");

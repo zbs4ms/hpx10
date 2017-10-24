@@ -76,7 +76,7 @@ public class AlibabaPay {
 
 
             String sign = OrderInfoUtil2_0.getSign(params, PayConstant.APP_PRIVATE_KEY, true);
-            String orderInfo = body + "&" + sign;
+            return body + "&" + sign;
         } catch (AlipayApiException e) {
             e.printStackTrace();
         }
