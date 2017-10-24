@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public interface PatientInfoMapper extends MyMapper<PatientInfo> {
@@ -20,4 +22,10 @@ public interface PatientInfoMapper extends MyMapper<PatientInfo> {
             "select * from patientInfo where id = #{id}"
     })
     PatientInfo queryById(@Param("id") Long id);
+
+
+    @Select({
+            "select br_id from patientInfo where account_id = #{accountId}"
+    })
+    List<String> queryBrIdByAccountId(@Param("accountId") Long accountId);
 }

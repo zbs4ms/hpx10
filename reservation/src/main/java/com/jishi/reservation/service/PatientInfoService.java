@@ -1,10 +1,12 @@
 package com.jishi.reservation.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
+import com.jishi.reservation.controller.protocol.HospitalizationInfoVO;
 import com.jishi.reservation.dao.mapper.PatientInfoMapper;
 import com.jishi.reservation.dao.mapper.PregnantMapper;
 import com.jishi.reservation.dao.models.PatientInfo;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -189,5 +192,25 @@ public class PatientInfoService {
             patientInfo.setPregnantId(pregnant.getId());
 
         }
+    }
+
+    public List<String> queryBrIdByAccountId(Long accountId) {
+
+        List<String> brIdList = patientInfoMapper.queryBrIdByAccountId(accountId);
+        brIdList.removeAll(Collections.singleton(null));
+        return brIdList;
+    }
+
+    public PageInfo<HospitalizationInfoVO> wrapListToPage(List<HospitalizationInfoVO> list, Integer startPage, Integer pageSize) {
+
+
+        PageInfo<HospitalizationInfoVO>  page = new PageInfo<>();
+        page.setTotal(list.size());
+        page.setList(list);
+        Integer pages = (list.size()-1)/pageSize+1;
+        page.setPages(pages);
+        page.setPageNum(startPage);
+
+        return page;
     }
 }

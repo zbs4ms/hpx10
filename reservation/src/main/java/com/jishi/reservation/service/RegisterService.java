@@ -123,10 +123,6 @@ public class RegisterService {
         String serialCode = NewRandomUtil.getRandomNum(4);
         register.setSerialNumber(serialCode);
 
-
-        //added csrr  添加排班表的数据
-        //scheduledService.addRegister(doctorId,patientinfoId,agreedTime);
-
         registerMapper.insertReturnId(register);
         order.setRegisterId(register.getId());
         orderInfoMapper.insertReturnId(order);
@@ -153,10 +149,10 @@ public class RegisterService {
         completeVO.setSubject(subject);
         completeVO.setDes(subject);
         completeVO.setOrderId(order.getId());
-        // his 锁定号源,返回hx 号序
-        //String hx = this.lockRegister(hm, agreedTime);
+        //his 锁定号源,返回hx 号序
+        String hx = this.lockRegister(hm, agreedTime);
 
-        //register.setHx(hx);
+        register.setHx(hx);
         registerMapper.updateByPrimaryKeySelective(register);
 
         return completeVO;
@@ -164,6 +160,7 @@ public class RegisterService {
     }
 
     private String lockRegister(String hm, Date agreedTime) throws Exception {
+        log.info("开始锁定号源");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
         String timeStr = sdf.format(agreedTime);
         LockRegister lockRegister = hisOutpatient.lockRegister(hm, timeStr, "", "jxyy+zczh");
