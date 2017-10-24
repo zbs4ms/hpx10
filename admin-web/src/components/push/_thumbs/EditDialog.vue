@@ -1,62 +1,71 @@
 <script>
-/*
- * Created by zhengji
- * Date: 2017/10/21
- */
-export default {
-  name: 'EditDialog',
-  props: {
-    value: {
-      type: Boolean
-    }
-  },
-  data () {
-    this.retainTimeOpts = [{
-      text: '不保留'
-    }, {
-      text: '1分钟'
-    }, {
-      text: '10分钟'
-    }, {
-      text: '1小时'
-    }, {
-      text: '3小时'
-    }, {
-      text: '12小时'
-    }, {
-      text: '1天'
-    }, {
-      text: '3天'
-    }, {
-      text: '10天'
-    }]
-    return {
-      ruleForm: {
-        content: '', // 推送内容
-        platform: [], // 目标平台
-        pushWay: [], // 推送方式
-        population: '', // 目标人群
-        link: {
-          location: '', // 跳转位置
-          link: '' // 链接
+  /*
+   * Created by zhengji
+   * Date: 2017/10/21
+   */
+  import deepAssign from '@/utils/index'
+  const initialData = {
+    ruleForm: {
+      content: '', // 推送内容
+      platform: [], // 目标平台
+      pushWay: [], // 推送方式
+      population: '', // 目标人群
+      link: {
+        location: '', // 跳转位置
+        link: '' // 链接
+      },
+      pushTime: '', // 发送时间
+      retainTime: '1天' // 离线保留时长
+    },
+    deviceAliasRadio: ''
+  }
+  export default {
+    name: 'EditDialog',
+    props: {
+      value: {
+        type: Boolean
+      }
+    },
+    data () {
+      this.retainTimeOpts = [{
+        text: '不保留'
+      }, {
+        text: '1分钟'
+      }, {
+        text: '10分钟'
+      }, {
+        text: '1小时'
+      }, {
+        text: '3小时'
+      }, {
+        text: '12小时'
+      }, {
+        text: '1天'
+      }, {
+        text: '3天'
+      }, {
+        text: '10天'
+      }]
+      return Object.assign({}, initialData)
+    },
+    computed: {
+      visible: {
+        get () {
+          return this.value
         },
-        pushTime: '', // 发送时间
-        retainTime: '1天' // 离线保留时长
-      },
-      deviceAliasRadio: ''
-    }
-  },
-  computed: {
-    visible: {
-      get () {
-        return this.value
-      },
-      set (val) {
-        this.$emit('input', val)
+        set (val) {
+          this.$emit('input', val)
+        }
+      }
+    },
+    watch: {
+      visible (val) {
+        if (!val) {
+          deepAssign(this.$data, initialData)
+        }
       }
     }
   }
-}
 </script>
 
 <template>

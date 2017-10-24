@@ -98,7 +98,7 @@
                     statusOptions.map(item => {
                       return (
                         <el-dropdown-item
-                          class={{ 'status-active': item.value === (vm.apiKeysMap && vm.apiKeysMap.status.value) }}
+                          class={{ 'active': item.value === (vm.apiKeysMap && vm.apiKeysMap.status.value) }}
                           nativeOnClick={() => vm.selectStatus(item)}>
                           { item.label }
                         </el-dropdown-item>
@@ -384,14 +384,6 @@
     }
 
     .operations {
-    }
-  }
-  .log-status-drodown-menu {
-    .el-dropdown-menu__item {
-      &.status-active {
-        background: #20a0ff;
-        color: #fff;
-      }
     }
   }
 </style>

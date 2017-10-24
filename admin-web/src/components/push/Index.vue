@@ -91,7 +91,7 @@
                     statusOptions.map(item => {
                       return (
                         <el-dropdown-item
-                          class={{ 'status-active': item.value === (vm.apiKeysMap && vm.apiKeysMap.status.value) }}
+                          class={{ 'active': item.value === (vm.apiKeysMap && vm.apiKeysMap.status.value) }}
                           nativeOnClick={() => vm.selectStatus(item)}>
                           { item.label }
                         </el-dropdown-item>
@@ -125,7 +125,8 @@
                   转发
                 </span>
                 <span
-                  class="operate-item el-icon-delete">
+                  class="operate-item el-icon-delete"
+                  onClick={() => this.handleDelRow(scope.row)}>
                 </span>
               </div>
             )
@@ -260,6 +261,28 @@
       // 编辑
       editRow () {
         this.editDialogVisible = true
+      },
+      // 删除
+      handleDelRow (rowData) {
+        this.$confirm('是否删除该信息？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          beforeClose: (action, instance, done) => {
+            if (action === 'confirm') {
+              Promise.resolve().then(res => {
+                done()
+                this.$message({
+                  type: 'success',
+                  message: '删除成功'
+                })
+                this.$refs.searchTable.getList()
+              })
+            } else {
+              done()
+            }
+          }
+        })
       }
     }
   }
@@ -321,14 +344,6 @@
   #push-manage {
     .table-tools {
       justify-content: space-between;
-    }
-  }
-  .push-type-drodown-menu {
-    .el-dropdown-menu__item {
-      &.status-active {
-        background: #20a0ff;
-        color: #fff;
-      }
     }
   }
 </style>
