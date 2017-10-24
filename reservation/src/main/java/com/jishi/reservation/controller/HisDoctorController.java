@@ -80,6 +80,7 @@ public class HisDoctorController extends BaseController{
 
         RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", ksid, ysid, name, "", "");
         List<RegisteredNumberInfo.Hb> hbList = info.getGroup().getHblist().get(0).getHbList();
+        log.info("总的医生数："+hbList.size());
         PageInfo<Doctor> pageInfo = new PageInfo<>();
         List<Doctor> doctorList = new ArrayList<>();
         Integer startIndex = (pageNum - 1)*pageSize;

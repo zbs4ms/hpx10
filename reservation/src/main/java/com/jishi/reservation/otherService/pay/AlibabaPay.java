@@ -15,6 +15,8 @@ import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.otherService.pay.protocol.AliPayCallbackModel;
 import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
 import com.jishi.reservation.service.enumPackage.PayEnum;
+import com.jishi.reservation.util.Constant;
+import com.jishi.reservation.util.OrderInfoUtil2_0;
 import com.jishi.reservation.util.PayConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +70,13 @@ public class AlibabaPay {
             AlipayTradeAppPayResponse response = client.sdkExecute(request);
             log.info("支付宝返回的处理结果：\n"+JSONObject.toJSONString(response));
             log.info("支付宝订单号："+response.getTradeNo());
-            return response.getBody();
+            String body = response.getBody();
+
+            Map<String, String> params = OrderInfoUtil2_0.buildOrderParamMap(PayConstant.APP_ID, true);
+
+
+            String sign = OrderInfoUtil2_0.getSign(params, PayConstant.APP_PRIVATE_KEY, true);
+            String orderInfo = body + "&" + sign;
         } catch (AlipayApiException e) {
             e.printStackTrace();
         }
