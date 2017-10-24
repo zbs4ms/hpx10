@@ -79,15 +79,21 @@ public class HisDoctorController extends BaseController{
     ) throws Exception {
         PageInfo<Doctor> pageInfo = new PageInfo<>();
 
+        if(startPage <0)
+            startPage = 1;
         RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", ksid, ysid, name, "", "");
         if(info.getGroup().getHblist().get(0)!=null){
             List<RegisteredNumberInfo.Hb> hbList = info.getGroup().getHblist().get(0).getHbList();
             //log.info("总的医生数："+hbList.size());
             List<Doctor> doctorList = new ArrayList<>();
             Integer startIndex = (startPage - 1)*pageSize;
-            int endIndex = hbList.size()<startPage*pageSize-1?hbList.size():startPage*pageSize-1;
+            int endRow = hbList.size()<startPage*pageSize-1?hbList.size():startPage*pageSize-1;
+            if(startPage == endRow)
+                endRow+=1;
+            if(endRow == 0)
+                endRow+=1;
 
-            for(int i = startIndex;i<endIndex;i++){
+            for(int i = startIndex;i<endRow;i++){
                 Doctor doctor = new Doctor();
                 RegisteredNumberInfo.Hb hb = hbList.get(i);
                 doctor.setName(hb.getYs());

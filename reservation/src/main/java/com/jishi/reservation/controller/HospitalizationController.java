@@ -44,12 +44,18 @@ public class HospitalizationController extends BaseController {
     @ResponseBody
     public JSONObject queryAllInfo(
             HttpServletRequest request,HttpServletResponse response,
+            @ApiParam(value = "状态", required = false) @RequestParam(value = "status",required = false) Integer status,
             @ApiParam(value = "accountId 通过token找到", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) throws Exception {
         List<HospitalizationInfoVO> list = new ArrayList<>();
         PageInfo<HospitalizationInfoVO> page = new PageInfo<>();
 
+        if(startPage == 0){
+            log.info("处理分页参数");
+            startPage =1;
+
+        }
         //供测试数据使用。。。
         if(accountId == 3987){
             List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo("3987");

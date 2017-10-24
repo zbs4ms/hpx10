@@ -208,7 +208,13 @@ public class PatientInfoService {
         List<HospitalizationInfoVO> result = new ArrayList<>();
         int startRow = (startPage - 1)*pageSize;
         int endRow = list.size()<startPage*pageSize-1?list.size():startPage*pageSize-1;
-        for(int i = startRow;i<=endRow;i++){
+        if(startPage == endRow)
+            endRow+=1;
+        if(endRow == 0)
+            endRow+=1;
+
+        log.info("endRow :"+endRow);
+        for(int i = startRow;i<endRow;i++){
             result.add(list.get(i));
         }
         page.setTotal(list.size());
