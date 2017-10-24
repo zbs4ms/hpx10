@@ -105,23 +105,33 @@ public class AccountService {
      * @throws Exception
      */
     public LoginData loginOrRegisterThroughPhone(String phone, String  prefix,String dynamicCode) throws Exception {
-        log.info("账号采用手机进行登陆: phone:" + phone + " dynamicCode:" + dynamicCode);
-        String code = redisOperation.get(prefix + "_" + phone);
-        if (!dynamicCode.equals(code))
-            return null;
-        List<Account> account = queryAccount(null, phone, null);
         Account accountLogin;
-        if (account.size() == 0){
-             accountLogin = addAccount(phone, phone, Constant.DEFAULT_AVATAR, phone, phone, null);
+        if(!Constant.TEST_PHONE.contains(phone)){
+            log.info("账号采用手机进行登陆: phone:" + phone + " dynamicCode:" + dynamicCode);
+            String code = redisOperation.get(prefix + "_" + phone);
+
+            if (!dynamicCode.equals(code))
+                return null;
+            List<Account> account = queryAccount(null, phone, null);
+
+            if (account.size() == 0){
+                accountLogin = addAccount(phone, phone, Constant.DEFAULT_AVATAR, phone, phone, null);
+
+            }else {
+                accountLogin = account.get(0);
+            }
+
+            //删除已核对的验证码
+            redisOperation.del(prefix + "_" + phone);
+            log.info("删除已核对的验证码："+prefix + "_" + phone);
+
 
         }else {
-            accountLogin = account.get(0);
+            //如果是测试账号
+            List<Account> accounts = queryAccount(null, phone, null);
+            accountLogin = accounts.get(0);
+
         }
-
-        //删除已核对的验证码
-        redisOperation.del(prefix + "_" + phone);
-        log.info("删除已核对的验证码："+prefix + "_" + phone);
-
         String token = login(phone);
         LoginData loginData = new LoginData();
         loginData.setToken(token);
@@ -131,6 +141,7 @@ public class AccountService {
         loginData.setPushId(accountLogin.getPushId());
 
         return loginData;
+
 
     }
 
