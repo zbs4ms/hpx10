@@ -196,7 +196,7 @@ export default {
     handleSearch (e) {
       this.apiKeysMap = Object.assign({}, this.apiKeysMap, {
         name: {
-          value: this.searchKeyword
+          value: this.searchKeyword || undefined
         }
       })
     },

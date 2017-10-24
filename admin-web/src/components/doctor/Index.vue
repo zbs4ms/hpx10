@@ -178,10 +178,10 @@ export default {
     handleDepartmentSelect (item) {
       this.departmentId = item.id
     },
-    search () {
+    handleSearch () {
       this.apiKeysMap = Object.assign({}, this.apiKeysMap, {
         departmentId: {
-          value: this.departmentId
+          value: this.departmentId || undefined
         }
       })
     },
@@ -265,7 +265,7 @@ export default {
         <el-button
           class="tool-item"
           type="primary"
-          @click="search">搜索
+          @click="handleSearch">搜索
         </el-button>
       </div>
     </search-table>

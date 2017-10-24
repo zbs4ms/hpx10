@@ -72,6 +72,11 @@
     },
     methods: {
       handleSearch () {
+//        this.apiKeysMap = Object.assign({}, this.apiKeysMap, {
+//          departmentId: {
+//            value: this.departmentId || undefined
+//          }
+//        })
       }
     }
   }
@@ -99,7 +104,12 @@
             v-model="searchKeyword"
             @keyup.enter.native="handleSearch">
           </el-input>
-          <el-button type="primary" style="margin-left: 30px;">搜索</el-button>
+          <el-button
+            type="primary"
+            style="margin-left: 30px;"
+            @click="handleSearch">
+            搜索
+          </el-button>
         </div>
       </div>
     </search-table>

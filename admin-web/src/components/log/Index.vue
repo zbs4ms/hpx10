@@ -204,16 +204,16 @@
       return {
         apiKeysMap: {
           query: {
-            value: ''
+            value: undefined
           },
           status: {
             value: undefined
           },
           startTime: {
-            value: ''
+            value: undefined
           },
           endTime: {
-            value: ''
+            value: undefined
           },
           orderBy: {
             value: 'create_time'
@@ -242,9 +242,17 @@
       },
       handleSearch () {
         const createTimeRange = this.createTimeRange || []
-        this.apiKeysMap.startTime.value = new Date(createTimeRange[0] || '').getTime() || undefined
-        this.apiKeysMap.endTime.value = new Date(createTimeRange[1] || '').getTime() || undefined
-        this.apiKeysMap.query.value = this.searchKeyword || undefined
+        this.apiKeysMap = Object.assign({}, this.apiKeysMap, {
+          startTime: {
+            value: new Date(createTimeRange[0] || '').getTime() || undefined
+          },
+          endTime: {
+            value: new Date(createTimeRange[1] || '').getTime() || undefined
+          },
+          query: {
+            value: this.searchKeyword || undefined
+          }
+        })
       },
       // 切换置顶状态
       switchTop (rowData) {
