@@ -25,6 +25,7 @@
     },
     data () {
       let vm = this
+      // 状态筛选项
       const statusOptions = [{
         label: '全部',
         value: undefined
@@ -82,7 +83,6 @@
       }, {
         attrs: {
           'prop': 'status',
-          'label': '审批状态',
           'render-header' (h, { column, $index }) {
             return (
               <el-dropdown>
@@ -114,10 +114,6 @@
           default: (scope) => {
             const statusMap = (status) => {
               const DICT = {
-                2: {
-                  text: '审核拒绝',
-                  class: 'status-refuse'
-                },
                 0: {
                   text: '审核通过',
                   class: 'status-pass'
@@ -125,6 +121,10 @@
                 1: {
                   text: '待审批',
                   class: 'status-wait'
+                },
+                2: {
+                  text: '审核拒绝',
+                  class: 'status-refuse'
                 }
               }
               return DICT[status]
@@ -144,30 +144,36 @@
           default: (scope) => {
             return (
               <div class="flex--vcenter operations">
-                <span class="operate-item flex--vcenter">
+                <span class="operate-item flex--vcenter" style="width: 110px;">
                   <el-switch
                     style="margin-right: 10px;"
                     value={scope.row.isTop}
+                    onInput={(isTop) => (scope.row.isTop = isTop)}
                     onChange={() => this.switchTop(scope.row)}
                     {...{props: { 'on-text': '', 'off-text': '' }}}>
                   </el-switch>
-                  { scope.row.top === 1 ? '置顶' : '取消置顶' }
+                  { scope.row.isTop ? '置顶' : '取消置顶' }
                 </span>
-                <span
+                <el-button
+                  type="text"
                   class="operate-item"
-                  style="color: #20a0ff;"
+                  disabled={scope.row.status + '' !== '1'}
                   onClick={() => this.handleCheck(scope.row)}>
                   审核
-                </span>
-                <span
+                </el-button>
+                <el-button
+                  type="text"
                   class="operate-item"
-                  style="color: #20a0ff;"
-                  onClick={() => this.handleUnShelve(scope.row)}>{ scope.row.enable + '' === '0' ? '下架' : '上架' }</span>
+                  disabled={scope.row.status + '' !== '0'}
+                  onClick={() => this.handleUnShelve(scope.row)}>
+                  { scope.row.status + '' === '0' && scope.row.enable + '' !== '0' ? '上架' : '下架' }
+                </el-button>
               </div>
             )
           }
         }
       }]
+      // 列表请求配置
       this.listApi = {
         requestFn: getListApi,
         responseFn (data) {
@@ -187,6 +193,7 @@
           this.total = content.total || 0
         }
       }
+      // 审核可选项
       this.checkOptions = [{
         label: '审核通过',
         value: '0'
@@ -381,9 +388,6 @@
         background: rgba(255,73,73,0.10);
         border: 1px solid rgba(255,73,73,0.20);
       }
-    }
-
-    .operations {
     }
   }
 </style>

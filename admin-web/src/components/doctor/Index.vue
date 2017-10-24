@@ -84,7 +84,7 @@ export default {
                   onChange={() => this.switchTop(scope.row)}
                   {...{props: { 'on-text': '', 'off-text': '' }}}>
                 </el-switch>
-                { scope.row.top === 1 ? '置顶' : '取消置顶' }
+                { scope.row.top ? '置顶' : '取消置顶' }
               </span>
               <span
                   class="operate-item el-icon-edit"
@@ -122,7 +122,7 @@ export default {
       editData: {},
       apiKeysMap: {
         pageSize: {
-          value: 10,
+          value: 2,
           innerKey: 'pageSize' // searchTable组件内部映射的key
         },
         departmentId: {
@@ -333,6 +333,13 @@ export default {
     }
 
     .operate-item {
+      color: $color4;
+      font-size: 18px;
+      cursor: pointer;
+      & + .operate-item {
+        margin-left: 20px;
+      }
+
       .el-switch {
         margin-right: 10px;
       }

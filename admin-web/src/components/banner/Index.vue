@@ -128,7 +128,7 @@ export default {
           name: item.name,
           cover: item.bannerUrl,
           link: item.jumpUrl,
-          visible: !!item.display
+          visible: !item.display  // display: 0表示显示 1表示隐藏
         }))
         this.total = content.total || 0
       }
@@ -276,6 +276,7 @@ export default {
         respondCb()
       })
     },
+    // 显示／隐藏
     switchVisible (rowData) {
       switchVisibleApi({
         bannerId: rowData.id
