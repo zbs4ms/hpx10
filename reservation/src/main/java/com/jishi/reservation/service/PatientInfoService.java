@@ -214,6 +214,9 @@ public class PatientInfoService {
             endRow+=1;
 
         log.info("endRow :"+endRow);
+        if(list.size()<endRow){
+            endRow = list.size();
+        }
         for(int i = startRow;i<endRow;i++){
             result.add(list.get(i));
         }

@@ -86,15 +86,21 @@ public class HisDoctorController extends BaseController{
             List<RegisteredNumberInfo.Hb> hbList = info.getGroup().getHblist().get(0).getHbList();
             //log.info("总的医生数："+hbList.size());
             List<Doctor> doctorList = new ArrayList<>();
-            Integer startIndex = (startPage - 1)*pageSize;
+            Integer startRow = (startPage - 1)*pageSize;
             if(hbList != null ){
                 int endRow = hbList.size()<startPage*pageSize-1?hbList.size():startPage*pageSize-1;
+                log.info(hbList.size()+"~~"+(startPage*pageSize-1));
                 if(startPage == endRow)
                     endRow+=1;
                 if(endRow == 0)
                     endRow+=1;
-
-                for(int i = startIndex;i<endRow;i++){
+                log.info("start:"+startRow);
+                log.info("end:"+endRow);
+                log.info("list:"+hbList.size());
+                if(hbList.size()<endRow){
+                    endRow = hbList.size();
+                }
+                for(int i = startRow;i<endRow;i++){
                     Doctor doctor = new Doctor();
                     RegisteredNumberInfo.Hb hb = hbList.get(i);
                     doctor.setName(hb.getYs());
