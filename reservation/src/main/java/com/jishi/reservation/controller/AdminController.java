@@ -180,7 +180,10 @@ public class AdminController extends BaseController {
         String token = CookieUtil.getCookieByName(request, Constant.ADMIN_TOKEN).getValue();
         SessionUtil.deleteSession(request,token);
         CookieUtil.deleteCookieByName(request,response,token);
-        managerService.logout(token);
+        if(token != null && !"".equals(token)){
+            log.info("取到token..."+token);
+            managerService.logout(token);
+        }
 
         return ResponseWrapper().addMessage("退出成功").ExeSuccess(200);
 
