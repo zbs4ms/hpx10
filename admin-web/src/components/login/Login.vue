@@ -1,5 +1,9 @@
 <script>
   import loginApi from './api'
+  import { mapMutations } from 'vuex'
+  import {
+    UPDATE_ACCOUNTINFO
+  } from '@/store/global'
   export default {
     name: 'Login',
     data () {
@@ -26,14 +30,21 @@
             loginApi({
               account: this.loginForm.userName,
               password: this.loginForm.psd
+            }).then((res) => {
+              const accountInfo = res.content
+              const accountInfoStr = encodeURIComponent(JSON.stringify(accountInfo))
+              localStorage.setItem('accountInfo', accountInfoStr)
+              this.updateAccountInfo(accountInfo)
+              this.$router.push('/')
             }).finally(() => {
               this.loginLoading = false
-            }).then(() => {
-              this.$router.push('/')
             })
           }
         })
-      }
+      },
+      ...mapMutations({
+        updateAccountInfo: UPDATE_ACCOUNTINFO // 更新vuex中的accountInfo和auth
+      })
     }
   }
 </script>

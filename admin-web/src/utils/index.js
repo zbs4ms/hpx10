@@ -166,3 +166,17 @@ export const deepAssign = function () {
     return _prev
   })
 }
+
+/**
+ * 获取accountInfo
+ */
+
+export const getAccountInfo = (function () {
+  let accountInfo
+  return function (isUpate) {
+    if (!(accountInfo && !isUpate)) {
+      accountInfo = JSON.parse(decodeURIComponent(localStorage.getItem('accountInfo')))
+    }
+    return accountInfo
+  }
+}())
