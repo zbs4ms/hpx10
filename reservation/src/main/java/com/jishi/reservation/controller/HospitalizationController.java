@@ -30,8 +30,11 @@ public class HospitalizationController extends BaseController {
     @ApiOperation(value = "查询住院人历史的住院信息",response = HospitalizationInfoVO.class)
     @RequestMapping(value = "queryAllInfo", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryAllInfo(@ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId) throws Exception {
-        List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo(accountId);
+    public JSONObject queryAllInfo(@ApiParam(value = "brId", required = false) @RequestParam(value = "brId", required = false) Long brId) throws Exception {
+
+
+
+        List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo(brId);
         if(depositBalanceDetails == null)
             return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
         List<HospitalizationInfoVO> list = new ArrayList<>();
@@ -44,9 +47,9 @@ public class HospitalizationController extends BaseController {
     @ApiOperation(value = "查询住院人住院信息",response = HospitalizationInfoVO.class)
     @RequestMapping(value = "queryInfo", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryInfo(@ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+    public JSONObject queryInfo(@ApiParam(value = "brId", required = false) @RequestParam(value = "brId", required = false) Long brId,
                                    @ApiParam(value = "入院的次数", required = false) @RequestParam(value = "rycs", required = false) Integer rycs) throws Exception {
-        DepositBalanceDetail depositBalanceDetail = hospitalizationService.queryInfo(accountId,rycs,null);
+        DepositBalanceDetail depositBalanceDetail = hospitalizationService.queryInfo(brId,rycs,null);
         if(depositBalanceDetail == null)
             return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
         HospitalizationInfoVO vo = getHospitalizationInfoVO(depositBalanceDetail);
@@ -69,6 +72,7 @@ public class HospitalizationController extends BaseController {
         hospitalizationInfoVO.setYjje(depositBalanceDetail.getFyxx().getWjfy().getYjye());
         hospitalizationInfoVO.setYyje(depositBalanceDetail.getFyxx().getYjfy().getZyfy());
         hospitalizationInfoVO.setRycs(depositBalanceDetail.getZycs());
+        hospitalizationInfoVO.setYujiaojine(depositBalanceDetail.getYujiaojine());
         return hospitalizationInfoVO;
     }
 

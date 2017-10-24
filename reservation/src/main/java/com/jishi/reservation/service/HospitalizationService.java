@@ -47,7 +47,9 @@ public class HospitalizationService {
      */
     public DepositBalanceDetail queryInfo(Long accountId,Integer zycs,String zyzt) throws Exception {
         DepositBalanceDetail depositBalanceDetail = hisHospitalization.selectDetail(String.valueOf(accountId),String.valueOf(zycs));
+        String depositBalance = hisHospitalization.selectDepositBalance(String.valueOf(accountId), String.valueOf(zycs));
         //写入住院状态参数
+        depositBalanceDetail.setYujiaojine(depositBalance);
         depositBalanceDetail.setZyzt(zyzt);
         depositBalanceDetail.setZycs(String.valueOf(zycs));
         return depositBalanceDetail;

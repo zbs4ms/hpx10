@@ -32,5 +32,11 @@ public class HospitalizationInfoVO {
     String yyje;
     @ApiModelProperty("入院次数")
     String rycs;
+    @ApiModelProperty("预缴金额")
+    String yujiaojine;
+
+
+
+
 
 }
