@@ -1,5 +1,7 @@
 package com.jishi.reservation.util;
 
+import org.apache.axis.encoding.Base64;
+
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
