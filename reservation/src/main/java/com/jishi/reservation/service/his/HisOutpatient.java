@@ -182,7 +182,7 @@ public class HisOutpatient {
      * @return
      * @throws Exception
      */
-    public String confirmRegister(ConfirmRegister confirmRegister) throws Exception {
+    public ConfirmOrder confirmRegister(ConfirmRegister confirmRegister) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<SFYY>").append("0").append("</SFYY>");
         sb.append("<CZFS>").append("3").append("</CZFS>");
@@ -213,7 +213,7 @@ public class HisOutpatient {
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             String xml = HisTool.getHisDataparam(me);
-            return HisTool.getXmlAttribute(xml,"GHDH");
+            return (ConfirmOrder) HisTool.toBean(ConfirmOrder.class,xml);
         }
         return null;
     }

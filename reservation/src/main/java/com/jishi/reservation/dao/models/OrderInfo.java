@@ -45,6 +45,17 @@ public class OrderInfo {
     @ApiModelProperty("支付时间")
     private String payTime;
 
+    @ApiModelProperty("操作时间")
+    private String czsj;
+
+    @ApiModelProperty("his的挂号单号")
+    private String ghdh;
+
+    @ApiModelProperty("结算id")
+    private String jsid;
+
+
+
 
 
 }

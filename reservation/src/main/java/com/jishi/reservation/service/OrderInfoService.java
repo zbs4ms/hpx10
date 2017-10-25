@@ -13,6 +13,7 @@ import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.Register;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.his.bean.ConfirmOrder;
 import com.jishi.reservation.service.his.bean.ConfirmRegister;
 import com.jishi.reservation.util.Helpers;
 import io.swagger.models.auth.In;
@@ -20,6 +21,7 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,14 +62,18 @@ public class OrderInfoService {
         return orderVO;
     }
 
+
+
     public ConfirmRegister returnConfirmRegister(Long orderId) {
 
         ConfirmRegister confirmRegister = new ConfirmRegister();
         OrderInfo orderInfo = orderInfoMapper.queryById(orderId);
         Register register = registerMapper.queryByOrderId(orderId);
         confirmRegister.setBrid(orderInfo.getBrId());
-        //confirmRegister.setJe(String.valueOf(orderInfo.getPrice()));
-        confirmRegister.setJe("1");
+        confirmRegister.setJe(String.valueOf(orderInfo.getPrice().stripTrailingZeros()));
+
+        log.info("处理前："+String.valueOf(orderInfo.getPrice()));
+        log.info("处理后："+String.valueOf(orderInfo.getPrice().stripTrailingZeros()));
         confirmRegister.setCzjlid("");
         confirmRegister.setHm(register.getHm());
         confirmRegister.setHx(register.getHx());
@@ -80,7 +86,7 @@ public class OrderInfoService {
         confirmRegister.setJsklb("");//结算卡类别，固定传入第三方名称
         confirmRegister.setJsfs("");//结算方式，传空
         //confirmRegister.setJsje(String.valueOf(orderInfo.getPrice()));
-        confirmRegister.setJsje("1");
+        confirmRegister.setJsje(String.valueOf(orderInfo.getPrice().stripTrailingZeros()));
         confirmRegister.setJylsh(orderInfo.getOrderNumber());
         confirmRegister.setJymc("交易信息");
         confirmRegister.setJylr("支付帐号|姓名");
@@ -101,5 +107,16 @@ public class OrderInfoService {
 
         return orderInfoMapper.queryOrderList(status,enable);
 
+    }
+
+    public void confirmOrderHis(Long orderId, ConfirmOrder confirmOrder) {
+
+        OrderInfo orderInfo = orderInfoMapper.queryById(orderId);
+        orderInfo.setGhdh(confirmOrder.getGhdh());
+        orderInfo.setCzsj(confirmOrder.getCzsj());
+        orderInfo.setJsid(confirmOrder.getJsid());
+        orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+
+        log.info("his订单信息已同步到系统中.."+orderId);
     }
 }

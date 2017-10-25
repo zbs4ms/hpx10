@@ -12,6 +12,7 @@ import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.PayEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
+import com.jishi.reservation.service.his.bean.ConfirmOrder;
 import com.jishi.reservation.service.his.bean.ConfirmRegister;
 import com.jishi.reservation.service.support.AliOssSupport;
 import com.jishi.reservation.service.support.DateSupport;
@@ -71,8 +72,8 @@ public class OrderController extends MyBaseController {
 
         ConfirmRegister confirmRegister = orderInfoService.returnConfirmRegister(orderId);
         log.info("处理his的确认订单接口");
-        hisOutpatient.confirmRegister(confirmRegister);
-
+        ConfirmOrder confirmOrder = hisOutpatient.confirmRegister(confirmRegister);
+        orderInfoService.confirmOrderHis(orderId,confirmOrder);
         return ResponseWrapper().addData(orderVO).addMessage("确认成功").ExeSuccess(200);
 
     }
