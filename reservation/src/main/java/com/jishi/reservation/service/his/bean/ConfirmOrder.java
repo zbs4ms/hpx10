@@ -16,6 +16,6 @@ public class ConfirmOrder {
     private String czsj;
     @XStreamAlias("GHDH")
     private String ghdh;
-    @XStreamAlias("JSID")
-    private String jsid;
+    @XStreamAlias("JZID")
+    private String jzid;
 }

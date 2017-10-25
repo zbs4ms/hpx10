@@ -114,7 +114,7 @@ public class OrderInfoService {
         OrderInfo orderInfo = orderInfoMapper.queryById(orderId);
         orderInfo.setGhdh(confirmOrder.getGhdh());
         orderInfo.setCzsj(confirmOrder.getCzsj());
-        orderInfo.setJsid(confirmOrder.getJsid());
+        orderInfo.setJsid(confirmOrder.getJzid());
         orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
 
         log.info("his订单信息已同步到系统中.."+orderId);
