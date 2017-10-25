@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Constant;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.protocol.LoginData;
 import com.jishi.reservation.controller.protocol.PatientHisVO;
 import com.jishi.reservation.dao.models.Doctor;
@@ -35,7 +36,7 @@ import java.util.List;
 @RequestMapping("/his_doctor")
 @Slf4j
 @Api(description = "对接了his系统的醫生相关接口")
-public class HisDoctorController extends BaseController{
+public class HisDoctorController extends MyBaseController {
 
     @Autowired
     HisOutpatient hisOutpatient;

@@ -2,6 +2,7 @@ package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
+import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.HospitalizationInfoVO;
 import com.jishi.reservation.dao.models.PatientInfo;
@@ -10,7 +11,6 @@ import com.jishi.reservation.service.HospitalizationService;
 import com.jishi.reservation.service.PatientInfoService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.his.bean.DepositBalanceDetail;
-import com.us.base.common.controller.BaseController;
 import com.jishi.reservation.util.DateTool;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,7 +28,7 @@ import java.util.List;
 @RequestMapping("/hospitalization")
 @Slf4j
 @Api(description = "住院相关接口")
-public class HospitalizationController extends BaseController {
+public class HospitalizationController extends MyBaseController {
 
     @Autowired
     HospitalizationService hospitalizationService;

@@ -2,6 +2,7 @@ package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
 
+import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.otherService.pay.protocol.AliPayCallbackModel;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
@@ -23,7 +24,7 @@ import java.math.BigDecimal;
 @RequestMapping("/pay")
 @Slf4j
 @Api(description = "支付接口")
-public class PayController extends BaseController {
+public class PayController extends MyBaseController {
 
 
 

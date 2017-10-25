@@ -2,15 +2,14 @@ package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
+import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
-import com.jishi.reservation.controller.protocol.DateVO;
-import com.jishi.reservation.dao.models.Banner;
+
 import com.jishi.reservation.dao.models.Diary;
-import com.jishi.reservation.otherService.pay.AlibabaPay;
+
 import com.jishi.reservation.service.DiaryService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
-import com.jishi.reservation.service.support.DateSupport;
-import com.us.base.common.controller.BaseController;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -18,8 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.List;
 
 
 /**
@@ -29,7 +26,7 @@ import java.util.List;
 @RequestMapping("/diray")
 @Slf4j
 @Api(description = "日记接口")
-public class DiaryController extends BaseController {
+public class DiaryController extends MyBaseController {
 
 
 

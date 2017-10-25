@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.AdminLogInfoData;
 import com.jishi.reservation.dao.models.*;
@@ -35,7 +36,7 @@ import java.util.List;
 @RequestMapping("/admin")
 @Slf4j
 @Api(description = "后台管理接口")
-public class AdminController extends BaseController {
+public class AdminController extends MyBaseController {
 
     @Autowired
     ManagerService managerService;
@@ -57,7 +58,6 @@ public class AdminController extends BaseController {
                             @RequestParam(value = "appKey", required = false) String appKey,
                             HttpServletRequest request,
                             HttpServletResponse response) throws Exception {
-
 
         Preconditions.checkNotNull(account, "请传入必要的参数：account");
         Preconditions.checkNotNull(password, "请传入必要的参数：password");

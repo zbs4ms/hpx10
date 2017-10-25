@@ -3,6 +3,7 @@ package com.jishi.reservation.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.RegisterVO;
 import com.jishi.reservation.dao.models.*;
@@ -28,7 +29,7 @@ import java.util.List;
 @RequestMapping("/pregnant")
 @Slf4j
 @Api(description = "孕妇信息相关接口")
-public class PregnantController extends BaseController {
+public class PregnantController extends MyBaseController {
 
     @Autowired
     PregnantService pregnantService;

@@ -3,6 +3,7 @@ package com.jishi.reservation.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.*;
 import com.jishi.reservation.dao.models.*;
@@ -39,7 +40,7 @@ import java.util.List;
 @RequestMapping("/order")
 @Slf4j
 @Api(description = "订单相关接口")
-public class OrderController extends BaseController{
+public class OrderController extends MyBaseController {
 
     @Autowired
     OrderInfoService orderInfoService;

@@ -2,6 +2,7 @@ package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.protocol.LoginData;
 import com.jishi.reservation.controller.protocol.PatientHisVO;
 import com.jishi.reservation.dao.models.Account;
@@ -33,7 +34,7 @@ import java.util.List;
 @RequestMapping("/his_account")
 @Slf4j
 @Api(description = "对接了his系统的账号相关接口")
-public class HisAccountController extends BaseController{
+public class HisAccountController extends MyBaseController {
 
     @Autowired
     AccountService accountService;

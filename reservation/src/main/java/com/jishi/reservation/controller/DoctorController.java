@@ -3,6 +3,7 @@ package com.jishi.reservation.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.DateVO;
 import com.jishi.reservation.controller.protocol.DoctorVO;
@@ -15,7 +16,7 @@ import com.jishi.reservation.service.support.AliOssSupport;
 import com.jishi.reservation.service.support.DateSupport;
 import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
-import com.us.base.common.controller.BaseController;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -33,7 +34,7 @@ import java.util.*;
 @RequestMapping("/doctor_i")
 @Slf4j
 @Api(description = "医生相关接口")
-public class DoctorController extends BaseController{
+public class DoctorController extends MyBaseController {
 
     @Autowired
     DoctorService doctorService;

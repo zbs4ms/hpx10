@@ -3,6 +3,7 @@ package com.jishi.reservation.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.RegisterCompleteVO;
 import com.jishi.reservation.controller.protocol.RegisterVO;
@@ -35,7 +36,7 @@ import java.util.List;
 @RequestMapping("/register")
 @Slf4j
 @Api(description = "预约相关接口")
-public class RegisterController extends BaseController {
+public class RegisterController extends MyBaseController {
 
     @Autowired
     RegisterService registerService;
