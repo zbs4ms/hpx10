@@ -118,7 +118,7 @@ public class AlibabaPay {
                     //todo  调取his的门诊号缴费单
 
                     //改变订单状态和支付时间
-                    Preconditions.checkState(orderInfo.getStatus() == OrderStatusEnum.WAIT_PAYED.getCode(),"该订单不是待支付状态.");
+                    //Preconditions.checkState(orderInfo.getStatus() == OrderStatusEnum.WAIT_PAYED.getCode(),"该订单不是待支付状态.");
                     orderInfo.setStatus(OrderStatusEnum.PAYED.getCode());
                     orderInfo.setPayTime(payTime);
                     orderInfo.setPayType(PayEnum.ALI.getCode());
