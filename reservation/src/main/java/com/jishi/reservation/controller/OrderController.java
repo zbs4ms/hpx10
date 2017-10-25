@@ -62,7 +62,6 @@ public class OrderController extends MyBaseController {
     public JSONObject sureOrder(
             @ApiParam(value = "订单id", required = true) @RequestParam(value = "orderId", required = true) Long orderId
     ) throws Exception {
-        Preconditions.checkNotNull(orderId,"请传入必须的参数：orderId");
 
         //执行his确认订单操作..
         //confirm.modify

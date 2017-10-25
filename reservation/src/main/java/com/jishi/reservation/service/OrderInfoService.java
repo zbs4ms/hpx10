@@ -66,7 +66,8 @@ public class OrderInfoService {
         OrderInfo orderInfo = orderInfoMapper.queryById(orderId);
         Register register = registerMapper.queryByOrderId(orderId);
         confirmRegister.setBrid(orderInfo.getBrId());
-        confirmRegister.setJe(String.valueOf(orderInfo.getPrice()));
+        //confirmRegister.setJe(String.valueOf(orderInfo.getPrice()));
+        confirmRegister.setJe("1");
         confirmRegister.setCzjlid("");
         confirmRegister.setHm(register.getHm());
         confirmRegister.setHx(register.getHx());
@@ -78,9 +79,12 @@ public class OrderInfoService {
         confirmRegister.setJqm("jxyy+zczh");
         confirmRegister.setJsklb("");//结算卡类别，固定传入第三方名称
         confirmRegister.setJsfs("");//结算方式，传空
-        confirmRegister.setJsje(String.valueOf(orderInfo.getPrice()));
+        //confirmRegister.setJsje(String.valueOf(orderInfo.getPrice()));
+        confirmRegister.setJsje("1");
         confirmRegister.setJylsh(orderInfo.getOrderNumber());
-
+        confirmRegister.setJymc("交易信息");
+        confirmRegister.setJylr("支付帐号|姓名");
+        log.info("调取his的订单确认Bean:\n"+JSONObject.toJSONString(confirmRegister));
         return confirmRegister;
     }
 
