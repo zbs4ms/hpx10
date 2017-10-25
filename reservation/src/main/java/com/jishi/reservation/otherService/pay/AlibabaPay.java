@@ -70,14 +70,14 @@ public class AlibabaPay {
             AlipayTradeAppPayResponse response = client.sdkExecute(request);
             log.info("支付宝返回的处理结果：\n"+JSONObject.toJSONString(response));
             log.info("支付宝订单号："+response.getTradeNo());
-            return response.getBody();
+            //return response.getBody();
 
-//            Map<String, String> params = OrderInfoUtil2_0.buildOrderParamMap(PayConstant.APP_ID, true);
-//
-//
-//            String sign = OrderInfoUtil2_0.getSign(params, PayConstant.APP_PRIVATE_KEY, true);
-//            log.info("返回结果：\n"+response.getBody() + "&" + sign);
-//            return response.getBody() + "&" + sign;
+            Map<String, String> params = OrderInfoUtil2_0.buildOrderParamMap(PayConstant.APP_ID, false);
+
+
+            String sign = OrderInfoUtil2_0.getSign(params, PayConstant.APP_PRIVATE_KEY, false);
+            log.info("返回结果：\n"+response.getBody() + "&" + sign);
+            return response.getBody() + "&" + sign;
         } catch (AlipayApiException e) {
             e.printStackTrace();
         }
