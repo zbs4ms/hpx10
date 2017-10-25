@@ -141,8 +141,8 @@ public class RegisterService {
         completeVO.setPayType(PayEnum.ALI.getCode());
         completeVO.setPayTime(new Date());
         completeVO.setCompleteTime(new Date());
-        //completeVO.setPrice(bd);
-        completeVO.setPrice(BigDecimal.valueOf(0.01));
+        completeVO.setPrice(bd);
+        //completeVO.setPrice(BigDecimal.valueOf(0.01));
         completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
         completeVO.setOrderCode(orderNumber);
         completeVO.setSerialNumber(serialCode);

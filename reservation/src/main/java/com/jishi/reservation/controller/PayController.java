@@ -2,6 +2,7 @@ package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
 
+import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.otherService.pay.protocol.AliPayCallbackModel;
@@ -79,6 +80,8 @@ public class PayController extends MyBaseController {
             @ApiParam(value = "支付的商品名称") @RequestParam(value = "subject") String subject,
             @ApiParam(value = "支付的商品价格 元为单位") @RequestParam(value = "price") BigDecimal price
     ) throws Exception {
+
+        Preconditions.checkNotNull(subject,"缺少参数：subject");
 
         String response = alibabaPay.generateOrder(subject, price);
 
