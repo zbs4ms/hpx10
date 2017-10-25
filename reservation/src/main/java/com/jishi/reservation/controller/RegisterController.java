@@ -98,7 +98,9 @@ public class RegisterController extends MyBaseController {
 
         // 10.17  在此处加入订单。。
         RegisterCompleteVO completeVO = registerService.addRegister(accountId, brid, departmentId, doctorId, new Date(agreedTime),timeInterval,doctorName,price,subject,brName,department,hm);
-
+        if(completeVO == null){
+            return ResponseWrapper().addMessage("该医生挂号号源已满，请选择其他医生。").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+        }
         jpushSupport.sendPush(accountService.queryAccountById(accountId).getPushId(), Constant.REGISTER_SUCCESS_MGS);
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }

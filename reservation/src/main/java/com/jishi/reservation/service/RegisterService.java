@@ -88,6 +88,10 @@ public class RegisterService {
         if(Helpers.isNullOrEmpty(doctorId)  || doctorService.queryDoctor(doctorId,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
             throw new Exception("医生信息为空.");
 
+        //his 锁定号源,返回hx 号序
+        String hx = this.lockRegister(hm, agreedTime);
+        if(hx.equals("invalid hx"))
+            return null;
 
         BigDecimal bd=new BigDecimal(price);
 
@@ -149,8 +153,6 @@ public class RegisterService {
         completeVO.setSubject(subject);
         completeVO.setDes(subject);
         completeVO.setOrderId(order.getId());
-        //his 锁定号源,返回hx 号序
-        String hx = this.lockRegister(hm, agreedTime);
 
         register.setHx(hx);
         registerMapper.updateByPrimaryKeySelective(register);
@@ -164,7 +166,9 @@ public class RegisterService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
         String timeStr = sdf.format(agreedTime);
         LockRegister lockRegister = hisOutpatient.lockRegister(hm, timeStr, "", "jxyy+zczh");
-        return lockRegister.getHx();
+        if(lockRegister !=null)
+            return lockRegister.getHx();
+        return "invalid hx";
     }
 
     /**
