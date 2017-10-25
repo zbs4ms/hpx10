@@ -71,12 +71,13 @@ public class AlibabaPay {
             log.info("支付宝返回的处理结果：\n"+JSONObject.toJSONString(response));
             log.info("支付宝订单号："+response.getTradeNo());
             return response.getBody();
-//
+
 //            Map<String, String> params = OrderInfoUtil2_0.buildOrderParamMap(PayConstant.APP_ID, true);
 //
 //
 //            String sign = OrderInfoUtil2_0.getSign(params, PayConstant.APP_PRIVATE_KEY, true);
-//            return body + "&" + sign;
+//            log.info("返回结果：\n"+response.getBody() + "&" + sign);
+//            return response.getBody() + "&" + sign;
         } catch (AlipayApiException e) {
             e.printStackTrace();
         }
