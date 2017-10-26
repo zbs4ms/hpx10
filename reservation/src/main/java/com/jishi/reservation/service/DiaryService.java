@@ -131,6 +131,9 @@ public class DiaryService {
                 }.getType());
         diary.setContentVOList(contentList);
         diary.setContent(null);
+        diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));
+        diary.setLikedNum(diaryLikedMapper.queryCountByDiaryId(diary.getId()));
+        diary.setAvatar(accountMapper.queryById(diary.getAccountId()).getHeadPortrait());
 
         return diary;
     }
