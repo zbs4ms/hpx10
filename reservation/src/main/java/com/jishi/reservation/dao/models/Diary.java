@@ -1,6 +1,7 @@
 package com.jishi.reservation.dao.models;
 
 import com.jishi.reservation.controller.protocol.DiaryContentVO;
+import com.jishi.reservation.controller.protocol.ImageVO;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
@@ -40,5 +41,16 @@ public class Diary {
 
     @Transient
     private List<DiaryContentVO> contentVOList;
+
+    @Transient
+    private String avatar;   //用户头像
+
+    @Transient
+    private Integer scanNum;   //浏览次数
+    @Transient
+    private Integer likedNum;      //点赞次数
+
+    @Transient
+    private List<ImageVO> imgList;   //首页列表展示的图片list
 
 }

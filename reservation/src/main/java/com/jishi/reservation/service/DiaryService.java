@@ -8,14 +8,20 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.DiaryContentVO;
+import com.jishi.reservation.controller.protocol.ImageVO;
 import com.jishi.reservation.dao.mapper.AccountMapper;
+import com.jishi.reservation.dao.mapper.DiaryLikedMapper;
 import com.jishi.reservation.dao.mapper.DiaryMapper;
+import com.jishi.reservation.dao.mapper.DiaryScanMapper;
 import com.jishi.reservation.dao.models.Diary;
+import com.jishi.reservation.dao.models.DiaryLiked;
+import com.jishi.reservation.dao.models.DiaryScan;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +39,12 @@ public class DiaryService {
 
     @Autowired
     DiaryMapper diaryMapper;
+
+    @Autowired
+    DiaryScanMapper diaryScanMapper;
+
+    @Autowired
+    DiaryLikedMapper diaryLikedMapper;
 
     public PageInfo<Diary> queryDiaryPageInfo(String name,Integer status, Long startTime,Long endTime,Paging paging) {
         if(paging != null)
@@ -121,6 +133,74 @@ public class DiaryService {
         diary.setContent(null);
 
         return diary;
+    }
+
+    public PageInfo<Diary> queryPage(Long accountId,Integer startPage, Integer pageSize) {
+
+        Gson gson = new Gson();
+        PageHelper.startPage(startPage,pageSize).setOrderBy("sort desc");
+        List<Diary> list =  diaryMapper.queryEnableAndVerified(accountId);
+        for (Diary diary : list) {
+            diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));
+            diary.setLikedNum(diaryLikedMapper.queryCountByDiaryId(diary.getId()));
+            diary.setAvatar(accountMapper.queryById(diary.getAccountId()).getHeadPortrait());
+            List<ImageVO> paramList = new ArrayList<>();
+            List<DiaryContentVO> contentList = gson.fromJson(diary.getContent(),
+                    new TypeToken<List<DiaryContentVO>>() {
+                    }.getType());
+            int i = 0;
+            for (DiaryContentVO diaryContentVO : contentList) {
+                if(i == 4)
+                    break;
+                if(diaryContentVO.getType() == 0){
+                    ImageVO vo = new ImageVO();
+                    vo.setUrl(diaryContentVO.getUrl());
+                    vo.setHeight(diaryContentVO.getHeight());
+                    vo.setWidth(diaryContentVO.getWidth());
+
+                    paramList.add(vo);
+                }
+                i++;
+            }
+            diary.setImgList(paramList);
+            diary.setContent(null);
+
+        }
+
+        PageInfo<Diary> pageInfo = new PageInfo<>(list);
+        return  pageInfo;
+    }
+
+    public Integer likeDiary(Long diaryId, Long accountId) {
+
+        DiaryLiked param = new DiaryLiked();
+        param.setDiaryId(diaryId);
+        param.setAccountId(accountId);
+
+        DiaryLiked liked = diaryLikedMapper.selectOne(param);
+        if(liked == null){
+            Preconditions.checkState(diaryLikedMapper.insert(param) == 1,"评论点赞失败");
+            return 1;
+        }else {
+            Preconditions.checkState(diaryLikedMapper.delete(param) == 1,"取消点赞失败");
+            return 0;
+        }
+
+
+    }
+
+    public void addScanNum(Long diaryId, String ip, Long accountId) {
+
+        DiaryScan scan = new DiaryScan();
+        if(accountId != -1L) {
+            scan.setAccountId(String.valueOf(accountId));
+        }else{
+            scan.setAccountId(ip);
+        }
+        scan.setDiaryId(diaryId);
+        if(diaryScanMapper.selectOne(scan) == null) {
+            diaryScanMapper.insert(scan);
+        }
     }
 
 //    public static void main(String[] args) {
