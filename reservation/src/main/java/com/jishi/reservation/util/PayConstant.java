@@ -34,11 +34,7 @@ public class PayConstant {
             "YomplqOtQ9Zrxv/xoyAmGXe8N/l9lA5fyEbNvA==";
 
    //应用公钥
-    public final static String APP_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtdbBNyC2/miwMD" +
-           "p7D1BwF/8GvwOKeXPpaCIm8zsdwwXn8nXvOEjJD2achLz73PWD+R2KHUBZ7vTTKSk4hUI2Y51h683y2PpwiEomb0mIGZR9khLt" +
-           "bkJad78FXSf42Hv/qypf83w4A8m3YK1eCJwDxtVHfJffI1pth1YAGEl7j92cY7LiU/J+RigGBAOq5OX/iCZqa+iNA01azrfDLlA" +
-           "/FVBkI5IN83MzDrorw7N5uy8Je4ol8I+YZm45FKJYEG0TvjPHr5K097hY9lARQqS8Qc1mSaSA7QxxYKW4QS+SLFWpxb/8c5jhY" +
-           "liPCVLtEMVgW1HFYqXFkJ6c22XCM3LSywIDAQAB";
+    public final static String APP_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAg18yOJ5ZqQ1rwqPNpjbdZVw6Dph0r6E49IUuMoBP24rwxzFJfAJTzKbTVFAw/fjN/dG68zwWJDRxZtVBinLd7IyqN7+hZJJtd2loVXSRxMGpKjCuaxkKhIC8oH1qBLWd5WlRfkyte0w2GJRo2l1Ri6mK5qPlzFJegQ/vC8mR4uQ8WPkZ+MWVnvbqIdeMARtUhtKDYDBOL6/0O/X7Wpc7oYupiwh3yRcDmdvKVfie4utG8y8s29i9Ufal6QmEYKiiX4pnUyOP92znjhFEZl1+oroWCdZ2O9R33M5asqS8scrT/ubM1gtpI+JT3XevKqaw718GZLg1OAP0jSUQScmf8wIDAQAB";
 
     public final static String SERVER_URL = "https://openapi.alipay.com/gateway.do";
     public final static String DATA_FORMAT = "json";
