@@ -71,8 +71,8 @@ public class DoctorService {
      * @param doctorName
      * @param type
      */
-    public List<Doctor> queryDoctor(Long doctorId, String doctorName, String departmentId,String type,Integer enable) throws Exception {
-        log.info("查询科室 doctorId:"+doctorId+" doctorName:"+doctorName+" type:"+type +" enable:"+enable);
+    public List<Doctor> queryDoctor(Long doctorId, String hDoctorId,String doctorName, String departmentId,String type,Integer enable) throws Exception {
+        log.info("查询医生 doctorId:"+doctorId+" doctorName:"+doctorName+" type:"+type +" enable:"+enable);
         Doctor queryDoctor = new Doctor();
         queryDoctor.setType(type);
         if(departmentId!=null &&!"null".equals(departmentId)&& !"".equals(departmentId)){
@@ -81,11 +81,10 @@ public class DoctorService {
         queryDoctor.setName(doctorName);
         queryDoctor.setId(doctorId);
         queryDoctor.setEnable(enable);
-        log.info("查询条件："+JSONObject.toJSONString(queryDoctor));
-        List<Doctor> list = doctorMapper.queryByAttr(queryDoctor);
+        queryDoctor.setHId(hDoctorId);
+        List<Doctor> list = doctorMapper.select(queryDoctor);
         log.info("查询结果："+JSONObject.toJSONString(list));
 
-        //todo  queryByAttrc查询无结果...
         return list;
     }
 
@@ -96,7 +95,7 @@ public class DoctorService {
         log.info("查询全部科室.");
         if(!Helpers.isNullOrEmpty(paging))
             PageHelper.startPage(paging.getPageNum(),paging.getPageSize(),paging.getOrderBy());
-        return new PageInfo(queryDoctor(doctorId,doctorName,departmentId,type,enable));
+        return new PageInfo(queryDoctor(doctorId,null,doctorName,departmentId,type,enable));
     }
 
     /**
@@ -115,8 +114,7 @@ public class DoctorService {
         log.info("修改科室信息 doctorId:"+doctorId+" doctorName:"+doctorName+" type:"+type+" headPortrait:"+headPortrait+" about:"+about+" title:"+title+" school:"+school+" goodDescribe:"+goodDescribe);
         if(Helpers.isNullOrEmpty(doctorId))
             throw new Exception("医生ID不能为空.");
-        if(this.queryDoctor(doctorId,null,null,null, EnableEnum.EFFECTIVE.getCode()).size()==0)
-            throw new Exception("没有查询到医生");
+
         Doctor oldDoctor = doctorMapper.queryById(doctorId);
         Doctor modifyDoctor = new Doctor();
         modifyDoctor.setId(doctorId);
@@ -152,7 +150,7 @@ public class DoctorService {
     public void topDoctor(Long doctorId) throws Exception {
         if(Helpers.isNullOrEmpty(doctorId))
             throw new Exception("医生ID不能为空.");
-        List<Doctor> doctorList = this.queryDoctor(doctorId, null, null, null, EnableEnum.EFFECTIVE.getCode());
+        List<Doctor> doctorList = this.queryDoctor(doctorId, null,null, null, null, EnableEnum.EFFECTIVE.getCode());
         if(doctorList.size()==0)
             throw new Exception("没有查询到医生");
 

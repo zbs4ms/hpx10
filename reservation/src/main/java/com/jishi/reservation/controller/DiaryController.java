@@ -5,8 +5,10 @@ import com.github.pagehelper.PageInfo;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 
+import com.jishi.reservation.controller.protocol.DiaryContentVO;
 import com.jishi.reservation.dao.models.Diary;
 
+import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.DiaryService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 
@@ -17,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -28,6 +32,9 @@ import org.springframework.web.bind.annotation.*;
 @Api(description = "日记接口")
 public class DiaryController extends MyBaseController {
 
+
+    @Autowired
+    private AccountService accountService;
 
 
     @Autowired
@@ -90,6 +97,60 @@ public class DiaryController extends MyBaseController {
 
         diaryService.top(id);
         return ResponseWrapper().addMessage("操作成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+
+    }
+
+    @ApiOperation(value = "查看 日记",response = DiaryContentVO.class)
+    @RequestMapping(value = "scan", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject scan(
+            @ApiParam(value = "日记的id") @RequestParam(value = "id") Long id
+    ){
+
+        log.info("查看日记 id:"+id);
+
+        Diary diary = diaryService.queryById(id);
+        return ResponseWrapper().addMessage("查询成功").addData(diary).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+
+    }
+
+
+
+
+
+
+    @ApiOperation(value = "用户发布日记")
+    @RequestMapping(value = "publish", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject top(
+            HttpServletRequest request,HttpServletResponse response,
+            @ApiParam(value = "accountId  token") @RequestParam(value = "accountId") Long accountId,
+            @ApiParam(value = "日记的标题") @RequestParam(value = "title") String title,
+            @ApiParam(value = "封面图片的url") @RequestParam(value = "bgImgUrl") String bigImgUrl,
+            @ApiParam(value = "封面图片的高度") @RequestParam(value = "height") Integer height,
+            @ApiParam(value = "封面图片的宽度") @RequestParam(value = "width") Integer width,
+            @ApiParam(value = "日记的内容 json格式保存   eg:[{\"fontName\":\"宋体\",\"lineSpace\":10,\"fontSize\":10,\"text\":\"我是文字\",\"type\":1,\"textColor\":\"red\"},{\"width\":200,\"type\":0,\"url\":\"http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/doctor/WechatIMG198.jpg\",\"height\":200}]") @RequestParam(value = "content") String content
+
+
+
+
+
+    ) throws Exception {
+
+
+        if (accountId == null) {
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1L)){
+                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
+
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+            }
+        }
+
+        diaryService.publish(accountId,title,bigImgUrl,height,width,content);
+
+
+        return ResponseWrapper().addMessage("添加成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
     }
 
