@@ -299,6 +299,48 @@ public class HisOutpatient {
         return null;
     }
 
+    /**
+     * @description 门诊缴费多张单据一次支付
+     * @param docIds 收费单据号串，逗号分隔多个单据号
+     * @param brId 病人ID
+     * @param zje 总金额
+     * @param jsje 结算金额
+     * @param sfghd 是否挂号单，0-收费单，1-挂号单
+     * @param jylsh 交易流水号
+     * @param jynr 交易内容，传“支付帐号|姓名”
+     * @throws Exception
+     * @date 2017/10/26
+     **/
+    public String batchPayModify(String docIds, String brId, double zje, double jsje, int sfghd, String jylsh, String jynr, String dsfmc) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<DJH>").append(docIds).append("</DJH>");
+        sb.append("<JE>").append(zje).append("</JE>");
+        sb.append("<SFGH>").append(sfghd).append("</SFGH>");
+        sb.append("<BRID>").append(brId).append("</BRID>");
+        sb.append("<JSLIST>");
+        sb.append("<JS>");
+        sb.append("<JSKLB>").append(dsfmc).append("</JSKLB>");
+        sb.append("<JSKH>").append("</JSKH>");
+        sb.append("<JSFS>").append("</JSFS>");
+        sb.append("<JSJE>").append(jsje).append("</JSJE>");
+        sb.append("<JYLSH>").append(jylsh).append("</JYLSH>");
+        sb.append("<EXPENDLIST>");
+        sb.append("<EXPEND>");
+        sb.append("<JYMC>").append("交易信息").append("</JYMC>");
+        sb.append("<JYLR>").append(jynr).append("</JYLR>");
+        sb.append("</EXPEND>");
+        sb.append("</EXPENDLIST>");
+        sb.append("</JS>");
+        sb.append("</JSLIST>");
+        String reData = HisTool.toXMLString("Payment.BatchPay.Modify", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            String xml = HisTool.getHisDataparam(me);
+            return HisTool.getXmlAttribute(xml,"CZSJ");
+        }
+        return null;
+    }
+
 
     private OutPatientResponseOutPatientResult execute(String reData) throws RemoteException, ServiceException {
         ZL_InformationServiceLocator locator = new ZL_InformationServiceLocator();
