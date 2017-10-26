@@ -43,7 +43,8 @@ public class AlibabaPay {
         AlipayClient client = new DefaultAlipayClient(
                 PayConstant.SERVER_URL,
                 PayConstant.APP_ID,
-                PayConstant.APP_PRIVATE_KEY,
+                PayConstant.APP_PRIVATE_KEY
+                ,
                 PayConstant.DATA_FORMAT,
                 PayConstant.CHARSET,
 
@@ -54,7 +55,7 @@ public class AlibabaPay {
 
         //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
         AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-        model.setBody(subject);
+        model.setBody("test...");
         model.setSubject(subject);
         //生成订单号
         String orderNumber = generateUniqueOrderNumber();

@@ -1,5 +1,7 @@
 package com.jishi.reservation.util;
 
+import com.alipay.api.internal.util.AlipaySignature;
+
 /**
  * Created by sloan on 2017/10/16.
  */
@@ -40,7 +42,7 @@ public class PayConstant {
            "vbqIdeMARtUhtKDYDBOL6/0O/X7Wpc7oYupiwh3yRcDmdvKVfie4utG8y8s29i9Ufal6QmEYKiiX4pnUyOP92znjhF" +
            "EZl1+oroWCdZ2O9R33M5asqS8scrT/ubM1gtpI+JT3XevKqaw718GZLg1OAP0jSUQScmf8wIDAQAB";
 
-    public final static String SERVER_URL = "https://openapi.alipay.com/gateway.do";
+    public final static String SERVER_URL = "http://openapi.alipay.com/gateway.do";
     public final static String DATA_FORMAT = "json";
     public final static String CHARSET = "utf-8";
     public final static String ENCRYPT = "RSA2";
@@ -50,5 +52,6 @@ public class PayConstant {
     //该笔订单允许的最晚付款时间，逾期将关闭交易。取值范围：1m～15d。m-分钟，h-小时，d-天，1c-当天（1c-当天的情况下，无论交易何时创建，都在0点关闭）。 该参数数值不接受小数点， 如 1.5h，可转换为 90m。
     //注：若为空，则默认为15d。
     public final static String TIME_OUT_EXPRESS = "30m";
+
 
 }
