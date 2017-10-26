@@ -206,6 +206,18 @@ public class DiaryService {
         }
     }
 
+    public Integer delete(Long diaryId, Long accountId) {
+
+        Diary diary = diaryMapper.queryById(diaryId);
+        Preconditions.checkNotNull(diary,"该id没有对应的日记信息");
+        if(!diary.getAccountId().equals(accountId))
+            return 1;
+
+        diary.setEnable(EnableEnum.DELETE.getCode());
+        diaryMapper.updateByPrimaryKeySelective(diary);
+        return 0;
+    }
+
 //    public static void main(String[] args) {
 //
 //        List<DiaryContentVO> list = new ArrayList<>();
