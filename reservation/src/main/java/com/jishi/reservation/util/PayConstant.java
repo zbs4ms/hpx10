@@ -11,31 +11,39 @@ public class PayConstant {
     public final static String APP_ID = "2017092508916490";
     //应用私钥
 
-    public final static String APP_PRIVATE_KEY = "MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBANuHXf6onPItABd9" +
-            "3MkHo591fO+g6b1HyUPQar3FUEUHp4fAEN1y27IUCOtd/ooxaxwTEa2xHakbNwLO" +
-            "/bFZh6JOOBkTuvpP2HrbMppmltNrEDD4AuuotQpoezfhv8gXk6TQ4cCrxcD7ISAn" +
-            "srlAGGkMSuvy9kVgajCqgLBEf/atAgMBAAECgYAFKye8Yi3nycVxyCXVmddxXqvF" +
-            "XI2ERldnwFVzCF0+ctKv8Ia1IAoqJCydlgXzLPyvmYdWBpCDNb/S0hrI/SmjTnNB" +
-            "A5DryOerSHRViiqcd2WUUpbs08zdXnkXNROjnGc6rO4SlJiJGFwcEE+SiXSrwaLb" +
-            "pRaa3+wGexIimBnFxQJBAPu+pDtXF76jchmvyT5xsAKdRPKE1szr9HcWo+OhjK9r" +
-            "zCOI35aBfrtSZ52OTb2kPoOTORud8sWM1CupyV7kQI8CQQDfPVHeNTS4yNROw7Bj" +
-            "rpK7kAC7dI4vSiLT81BwdLko+GIGUSmkGKzydY5+lsHxvsprv0iq1usnvUYU4ucw" +
-            "ifsDAkBR41N80fmxU21cGag2nbiJQSsaUEem5OHikwTAmN4webovnOhOBtV4jXeS" +
-            "8qUrGPAU0KD08M31oLerdFFCgrDVAkAVKdYKD9c4sWlXMjwVpyYn++Xl343fM9ML" +
-            "buSwVJB9Ltb0LFubP++daMGihJ5MUb8U6eR0tb1DXjE3p68tLdeLAkB21aSqCSnV" +
-            "vyQa8N37v3IupessTgy6Kvv3vFrpmM9FdShshkX91syo3unyRFiV7JWpBI4NN6qD" +
-            "jho+CEaoyXJC";
+    public final static String APP_PRIVATE_KEY = "MIIEvAIBADANBgkqhkiG9w0BAQEFAAS" +
+            "CBKYwggSiAgEAAoIBAQC11sE3ILb+aLAwOnsPUHAX/wa/A4p5c+loIibzOx3DBefyde84SM" +
+            "kPZpyEvPvc9YP5HYodQFnu9NMpKTiFQjZjnWHrzfLY+nCISiZvSYgZlH2SEu1uQlp3vwVdJ/jYe" +
+            "/+rKl/zfDgDybdgrV4InAPG1Ud8l98jWm2HVgAYSXuP3ZxjsuJT8n5GKAYEA6rk5f+IJmpr6I0DTVrO" +
+            "t8MuUD8VUGQjkg3zczMOuivDs3m7Lwl7iiXwj5hmbjkUolgQbRO+M8evkrT3uFj2UBFCpLxBzWZJpIDt" +
+            "DHFgpbhBL5IsVanFv/xzmOFiWI8JUu0QxWBbUcVipcWQnpzbZcIzctLLAgMBAAECggEAJ8Bt9tZBC" +
+            "vbp5XEza9Ki3qwS1nk4sXpkgS5OI4g95l+JKFkd1ckbozFEcEQ8Lz7A/hm2EtT5lCKTcwEe6Qrjhv" +
+            "1l5b3dJBADv9et9VA235i1ptRacWsyCdGJo6bUYMciylF2Lm1udW2ImCruTqWEsdf4S8WLs1fWb+qeF" +
+            "LEjwPxLgpHfsjW5qkSounJUHStM+M3Hbh88d95OQIZHwMJTATSeUonXEmhmloEzTX/3EPHXUZfYyadt" +
+            "JfM2tSjldrAPD+vBdvt+N6OrWeTy7A+8BUsmBWlrwrq8/cfMWkf3vHIwgZGxZhvn+QCK1+JNLMzpsW9EE" +
+            "6NL+0OUdSfesFQ+EQKBgQDxQ17b3tfQejSimCWEQkKrhInjVnypvs2fxPZaWjhSUclWpz5jEOcfuhudi" +
+            "p5zsHiaceeDKVDdk+bUdRflBUTvZHT592uzPWaSDU4gVj4Kk40fKEn7/a9ejRwZKrJbXTsOLv5w3zeMoXgVm" +
+            "NTfju9HX2nugOo1LZCzHsMylFcVuQKBgQDA8iraDZXUcjEx8SWYsrG6QUeTyjOcGJUif7sUQcANb3/XoKsM/" +
+            "uVT+t7QSaQsvw9FQO9WgdcrFSK6lMqINQfpdPG4tfkildomA231aIDHyIhMsfjiK1/dscUoDCM6jdB0diSJWX" +
+            "+d0Zw85NAV2ZGCj9s7qTnrAVcSMg9dPz7uowKBgCxoaSpxXyoJhGy1Mpqgk6L8d2D4B2Q7MaAJ4gqJdrp4QWY" +
+            "IzKvxbYlieTjLThUfU2OiOanjzfWrBp7umqJWEPU7eWiVSSap05pohovfM/ZAaIZmpQ+UB1aRBK4BNOkqRPd8YOs" +
+            "nuxLQmcjn467uoU5y2o3C/tkg9PRzYhyKP2lJAoGAXKuzgzmlLf2OvVL6YMXq8O9rpoMmmKGB96jrvMX7rThRacqE" +
+            "fWBr2xMSM247STaW6gdPLPh91PZ40K6oPBVkcG+3raTRPRhGR528EXOY7tvVAykzxcVZbQx2Ck8SGIyGg3k/AS" +
+            "0YSz+iz+iCPQxbhB7+CEC2TbY+EMI0eO/olQsCgYA+H76fT+9cY2XcUHCYZF7HREbK75Z0RiA5ecFY9NvXtEskW" +
+            "5oBtPAiIjtHoDjFsCwnkLN6ESGjoJ9TvRiRfp/fvlf0feJL4OpnnNU5La7kR2QoWzYgyQVYOI9IrjguUHjaVY2O" +
+            "YomplqOtQ9Zrxv/xoyAmGXe8N/l9lA5fyEbNvA==";
 
    //应用公钥
-    public final static String APP_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDbh13+qJzyLQAXfdzJB6OfdXzv" +
-            "oOm9R8lD0Gq9xVBFB6eHwBDdctuyFAjrXf6KMWscExGtsR2pGzcCzv2xWYeiTjgZ" +
-            "E7r6T9h62zKaZpbTaxAw+ALrqLUKaHs34b/IF5Ok0OHAq8XA+yEgJ7K5QBhpDErr" +
-            "8vZFYGowqoCwRH/2rQIDAQAB";
+    public final static String APP_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtdbBNyC2/miwMD" +
+           "p7D1BwF/8GvwOKeXPpaCIm8zsdwwXn8nXvOEjJD2achLz73PWD+R2KHUBZ7vTTKSk4hUI2Y51h683y2PpwiEomb0mIGZR9khLt" +
+           "bkJad78FXSf42Hv/qypf83w4A8m3YK1eCJwDxtVHfJffI1pth1YAGEl7j92cY7LiU/J+RigGBAOq5OX/iCZqa+iNA01azrfDLlA" +
+           "/FVBkI5IN83MzDrorw7N5uy8Je4ol8I+YZm45FKJYEG0TvjPHr5K097hY9lARQqS8Qc1mSaSA7QxxYKW4QS+SLFWpxb/8c5jhY" +
+           "liPCVLtEMVgW1HFYqXFkJ6c22XCM3LSywIDAQAB";
 
     public final static String SERVER_URL = "https://openapi.alipay.com/gateway.do";
     public final static String DATA_FORMAT = "json";
     public final static String CHARSET = "utf-8";
-    public final static String ENCRYPT = "RSA";
+    public final static String ENCRYPT = "RSA2";
     //销售产品码，商家和支付宝签约的产品码，为固定值QUICK_MSECURITY_PAY
     public final static String QUICK_MSECURITY_PAY = "QUICK_MSECURITY_PAY";
 

@@ -70,9 +70,11 @@ public class AlibabaPay {
             AlipayTradeAppPayResponse response = client.sdkExecute(request);
             log.info("支付宝返回的处理结果：\n"+JSONObject.toJSONString(response));
             log.info("支付宝订单号："+response.getTradeNo());
-            String s = response.getBody().split("alipay_sdk=alipay-sdk-java-dynamicVersionNo&")[1];
-            System.out.println(s+"~~~~");
-            return s;
+//            String s = response.getBody().split("alipay_sdk=alipay-sdk-java-dynamicVersionNo&")[1];
+//            System.out.println(s+"~~~~");
+//            return s;
+
+            return response.getBody();
 
 
 
