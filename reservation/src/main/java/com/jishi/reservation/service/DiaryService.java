@@ -123,27 +123,27 @@ public class DiaryService {
         return diary;
     }
 
-    public static void main(String[] args) {
-
-        List<DiaryContentVO> list = new ArrayList<>();
-        DiaryContentVO vo1 = new DiaryContentVO();
-        vo1.setFontName("宋体");
-        vo1.setFontSize(10);
-        vo1.setLineSpace(10);
-        vo1.setType(1);
-        vo1.setTextColor("red");
-        vo1.setText("我是文字");
-
-        DiaryContentVO vo2 = new DiaryContentVO();
-        vo2.setUrl("http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/doctor/WechatIMG198.jpg");
-        vo2.setHeight(200);
-        vo2.setWidth(200);
-        vo2.setType(0);
-
-        list.add(vo1);
-        list.add(vo2);
-
-        System.out.println(JSONObject.toJSON(list));
-
-    }
+//    public static void main(String[] args) {
+//
+//        List<DiaryContentVO> list = new ArrayList<>();
+//        DiaryContentVO vo1 = new DiaryContentVO();
+//        vo1.setFontName("宋体");
+//        vo1.setFontSize(10);
+//        vo1.setLineSpace(10);
+//        vo1.setType(1);
+//        vo1.setTextColor("red");
+//        vo1.setText("我是文字");
+//
+//        DiaryContentVO vo2 = new DiaryContentVO();
+//        vo2.setUrl("http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/doctor/WechatIMG198.jpg");
+//        vo2.setHeight(200);
+//        vo2.setWidth(200);
+//        vo2.setType(0);
+//
+//        list.add(vo1);
+//        list.add(vo2);
+//
+//        System.out.println(JSONObject.toJSON(list));
+//
+//    }
 }
