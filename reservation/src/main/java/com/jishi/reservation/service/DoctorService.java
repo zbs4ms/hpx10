@@ -11,6 +11,8 @@ import com.jishi.reservation.dao.mapper.DoctorMapper;
 import com.jishi.reservation.dao.models.Banner;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.his.bean.RegisteredNumberInfo;
+import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,5 +162,31 @@ public class DoctorService {
 
         doctorMapper.updateByPrimaryKeySelective(doctorList.get(0));
 
+    }
+
+    public void getDoctorFromHis(List<RegisteredNumberInfo.Hb> hbList) {
+
+        List<Doctor> list = new ArrayList<>();
+        for (RegisteredNumberInfo.Hb hb : hbList) {
+            Doctor doctor = new Doctor();
+            doctor.setName(hb.getYs());
+            doctor.setHId(hb.getYsid());
+            doctor.setDepartmentId(hb.getKsid());
+            doctor.setKsmc(hb.getKsmc());
+            doctor.setHeadPortrait(Constant.DEFAULT_AVATAR);
+            doctor.setOrderNumber(0);
+            doctor.setEnable(0);
+            doctor.setType("0");
+            if(!isExist(hb.getYsid())){
+                list.add(doctor);
+
+            }
+
+        }
+        doctorMapper.insertList(list);
+    }
+
+    private boolean isExist(String hId) {
+        return doctorMapper.queryByHid(hId) !=null;
     }
 }

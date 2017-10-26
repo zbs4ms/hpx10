@@ -12,6 +12,8 @@ import com.jishi.reservation.service.DepartmentService;
 import com.jishi.reservation.service.DoctorService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.his.HisOutpatient;
+import com.jishi.reservation.service.his.bean.RegisteredNumberInfo;
 import com.jishi.reservation.service.support.AliOssSupport;
 import com.jishi.reservation.service.support.DateSupport;
 import com.jishi.reservation.util.Constant;
@@ -43,6 +45,10 @@ public class DoctorController extends MyBaseController {
 
     @Autowired
     AliOssSupport ossSupport;
+
+
+    @Autowired
+    HisOutpatient hisOutpatient;
 
     @ApiOperation(value = "增加医生")
     @RequestMapping(value = "addDoctor", method = RequestMethod.PUT)
@@ -206,6 +212,24 @@ public class DoctorController extends MyBaseController {
         Preconditions.checkNotNull(doctorId,"请传入必须的参数：doctorId");
 
         doctorService.topDoctor(doctorId);
+
+        return ResponseWrapper().addMessage("操作成功！").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+
+    }
+
+
+    @ApiOperation(value = "从his抓取医生信息入到我们自己的库")
+    @RequestMapping(value = "getDoctorFromHis", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject getDoctorFromHis(
+    ) throws Exception {
+
+        RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", "", "", "", "", "");
+        if(info.getGroup().getHblist().get(0)!=null) {
+            List<RegisteredNumberInfo.Hb> hbList = info.getGroup().getHblist().get(0).getHbList();
+
+            doctorService.getDoctorFromHis(hbList);
+        }
 
         return ResponseWrapper().addMessage("操作成功！").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
