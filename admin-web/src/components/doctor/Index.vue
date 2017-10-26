@@ -122,7 +122,7 @@ export default {
       editData: {},
       apiKeysMap: {
         pageSize: {
-          value: 2,
+          value: 10,
           innerKey: 'pageSize' // searchTable组件内部映射的key
         },
         departmentId: {

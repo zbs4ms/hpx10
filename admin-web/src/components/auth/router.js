@@ -1,9 +1,12 @@
+import injectPermissionId from '@/utils/injectPermissionId'
 import {
-  INDEX
+INDEX
 } from './_consts/routers'
+// 该模块的权限ID
+const permissionId = INDEX.meta.permissionId
 
-export default [{
-  path: INDEX.path,
-  name: INDEX.name,
-  component: resolve => require(['./Index'], resolve)
-}]
+export default injectPermissionId([
+  Object.assign({}, INDEX, {
+    component: resolve => require(['./Index'], resolve)
+  })
+], permissionId)
