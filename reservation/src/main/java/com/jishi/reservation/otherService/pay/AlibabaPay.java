@@ -47,7 +47,7 @@ public class AlibabaPay {
                 PayConstant.DATA_FORMAT,
                 PayConstant.CHARSET,
 
-                PayConstant.APP_PUBLIC_KEY,
+                PayConstant.ALI_PAY_PUBLIC_KEY,
                 PayConstant.ENCRYPT
         );
         AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
@@ -73,7 +73,6 @@ public class AlibabaPay {
 //            String s = response.getBody().split("alipay_sdk=alipay-sdk-java-dynamicVersionNo&")[1];
 //            System.out.println(s+"~~~~");
 //            return s;
-
             return response.getBody();
 
 

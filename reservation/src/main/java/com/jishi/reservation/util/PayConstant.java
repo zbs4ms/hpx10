@@ -33,8 +33,12 @@ public class PayConstant {
             "5oBtPAiIjtHoDjFsCwnkLN6ESGjoJ9TvRiRfp/fvlf0feJL4OpnnNU5La7kR2QoWzYgyQVYOI9IrjguUHjaVY2O" +
             "YomplqOtQ9Zrxv/xoyAmGXe8N/l9lA5fyEbNvA==";
 
-   //应用公钥
-    public final static String APP_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAg18yOJ5ZqQ1rwqPNpjbdZVw6Dph0r6E49IUuMoBP24rwxzFJfAJTzKbTVFAw/fjN/dG68zwWJDRxZtVBinLd7IyqN7+hZJJtd2loVXSRxMGpKjCuaxkKhIC8oH1qBLWd5WlRfkyte0w2GJRo2l1Ri6mK5qPlzFJegQ/vC8mR4uQ8WPkZ+MWVnvbqIdeMARtUhtKDYDBOL6/0O/X7Wpc7oYupiwh3yRcDmdvKVfie4utG8y8s29i9Ufal6QmEYKiiX4pnUyOP92znjhFEZl1+oroWCdZ2O9R33M5asqS8scrT/ubM1gtpI+JT3XevKqaw718GZLg1OAP0jSUQScmf8wIDAQAB";
+   //支付宝公钥
+   public final static String ALI_PAY_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCA" +
+           "QEAg18yOJ5ZqQ1rwqPNpjbdZVw6Dph0r6E49IUuMoBP24rwxzFJfAJTzKbTVFAw/fjN/dG68zwWJDRxZtVBinLd7IyqN" +
+           "7+hZJJtd2loVXSRxMGpKjCuaxkKhIC8oH1qBLWd5WlRfkyte0w2GJRo2l1Ri6mK5qPlzFJegQ/vC8mR4uQ8WPkZ+MWVn" +
+           "vbqIdeMARtUhtKDYDBOL6/0O/X7Wpc7oYupiwh3yRcDmdvKVfie4utG8y8s29i9Ufal6QmEYKiiX4pnUyOP92znjhF" +
+           "EZl1+oroWCdZ2O9R33M5asqS8scrT/ubM1gtpI+JT3XevKqaw718GZLg1OAP0jSUQScmf8wIDAQAB";
 
     public final static String SERVER_URL = "https://openapi.alipay.com/gateway.do";
     public final static String DATA_FORMAT = "json";
