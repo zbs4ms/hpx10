@@ -1,31 +1,60 @@
+import {
+  INDEX as bannerCfg
+} from '@/components/banner/_consts/routers'
+import {
+  INDEX as logCfg
+} from '@/components/log/_consts/routers'
+import {
+  INDEX as reserveCfg
+} from '@/components/reserve/_consts/routers'
+import {
+  INDEX as doctorCfg
+} from '@/components/doctor/_consts/routers'
+import {
+  INDEX as userCfg
+} from '@/components/user/_consts/routers'
+import {
+  INDEX as authCfg
+} from '@/components/auth/_consts/routers'
+import {
+  INDEX as pushCfg
+} from '@/components/push/_consts/routers'
+
 export default [{
   label: '运营管理',
   icon: 'icon-operate',
   children: [{
-    label: 'BANNER管理',
-    path: '/banner'
+    label: bannerCfg.meta.label,
+    path: bannerCfg.path,
+    permissionId: bannerCfg.meta.permissionId
   }, {
-    label: '日记管理',
-    path: '/log'
+    label: logCfg.meta.label,
+    path: logCfg.path,
+    permissionId: logCfg.meta.permissionId
   }]
 }, {
-  label: '预约管理',
+  label: reserveCfg.meta.label,
   icon: 'icon-reservation',
-  path: '/reserve'
+  path: reserveCfg.path,
+  permissionId: reserveCfg.meta.permissionId
 }, {
-  label: '医生信息录入',
+  label: doctorCfg.meta.label,
   icon: 'icon-doctor',
-  path: '/doctor'
+  path: doctorCfg.path,
+  permissionId: doctorCfg.meta.permissionId
 }, {
-  label: '用户管理',
+  label: userCfg.meta.label,
   icon: 'icon-user',
-  path: '/user'
+  path: userCfg.path,
+  permissionId: userCfg.meta.permissionId
 }, {
-  label: '权限管理',
+  label: authCfg.meta.label,
   icon: 'icon-access',
-  path: '/auth'
+  path: authCfg.path,
+  permissionId: authCfg.meta.permissionId
 }, {
-  label: '推送管理',
+  label: pushCfg.meta.label,
   icon: 'icon-push',
-  path: '/push'
+  path: pushCfg.path,
+  permissionId: pushCfg.meta.permissionId
 }]

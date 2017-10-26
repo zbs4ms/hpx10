@@ -5,5 +5,9 @@ const MOUDLE_ROOT = `/${MOUDLE_PREDIX}`
 // 当前模块首页：模块入口
 export const INDEX = {
   path: MOUDLE_ROOT,
-  name: `${MOUDLE_PREDIX}_root`
+  name: `${MOUDLE_PREDIX}_root`,
+  meta: {
+    permissionId: 'm_02',
+    label: '日记管理'
+  }
 }

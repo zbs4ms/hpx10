@@ -1,8 +1,10 @@
 <script>
-//  import { Cookie } from '@/utils/index'
-
   // 一级导航
   import NAVS from './NAVS'
+
+  import {
+    mapState
+  } from 'vuex'
 
   export default {
     name: 'LeftNav',
@@ -13,8 +15,11 @@
     created () {
       console.log(this.$route.path.match(/\/\w+((?=\/)|$)/)[0])
       this.NAVS = NAVS
-//      let accountInfo = JSON.parse(decodeURIComponent(Cookie.get('accountInfo')))
-//      this.userName = accountInfo.userName
+    },
+    computed: {
+      ...mapState({
+        myAuth: 'auth'
+      })
     },
     methods: {
       handleSelect (index) {
@@ -43,21 +48,23 @@
       </el-menu-item>
       <template v-for="nav in NAVS">
         <el-submenu
-          v-if="nav.children"
+          v-if="nav.children && nav.children.find(subNav => myAuth.indexOf(subNav.permissionId) !== -1)"
           :key="nav.label"
           index="nav">
           <template slot="title">
             <i v-if="nav.icon" class="nav-icon" :class="nav.icon"></i>{{ nav.label }}
           </template>
-          <el-menu-item
-            v-for="subNav in nav.children"
-            :key="subNav.label"
-            :index="subNav.path">
-            {{ subNav.label }}
-          </el-menu-item>
+          <template v-for="subNav in nav.children">
+            <el-menu-item
+              v-if="myAuth.indexOf(subNav.permissionId) !== -1"
+              :key="subNav.label"
+              :index="subNav.path">
+              {{ subNav.label }}
+            </el-menu-item>
+          </template>
         </el-submenu>
         <el-menu-item
-          v-else
+          v-else-if="myAuth.indexOf(nav.permissionId) !== -1"
           :index="nav.path">
           <i v-if="nav.icon" class="nav-icon" :class="nav.icon"></i>{{ nav.label }}
         </el-menu-item>

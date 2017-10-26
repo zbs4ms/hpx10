@@ -21,7 +21,8 @@ const state = {
   },
   // 保持状态的组件 (多个之间用','分隔)
   keepAlive: 'no-match',
-  auth: (getAccountInfo() || {}).permissionList,
+  // todo: 删除`Array.from({length: 8 - 1 + 1}).map((item, index) => `m_0${index + 1}`) &&`
+  auth: Array.from({length: 8 - 1 + 1}).map((item, index) => `m_0${index + 1}`) && (getAccountInfo() || {}).permissionList || [],
   accountInfo: getAccountInfo() || {}
 }
 

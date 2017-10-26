@@ -6,8 +6,8 @@ import 'es6-symbol/implement'
 import 'es6-promise/auto'
 
 import Vue from 'vue'
-import router from '@/router'
 import store from '@/store'
+import router from '@/router'
 
 import './rootApi'
 

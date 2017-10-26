@@ -3,7 +3,9 @@
    * Created by zhengji
    * Date: 2017/10/21
    */
-  import deepAssign from '@/utils/index'
+  import {
+    deepAssign
+  } from '@/utils/index'
   const initialData = {
     ruleForm: {
       content: '', // 推送内容

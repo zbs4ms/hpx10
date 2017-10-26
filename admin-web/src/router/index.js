@@ -52,13 +52,18 @@ const router = new Router({
 
 // 全局路由验证登陆状态
 import { Cookie } from '@/utils/index'
+import $store from '@/store'
 router.beforeEach((to, from, next) => {
+  console.log(to.matched)
   if (to.name !== 'Login' && !Cookie.get('login')) {
     next({ name: 'Login' })
   } else if (to.name === 'Login' && Cookie.get('login') === 'yes') {
     next(from.path || '/')
   } else {
-    next()
+    const myAuth = $store.state.auth || []
+    if (myAuth.indexOf(to.meta.permissionId) !== -1) { // 校验权限
+      next()
+    }
   }
 })
 
