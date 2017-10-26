@@ -271,6 +271,9 @@ public class DiaryController extends MyBaseController {
 
         }
 
+
+        return null;
+
     }
 
 }
