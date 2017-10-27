@@ -1,5 +1,6 @@
 package com.jishi.reservation.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jishi.reservation.controller.protocol.*;
 import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.service.his.HisOutpatient;
@@ -40,6 +41,7 @@ public class OutpatientService {
     public List<OutpatientPaymentInfoVO> queryOutpatientPamentInfo(long accountId) throws Exception {
         List<PatientInfo> patientInfoList = patientInfoService.queryPatientInfo(null,accountId, 0);
         if (patientInfoList == null || patientInfoList.isEmpty()) {
+            log.info(accountId + ": 门诊缴费列表为空");
             return Collections.emptyList();
         }
         List<OutpatientPaymentInfoVO> paymentInfoList = new ArrayList<OutpatientPaymentInfoVO>();
@@ -48,8 +50,10 @@ public class OutpatientService {
             OutpatientPaymentInfo data = hisOutpatient.queryPayReceipt(info.getBrId(), "", "", "");
             List<OutpatientPaymentInfo.Ghlist> ghList = data.getGhlist();
             if (ghList == null || ghList.isEmpty()) {
+              log.info(info.getBrId() + ": 门诊缴费列表为空");
               continue;
             }
+            log.info(info.getBrId() + "的his门诊缴费列表返回值：" + JSONObject.toJSONString(ghList));
             for (OutpatientPaymentInfo.Ghlist gh : ghList) {
                 OutpatientPaymentInfoVO paymentInfo = new OutpatientPaymentInfoVO();
                 paymentInfo.setBrid(info.getBrId());
@@ -145,9 +149,11 @@ public class OutpatientService {
 
     public boolean batchpayConfirm(String docIds, String brId, double zje, double jsje, int sfghd, long orderId) throws Exception {
         OrderVO order = orderInfoService.queryOrderInfoById(orderId);
+        log.info("batchpayConfirm => OrderNumber: " + order.getOrderNumber() + "病人Id" + brId + "单据号" + docIds);
         // TODO 校验总金额和支付结果
         // TODO 第三方名称, 暂时传空, 交易流水号 交易内容
         String czsj = hisOutpatient.batchPayModify(docIds, brId, zje, jsje, sfghd, null, null, null);
+        log.info(czsj + " batchpayConfirm => 病人ID: " + brId + "单据号：" + docIds + "总/结算金额: " + zje + jsje);
         return czsj != null && !czsj.isEmpty();
     }
 

@@ -44,7 +44,7 @@ public class OutpatientController extends MyBaseController {
           }
         }
         List<OutpatientPaymentInfoVO> outpatientPamentInfo = outpatientService.queryOutpatientPamentInfo(accountId);
-        return ResponseWrapper().addData(outpatientPamentInfo).addMessage("添加成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        return ResponseWrapper().addData(outpatientPamentInfo).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     /*
