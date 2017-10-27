@@ -65,7 +65,6 @@ public class ManagerService {
 
     public Manager findAccountByAccount(String account) {
 
-        int i = 5/0;
         Manager manager =  managerMapper.findAccountByUserName(account);
         Preconditions.checkNotNull(account,"该账户不存在，请检查账号");
         return  manager;

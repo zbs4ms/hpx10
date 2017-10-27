@@ -111,7 +111,7 @@ public class AdminController extends MyBaseController {
 
 
     @ApiOperation(value = "创建管理员账号")
-    @RequestMapping(value = "crete", method = RequestMethod.POST)
+    @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject create(
             @ApiParam(value = "账号") @RequestParam(value = "account") String account,

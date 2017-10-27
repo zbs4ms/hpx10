@@ -12,6 +12,8 @@ import com.jishi.reservation.service.DepartmentService;
 import com.jishi.reservation.service.DoctorService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.his.HisOutpatient;
+import com.jishi.reservation.service.his.bean.RegisteredNumberInfo;
 import com.jishi.reservation.service.support.AliOssSupport;
 import com.jishi.reservation.service.support.DateSupport;
 import com.jishi.reservation.util.Constant;
@@ -43,6 +45,10 @@ public class DoctorController extends MyBaseController {
 
     @Autowired
     AliOssSupport ossSupport;
+
+
+    @Autowired
+    HisOutpatient hisOutpatient;
 
     @ApiOperation(value = "增加医生")
     @RequestMapping(value = "addDoctor", method = RequestMethod.PUT)
@@ -83,7 +89,7 @@ public class DoctorController extends MyBaseController {
             doctor.setIsTop(doctor.getOrderNumber().equals(0)?0:1);
             DoctorVO doctorVO = new DoctorVO();
             doctorVO.setDoctor(doctor);
-            doctorVO.setDepartmentList(departmentService.batchQueryDepartment(JSONObject.parseArray(doctor.getDepartmentIds(),String.class)));
+            //doctorVO.setDepartmentList(departmentService.batchQueryDepartment(JSONObject.parseArray(doctor.getDepartmentIds(),String.class)));
                     //doctor.getDepartmentIds().split(",")));
             doctorVOList.add(doctorVO);
         }
@@ -96,15 +102,16 @@ public class DoctorController extends MyBaseController {
     @ResponseBody
     public JSONObject queryDoctor(
             @ApiParam(value = "医生ID", required = false) @RequestParam(value = "doctorId", required = false) Long doctorId,
+            @ApiParam(value = "his存的医生ID", required = false) @RequestParam(value = "hDoctorId", required = false) String hDoctorId,
             @ApiParam(value = "医生名称", required = false) @RequestParam(value = "doctorName", required = false) String doctorName,
             @ApiParam(value = "类型（0 普通医生 1 专家", required = false) @RequestParam(value = "type", required = false) String type) throws Exception {
         if(Helpers.isNullOrEmpty(doctorId) && Helpers.isNullOrEmpty(doctorName) && Helpers.isNullOrEmpty(type))
             throw new Exception("查询参数不能全部为空");
         DoctorVO doctorVO = new DoctorVO();
-        List<Doctor> doctors = doctorService.queryDoctor(doctorId,doctorName,null,null,EnableEnum.EFFECTIVE.getCode());
+        List<Doctor> doctors = doctorService.queryDoctor(doctorId,hDoctorId,doctorName,null,null,EnableEnum.EFFECTIVE.getCode());
         if(doctors.size()>0){
             doctorVO.setDoctor(doctors.get(0));
-            doctorVO.setDepartmentList(departmentService.batchQueryDepartment(JSONObject.parseArray(doctors.get(0).getDepartmentIds(),String.class)));
+            //doctorVO.setDepartmentList(departmentService.batchQueryDepartment(JSONObject.parseArray(doctors.get(0).getDepartmentIds(),String.class)));
         }
         return ResponseWrapper().addData(doctorVO).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -206,6 +213,24 @@ public class DoctorController extends MyBaseController {
         Preconditions.checkNotNull(doctorId,"请传入必须的参数：doctorId");
 
         doctorService.topDoctor(doctorId);
+
+        return ResponseWrapper().addMessage("操作成功！").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+
+    }
+
+
+    @ApiOperation(value = "从his抓取医生信息入到我们自己的库")
+    @RequestMapping(value = "getDoctorFromHis", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject getDoctorFromHis(
+    ) throws Exception {
+
+        RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", "", "", "", "", "");
+        if(info.getGroup().getHblist().get(0)!=null) {
+            List<RegisteredNumberInfo.Hb> hbList = info.getGroup().getHblist().get(0).getHbList();
+
+            doctorService.getDoctorFromHis(hbList);
+        }
 
         return ResponseWrapper().addMessage("操作成功！").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
