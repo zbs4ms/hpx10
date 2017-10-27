@@ -153,7 +153,7 @@ public class DiaryController extends MyBaseController {
             }
         }
 
-        diaryService.publish(accountId,title,bigImgUrl,height,width,content);
+        diaryService.publish(accountId,title,content);
 
 
         return ResponseWrapper().addMessage("添加成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());

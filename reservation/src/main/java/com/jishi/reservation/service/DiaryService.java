@@ -90,7 +90,7 @@ public class DiaryService {
 
     }
 
-    public void publish(Long accountId,String title, String bigImgUrl, Integer height, Integer width, String content) {
+    public void publish(Long accountId,String title, String content) {
 
         Gson gson = new Gson();
 
@@ -102,9 +102,7 @@ public class DiaryService {
         Diary diary = new Diary();
 
         diary.setTitle(title);
-        diary.setBigImgUrl(bigImgUrl);
-        diary.setHeight(height);
-        diary.setWidth(width);
+
         diary.setContent(JSONObject.toJSONString(contentList));
         diary.setEnable(0);
         diary.setAccountId(accountId);
