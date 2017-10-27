@@ -131,10 +131,10 @@ public class DiaryController extends MyBaseController {
     public JSONObject top(
             HttpServletRequest request,HttpServletResponse response,
             @ApiParam(value = "accountId  token") @RequestParam(value = "accountId") Long accountId,
-            @ApiParam(value = "日记的标题") @RequestParam(value = "title",required = false) String title,  //todo 标题必须？？
-            @ApiParam(value = "封面图片的url") @RequestParam(value = "bgImgUrl",required = false) String bigImgUrl,
-            @ApiParam(value = "封面图片的高度") @RequestParam(value = "height",required = false) Integer height,
-            @ApiParam(value = "封面图片的宽度") @RequestParam(value = "width",required = false) Integer width,
+            @ApiParam(value = "日记的标题") @RequestParam(value = "title",required = false) String title,
+//            @ApiParam(value = "封面图片的url") @RequestParam(value = "bgImgUrl",required = false) String bigImgUrl,
+//            @ApiParam(value = "封面图片的高度") @RequestParam(value = "height",required = false) Integer height,
+//            @ApiParam(value = "封面图片的宽度") @RequestParam(value = "width",required = false) Integer width,
             @ApiParam(value = "日记的内容 json格式保存   eg:[{\"fontName\":\"宋体\",\"lineSpace\":10,\"fontSize\":10,\"text\":\"我是文字\",\"type\":1,\"textColor\":\"red\"},{\"width\":200,\"type\":0,\"url\":\"http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/doctor/WechatIMG198.jpg\",\"height\":200}]") @RequestParam(value = "content") String content
 
 
