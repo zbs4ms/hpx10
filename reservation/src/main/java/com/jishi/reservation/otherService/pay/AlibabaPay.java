@@ -100,7 +100,7 @@ public class AlibabaPay {
 
         try {
             //加密采用RSA...
-            boolean flag = AlipaySignature.rsaCheckV1(params, PayConstant.ALI_PAY_PUBLIC_KEY, PayConstant.CHARSET);
+            boolean flag = AlipaySignature.rsaCheckV1(params, PayConstant.ALI_PAY_PUBLIC_KEY, PayConstant.CHARSET,PayConstant.ENCRYPT);
             log.info("验证结果："+flag);
 
                 if("TRADE_SUCCESS".equals(params.get("trade_status"))){
