@@ -33,4 +33,17 @@ public interface OrderInfoMapper extends MyMapper<OrderInfo>{
                     "</script>"
     })
     List queryOrderList(@Param("status") Integer status,@Param("enable") Integer enable);
+
+
+
+
+
+    @Select({
+            "<script>" +
+                    "select * from order_info where 1 =1 " +
+                    "<if test = \"orderId != null\"> AND id = #{orderId}</if>" +
+                    "<if test = \"orderNumber != null\"> AND order_number = #{orderNumber}</if>" +
+                    "</script>"
+    })
+    OrderInfo queryByIdOrOrderNumber(@Param("orderId") Long orderId,@Param("orderNumber") String orderNumber);
 }

@@ -148,7 +148,7 @@ public class OutpatientService {
     }
 
     public boolean batchpayConfirm(String docIds, String brId, double zje, double jsje, int sfghd, long orderId) throws Exception {
-        OrderVO order = orderInfoService.queryOrderInfoById(orderId);
+        OrderVO order = orderInfoService.queryOrderInfoById(orderId,null);
         log.info("batchpayConfirm => OrderNumber: " + order.getOrderNumber() + "病人Id" + brId + "单据号" + docIds);
         // TODO 校验总金额和支付结果
         // TODO 第三方名称, 暂时传空, 交易流水号 交易内容

@@ -39,9 +39,9 @@ public class OrderInfoService {
     @Autowired
     RegisterMapper registerMapper;
 
-    public OrderVO queryOrderInfoById(Long orderId) {
+    public OrderVO queryOrderInfoById(Long orderId,String orderNumber) {
 
-        OrderInfo orderInfo = orderInfoMapper.queryById(orderId);
+        OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(orderId,orderNumber);
         Register register =  registerMapper.queryByOrderId(orderId);
 
         OrderVO orderVO = new OrderVO();
