@@ -43,7 +43,7 @@ public class HospitalizationController extends MyBaseController {
 
 
     //selectTotalPayDetail
-    @ApiOperation(value = "查询住院費用清單", response = HospitalizationInfoVO.class)
+    @ApiOperation(value = "查询住院費用清單", response = HospitalizationService.PayItem.class)
     @RequestMapping(value = "queryPrepay", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryPrepay(@ApiParam(value = "brId", required = false) @RequestParam(value = "brId", required = false) String brId,

@@ -67,7 +67,6 @@ public class OrderController extends MyBaseController {
 
         //执行his确认订单操作..
         //confirm.modify
-        Preconditions.checkNotNull(orderId,"请传入合适的参数：orderId");
 
         OrderVO orderVO = orderInfoService.queryOrderInfoById(orderId,orderNumber);
 

@@ -8,6 +8,8 @@ import com.jishi.reservation.service.his.bean.DepositBalanceDailyPayDetail;
 import com.jishi.reservation.service.his.bean.DepositBalanceDetail;
 import com.jishi.reservation.service.his.bean.DepositBalanceHistoryDetail;
 import com.jishi.reservation.service.his.bean.TotalDepositBalancePayDetail;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,9 +124,12 @@ public class HospitalizationService {
 
 
     @Data
+    @ApiModel("住院清单对象")
     public class PayItem{
-
+        @ApiModelProperty(name = "费用金额")
         String fyje;
+        @ApiModelProperty(name = "类别名称  日期/收费类型")
+
         String lbmc;
         DepositBalanceDailyPayDetail detail;
     }
