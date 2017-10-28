@@ -92,4 +92,9 @@ public class Constant {
      */
     public final static int MAX_BINDING_NUM = 5;
     public final static String TEST_PHONE = "13401154497,18349226649,18215603517";
+
+
+    /** =========================   网易云信相关    ==============================**/
+    public static final String IM_NETEASY_APPKEY = "b183b56ab35717b01f2ad925a8e6cc89";
+    public static final String IM_NETEASY_APPSECRET = "8071e83e5b74";
 }
