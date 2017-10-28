@@ -31,7 +31,7 @@ public class Diary {
     private Integer enable;
     private Integer sort;
     private String content;
-    private Integer lock;  //是否锁定 锁定0 只有自己能看  ，没有锁定1 公布
+    private Integer isLock;  //是否锁定 锁定0 只有自己能看  ，没有锁定1 公布
 
 
 

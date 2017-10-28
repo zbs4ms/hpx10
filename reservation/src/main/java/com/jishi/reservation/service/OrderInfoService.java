@@ -109,9 +109,9 @@ public class OrderInfoService {
 
     }
 
-    public void confirmOrderHis(Long orderId, ConfirmOrder confirmOrder) {
+    public void confirmOrderHis(Long orderId, String orderNumber,ConfirmOrder confirmOrder) {
 
-        OrderInfo orderInfo = orderInfoMapper.queryById(orderId);
+        OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(orderId,orderNumber);
         orderInfo.setGhdh(confirmOrder.getGhdh());
         orderInfo.setCzsj(confirmOrder.getCzsj());
         orderInfo.setJsid(confirmOrder.getJzid());

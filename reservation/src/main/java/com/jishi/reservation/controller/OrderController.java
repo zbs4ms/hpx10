@@ -73,7 +73,10 @@ public class OrderController extends MyBaseController {
         ConfirmRegister confirmRegister = orderInfoService.returnConfirmRegister(orderId,orderNumber);
         log.info("处理his的确认订单接口");
         ConfirmOrder confirmOrder = hisOutpatient.confirmRegister(confirmRegister);
-        orderInfoService.confirmOrderHis(orderId,confirmOrder);
+        if(confirmOrder!=null){
+            orderInfoService.confirmOrderHis(orderId,orderNumber,confirmOrder);
+
+        }
         return ResponseWrapper().addData(orderVO).addMessage("确认成功").ExeSuccess(200);
 
     }

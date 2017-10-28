@@ -42,7 +42,7 @@ public interface DiaryMapper extends MyMapper<Diary>{
     @Select({
             "<script>select  * from diary where enable = 0 and status = 0 " +
                     "<if test = \"accountId != null\"> AND account_id = #{accountId}</if>" +
-                    "<if test = \"accountId == null\"> AND lock  = 1 </if>" +
+                    "<if test = \"accountId == null\"> AND is_lock  = 1 </if>" +
                     "</script>"
     })
     List<Diary> queryEnableAndVerified(@Param("accountId") Long accountId);

@@ -104,7 +104,7 @@ public class DiaryService {
                 }.getType());
 
         diary.setContent(JSONObject.toJSONString(contentList));
-        diary.setLock(lock);
+        diary.setIsLock(lock);
         diaryMapper.updateByPrimaryKeySelective(diary);
     }
 
@@ -129,7 +129,7 @@ public class DiaryService {
         diary.setUrl("");
         diary.setStatus(1);
         diary.setSort(0);
-        diary.setLock(lock);
+        diary.setIsLock(lock);
         diary.setCreateTime(new Date());
         diaryMapper.insertReturnId(diary);
 
