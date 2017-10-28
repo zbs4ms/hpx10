@@ -125,7 +125,7 @@ public class DepartmentService {
             log.info(JSONObject.toJSON(d));
             Department department = new Department();
             department.setName(d.getMc());
-            department.setH_id(d.getId());
+            department.setHId(d.getId());
             department.setEnable(0);
             department.setPosition("锦欣医院");
             departmentList1.add(department);
