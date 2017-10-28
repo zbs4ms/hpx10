@@ -201,20 +201,16 @@ public class DiaryController extends MyBaseController {
     @ResponseBody
     public JSONObject likeDiary(
             HttpServletRequest request,HttpServletResponse response,
-            @ApiParam(value = "accountId  token") @RequestParam(value = "accountId") Long accountId,
 
-            @ApiParam(value = "日记的id", required = false) @RequestParam(value = "diaryId") Long diaryId
+            @ApiParam(value = "日记的id", required = true) @RequestParam(value = "diaryId") Long diaryId
 
 
     ) throws Exception {
+        Long accountId = accountService.returnIdByToken(request);
+        if(accountId.equals(-1L)){
+            response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
 
-        if (accountId == null) {
-            accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1L)){
-                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
-
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-            }
+            return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
         }
 
 
@@ -234,7 +230,7 @@ public class DiaryController extends MyBaseController {
             HttpServletRequest request,HttpServletResponse response,
             //@ApiParam(value = "accountId  token") @RequestParam(value = "accountId") Long accountId,
 
-            @ApiParam(value = "日记的id", required = false) @RequestParam(value = "diaryId") Long diaryId
+            @ApiParam(value = "日记的id", required = true) @RequestParam(value = "diaryId") Long diaryId
 
 
     ) throws Exception {
@@ -256,7 +252,7 @@ public class DiaryController extends MyBaseController {
     @ResponseBody
     public JSONObject delete(
             HttpServletRequest request,HttpServletResponse response,
-            @ApiParam(value = "日记的id") @RequestParam(value = "diaryId") Long diaryId
+            @ApiParam(value = "日记的id ",required = true) @RequestParam(value = "diaryId") Long diaryId
     ) throws Exception {
         Long accountId = accountService.returnIdByToken(request);
         if(accountId.equals(-1L)){
@@ -265,6 +261,34 @@ public class DiaryController extends MyBaseController {
             return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
         }
         Integer state = diaryService.delete(diaryId,accountId);
+        switch (state){
+            case 0:
+                return ResponseWrapper().addMessage("操作成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+            case 1:
+                return ResponseWrapper().addMessage("您无权执行该操作").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+
+        }
+
+
+        return null;
+
+    }
+
+
+    @ApiOperation(value = "app 上锁/解锁 日记 token传递，如果不是发布者上锁，会提示错误信息")
+    @RequestMapping(value = "lock", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject lock(
+            HttpServletRequest request,HttpServletResponse response,
+            @ApiParam(value = "日记的id") @RequestParam(value = "diaryId") Long diaryId
+    ) throws Exception {
+        Long accountId = accountService.returnIdByToken(request);
+        if(accountId.equals(-1L)){
+            response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
+
+            return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+        }
+        Integer state = diaryService.lock(diaryId,accountId);
         switch (state){
             case 0:
                 return ResponseWrapper().addMessage("操作成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());

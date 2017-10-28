@@ -236,6 +236,16 @@ public class DiaryService {
         return 0;
     }
 
+    public Integer lock(Long diaryId, Long accountId) {
+        Diary diary = diaryMapper.queryById(diaryId);
+        Preconditions.checkNotNull(diary,"该id没有对应的日记信息");
+        if(!diary.getAccountId().equals(accountId))
+            return 1;
+        diary.setIsLock(diary.getIsLock()==1?0:1);
+        diaryMapper.updateByPrimaryKeySelective(diary);
+        return 0;
+
+    }
 
 
 //    public static void main(String[] args) {
