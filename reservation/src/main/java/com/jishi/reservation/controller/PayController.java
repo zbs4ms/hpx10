@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
+import com.jishi.reservation.controller.protocol.OrderGenerateVO;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.otherService.pay.protocol.AliPayCallbackModel;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
@@ -83,8 +84,8 @@ public class PayController extends MyBaseController {
 
         Preconditions.checkNotNull(subject,"缺少参数：subject");
 
-        String response = alibabaPay.generateOrder(subject, price);
+        OrderGenerateVO vo = alibabaPay.generateOrder(subject, price);
 
-        return ResponseWrapper().addData(response).addMessage("请求成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        return ResponseWrapper().addData(vo).addMessage("请求成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 }

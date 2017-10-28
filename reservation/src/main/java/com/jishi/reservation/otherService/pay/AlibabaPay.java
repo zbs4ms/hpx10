@@ -10,6 +10,7 @@ import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.doraemon.base.util.RandomUtil;
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.controller.protocol.OrderGenerateVO;
 import com.jishi.reservation.dao.mapper.OrderInfoMapper;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.otherService.pay.protocol.AliPayCallbackModel;
@@ -39,7 +40,7 @@ public class AlibabaPay {
     @Autowired
     OrderInfoMapper orderInfoMapper;
 
-    public String generateOrder(String subject, BigDecimal price) throws Exception {
+    public OrderGenerateVO generateOrder(String subject, BigDecimal price) throws Exception {
         AlipayClient client = new DefaultAlipayClient(
                 PayConstant.SERVER_URL,
                 PayConstant.APP_ID,
@@ -70,11 +71,11 @@ public class AlibabaPay {
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = client.sdkExecute(request);
             log.info("支付宝返回的处理结果：\n"+JSONObject.toJSONString(response));
-            log.info("支付宝订单号："+response.getTradeNo());
-//            String s = response.getBody().split("alipay_sdk=alipay-sdk-java-dynamicVersionNo&")[1];
-//            System.out.println(s+"~~~~");
-//            return s;
-            return response.getBody();
+
+            OrderGenerateVO vo = new OrderGenerateVO();
+            vo.setOrderNumber(orderNumber);
+            vo.setOrderString(response.getBody());
+            return vo;
 
 
 
