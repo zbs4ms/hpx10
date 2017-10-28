@@ -47,10 +47,24 @@ public class HospitalizationController extends MyBaseController {
     @RequestMapping(value = "queryPrepay", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryPrepay(@ApiParam(value = "brId", required = false) @RequestParam(value = "brId", required = false) String brId,
-                                @ApiParam(value = "入院的次数", required = false) @RequestParam(value = "rycs", required = false) Integer rycs) throws Exception {
-        List<TotalDepositBalancePayDetail.Item> items = hospitalizationService.queryPrepayDetail(brId, rycs);
+                                @ApiParam(value = "入院的次数", required = false) @RequestParam(value = "rycs", required = false) Integer rycs,
+                                  @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
+                                  @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize
+ ) throws Exception {
 
-        return ResponseWrapper().addMessage("ok").addData(items).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        if(startPage == 0){
+            startPage =1;
+
+        }
+        if(pageSize ==0 ){
+            pageSize = 100;
+        }
+
+        List<HospitalizationService.PayItem> list = hospitalizationService.queryPrepayDetail(brId, rycs);
+
+        PageInfo<HospitalizationService.PayItem> page = hospitalizationService.wrapPage(list,startPage,pageSize);
+
+        return ResponseWrapper().addMessage("ok").addData(page).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 
@@ -69,7 +83,6 @@ public class HospitalizationController extends MyBaseController {
         PageInfo<HospitalizationInfoVO> page = new PageInfo<>();
 
         if(startPage == 0){
-            log.info("处理分页参数");
             startPage =1;
 
         }

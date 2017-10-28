@@ -30,7 +30,6 @@ public class TotalDepositBalancePayDetail {
         @XStreamAlias("FYJE")
         String fyje;
 
-        DepositBalanceDailyPayDetail detail;
     }
 
 
