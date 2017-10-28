@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
+import com.jishi.reservation.controller.protocol.OrderVO;
 import com.jishi.reservation.controller.protocol.RegisterCompleteVO;
 import com.jishi.reservation.controller.protocol.RegisterVO;
 import com.jishi.reservation.dao.models.*;
@@ -51,6 +52,9 @@ public class RegisterController extends MyBaseController {
 
     @Autowired
     JpushSupport jpushSupport;
+
+    @Autowired
+    OrderInfoService orderInfoService;
 
 
 
@@ -133,24 +137,34 @@ public class RegisterController extends MyBaseController {
 
         for (Register register : registerList) {
             RegisterVO registerVO = new RegisterVO();
-            List<Doctor> doctors = doctorService.queryDoctor(register.getDoctorId(), null,null, null,null, null);
-            List<Department> departments = departmentService.queryDepartment(register.getDepartmentId(), null);
+            //List<Doctor> doctors = doctorService.queryDoctor(null, String.valueOf(register.getDoctorId()),null, null,null, null);
+
+
             List<Account> accounts = accountService.queryAccount(register.getAccountId(), null, null);
-            List<PatientInfo> patientInfos = patientInfoService.queryPatientInfo(register.getId(), null, null);
-            //todo 还没对接支付，所以就先搞几个假数据，供前段解析展示
-            register.setPayType(PayEnum.WEIXIN.getCode());
-            register.setPayTime(new Date());
-            register.setCompleteTime(new Date());
-            register.setPrice(BigDecimal.valueOf(23.88));
-            register.setCountDownTime(register.getCreateTime().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
-            register.setOrderCode("wx568254965");
 
+            log.info("预约信息："+JSONObject.toJSONString(register));
+            //OrderVO orderVO = orderInfoService.queryOrderInfoById(register.getOrderId());
+            OrderInfo orderInfo = orderInfoService.findOrderById(register.getOrderId());
+            log.info("订单信息："+JSONObject.toJSONString(orderInfo));
+            register.setPayType(orderInfo.getPayType()!=null?orderInfo.getPayType():null);
+            register.setPayTime(orderInfo.getPayTime()!=null?orderInfo.getPayTime():null);
+            register.setCompleteTime(orderInfo.getPayTime()!=null?orderInfo.getPayTime():null);
+            register.setPrice(orderInfo.getPrice());
+            //register.setCountDownTime(register.getCreateTime().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
+            register.setOrderCode(orderInfo.getOrderNumber());
 
+            Doctor doctor = doctorService.queryDoctorByHid(register.getDoctorId());
             registerVO.setRegister(register);
-            registerVO.setDoctor(doctors.size() > 0 ? doctors.get(0) : null);
+            registerVO.setDoctor(doctor);
             registerVO.setAccount(accounts.size() > 0 ? accounts.get(0) : null);
-            registerVO.setDepartment(departments.size() > 0 ? departments.get(0) : null);
-            registerVO.setPatientInfo(patientInfos.size() > 0 ? patientInfos.get(0) : null);
+            Department department = new Department();
+            department.setName(register.getDepartment());
+            department.setId(register.getDepartmentId());
+            registerVO.setDepartment(department);
+            PatientInfo patientInfo = patientInfoService.queryByBrId(register.getBrId());
+
+
+            registerVO.setPatientInfo(patientInfo);
             registerVOList.add(registerVO);
         }
         pageInfo.setList(registerVOList);

@@ -41,6 +41,15 @@ public class Doctor {
     @ApiModelProperty("排序")
     private Integer orderNumber;
 
+
+    @ApiModelProperty("科室名称")
+    private String ksmc;
+
+
+    @ApiModelProperty("his的號碼 HM")
+    private String hm;
+
+
     @Transient
     private Integer isTop;
 
@@ -48,7 +57,7 @@ public class Doctor {
     @ApiModelProperty("his的醫生id")
     private String ysid;
 
-    @Transient
+
     @ApiModelProperty("挂号单价")
     private String dj;
 
@@ -58,12 +67,6 @@ public class Doctor {
 
 
 
-    @ApiModelProperty("科室名称")
-    private String ksmc;
-
-    @Transient
-    @ApiModelProperty("his的號碼 HM")
-    private String hm;
 
 
 }

@@ -175,6 +175,8 @@ public class DoctorService {
             doctor.setOrderNumber(0);
             doctor.setEnable(0);
             doctor.setType("0");
+            doctor.setDj(hb.getDj());
+            doctor.setHm(hb.getHm());
             if(!isExist(hb.getYsid())){
                 list.add(doctor);
 
@@ -186,5 +188,11 @@ public class DoctorService {
 
     private boolean isExist(String hId) {
         return doctorMapper.queryByHid(hId) !=null;
+    }
+
+
+
+    public Doctor queryDoctorByHid(Long hDoctorId) {
+        return doctorMapper.queryByHdoctorId(hDoctorId);
     }
 }

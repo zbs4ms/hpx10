@@ -228,4 +228,9 @@ public class PatientInfoService {
 
         return page;
     }
+
+    public PatientInfo queryByBrId(String brId) {
+
+        return patientInfoMapper.queryByById(brId);
+    }
 }

@@ -55,9 +55,9 @@ public class Register {
     @Transient
     private BigDecimal price;  //支付金额
     @Transient
-    private Date payTime;       //支付时间
+    private String payTime;       //支付时间
     @Transient
-    private Date completeTime;  //完成时间
+    private String completeTime;  //完成时间
     @Transient
     private String orderCode;     //订单编号
     @Transient

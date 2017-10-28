@@ -119,4 +119,8 @@ public class OrderInfoService {
 
         log.info("his订单信息已同步到系统中.."+orderId);
     }
+
+    public OrderInfo findOrderById(Long orderId) {
+        return orderInfoMapper.queryById(orderId);
+    }
 }
