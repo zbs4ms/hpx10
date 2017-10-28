@@ -40,7 +40,7 @@ public class AlibabaPay {
     @Autowired
     OrderInfoMapper orderInfoMapper;
 
-    public OrderGenerateVO generateOrder(String subject, BigDecimal price) throws Exception {
+    public OrderGenerateVO generateOrder(String orderNumber,String subject, BigDecimal price) throws Exception {
         AlipayClient client = new DefaultAlipayClient(
                 PayConstant.SERVER_URL,
                 PayConstant.APP_ID,
@@ -58,8 +58,7 @@ public class AlibabaPay {
         AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
         model.setBody("test...");
         model.setSubject(subject);
-        //生成订单号
-        String orderNumber = generateUniqueOrderNumber();
+
         model.setOutTradeNo(orderNumber);
         model.setTimeoutExpress(PayConstant.TIME_OUT_EXPRESS);
         model.setTotalAmount(String.valueOf(price));
@@ -76,12 +75,6 @@ public class AlibabaPay {
             vo.setOrderNumber(orderNumber);
             vo.setOrderString(response.getBody());
             return vo;
-
-
-
-
-
-
 
         } catch (AlipayApiException e) {
             e.printStackTrace();
