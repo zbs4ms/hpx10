@@ -1,9 +1,12 @@
 package com.jishi.reservation.service;
 
-import com.jishi.reservation.dao.config.DataConfig;
+import com.alibaba.fastjson.JSONObject;
 import com.jishi.reservation.service.his.HisHospitalization;
+import com.jishi.reservation.service.his.bean.DepositBalanceDailyPayDetail;
 import com.jishi.reservation.service.his.bean.DepositBalanceDetail;
 import com.jishi.reservation.service.his.bean.DepositBalanceHistoryDetail;
+import com.jishi.reservation.service.his.bean.TotalDepositBalancePayDetail;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,7 @@ import java.util.List;
  * Created by zbs on 2017/10/5.
  */
 @Service
+@Slf4j
 public class HospitalizationService {
 
     @Autowired
@@ -56,6 +60,27 @@ public class HospitalizationService {
         depositBalanceDetail.setZyzt(zyzt);
         depositBalanceDetail.setZycs(String.valueOf(zycs));
         return depositBalanceDetail;
+    }
+
+
+    /**
+     * 获取用户住院費用清單
+     * @param brId 患者ID
+     * @param zycs 住院次数
+     * @return
+     * @throws Exception
+     */
+    public List<TotalDepositBalancePayDetail.Item> queryPrepayDetail(String brId, Integer zycs) throws Exception {
+        TotalDepositBalancePayDetail payDetail = hisHospitalization.selectTotalPayDetail(brId, String.valueOf(zycs), "2");  //2是按日期查
+        List<TotalDepositBalancePayDetail.Item> list = payDetail.getItemList();
+        log.info(JSONObject.toJSONString(list));
+ //       for (TotalDepositBalancePayDetail.Item item : list) {
+   //         JSONObject.toJSONString("遍历的对象"+item);
+//            DepositBalanceDailyPayDetail detail = hisHospitalization.selectDailyPayDetail(brId, item.getLbmc(), String.valueOf(zycs));
+//            item.setDetail(detail);
+//            log.info(JSONObject.toJSONString(detail));
+     //   }
+        return null;
     }
 
 }

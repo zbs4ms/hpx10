@@ -11,6 +11,7 @@ import com.jishi.reservation.service.HospitalizationService;
 import com.jishi.reservation.service.PatientInfoService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.his.bean.DepositBalanceDetail;
+import com.jishi.reservation.service.his.bean.TotalDepositBalancePayDetail;
 import com.jishi.reservation.util.DateTool;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -38,6 +39,22 @@ public class HospitalizationController extends MyBaseController {
 
     @Autowired
     PatientInfoService patientInfoService;
+
+
+
+    //selectTotalPayDetail
+    @ApiOperation(value = "查询住院費用清單", response = HospitalizationInfoVO.class)
+    @RequestMapping(value = "queryPrepay", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject queryPrepay(@ApiParam(value = "brId", required = false) @RequestParam(value = "brId", required = false) String brId,
+                                @ApiParam(value = "入院的次数", required = false) @RequestParam(value = "rycs", required = false) Integer rycs) throws Exception {
+        List<TotalDepositBalancePayDetail.Item> items = hospitalizationService.queryPrepayDetail(brId, rycs);
+
+        return ResponseWrapper().addMessage("ok").addData(items).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+
+
 
     @ApiOperation(value = "查询住院人历史的住院信息 分页  by token", response = HospitalizationInfoVO.class)
     @RequestMapping(value = "queryAllInfo", method = RequestMethod.GET)
@@ -129,5 +146,7 @@ public class HospitalizationController extends MyBaseController {
         hospitalizationInfoVO.setYujiaojine(depositBalanceDetail.getYujiaojine());
         return hospitalizationInfoVO;
     }
+
+
 
 }

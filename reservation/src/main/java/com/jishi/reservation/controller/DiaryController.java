@@ -130,7 +130,7 @@ public class DiaryController extends MyBaseController {
     @ResponseBody
     public JSONObject top(
             HttpServletRequest request,HttpServletResponse response,
-            @ApiParam(value = "accountId  token") @RequestParam(value = "accountId") Long accountId,
+            @ApiParam(value = "accountId  token") @RequestParam(value = "accountId",required = false) Long accountId,
             @ApiParam(value = "日记的标题") @RequestParam(value = "title",required = false) String title,
 //            @ApiParam(value = "封面图片的url") @RequestParam(value = "bgImgUrl",required = false) String bigImgUrl,
 //            @ApiParam(value = "封面图片的高度") @RequestParam(value = "height",required = false) Integer height,
