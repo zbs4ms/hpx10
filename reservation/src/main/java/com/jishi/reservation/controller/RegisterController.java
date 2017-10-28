@@ -156,6 +156,7 @@ public class RegisterController extends MyBaseController {
             Doctor doctor = doctorService.queryDoctorByHid(register.getDoctorId());
             registerVO.setRegister(register);
             registerVO.setDoctor(doctor);
+            accounts.get(0).setPasswd(null);
             registerVO.setAccount(accounts.size() > 0 ? accounts.get(0) : null);
             Department department = new Department();
             department.setName(register.getDepartment());
