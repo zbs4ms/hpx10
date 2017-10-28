@@ -44,7 +44,7 @@ public class HospitalizationController extends MyBaseController {
     @ResponseBody
     public JSONObject queryAllInfo(
             HttpServletRequest request,HttpServletResponse response,
-            @ApiParam(value = "状态", required = false) @RequestParam(value = "status",required = false) Integer status,
+            @ApiParam(value = "状态 1 查询未支付订单 0 查询所有订单", required = false) @RequestParam(value = "status",required = false) Integer status,
             @ApiParam(value = "accountId 通过token找到", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) throws Exception {
@@ -55,6 +55,9 @@ public class HospitalizationController extends MyBaseController {
             log.info("处理分页参数");
             startPage =1;
 
+        }
+        if(pageSize ==0 ){
+            pageSize = 100;
         }
         //供测试数据使用。。。
         if(accountId == 3987){
@@ -83,6 +86,10 @@ public class HospitalizationController extends MyBaseController {
                 if (depositBalanceDetails == null)
                     return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
                 for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
+//
+//                    if(status == 1){
+//                        if(depositBalanceDetail.getZyzt())
+//                    }
                     list.add(getHospitalizationInfoVO(depositBalanceDetail));
                 }
             }

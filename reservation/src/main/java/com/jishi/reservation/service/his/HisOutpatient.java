@@ -43,7 +43,7 @@ public class HisOutpatient {
         String reData = HisTool.toXMLString("Register.SignalSource.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"Register.SignalSource.Query");
             return (RegisteredNumberInfo) HisTool.toBean(RegisteredNumberInfo.class, xml);
         }
         return null;
@@ -66,7 +66,7 @@ public class HisOutpatient {
         String reData = HisTool.toXMLString("Register.LimitInfo.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            HisTool.getHisDataparam(me);
+            HisTool.getHisDataparam(me,"Register.LimitInfo.Query");
             return true;
         }
         return false;
@@ -99,7 +99,7 @@ public class HisOutpatient {
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"Register.Lock.Modify");
             return (LockRegister)HisTool.toBean(LockRegister.class,xml);
         }
 
@@ -126,7 +126,7 @@ public class HisOutpatient {
         String reData = HisTool.toXMLString("Register.SubScribeCancel.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            HisTool.getHisDataparam(me);
+            HisTool.getHisDataparam(me,"Register.SubScribeCancel.Modify");
             return true;
         }
         return false;
@@ -168,7 +168,7 @@ public class HisOutpatient {
         String reData = HisTool.toXMLString("Register.Subscribe.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"Register.Subscribe.Modify");
             return HisTool.getXmlAttribute(xml,"GHDH");
         }
         return null;
@@ -212,7 +212,7 @@ public class HisOutpatient {
         String reData = HisTool.toXMLString("Register.Confirm.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"Register.Confirm.Modify");
             return (ConfirmOrder) HisTool.toBean(ConfirmOrder.class,xml);
         }
         return null;
@@ -234,7 +234,7 @@ public class HisOutpatient {
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"Register.Depart.Query");
             return (DepartmentList)HisTool.toBean(DepartmentList.class,xml);
         }
         return null;
@@ -263,7 +263,7 @@ public class HisOutpatient {
         String reData = HisTool.toXMLString("Register.RegReceipt.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"Register.RegReceipt.Query");
             return (RegisterRegReceiptInfo)HisTool.toBean(RegisterRegReceiptInfo.class,xml);
         }
         return null;
@@ -293,7 +293,7 @@ public class HisOutpatient {
         String reData = HisTool.toXMLString("Payment.PayReceipt.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"Payment.PayReceipt.Query");
             return (OutpatientPaymentInfo)HisTool.toBean(OutpatientPaymentInfo.class,xml);
         }
         return null;
@@ -335,7 +335,7 @@ public class HisOutpatient {
         String reData = HisTool.toXMLString("Payment.BatchPay.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"Payment.BatchPay.Modify");
             return HisTool.getXmlAttribute(xml,"CZSJ");
         }
         return null;

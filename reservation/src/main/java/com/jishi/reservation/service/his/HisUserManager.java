@@ -38,7 +38,7 @@ public class HisUserManager {
         String reData = HisTool.toXMLString("BindCard.UserInfoByCardNO.Query", sb.toString());
         UserManagerResponseUserManagerResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"BindCard.UserInfoByCardNO.Query");
             return (PatientsList)HisTool.toBean(PatientsList.class,xml);
         }
         return null;
@@ -65,7 +65,7 @@ public class HisUserManager {
         UserManagerResponseUserManagerResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"BindCard.UserInfoByRegNO.Query");
             return (Credentials)HisTool.toBean(Credentials.class,xml);
         }
         return null;
@@ -93,7 +93,7 @@ public class HisUserManager {
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
 
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"BindCard.CreateUser.Modify");
             return (Credentials)HisTool.toBean(Credentials.class,xml);
 
         }

@@ -142,13 +142,11 @@ public class RegisterController extends MyBaseController {
 
             List<Account> accounts = accountService.queryAccount(register.getAccountId(), null, null);
 
-            log.info("预约信息："+JSONObject.toJSONString(register));
             //OrderVO orderVO = orderInfoService.queryOrderInfoById(register.getOrderId());
             OrderInfo orderInfo = orderInfoService.findOrderById(register.getOrderId());
-            log.info("订单信息："+JSONObject.toJSONString(orderInfo));
-            register.setPayType(orderInfo.getPayType()!=null?orderInfo.getPayType():null);
-            register.setPayTime(orderInfo.getPayTime()!=null?orderInfo.getPayTime():null);
-            register.setCompleteTime(orderInfo.getPayTime()!=null?orderInfo.getPayTime():null);
+            register.setPayType(orderInfo.getPayType());
+            register.setPayTime(orderInfo.getPayTime());
+            register.setCompleteTime(orderInfo.getPayTime());
             register.setPrice(orderInfo.getPrice());
             //register.setCountDownTime(register.getCreateTime().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
             register.setOrderCode(orderInfo.getOrderNumber());
@@ -203,6 +201,19 @@ public class RegisterController extends MyBaseController {
     @RequestMapping(value = "failureRegister", method = RequestMethod.DELETE)
     @ResponseBody
     public JSONObject failureRegister(
+            @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId
+    ) throws Exception {
+        Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
+
+        registerService.failureRegister(registerId);
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+
+    @ApiOperation(value = "锁定号源")
+    @RequestMapping(value = "lock", method = RequestMethod.DELETE)
+    @ResponseBody
+    public JSONObject lock(
             @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId
     ) throws Exception {
         Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
