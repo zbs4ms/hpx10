@@ -109,7 +109,7 @@ public class RegisterController extends MyBaseController {
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
-    @ApiOperation(value = "查询预约信息  --不用", response = RegisterVO.class)
+    @ApiOperation(value = "查询预约信息 ", response = RegisterVO.class)
     @RequestMapping(value = "queryRegister", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryRegister(HttpServletRequest request,

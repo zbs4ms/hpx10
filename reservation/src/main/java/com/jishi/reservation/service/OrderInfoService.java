@@ -42,7 +42,7 @@ public class OrderInfoService {
     public OrderVO queryOrderInfoById(Long orderId,String orderNumber) {
 
         OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(orderId,orderNumber);
-        Register register =  registerMapper.queryByOrderId(orderId);
+        Register register =  registerMapper.queryByOrderId(orderInfo.getId());
 
         OrderVO orderVO = new OrderVO();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
