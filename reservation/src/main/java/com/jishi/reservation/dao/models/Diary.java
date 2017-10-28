@@ -31,9 +31,8 @@ public class Diary {
     private Integer enable;
     private Integer sort;
     private String content;
-    private String bigImgUrl;  //封面url
-    private Integer height;     //高度
-    private Integer width;      //宽度
+    private Integer lock;  //是否锁定 锁定0 只有自己能看  ，没有锁定1 公布
+
 
 
     @Transient

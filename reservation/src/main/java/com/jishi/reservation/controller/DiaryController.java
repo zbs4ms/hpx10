@@ -2,6 +2,7 @@ package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 
@@ -125,23 +126,17 @@ public class DiaryController extends MyBaseController {
 
 
 
-    @ApiOperation(value = "app 用户发布日记")
+    @ApiOperation(value = "app 用户发布日记/支持修改 传diaryId就是修改")
     @RequestMapping(value = "publish", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject top(
             HttpServletRequest request,HttpServletResponse response,
             @ApiParam(value = "accountId  token") @RequestParam(value = "accountId",required = false) Long accountId,
             @ApiParam(value = "日记的标题") @RequestParam(value = "title",required = false) String title,
-//            @ApiParam(value = "封面图片的url") @RequestParam(value = "bgImgUrl",required = false) String bigImgUrl,
-//            @ApiParam(value = "封面图片的高度") @RequestParam(value = "height",required = false) Integer height,
-//            @ApiParam(value = "封面图片的宽度") @RequestParam(value = "width",required = false) Integer width,
-            @ApiParam(value = "日记的内容 json格式保存   eg:[{\"fontName\":\"宋体\",\"lineSpace\":10,\"fontSize\":10,\"text\":\"我是文字\",\"type\":1,\"textColor\":\"red\"},{\"width\":200,\"type\":0,\"url\":\"http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/doctor/WechatIMG198.jpg\",\"height\":200}]") @RequestParam(value = "content") String content
-
-
-
-
-
-    ) throws Exception {
+            @ApiParam(value = "日记的内容 json格式保存   eg:[{\"fontName\":\"宋体\",\"lineSpace\":10,\"fontSize\":10,\"text\":\"我是文字\",\"type\":1,\"textColor\":\"red\"},{\"width\":200,\"type\":0,\"url\":\"http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/doctor/WechatIMG198.jpg\",\"height\":200}]") @RequestParam(value = "content") String content,
+            @ApiParam(value = "日记的id") @RequestParam(value = "diaryId",required = false) Long diaryId,
+            @ApiParam(value = "日记是否锁定  0锁定，只有自己能看  1不锁定 大家都能看") @RequestParam(value = "isLock") Integer isLock
+            ) throws Exception {
 
 
         if (accountId == null) {
@@ -152,8 +147,15 @@ public class DiaryController extends MyBaseController {
                 return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
+        if(diaryId ==null ){
+            diaryService.publish(accountId,title,content,isLock);
 
-        diaryService.publish(accountId,title,content);
+        }else {
+
+            Preconditions.checkNotNull(diaryService.queryById(diaryId),"该id没有对应的日记");
+            diaryService.update(diaryId,title,content,isLock);
+        }
+
 
 
         return ResponseWrapper().addMessage("添加成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());

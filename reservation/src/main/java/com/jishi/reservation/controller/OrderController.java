@@ -70,7 +70,7 @@ public class OrderController extends MyBaseController {
 
         OrderVO orderVO = orderInfoService.queryOrderInfoById(orderId,orderNumber);
 
-        ConfirmRegister confirmRegister = orderInfoService.returnConfirmRegister(orderId);
+        ConfirmRegister confirmRegister = orderInfoService.returnConfirmRegister(orderId,orderNumber);
         log.info("处理his的确认订单接口");
         ConfirmOrder confirmOrder = hisOutpatient.confirmRegister(confirmRegister);
         orderInfoService.confirmOrderHis(orderId,confirmOrder);

@@ -64,11 +64,11 @@ public class OrderInfoService {
 
 
 
-    public ConfirmRegister returnConfirmRegister(Long orderId) {
+    public ConfirmRegister returnConfirmRegister(Long orderId,String orderNumber) {
 
         ConfirmRegister confirmRegister = new ConfirmRegister();
-        OrderInfo orderInfo = orderInfoMapper.queryById(orderId);
-        Register register = registerMapper.queryByOrderId(orderId);
+        OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(orderId,orderNumber);
+        Register register = registerMapper.queryByOrderId(orderInfo.getId());
         confirmRegister.setBrid(orderInfo.getBrId());
         confirmRegister.setJe(String.valueOf(orderInfo.getPrice().stripTrailingZeros()));
 

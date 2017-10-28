@@ -1,9 +1,12 @@
 package com.jishi.reservation.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.dao.mapper.DepartmentMapper;
 import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.his.HisOutpatient;
+import com.jishi.reservation.service.his.bean.DepartmentList;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,10 @@ public class DepartmentService {
 
     @Autowired
     DepartmentMapper departmentMapper;
+
+
+    @Autowired
+    HisOutpatient hisOutpatient;
 
     /**
      * 增加科室
@@ -106,5 +113,26 @@ public class DepartmentService {
         if(queryDepartment(departmentId,null).size()==0)
             throw new Exception("科室不存在!");
         modifyDepartment(departmentId,null,null, EnableEnum.INVALID.getCode());
+    }
+
+    public void pullFromHis() throws Exception {
+
+        DepartmentList departmentList = hisOutpatient.selectDepartments("", "", "");
+        DepartmentList.KSLIST kslist = departmentList.getKslist();
+        List<DepartmentList.DepartmentHis> list = kslist.getList();
+        List<Department> departmentList1 = new ArrayList<>();
+        for (DepartmentList.DepartmentHis d : list) {
+            log.info(JSONObject.toJSON(d));
+            Department department = new Department();
+            department.setName(d.getMc());
+            department.setH_id(d.getId());
+            department.setEnable(0);
+            department.setPosition("锦欣医院");
+            departmentList1.add(department);
+
+        }
+
+        departmentMapper.insertList(departmentList1);
+
     }
 }
