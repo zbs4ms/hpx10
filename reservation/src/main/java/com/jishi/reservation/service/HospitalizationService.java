@@ -2,12 +2,8 @@ package com.jishi.reservation.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
-import com.jishi.reservation.controller.protocol.HospitalizationInfoVO;
 import com.jishi.reservation.service.his.HisHospitalization;
-import com.jishi.reservation.service.his.bean.DepositBalanceDailyPayDetail;
-import com.jishi.reservation.service.his.bean.DepositBalanceDetail;
-import com.jishi.reservation.service.his.bean.DepositBalanceHistoryDetail;
-import com.jishi.reservation.service.his.bean.TotalDepositBalancePayDetail;
+import com.jishi.reservation.service.his.bean.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -78,7 +74,7 @@ public class HospitalizationService {
     public  List<PayItem> queryPrepayDetail(String brId, Integer zycs) throws Exception {
         TotalDepositBalancePayDetail payDetail = hisHospitalization.selectTotalPayDetail(brId, String.valueOf(zycs), "2");  //2是按日期查
         List<TotalDepositBalancePayDetail.Item> list = payDetail.getItemList();
-        //log.info(JSONObject.toJSONString(list));
+        log.info(JSONObject.toJSONString(list));
         List<PayItem> voList = new ArrayList<>();
         for (TotalDepositBalancePayDetail.Item item : list) {
             //JSONObject.toJSONString("遍历的对象"+item);
@@ -119,6 +115,18 @@ public class HospitalizationService {
         page.setPageNum(startPage);
 
         return page;
+
+    }
+
+    public String queryPrePayment(String brId, Integer rycs) throws Exception {
+
+        return hisHospitalization.selectDepositBalance(brId, String.valueOf(rycs));
+    }
+
+    public DepositBalanceLog queryPaymentRecord(String brId) throws Exception {
+
+        return hisHospitalization.selectDepositBalanceLog(brId);
+
 
     }
 

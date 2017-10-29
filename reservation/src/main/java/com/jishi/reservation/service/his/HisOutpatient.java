@@ -213,6 +213,9 @@ public class HisOutpatient {
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             String xml = HisTool.getHisDataparam(me,"Register.Confirm.Modify");
+            if(xml == null || "".equals(xml))
+                return null;
+            //失败返回null
             return (ConfirmOrder) HisTool.toBean(ConfirmOrder.class,xml);
         }
         return null;

@@ -515,6 +515,4 @@ public class AccountService {
         return loginData;
     }
 
-
-
 }

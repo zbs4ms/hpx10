@@ -159,7 +159,7 @@ public class DiaryService {
     public PageInfo<Diary> queryPage(Long accountId,Integer startPage, Integer pageSize) {
 
         Gson gson = new Gson();
-        PageHelper.startPage(startPage,pageSize).setOrderBy("sort desc");
+        PageHelper.startPage(startPage,pageSize).setOrderBy("create_time desc");
         List<Diary> list =  diaryMapper.queryEnableAndVerified(accountId);
         for (Diary diary : list) {
             diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));

@@ -5,12 +5,15 @@ import com.github.pagehelper.PageInfo;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.HospitalizationInfoVO;
+import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.HospitalizationService;
+import com.jishi.reservation.service.OrderInfoService;
 import com.jishi.reservation.service.PatientInfoService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.his.bean.DepositBalanceDetail;
+import com.jishi.reservation.service.his.bean.DepositBalanceLog;
 import com.jishi.reservation.service.his.bean.TotalDepositBalancePayDetail;
 import com.jishi.reservation.util.DateTool;
 import io.swagger.annotations.Api;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,11 +44,14 @@ public class HospitalizationController extends MyBaseController {
     @Autowired
     PatientInfoService patientInfoService;
 
+    @Autowired
+    OrderInfoService orderInfoService;
+
 
 
     //selectTotalPayDetail
     @ApiOperation(value = "查询住院費用清單", response = HospitalizationService.PayItem.class)
-    @RequestMapping(value = "queryPrepay", method = RequestMethod.GET)
+    @RequestMapping(value = "queryHospitalDetail", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryPrepay(@ApiParam(value = "brId", required = false) @RequestParam(value = "brId", required = false) String brId,
                                 @ApiParam(value = "入院的次数", required = false) @RequestParam(value = "rycs", required = false) Integer rycs,
@@ -134,14 +141,72 @@ public class HospitalizationController extends MyBaseController {
     @ApiOperation(value = "查询住院人住院信息", response = HospitalizationInfoVO.class)
     @RequestMapping(value = "queryInfo", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryInfo(@ApiParam(value = "brId", required = false) @RequestParam(value = "brId", required = false) String brId,
-                                @ApiParam(value = "入院的次数", required = false) @RequestParam(value = "rycs", required = false) Integer rycs) throws Exception {
+    public JSONObject queryInfo(
+            @ApiParam(value = "brId", required = false) @RequestParam(value = "brId", required = false) String brId,
+            @ApiParam(value = "入院的次数", required = false) @RequestParam(value = "rycs", required = false) Integer rycs) throws Exception {
         DepositBalanceDetail depositBalanceDetail = hospitalizationService.queryInfo(brId, rycs, null);
         if (depositBalanceDetail == null)
             return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
         HospitalizationInfoVO vo = getHospitalizationInfoVO(depositBalanceDetail);
         return ResponseWrapper().addData(vo).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
+
+
+
+    @ApiOperation(value = "获取预交余额", response = HospitalizationInfoVO.class)
+    @RequestMapping(value = "queryPrePayment", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject queryPrePayment(
+            @ApiParam(value = "brId", required = true) @RequestParam(value = "brId", required = true) String brId,
+            @ApiParam(value = "入院的次数", required = true) @RequestParam(value = "rycs", required = true) Integer rycs
+    ) throws Exception {
+       String prePayment = hospitalizationService.queryPrePayment(brId, rycs);
+
+        return ResponseWrapper().addData(prePayment).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+
+
+    @ApiOperation(value = "获取预交款缴款记录", response = HospitalizationInfoVO.class)
+    @RequestMapping(value = "queryPaymentRecord", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject queryPaymentRecord(
+            @ApiParam(value = "brId", required = true) @RequestParam(value = "brId", required = true) String brId
+    ) throws Exception {
+        DepositBalanceLog balanceLog = hospitalizationService.queryPaymentRecord(brId);
+
+        return ResponseWrapper().addData(balanceLog).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+
+    @ApiOperation(value = "生成 预交款订单", response = HospitalizationInfoVO.class)
+    @RequestMapping(value = "generatePrepaymentOrder", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject generatePrepaymentOrder(
+            HttpServletRequest request,HttpServletResponse response,
+            @ApiParam(value = "预交的名称 eg:住院预交款", required = true) @RequestParam(value = "subject", required = true) String subject,
+            @ApiParam(value = "交易的金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
+            @ApiParam(value = "accountId 通过token找到", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+            @ApiParam(value = "brId", required = true) @RequestParam(value = "brId", required = true) String brId,
+            @ApiParam(value = "入院的次数", required = true) @RequestParam(value = "rycs", required = true) Integer rycs
+    ) throws Exception {
+
+        if (accountId == null) {
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1L)){
+                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
+
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+            }
+        }
+
+        OrderInfo orderInfo = orderInfoService.generatePrepayment(subject, price, accountId, brId, rycs);
+
+        return ResponseWrapper().addData(orderInfo).addMessage("订单生成成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+
+
 
 
     private HospitalizationInfoVO getHospitalizationInfoVO(DepositBalanceDetail depositBalanceDetail) throws Exception {

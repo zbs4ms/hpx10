@@ -74,10 +74,13 @@ public class OrderController extends MyBaseController {
         log.info("处理his的确认订单接口");
         ConfirmOrder confirmOrder = hisOutpatient.confirmRegister(confirmRegister);
         if(confirmOrder!=null){
+            log.info("his系统处理成功，更新自己系统数据.");
             orderInfoService.confirmOrderHis(orderId,orderNumber,confirmOrder);
-
+            //return ResponseWrapper().addData(orderVO).addMessage("确认成功").ExeSuccess(200);
+            return  ResponseWrapper().addMessage("his系统订单确认失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+        }else {
+            return  ResponseWrapper().addMessage("his系统订单确认失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
         }
-        return ResponseWrapper().addData(orderVO).addMessage("确认成功").ExeSuccess(200);
 
     }
 

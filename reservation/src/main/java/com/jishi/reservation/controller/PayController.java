@@ -74,10 +74,35 @@ public class PayController extends MyBaseController {
      * @return
      * @throws Exception
      */
-    @ApiOperation(value = "阿里支付", notes = "")
+    @ApiOperation(value = "阿里支付  掛號", notes = "")
     @RequestMapping(value = "aliPay", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject aliPay(
+            @ApiParam(value = "商户生成的订单号") @RequestParam(value = "orderNumber") String orderNumber,
+            @ApiParam(value = "支付的商品名称") @RequestParam(value = "subject") String subject,
+            @ApiParam(value = "支付的商品价格 元为单位") @RequestParam(value = "price") BigDecimal price
+    ) throws Exception {
+
+        Preconditions.checkNotNull(subject,"缺少参数：subject");
+        Preconditions.checkNotNull(orderNumber,"缺少参数：orderNumber");
+        Preconditions.checkNotNull(price,"缺少参数：price");
+
+        OrderGenerateVO vo = alibabaPay.generateOrder(orderNumber,subject, price);
+
+        return ResponseWrapper().addData(vo).addMessage("请求成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+    //进行预交款缴款
+
+    /**
+     * @param
+     * @return
+     * @throws Exception
+     */
+    @ApiOperation(value = "阿里支付  进行预交款缴款", notes = "")
+    @RequestMapping(value = "aliPrePay", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject aliPrePay(
             @ApiParam(value = "商户生成的订单号") @RequestParam(value = "orderNumber") String orderNumber,
             @ApiParam(value = "支付的商品名称") @RequestParam(value = "subject") String subject,
             @ApiParam(value = "支付的商品价格 元为单位") @RequestParam(value = "price") BigDecimal price

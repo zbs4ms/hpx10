@@ -10,10 +10,7 @@ import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.Register;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
-import com.jishi.reservation.service.enumPackage.EnableEnum;
-import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
-import com.jishi.reservation.service.enumPackage.PayEnum;
-import com.jishi.reservation.service.enumPackage.StatusEnum;
+import com.jishi.reservation.service.enumPackage.*;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.HisUserManager;
 import com.jishi.reservation.service.his.bean.LockRegister;
@@ -108,7 +105,7 @@ public class RegisterService {
         //order.setRegisterId(register.getId());
         order.setStatus(OrderStatusEnum.WAIT_PAYED.getCode());
         order.setPayType(PayEnum.ALI.getCode());
-
+        order.setType(OrderTypeEnum.REGISTER.getCode());
 
         Register register = new Register();
         register.setAccountId(accountId);

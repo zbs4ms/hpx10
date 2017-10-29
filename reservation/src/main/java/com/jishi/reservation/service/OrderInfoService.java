@@ -12,7 +12,10 @@ import com.jishi.reservation.dao.mapper.RegisterMapper;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.Register;
+import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
+import com.jishi.reservation.service.enumPackage.OrderTypeEnum;
 import com.jishi.reservation.service.his.bean.ConfirmOrder;
 import com.jishi.reservation.service.his.bean.ConfirmRegister;
 import com.jishi.reservation.util.Helpers;
@@ -38,6 +41,9 @@ public class OrderInfoService {
 
     @Autowired
     RegisterMapper registerMapper;
+
+    @Autowired
+    PatientInfoService patientService;
 
     public OrderVO queryOrderInfoById(Long orderId,String orderNumber) {
 
@@ -122,5 +128,36 @@ public class OrderInfoService {
 
     public OrderInfo findOrderById(Long orderId) {
         return orderInfoMapper.queryById(orderId);
+    }
+
+
+    /**
+     * 生成住院预交款
+     * @param subject
+     * @param price
+     * @param accountId
+     * @param brId
+     * @param rycs
+     */
+    public OrderInfo generatePrepayment(String subject, BigDecimal price, Long accountId, String brId, Integer rycs) throws Exception {
+
+        //todo 判断accountId和brId是否匹配
+        Preconditions.checkState(patientService.isAccountIdMatchBrid(accountId,brId),"账号和brId不匹配，不能执行操作");
+
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setSubject(subject);
+        orderInfo.setDes(subject);
+        orderInfo.setOrderNumber(AlibabaPay.generateUniqueOrderNumber());
+        orderInfo.setPrice(price);
+        orderInfo.setAccountId(accountId);
+        orderInfo.setBrId(brId);
+        orderInfo.setType(OrderTypeEnum.HOSPITALIZED.getCode());
+        orderInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
+        orderInfo.setStatus(OrderStatusEnum.WAIT_PAYED.getCode());
+
+        orderInfoMapper.insertSelectiveReturnId(orderInfo);
+
+        return orderInfo;
+
     }
 }
