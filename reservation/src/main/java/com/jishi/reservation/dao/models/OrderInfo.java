@@ -46,6 +46,8 @@ public class OrderInfo {
     private Date createTime;
     @ApiModelProperty("支付时间")
     private String payTime;
+    @ApiModelProperty("第三方支付的流水号")
+    private String thirdOrderNumber;
 
     @ApiModelProperty("操作时间")
     private String czsj;
