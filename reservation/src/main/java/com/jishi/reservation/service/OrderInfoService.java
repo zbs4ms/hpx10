@@ -16,17 +16,21 @@ import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
 import com.jishi.reservation.service.enumPackage.OrderTypeEnum;
+import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.his.bean.ConfirmOrder;
 import com.jishi.reservation.service.his.bean.ConfirmRegister;
 import com.jishi.reservation.util.Helpers;
+import com.sun.org.apache.regexp.internal.RE;
 import io.swagger.models.auth.In;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -115,15 +119,19 @@ public class OrderInfoService {
 
     }
 
-    public void confirmOrderHis(Long orderId, String orderNumber,ConfirmOrder confirmOrder) {
+    public Integer confirmOrderHis(Long orderId, String orderNumber,ConfirmOrder confirmOrder) {
 
         OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(orderId,orderNumber);
+        //Preconditions.checkState(orderInfo.getStatus()==OrderStatusEnum.PAYED.getCode(),"该订单未支付，不能确认");
+        if(orderInfo.getStatus() != OrderStatusEnum.PAYED.getCode())
+            return ReturnCodeEnum.FAILED.getCode();
         orderInfo.setGhdh(confirmOrder.getGhdh());
         orderInfo.setCzsj(confirmOrder.getCzsj());
         orderInfo.setJsid(confirmOrder.getJzid());
         orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
 
         log.info("his订单信息已同步到系统中.."+orderId);
+        return ReturnCodeEnum.SUCCESS.getCode();
     }
 
     public OrderInfo findOrderById(Long orderId) {
@@ -154,7 +162,7 @@ public class OrderInfoService {
         orderInfo.setType(OrderTypeEnum.HOSPITALIZED.getCode());
         orderInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
         orderInfo.setStatus(OrderStatusEnum.WAIT_PAYED.getCode());
-
+        orderInfo.setCreateTime(new Date());
         orderInfoMapper.insertSelectiveReturnId(orderInfo);
 
         return orderInfo;

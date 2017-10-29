@@ -169,8 +169,10 @@ public class DiaryService {
             List<DiaryContentVO> contentList = gson.fromJson(diary.getContent(),
                     new TypeToken<List<DiaryContentVO>>() {
                     }.getType());
+            log.info("LIST"+JSONObject.toJSON(contentList));
             int i = 0;
             for (DiaryContentVO diaryContentVO : contentList) {
+                log.info(JSONObject.toJSON(diaryContentVO));
                 if(i == 4)
                     break;
                 if(diaryContentVO.getType() == 0){

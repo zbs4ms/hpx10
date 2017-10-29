@@ -112,7 +112,7 @@ public class PayController extends MyBaseController {
         Preconditions.checkNotNull(orderNumber,"缺少参数：orderNumber");
         Preconditions.checkNotNull(price,"缺少参数：price");
 
-        OrderGenerateVO vo = alibabaPay.generateOrder(orderNumber,subject, price);
+        OrderGenerateVO vo = alibabaPay.generatePrePayOrder(orderNumber,subject, price);
 
         return ResponseWrapper().addData(vo).addMessage("请求成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }

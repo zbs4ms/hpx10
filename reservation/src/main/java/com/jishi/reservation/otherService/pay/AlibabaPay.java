@@ -144,4 +144,7 @@ public class AlibabaPay {
     }
 
 
+    public OrderGenerateVO generatePrePayOrder(String orderNumber, String subject, BigDecimal price) {
+        return null;
+    }
 }

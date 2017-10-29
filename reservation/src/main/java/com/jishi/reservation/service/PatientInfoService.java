@@ -236,7 +236,6 @@ public class PatientInfoService {
 
     public boolean isAccountIdMatchBrid(Long accountId, String brId) {
 
-
-        return true;
+        return patientInfoMapper.queryById(accountId).getBrId().equals(brId);
     }
 }
