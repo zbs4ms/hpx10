@@ -116,6 +116,7 @@ public class AlibabaPay {
 
 
                     //判断支付金额和商户订单号和自己系统中的信息是否吻合，做判断
+                    log.info("订单号："+outTradeNo);
                     OrderInfo orderInfo =  orderInfoMapper.queryByOutTradeNo(outTradeNo);
                     Preconditions.checkNotNull(orderInfo,"找不到该订单信息");
                     log.info("订单信息：\n"+JSONObject.toJSONString(orderInfo));
@@ -150,7 +151,4 @@ public class AlibabaPay {
     }
 
 
-    public OrderGenerateVO generatePrePayOrder(String orderNumber, String subject, BigDecimal price) {
-        return null;
-    }
 }

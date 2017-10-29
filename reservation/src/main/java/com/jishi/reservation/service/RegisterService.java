@@ -4,11 +4,10 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
+import com.jishi.reservation.controller.protocol.RegisterAdminVO;
 import com.jishi.reservation.controller.protocol.RegisterCompleteVO;
 import com.jishi.reservation.dao.mapper.*;
-import com.jishi.reservation.dao.models.Department;
-import com.jishi.reservation.dao.models.OrderInfo;
-import com.jishi.reservation.dao.models.Register;
+import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.service.enumPackage.*;
 import com.jishi.reservation.service.his.HisOutpatient;
@@ -16,6 +15,7 @@ import com.jishi.reservation.service.his.HisUserManager;
 import com.jishi.reservation.service.his.bean.LockRegister;
 import com.jishi.reservation.util.Helpers;
 import com.jishi.reservation.util.NewRandomUtil;
+import io.swagger.annotations.ApiModel;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -61,6 +62,9 @@ public class RegisterService {
 
     @Autowired
     HisOutpatient hisOutpatient;
+
+    @Autowired
+    AccountMapper accountMapper;
 
 
 
@@ -269,5 +273,43 @@ public class RegisterService {
     public Register queryByOrderId(Long orderId) {
 
         return registerMapper.queryByOrderId(orderId);
+    }
+
+    public PageInfo<RegisterAdminVO> queryRegisterAdmin(String key, Long startTime, Long endTime, Long doctorId, Long departmentId, Integer status, Integer startPage, Integer pageSize) {
+
+
+        PageHelper.startPage(startPage,pageSize).setOrderBy("id desc");
+        List<Register> registerList = registerMapper.queryAllRegister();
+        PageInfo<Register> registerPageInfo = new PageInfo<>(registerList);
+        List<RegisterAdminVO> voList = new ArrayList<>();
+        for (Register register : registerList) {
+            log.info("预约id:"+register.getId());
+            OrderInfo orderInfo = orderInfoMapper.queryById(register.getOrderId());
+            RegisterAdminVO vo = new RegisterAdminVO();
+            vo.setDepartment(register.getDepartment());
+            vo.setDepartmentId(register.getDepartmentId());
+            vo.setDoctorId(register.getDoctorId());
+            vo.setDoctorName(register.getDoctorName());
+            vo.setPatientName(register.getPatientName());
+            vo.setRegisterTime(register.getAgreedTime());
+            vo.setId(register.getId());
+            Account account = accountMapper.queryById(register.getAccountId());
+            PatientInfo patientInfo = patientInfoMapper.queryByById(register.getBrId());
+            vo.setPhone(account.getPhone());
+            //todo  状态..
+            vo.setStatus("2");
+            vo.setIdCard(patientInfo.getIdCard());
+            vo.setJjkh(patientInfo.getMzh());
+            voList.add(vo);
+
+        }
+        PageInfo<RegisterAdminVO> page = new PageInfo<>();
+        page.setList(voList);
+        page.setTotal(registerPageInfo.getTotal());
+        page.setPageNum(registerPageInfo.getPageNum());
+        page.setPageSize(registerPageInfo.getPageSize());
+        page.setPages(registerPageInfo.getPages());
+
+        return page;
     }
 }

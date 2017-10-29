@@ -212,13 +212,10 @@ public class HospitalizationController extends MyBaseController {
     @ResponseBody
     public JSONObject confirmPrePayment(
             HttpServletRequest request,HttpServletResponse response,
-            @ApiParam(value = "预交的名称 eg:住院预交款", required = true) @RequestParam(value = "subject", required = true) String subject,
-            @ApiParam(value = "交易的金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
-            @ApiParam(value = "accountId 通过token找到", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-            @ApiParam(value = "brId", required = true) @RequestParam(value = "brId", required = true) String brId,
-            @ApiParam(value = "入院的次数", required = true) @RequestParam(value = "rycs", required = true) Integer rycs
+            @ApiParam(value = "订单号", required = true) @RequestParam(value = "orderNumber", required = true) String orderNumber,
+            @ApiParam(value = "账号id", required = false) @RequestParam(value = "accountId", required = false) Long accountId
     ) throws Exception {
-
+    //PrePayment.Pay.Modify
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1L)){
@@ -228,9 +225,16 @@ public class HospitalizationController extends MyBaseController {
             }
         }
 
-        OrderInfo orderInfo = orderInfoService.generatePrepayment(subject, price, accountId, brId, rycs);
+        Integer status = hospitalizationService.confirmPrePayment(orderNumber, accountId);
+        switch (status){
+            case 1:
+                return ResponseWrapper().addMessage("确认成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+             case 0:
+                 return ResponseWrapper().addMessage("确认失败!").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
 
-        return ResponseWrapper().addData(orderInfo).addMessage("订单生成成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        }
+        return ResponseWrapper().addMessage("系统错误").ExeSuccess(ReturnCodeEnum.ERR.getCode());
+
     }
 
 

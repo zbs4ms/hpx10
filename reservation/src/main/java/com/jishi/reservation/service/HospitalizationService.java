@@ -2,6 +2,12 @@ package com.jishi.reservation.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
+import com.google.common.base.Preconditions;
+import com.jishi.reservation.controller.protocol.OrderVO;
+import com.jishi.reservation.dao.mapper.PrePaymentMapper;
+import com.jishi.reservation.dao.models.OrderInfo;
+import com.jishi.reservation.dao.models.PrePayment;
+import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
 import com.jishi.reservation.service.his.HisHospitalization;
 import com.jishi.reservation.service.his.bean.*;
 import io.swagger.annotations.ApiModel;
@@ -23,6 +29,13 @@ public class HospitalizationService {
 
     @Autowired
     HisHospitalization hisHospitalization;
+
+
+    @Autowired
+    OrderInfoService orderInfoService;
+
+    @Autowired
+    PrePaymentMapper prePaymentMapper;
 
     /**
      * 获取用户历史的住院详情信息
@@ -127,6 +140,26 @@ public class HospitalizationService {
 
         return hisHospitalization.selectDepositBalanceLog(brId);
 
+
+    }
+
+    public Integer confirmPrePayment(String orderNumber, Long accountId) throws Exception {
+
+
+        OrderInfo orderInfo = orderInfoService.queryOrderByOrderNumber(orderNumber);
+        Preconditions.checkState(orderInfo.getAccountId().equals(accountId),"该用户无权执行此操作");
+        PrePayment prePayment =  prePaymentMapper.queryByOrderId(orderInfo.getId());
+        String pay = hisHospitalization.pay
+                (orderInfo.getBrId(),String.valueOf(prePayment.getRycs()), "", String.valueOf(orderInfo.getPrice()),
+                        orderInfo.getThirdOrderNumber(), "支付账号", "支付姓名");
+        if(pay!=null && !"".equals(pay)){
+            log.info("更新预交订单状态...");
+            prePayment.setYjdh(pay);
+            return prePaymentMapper.updateByPrimaryKeySelective(prePayment);
+        }else {
+            return 0;
+
+        }
 
     }
 

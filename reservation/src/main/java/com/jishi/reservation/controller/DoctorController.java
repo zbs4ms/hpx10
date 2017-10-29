@@ -130,15 +130,7 @@ public class DoctorController extends MyBaseController {
         if(Helpers.isNullOrEmpty(departmentId))
             throw new Exception("请传入有效的参数");
         PageInfo doctors = doctorService.queryDoctorPageInfo(null,name,String.valueOf(departmentId),null,EnableEnum.EFFECTIVE.getCode(),Paging.create(pageNum,pageSize,orderBy,desc));
-        List<Doctor> doctorList = doctors.getList();
 
-
-        DoctorVO doctorVO = new DoctorVO();
-   //     List<Doctor> doctors = doctorService.queryDoctorByDepartment(doctorList,departmentId,EnableEnum.EFFECTIVE.getCode());
-//        if(doctors.size()>0){
-//            doctorVO.setDoctor(doctors.get(0));
-//            doctorVO.setDepartmentList(departmentService.batchQueryDepartment(doctors.get(0).getDepartmentIds().split(",")));
-//        }
         return ResponseWrapper().addData(doctors).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 

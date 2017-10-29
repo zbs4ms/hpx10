@@ -179,6 +179,7 @@ public class DiaryService {
         Gson gson = new Gson();
         PageHelper.startPage(startPage,pageSize).setOrderBy("create_time desc");
         List<Diary> list =  diaryMapper.queryEnableAndVerified(accountId);
+        log.info("返回日记长度："+list.size());
         for (Diary diary : list) {
             diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));
             diary.setLikedNum(diaryLikedMapper.queryCountByDiaryId(diary.getId()));

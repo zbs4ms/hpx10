@@ -68,7 +68,7 @@ public class OrderController extends MyBaseController {
         //执行his确认订单操作..
         //confirm.modify
 
-        OrderVO orderVO = orderInfoService.queryOrderInfoById(orderId,orderNumber);
+        OrderVO orderVO = orderInfoService.queryOrderVoById(orderId,orderNumber);
 
         ConfirmRegister confirmRegister = orderInfoService.returnConfirmRegister(orderId,orderNumber);
         log.info("处理his的确认订单接口");
@@ -102,7 +102,7 @@ public class OrderController extends MyBaseController {
 
         Preconditions.checkNotNull(orderId,"请传入合适的参数：orderId");
 
-        OrderVO orderVO = orderInfoService.queryOrderInfoById(orderId,null);
+        OrderVO orderVO = orderInfoService.queryOrderVoById(orderId,null);
 
         return ResponseWrapper().addData(orderVO).addMessage("查询成功").ExeSuccess(200);
 

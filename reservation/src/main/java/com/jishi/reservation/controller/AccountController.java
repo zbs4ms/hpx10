@@ -2,14 +2,18 @@ package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
 
+import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
+import com.jishi.reservation.controller.base.Paging;
+import com.jishi.reservation.controller.protocol.DoctorVO;
 import com.jishi.reservation.controller.protocol.LoginData;
 import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.enumPackage.SmsEnum;
+import com.jishi.reservation.util.Helpers;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -42,6 +46,9 @@ public class AccountController extends MyBaseController {
     public String changePhoneOrigin;
     @Value("constant.dynamic_code_key.change_phone_new")
     public String changePhoneNew;
+
+
+
 
     @ApiOperation(value = "采用手机进行动态码登陆和注册(如果已经注册就走登陆,如果没有注册,先注册再登陆)")
     @RequestMapping(value = "loginOrRegisterThroughPhone", method = RequestMethod.POST)
@@ -248,6 +255,21 @@ public class AccountController extends MyBaseController {
             @ApiParam(value = "电话", required = false) @RequestParam(value = "phone", required = false) String phone) throws Exception {
         accountService.failureAccount(accountId,phone);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+
+    @ApiOperation(value = "admin 查询用户列表",response=DoctorVO.class)
+    @RequestMapping(value = "queryUser", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject queryAccountAdmin(
+            @ApiParam(value = "查询的名字", required = false) @RequestParam(value = "key", required = false) String key,
+            @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
+            @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize
+    ) throws Exception {
+
+
+        PageInfo<Account> page = accountService.queryAccountPage(key,startPage,pageSize);
+        return ResponseWrapper().addData(page).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 

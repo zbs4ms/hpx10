@@ -49,7 +49,7 @@ public class OrderInfoService {
     @Autowired
     PatientInfoService patientService;
 
-    public OrderVO queryOrderInfoById(Long orderId,String orderNumber) {
+    public OrderVO queryOrderVoById(Long orderId,String orderNumber) {
 
         OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(orderId,orderNumber);
         Register register =  registerMapper.queryByOrderId(orderInfo.getId());
@@ -167,5 +167,9 @@ public class OrderInfoService {
 
         return orderInfo;
 
+    }
+
+    public OrderInfo queryOrderByOrderNumber(String orderNumber) {
+        return orderInfoMapper.queryByNumber(orderNumber);
     }
 }

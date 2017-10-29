@@ -2,6 +2,8 @@ package com.jishi.reservation.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.doraemon.base.redis.RedisOperation;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.protocol.BridAndMzh;
 import com.jishi.reservation.controller.protocol.LoginData;
@@ -515,4 +517,13 @@ public class AccountService {
         return loginData;
     }
 
+    public PageInfo<Account> queryAccountPage(String key, Integer startPage, Integer pageSize) {
+
+        PageHelper.startPage(startPage,pageSize).setOrderBy("id desc");
+        List<Account> list = accountMapper.queryCondition(key);
+        for (Account account : list) {
+            account.setPasswd(null);
+        }
+        return new PageInfo<>(list);
+    }
 }

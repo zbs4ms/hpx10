@@ -6,6 +6,7 @@ import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.OrderVO;
+import com.jishi.reservation.controller.protocol.RegisterAdminVO;
 import com.jishi.reservation.controller.protocol.RegisterCompleteVO;
 import com.jishi.reservation.controller.protocol.RegisterVO;
 import com.jishi.reservation.dao.models.*;
@@ -220,5 +221,27 @@ public class RegisterController extends MyBaseController {
 
         registerService.failureRegister(registerId);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+
+
+    @ApiOperation(value = "admin 查询预约信息 ", response = RegisterVO.class)
+    @RequestMapping(value = "queryRegisterAdmin", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject queryRegisterAdmin(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                         @ApiParam(value = "开始时间", required = false) @RequestParam(value = "startTime", required = false) Long startTime,
+                                         @ApiParam(value = "结束时间", required = false) @RequestParam(value = "endTime", required = false) Long endTime,
+                                         @ApiParam(value = "查询关键字", required = false) @RequestParam(value = "key", required = false) String key,
+                                         @ApiParam(value = "医生id", required = false) @RequestParam(value = "doctorId", required = false) Long doctorId,
+                                         @ApiParam(value = "科室id", required = false) @RequestParam(value = "departmentId", required = false) Long departmentId,
+                                         @ApiParam(value = "预约状态 过期未到诊 1，正常就诊 2 ，预约就诊 3", required = false) @RequestParam(value = "status", required = false) Integer status,
+                                        @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
+                                    @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) throws Exception {
+
+        PageInfo<RegisterAdminVO> page  = registerService.queryRegisterAdmin(key,startTime,endTime,doctorId,departmentId,status,startPage,pageSize);
+        return ResponseWrapper().addMessage("查询成功").addData(page).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+
+
     }
 }
