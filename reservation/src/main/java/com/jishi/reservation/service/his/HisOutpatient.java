@@ -344,6 +344,66 @@ public class HisOutpatient {
         return null;
     }
 
+    /**
+     * @description 获取病人的门诊就诊记录
+     * @param brId 病人ID
+     * @param dqys 当前页数
+     * @param jlts 记录条数
+     * @param zd 站点（用于区分多院区）
+     * @throws Exception
+    **/
+    public OutpatientVisitRecord queryOutpatientVisitRecord(String brId, long dqys, long jlts, String zd) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<BRID>").append(brId).append("</BRID>");
+        sb.append("<DQYS>").append(dqys).append("</DQYS>");
+        sb.append("<JLTS>").append(jlts).append("</JLTS>");
+        sb.append("<ZD>").append(zd).append("</ZD>");
+        String reData = HisTool.toXMLString("Visit.Record.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            log.info(me.getAsString());
+            String xml = HisTool.getHisDataparam(me, "Visit.Record.Query");
+            return (OutpatientVisitRecord)HisTool.toBean(OutpatientVisitRecord.class, xml);
+        }
+        return null;
+    }
+
+    /**
+     * @description 获取指定就诊的单据信息
+     * @param ghdh 挂号单号
+     * @throws Exception
+    **/
+    public OutpatientVisitPrescription queryOutpatientVisitPrescription(String ghdh) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<GHDH>").append(ghdh).append("</GHDH>");
+        String reData = HisTool.toXMLString("Visit.Prescription.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            log.info(me.getAsString());
+            String xml = HisTool.getHisDataparam(me, "Visit.Prescription.Query");
+            return (OutpatientVisitPrescription)HisTool.toBean(OutpatientVisitPrescription.class, xml);
+        }
+        return null;
+    }
+
+    /**
+     * @description 获取指定就诊的费用信息
+     * @param ghdh 挂号单号
+     * @throws Exception
+     **/
+    public OutpatientVisitReceipt queryOutpatientVisitReceipt(String ghdh) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<GHDH>").append(ghdh).append("</GHDH>");
+        String reData = HisTool.toXMLString("Visit.Receipt.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            log.info(me.getAsString());
+            String xml = HisTool.getHisDataparam(me, "Visit.Receipt.Query");
+            return (OutpatientVisitReceipt)HisTool.toBean(OutpatientVisitReceipt.class, xml);
+        }
+        return null;
+    }
+
 
     private OutPatientResponseOutPatientResult execute(String reData) throws RemoteException, ServiceException {
         ZL_InformationServiceLocator locator = new ZL_InformationServiceLocator();
