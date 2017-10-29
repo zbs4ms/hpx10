@@ -1,9 +1,13 @@
 package com.jishi.reservation.service;
 
-import com.jishi.reservation.dao.config.DataConfig;
+import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageInfo;
 import com.jishi.reservation.service.his.HisHospitalization;
-import com.jishi.reservation.service.his.bean.DepositBalanceDetail;
-import com.jishi.reservation.service.his.bean.DepositBalanceHistoryDetail;
+import com.jishi.reservation.service.his.bean.*;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +18,7 @@ import java.util.List;
  * Created by zbs on 2017/10/5.
  */
 @Service
+@Slf4j
 public class HospitalizationService {
 
     @Autowired
@@ -21,36 +26,120 @@ public class HospitalizationService {
 
     /**
      * 获取用户历史的住院详情信息
-     * @param accountId
+     * @param brId
      * @return
      * @throws Exception
      */
-    public List<DepositBalanceDetail> queryAllInfo(Long accountId) throws Exception {
+    public List<DepositBalanceDetail> queryAllInfo(String brId) throws Exception {
         //获取所有的历史住院信息
-        DepositBalanceHistoryDetail depositBalanceHistoryDetail =  hisHospitalization.selectHistoryDetail(String.valueOf(accountId),"1","1000","1");
+        DepositBalanceHistoryDetail depositBalanceHistoryDetail =  hisHospitalization.selectHistoryDetail(String.valueOf(brId),"1","1000","1");
         if(depositBalanceHistoryDetail == null)
             return null;
         List<DepositBalanceDetail> depositBalanceDetails = new ArrayList<>();
-        for(DepositBalanceHistoryDetail.Item item : depositBalanceHistoryDetail.getGroup().getItemList()){
-           depositBalanceDetails.add(queryInfo(accountId,Integer.valueOf(item.getZycs()),item.getZyzt()));
+        if(depositBalanceHistoryDetail.getGroup().getItemList()!=null && depositBalanceHistoryDetail.getGroup().getItemList().size() !=0){
+            for(DepositBalanceHistoryDetail.Item item : depositBalanceHistoryDetail.getGroup().getItemList()){
+                depositBalanceDetails.add(queryInfo(brId,Integer.valueOf(item.getZycs()),item.getZyzt()));
+            }
         }
         return depositBalanceDetails;
+
     }
 
     /**
      * 获取用户住院详情信息
-     * @param accountId 患者ID
+     * @param brId 患者ID
      * @param zycs 住院次数
      * @param zyzt 住院状态 可为空
      * @return
      * @throws Exception
      */
-    public DepositBalanceDetail queryInfo(Long accountId,Integer zycs,String zyzt) throws Exception {
-        DepositBalanceDetail depositBalanceDetail = hisHospitalization.selectDetail(String.valueOf(accountId),String.valueOf(zycs));
+    public DepositBalanceDetail queryInfo(String brId,Integer zycs,String zyzt) throws Exception {
+        DepositBalanceDetail depositBalanceDetail = hisHospitalization.selectDetail(brId,String.valueOf(zycs));
+        String depositBalance = hisHospitalization.selectDepositBalance(brId, String.valueOf(zycs));
         //写入住院状态参数
+        depositBalanceDetail.setYujiaojine(depositBalance);
         depositBalanceDetail.setZyzt(zyzt);
         depositBalanceDetail.setZycs(String.valueOf(zycs));
         return depositBalanceDetail;
+    }
+
+
+    /**
+     * 获取用户住院費用清單
+     * @param brId 患者ID
+     * @param zycs 住院次数
+     * @return
+     * @throws Exception
+     */
+    public  List<PayItem> queryPrepayDetail(String brId, Integer zycs) throws Exception {
+        TotalDepositBalancePayDetail payDetail = hisHospitalization.selectTotalPayDetail(brId, String.valueOf(zycs), "2");  //2是按日期查
+        List<TotalDepositBalancePayDetail.Item> list = payDetail.getItemList();
+        log.info(JSONObject.toJSONString(list));
+        List<PayItem> voList = new ArrayList<>();
+        for (TotalDepositBalancePayDetail.Item item : list) {
+            //JSONObject.toJSONString("遍历的对象"+item);
+            DepositBalanceDailyPayDetail detail = hisHospitalization.selectDailyPayDetail(brId, item.getLbmc(), String.valueOf(zycs));
+            //item.setDetail(detail);
+            //log.info("detail:"+JSONObject.toJSONString(detail));
+            PayItem vo = new PayItem();
+            vo.setFyje(item.getFyje());
+            vo.setLbmc(item.getLbmc());
+            vo.setDetail(detail);
+
+            voList.add(vo);
+        }
+        return voList;
+    }
+
+    public PageInfo<PayItem> wrapPage(List<PayItem> list, Integer startPage, Integer pageSize) {
+        PageInfo<PayItem>  page = new PageInfo<>();
+        List<PayItem> result = new ArrayList<>();
+        int startRow = (startPage - 1)*pageSize;
+        int endRow = list.size()<startPage*pageSize-1?list.size():startPage*pageSize-1;
+        if(startPage == endRow)
+            endRow+=1;
+        if(endRow == 0)
+            endRow+=1;
+
+        log.info("endRow :"+endRow);
+        if(list.size()<endRow){
+            endRow = list.size();
+        }
+        for(int i = startRow;i<endRow;i++){
+            result.add(list.get(i));
+        }
+        page.setTotal(list.size());
+        page.setList(result);
+        Integer pages = (list.size()-1)/pageSize+1;
+        page.setPages(pages);
+        page.setPageNum(startPage);
+
+        return page;
+
+    }
+
+    public String queryPrePayment(String brId, Integer rycs) throws Exception {
+
+        return hisHospitalization.selectDepositBalance(brId, String.valueOf(rycs));
+    }
+
+    public DepositBalanceLog queryPaymentRecord(String brId) throws Exception {
+
+        return hisHospitalization.selectDepositBalanceLog(brId);
+
+
+    }
+
+
+    @Data
+    @ApiModel("住院清单对象")
+    public class PayItem{
+        @ApiModelProperty(name = "费用金额")
+        String fyje;
+        @ApiModelProperty(name = "类别名称  日期/收费类型")
+
+        String lbmc;
+        DepositBalanceDailyPayDetail detail;
     }
 
 }

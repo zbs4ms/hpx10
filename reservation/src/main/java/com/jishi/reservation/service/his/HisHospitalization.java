@@ -34,7 +34,7 @@ public class HisHospitalization {
         String reData = HisTool.toXMLString("PrePayment.Balance.Query", sb.toString());
         HospitalizationResponseHospitalizationResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"PrePayment.Balance.Query");
             return HisTool.getXmlAttribute(xml, "FYYE");
         }
         return null;
@@ -53,7 +53,7 @@ public class HisHospitalization {
         String reData = HisTool.toXMLString("PrePayment.Record.Query", sb.toString());
         HospitalizationResponseHospitalizationResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"PrePayment.Record.Query");
             return (DepositBalanceLog) HisTool.toBean(DepositBalanceLog.class, xml);
         }
         return null;
@@ -76,7 +76,7 @@ public class HisHospitalization {
         String reData = HisTool.toXMLString("Information.PayDetail.Query", sb.toString());
         HospitalizationResponseHospitalizationResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"Information.PayDetail.Query");
             return (TotalDepositBalancePayDetail) HisTool.toBean(TotalDepositBalancePayDetail.class, xml);
         }
         return null;
@@ -99,7 +99,7 @@ public class HisHospitalization {
         String reData = HisTool.toXMLString("Information.DailyPayDetail.Query", sb.toString());
         HospitalizationResponseHospitalizationResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"Information.DailyPayDetail.Query");
             return (DepositBalanceDailyPayDetail) HisTool.toBean(DepositBalanceDailyPayDetail.class, xml);
         }
         return null;
@@ -120,7 +120,7 @@ public class HisHospitalization {
         String reData = HisTool.toXMLString("Information.Detail.Query", sb.toString());
         HospitalizationResponseHospitalizationResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"Information.Detail.Query");
             return (DepositBalanceDetail) HisTool.toBean(DepositBalanceDetail.class, xml);
         }
         return null;
@@ -145,7 +145,7 @@ public class HisHospitalization {
         String reData = HisTool.toXMLString("Information.Record.Query", sb.toString());
         HospitalizationResponseHospitalizationResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"Information.Record.Query");
             return (DepositBalanceHistoryDetail) HisTool.toBean(DepositBalanceHistoryDetail.class, xml);
         }
         return null;
@@ -181,14 +181,13 @@ public class HisHospitalization {
         String reData = HisTool.toXMLString("PrePayment.Pay.Modify", sb.toString());
         HospitalizationResponseHospitalizationResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"PrePayment.Pay.Modify");
             return HisTool.getXmlAttribute(xml,"YJDH");
         }
         return null;
     }
 
-<<<<<<< HEAD
-=======
+
 //    public static void main(String[] args) throws Exception {
 //        HisHospitalization hisHospitalization = new HisHospitalization();
 //        String l1 = hisHospitalization.selectDepositBalance("264", "1");
@@ -220,7 +219,6 @@ public class HisHospitalization {
 //        hisHospitalization.selectDepositBalanceLog("3987");
 //    }
 
->>>>>>> e7bc321572438e5047eb8b46df3f4bf8fbb12924
     private HospitalizationResponseHospitalizationResult execute(String reData) throws RemoteException, ServiceException {
         ZL_InformationServiceLocator locator = new ZL_InformationServiceLocator();
         ZL_InformationServiceSoap_PortType service = locator.getZL_InformationServiceSoap();

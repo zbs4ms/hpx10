@@ -37,4 +37,13 @@ public interface DiaryMapper extends MyMapper<Diary>{
             "select * from diary order by sort desc limit 1"
     })
     Diary queryTopDiary();
+
+
+    @Select({
+            "<script>select  * from diary where enable = 0 and status = 0 " +
+                    "<if test = \"accountId != null\"> AND account_id = #{accountId}</if>" +
+                    "<if test = \"accountId == null\"> AND is_lock  = 1 </if>" +
+                    "</script>"
+    })
+    List<Diary> queryEnableAndVerified(@Param("accountId") Long accountId);
 }

@@ -21,4 +21,7 @@ public class Department {
     @ApiModelProperty("状态标示:0:正常 1:禁用  99:删除")
     private Integer enable;
 
+    @ApiModelProperty("his存的科室id")
+    private String hId;
+
 }

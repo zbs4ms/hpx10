@@ -3,6 +3,7 @@ package com.jishi.reservation.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.models.Banner;
 import com.jishi.reservation.service.HomeService;
@@ -27,7 +28,7 @@ import java.util.List;
 @RequestMapping("/home")
 @Slf4j
 @Api(description = "首页相关接口")
-public class HomeController extends BaseController {
+public class HomeController extends MyBaseController {
 
     @Autowired
     HomeService homeService;

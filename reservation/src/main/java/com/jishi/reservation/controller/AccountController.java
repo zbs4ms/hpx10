@@ -3,13 +3,13 @@ package com.jishi.reservation.controller;
 import com.alibaba.fastjson.JSONObject;
 
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.protocol.LoginData;
 import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.enumPackage.SmsEnum;
-import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -30,7 +30,7 @@ import java.util.List;
 @RequestMapping("/account")
 @Slf4j
 @Api(description = "账号相关接口")
-public class AccountController extends BaseController{
+public class AccountController extends MyBaseController {
 
     @Autowired
     AccountService accountService;

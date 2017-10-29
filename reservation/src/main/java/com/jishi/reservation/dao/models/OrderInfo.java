@@ -34,6 +34,8 @@ public class OrderInfo {
     private String des;
     @ApiModelProperty("价格")
     private BigDecimal price;
+    @ApiModelProperty("订单类型  1：挂号订单  2：住院预交款订单 ，3 门诊订单  之后加的往后累加.")
+    private Integer type;
     @ApiModelProperty("支付方式  1 支付宝；2 微信")
     private Integer payType;
     @ApiModelProperty("订单状态 0：已完成(已付款)； 1：待付款 ；2：已取消")
@@ -44,6 +46,17 @@ public class OrderInfo {
     private Date createTime;
     @ApiModelProperty("支付时间")
     private String payTime;
+
+    @ApiModelProperty("操作时间")
+    private String czsj;
+
+    @ApiModelProperty("his的挂号单号")
+    private String ghdh;
+
+    @ApiModelProperty("结算id")
+    private String jsid;
+
+
 
 
 

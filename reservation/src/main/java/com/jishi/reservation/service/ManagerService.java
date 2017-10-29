@@ -102,8 +102,12 @@ public class ManagerService {
      */
     public  void logout(String user) throws Exception {
         List<String> keys = new ArrayList<String>();
-        keys.add(user);
-        Preconditions.checkState(Integer.valueOf(String.valueOf(redisOperation.usePool().eval(DEL_TOKEN,keys,new ArrayList<String>()))) == 1,"注销用户登陆信息失败.");
+        String s = redisOperation.get(user);
+        if(!"".equals(s) && s!=null){
+            keys.add(user);
+            Preconditions.checkState(Integer.valueOf(String.valueOf(redisOperation.usePool().eval(DEL_TOKEN,keys,new ArrayList<String>()))) == 1,"注销用户登陆信息失败.");
+
+        }
     }
 
     public void create(String account, String password, String permission) throws NoSuchAlgorithmException {

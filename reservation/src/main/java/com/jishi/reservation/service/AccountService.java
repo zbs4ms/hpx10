@@ -13,12 +13,10 @@ import com.jishi.reservation.dao.models.Credentials;
 import com.jishi.reservation.dao.models.IdentityInfo;
 import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
-<<<<<<< HEAD
-=======
+
 import com.jishi.reservation.service.enumPackage.SmsEnum;
 import com.jishi.reservation.service.his.HisUserManager;
 import com.jishi.reservation.service.his.bean.PatientsList;
->>>>>>> e7bc321572438e5047eb8b46df3f4bf8fbb12924
 import com.jishi.reservation.service.support.AliDayuSupport;
 import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
@@ -107,23 +105,33 @@ public class AccountService {
      * @throws Exception
      */
     public LoginData loginOrRegisterThroughPhone(String phone, String  prefix,String dynamicCode) throws Exception {
-        log.info("账号采用手机进行登陆: phone:" + phone + " dynamicCode:" + dynamicCode);
-        String code = redisOperation.get(prefix + "_" + phone);
-        if (!dynamicCode.equals(code))
-            return null;
-        List<Account> account = queryAccount(null, phone, null);
         Account accountLogin;
-        if (account.size() == 0){
-             accountLogin = addAccount(phone, phone, Constant.DEFAULT_AVATAR, phone, phone, null);
+        if(!Constant.TEST_PHONE.contains(phone)){
+            log.info("账号采用手机进行登陆: phone:" + phone + " dynamicCode:" + dynamicCode);
+            String code = redisOperation.get(prefix + "_" + phone);
+
+            if (!dynamicCode.equals(code))
+                return null;
+            List<Account> account = queryAccount(null, phone, null);
+
+            if (account.size() == 0){
+                accountLogin = addAccount(phone, phone, Constant.DEFAULT_AVATAR, phone, phone, null);
+
+            }else {
+                accountLogin = account.get(0);
+            }
+
+            //删除已核对的验证码
+            redisOperation.del(prefix + "_" + phone);
+            log.info("删除已核对的验证码："+prefix + "_" + phone);
+
 
         }else {
-            accountLogin = account.get(0);
+            //如果是测试账号
+            List<Account> accounts = queryAccount(null, phone, null);
+            accountLogin = accounts.get(0);
+
         }
-
-        //删除已核对的验证码
-        redisOperation.del(prefix + "_" + phone);
-        log.info("删除已核对的验证码："+prefix + "_" + phone);
-
         String token = login(phone);
         LoginData loginData = new LoginData();
         loginData.setToken(token);
@@ -133,6 +141,7 @@ public class AccountService {
         loginData.setPushId(accountLogin.getPushId());
 
         return loginData;
+
 
     }
 
@@ -395,98 +404,98 @@ public class AccountService {
         return accountMapper.queryById(accountId);
     }
 
-    /**
-     * 连接了his系统的注册，如果证件号已存在，就返回相应信息；不然就注册，然后返回相应信息；
-     * 如果手机号已存在，但是证件号不存在，那就把证件号和手机号绑定，最多不超过5个
-     * @param idNumber 证件号
-     * @param idNumberType 证件类型
-     * @param name 姓名
-     * @param phone 手机号
-     * @return
-     */
-    @Transactional
-    public LoginData registerWithHis(String idNumber, String idNumberType, String name, String phone) throws Exception {
-
-
-        PatientsList patientsList = hisUserManager.getUserInfoByCode(idNumber, idNumberType);
-        //如果查询不到，就去注册
-        BridAndMzh bridAndMzh = null ;
-        if(patientsList == null){
-            // todo 现在返回的是假的BRID
-            bridAndMzh = hisUserManager.addUserInfo(idNumber, idNumberType, name, phone);
-        }else {
-            bridAndMzh = new BridAndMzh();
-            List<com.jishi.reservation.service.his.bean.Credentials> jzkList = patientsList.getJzkList();
-            bridAndMzh.setBRID(jzkList.get(0).getBRID());
-            bridAndMzh.setMZH(jzkList.get(0).getMZH());
-        }
-
-        List<IdentityInfo> list = new ArrayList<>();
-        //看在我们的系统中，该电话是否存在
-        Account account = accountMapper.queryByTelephone(phone);
-        Account newAccount = new Account();
-
-        //不存在就注册
-        if(account == null){
-            //账号主表
-            newAccount.setAccount(phone);
-            newAccount.setPhone(phone);
-            newAccount.setHeadPortrait(Common.DEFAULT_AVATAR);
-            newAccount.setPushId("hpx10_"+NewRandomUtil.getRandomNum(6));
-            newAccount.setNick(phone);
-            newAccount.setEnable(EnableEnum.EFFECTIVE.getCode());
-            newAccount.setPasswd(Common.DEFAULT_PASSWORD);
-
-            accountMapper.insertReturnId(newAccount);
-
-
-
-        }else {
-            //存在就进行绑定,最多不超过5个
-            list = identityInfoMapper.queryByAccountId(account.getId());
-            Preconditions.checkState(list.size() > Common.MAX_BINDING_NUM,"同一个账号最多只能绑定5个账号");
-        }
-
-        //判断该就诊人是否已经和该账号已经关联了
-        Preconditions.checkState(identityInfoMapper.queryByAccountIdAndIdentity(account==null?newAccount.getId():account.getId(),idNumber) != null,
-                "病人已经和该账号关联");
-
-        //就诊人表
-        IdentityInfo newIdentityInfo = new IdentityInfo();
-        newIdentityInfo.setAccountId(account==null?newAccount.getId():account.getId());
-        newIdentityInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
-        newIdentityInfo.setIdentityCode(idNumber);
-        newIdentityInfo.setBrId(bridAndMzh.getBRID());
-        identityInfoMapper.insertReturnId(newIdentityInfo);
-        list.add(newIdentityInfo);
-
-        //就诊卡info表
-        Credentials newCredentials = new Credentials();
-        newCredentials.setBrId(bridAndMzh.getBRID());
-        newCredentials.setEnable(EnableEnum.EFFECTIVE.getCode());
-        newCredentials.setIdNumber(idNumber);
-        newCredentials.setMzh(bridAndMzh.getMZH());
-        newCredentials.setIdType(idNumberType);
-        credentialsMapper.insertReturnId(newCredentials);
-
-        LoginData loginData = new LoginData();
-        List<Credentials> credentialsList = new ArrayList<>();
-        if(patientsList != null && patientsList.getJzkList()!=null){
-            List<com.jishi.reservation.service.his.bean.Credentials> jzkList = patientsList.getJzkList();
-            for (com.jishi.reservation.service.his.bean.Credentials credentials : jzkList) {
-                Credentials param = new Credentials();
-                param.setIdType(credentials.getIdType());
-                param.setMzh(credentials.getMZH());
-                param.setBrId(credentials.getBRID());
-                param.setIdNumber(credentials.getIdNumber());
-
-                credentialsList.add(param);
-            }
-        }
-        loginData.setCredentialsList(credentialsList);
-        loginData.setIdentityInfoList(list);
-        return loginData;
-    }
+//    /**
+//     * 连接了his系统的注册，如果证件号已存在，就返回相应信息；不然就注册，然后返回相应信息；
+//     * 如果手机号已存在，但是证件号不存在，那就把证件号和手机号绑定，最多不超过5个
+//     * @param idNumber 证件号
+//     * @param idNumberType 证件类型
+//     * @param name 姓名
+//     * @param phone 手机号
+//     * @return
+//     */
+//    @Transactional
+//    public LoginData registerWithHis(String idNumber, String idNumberType, String name, String phone) throws Exception {
+//
+//
+//        PatientsList patientsList = hisUserManager.getUserInfoByCode(idNumber, idNumberType);
+//        //如果查询不到，就去注册
+//        BridAndMzh bridAndMzh = null ;
+//        if(patientsList == null){
+//            // todo 现在返回的是假的BRID
+//            bridAndMzh = hisUserManager.addUserInfo(idNumber, idNumberType, name, phone);
+//        }else {
+//            bridAndMzh = new BridAndMzh();
+//            List<com.jishi.reservation.service.his.bean.PatientsList.Credentials> jzkList = patientsList.getJzkList();
+//            bridAndMzh.setBRID(jzkList.get(0).getBRID());
+//            bridAndMzh.setMZH(jzkList.get(0).getMZH());
+//        }
+//
+//        List<IdentityInfo> list = new ArrayList<>();
+//        //看在我们的系统中，该电话是否存在
+//        Account account = accountMapper.queryByTelephone(phone);
+//        Account newAccount = new Account();
+//
+//        //不存在就注册
+//        if(account == null){
+//            //账号主表
+//            newAccount.setAccount(phone);
+//            newAccount.setPhone(phone);
+//            newAccount.setHeadPortrait(Constant.DEFAULT_AVATAR);
+//            newAccount.setPushId("hpx10_"+NewRandomUtil.getRandomNum(6));
+//            newAccount.setNick(phone);
+//            newAccount.setEnable(EnableEnum.EFFECTIVE.getCode());
+//            newAccount.setPasswd(Constant.DEFAULT_PASSWORD);
+//
+//            accountMapper.insertReturnId(newAccount);
+//
+//
+//
+//        }else {
+//            //存在就进行绑定,最多不超过5个
+//            list = identityInfoMapper.queryByAccountId(account.getId());
+//            Preconditions.checkState(list.size() > Constant.MAX_BINDING_NUM,"同一个账号最多只能绑定5个账号");
+//        }
+//
+//        //判断该就诊人是否已经和该账号已经关联了
+//        Preconditions.checkState(identityInfoMapper.queryByAccountIdAndIdentity(account==null?newAccount.getId():account.getId(),idNumber) != null,
+//                "病人已经和该账号关联");
+//
+//        //就诊人表
+//        IdentityInfo newIdentityInfo = new IdentityInfo();
+//        newIdentityInfo.setAccountId(account==null?newAccount.getId():account.getId());
+//        newIdentityInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
+//        newIdentityInfo.setIdentityCode(idNumber);
+//        newIdentityInfo.setBrId(bridAndMzh.getBRID());
+//        identityInfoMapper.insertReturnId(newIdentityInfo);
+//        list.add(newIdentityInfo);
+//
+//        //就诊卡info表
+//        Credentials newCredentials = new Credentials();
+//        newCredentials.setBrId(bridAndMzh.getBRID());
+//        newCredentials.setEnable(EnableEnum.EFFECTIVE.getCode());
+//        newCredentials.setIdNumber(idNumber);
+//        newCredentials.setMzh(bridAndMzh.getMZH());
+//        newCredentials.setIdType(idNumberType);
+//        credentialsMapper.insertReturnId(newCredentials);
+//
+//        LoginData loginData = new LoginData();
+//        List<Credentials> credentialsList = new ArrayList<>();
+//        if(patientsList != null && patientsList.getJzkList()!=null){
+//            List<com.jishi.reservation.service.his.bean.Credentials> jzkList = patientsList.getJzkList();
+//            for (com.jishi.reservation.service.his.bean.Credentials credentials : jzkList) {
+//                Credentials param = new Credentials();
+//                param.setIdType(credentials.getIdType());
+//                param.setMzh(credentials.getMZH());
+//                param.setBrId(credentials.getBRID());
+//                param.setIdNumber(credentials.getIdNumber());
+//
+//                credentialsList.add(param);
+//            }
+//        }
+//        loginData.setCredentialsList(credentialsList);
+//        loginData.setIdentityInfoList(list);
+//        return loginData;
+//    }
 
     public LoginData queryInfo(String accountStr) {
 
@@ -505,6 +514,5 @@ public class AccountService {
 
         return loginData;
     }
-
 
 }

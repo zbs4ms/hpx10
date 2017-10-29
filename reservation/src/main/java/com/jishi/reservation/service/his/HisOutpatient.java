@@ -43,12 +43,68 @@ public class HisOutpatient {
         String reData = HisTool.toXMLString("Register.SignalSource.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"Register.SignalSource.Query");
             return (RegisteredNumberInfo) HisTool.toBean(RegisteredNumberInfo.class, xml);
         }
         return null;
     }
 
+    /**
+     * 获取挂号限制条件
+     * @param brid 病人id
+     * @param ghhm 挂号号码
+     * @return
+     * @throws Exception
+     */
+    public Boolean checkIsValid(String brid,String ghhm) throws Exception {
+
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("<BRID>").append(brid).append("</BRID>");
+        sb.append("<GHHM>").append(ghhm).append("</GHHM>");
+
+        String reData = HisTool.toXMLString("Register.LimitInfo.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            HisTool.getHisDataparam(me,"Register.LimitInfo.Query");
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * 锁定号源 返回号序  之后的confirm.modify会用到这个hm
+     * @param hm 号码
+     * @param yysj
+     * @param hzdw
+     * @param jqm
+     * @return
+     * @throws Exception
+     */
+    public LockRegister lockRegister(
+            String hm,String yysj,String hzdw,String jqm
+    ) throws Exception {
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("<HM>").append(hm).append("</HM>");
+        sb.append("<YYSJ>").append(yysj).append("</YYSJ>");
+        sb.append("<CZ>").append("1").append("</CZ>");
+        sb.append("<HZDW>").append(hzdw).append("</HZDW>");
+        sb.append("<JQM>").append(jqm).append("</JQM>");
+
+        String reData = HisTool.toXMLString("Register.Lock.Modify", sb.toString());
+
+
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            log.info(me.getAsString());
+            String xml = HisTool.getHisDataparam(me,"Register.Lock.Modify");
+            return (LockRegister)HisTool.toBean(LockRegister.class,xml);
+        }
+
+        return null;
+    }
 
     /**
      * 取消预约
@@ -70,7 +126,7 @@ public class HisOutpatient {
         String reData = HisTool.toXMLString("Register.SubScribeCancel.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            HisTool.getHisDataparam(me);
+            HisTool.getHisDataparam(me,"Register.SubScribeCancel.Modify");
             return true;
         }
         return false;
@@ -112,7 +168,7 @@ public class HisOutpatient {
         String reData = HisTool.toXMLString("Register.Subscribe.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"Register.Subscribe.Modify");
             return HisTool.getXmlAttribute(xml,"GHDH");
         }
         return null;
@@ -126,7 +182,7 @@ public class HisOutpatient {
      * @return
      * @throws Exception
      */
-    public String confirmRegister(ConfirmRegister confirmRegister) throws Exception {
+    public ConfirmOrder confirmRegister(ConfirmRegister confirmRegister) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<SFYY>").append("0").append("</SFYY>");
         sb.append("<CZFS>").append("3").append("</CZFS>");
@@ -156,8 +212,11 @@ public class HisOutpatient {
         String reData = HisTool.toXMLString("Register.Confirm.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
-            return HisTool.getXmlAttribute(xml,"GHDH");
+            String xml = HisTool.getHisDataparam(me,"Register.Confirm.Modify");
+            if(xml == null || "".equals(xml))
+                return null;
+            //失败返回null
+            return (ConfirmOrder) HisTool.toBean(ConfirmOrder.class,xml);
         }
         return null;
     }
@@ -178,11 +237,46 @@ public class HisOutpatient {
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"Register.Depart.Query");
             return (DepartmentList)HisTool.toBean(DepartmentList.class,xml);
         }
         return null;
     }
+
+
+
+
+
+
+
+
+
+    /**
+     * 获取未缴费/已缴费的挂号单据信息。对于已缴费挂号单仅返回指定第三方缴费的挂号单
+     *
+     * @param brid
+     * @param cxts
+     * @return
+     * @throws Exception
+     */
+    public RegisterRegReceiptInfo queryRegisterRegReceipt(String brid, String cxts) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<BRID>").append(brid).append("</BRID>");
+        sb.append("<CXTS>").append(cxts).append("</CXTS>");
+        String reData = HisTool.toXMLString("Register.RegReceipt.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            String xml = HisTool.getHisDataparam(me,"Register.RegReceipt.Query");
+            return (RegisterRegReceiptInfo)HisTool.toBean(RegisterRegReceiptInfo.class,xml);
+        }
+        return null;
+    }
+
+
+
+
+
+
 
     /**
      * 获取缴费单据信息
@@ -202,8 +296,50 @@ public class HisOutpatient {
         String reData = HisTool.toXMLString("Payment.PayReceipt.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me);
+            String xml = HisTool.getHisDataparam(me,"Payment.PayReceipt.Query");
             return (OutpatientPaymentInfo)HisTool.toBean(OutpatientPaymentInfo.class,xml);
+        }
+        return null;
+    }
+
+    /**
+     * @description 门诊缴费多张单据一次支付
+     * @param docIds 收费单据号串，逗号分隔多个单据号
+     * @param brId 病人ID
+     * @param zje 总金额
+     * @param jsje 结算金额
+     * @param sfghd 是否挂号单，0-收费单，1-挂号单
+     * @param jylsh 交易流水号
+     * @param jynr 交易内容，传“支付帐号|姓名”
+     * @throws Exception
+     * @date 2017/10/26
+     **/
+    public String batchPayModify(String docIds, String brId, double zje, double jsje, int sfghd, String jylsh, String jynr, String dsfmc) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<DJH>").append(docIds).append("</DJH>");
+        sb.append("<JE>").append(zje).append("</JE>");
+        sb.append("<SFGH>").append(sfghd).append("</SFGH>");
+        sb.append("<BRID>").append(brId).append("</BRID>");
+        sb.append("<JSLIST>");
+        sb.append("<JS>");
+        sb.append("<JSKLB>").append(dsfmc).append("</JSKLB>");
+        sb.append("<JSKH>").append("</JSKH>");
+        sb.append("<JSFS>").append("</JSFS>");
+        sb.append("<JSJE>").append(jsje).append("</JSJE>");
+        sb.append("<JYLSH>").append(jylsh).append("</JYLSH>");
+        sb.append("<EXPENDLIST>");
+        sb.append("<EXPEND>");
+        sb.append("<JYMC>").append("交易信息").append("</JYMC>");
+        sb.append("<JYLR>").append(jynr).append("</JYLR>");
+        sb.append("</EXPEND>");
+        sb.append("</EXPENDLIST>");
+        sb.append("</JS>");
+        sb.append("</JSLIST>");
+        String reData = HisTool.toXMLString("Payment.BatchPay.Modify", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            String xml = HisTool.getHisDataparam(me,"Payment.BatchPay.Modify");
+            return HisTool.getXmlAttribute(xml,"CZSJ");
         }
         return null;
     }

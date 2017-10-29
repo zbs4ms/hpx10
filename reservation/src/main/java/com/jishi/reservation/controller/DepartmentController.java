@@ -2,10 +2,11 @@ package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.service.DepartmentService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
-import com.us.base.common.controller.BaseController;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -22,7 +23,7 @@ import java.util.List;
 @RequestMapping("/department")
 @Slf4j
 @Api(description = "科室相关接口")
-public class DepartmentController extends BaseController{
+public class DepartmentController extends MyBaseController {
 
     @Autowired
     DepartmentService departmentService;
@@ -80,5 +81,19 @@ public class DepartmentController extends BaseController{
         departmentService.failureDepartment(departmentId);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
+
+
+
+//    @ApiOperation(value = "拉去his的科室信息到我们自己的系统")
+//    @RequestMapping(value = "pullFromHis", method = RequestMethod.POST)
+//    @ResponseBody
+//    public JSONObject pullFromHis(
+//    ) throws Exception {
+//
+//
+//
+//        departmentService.pullFromHis();
+//        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+//    }
 
 }

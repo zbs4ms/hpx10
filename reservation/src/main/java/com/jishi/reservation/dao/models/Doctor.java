@@ -15,6 +15,10 @@ public class Doctor {
     @Id
     @ApiModelProperty("医生ID")
     private Long id;
+    @ApiModelProperty("His系统存的医生ID")
+    private String hId;
+    @ApiModelProperty("His系统存的医生所属的科室ID")
+    private String departmentId;
     @ApiModelProperty("医生名称")
     private String name;
     @ApiModelProperty("医生类型（0 普通医生 1 专家）")
@@ -37,7 +41,32 @@ public class Doctor {
     @ApiModelProperty("排序")
     private Integer orderNumber;
 
+
+    @ApiModelProperty("科室名称")
+    private String ksmc;
+
+
+    @ApiModelProperty("his的號碼 HM")
+    private String hm;
+
+
     @Transient
     private Integer isTop;
+
+    @Transient
+    @ApiModelProperty("his的醫生id")
+    private String ysid;
+
+
+    @ApiModelProperty("挂号单价")
+    private String dj;
+
+    @Transient
+    @ApiModelProperty("号源名称")
+    private String hymc;
+
+
+
+
 
 }

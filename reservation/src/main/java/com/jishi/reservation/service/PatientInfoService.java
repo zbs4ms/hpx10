@@ -1,15 +1,19 @@
 package com.jishi.reservation.service;
 
+import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
+import com.jishi.reservation.controller.protocol.HospitalizationInfoVO;
 import com.jishi.reservation.dao.mapper.PatientInfoMapper;
 import com.jishi.reservation.dao.mapper.PregnantMapper;
 import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.dao.models.Pregnant;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.his.HisUserManager;
+import com.jishi.reservation.service.his.bean.Credentials;
 import com.jishi.reservation.util.CheckIdCard;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.log4j.Log4j;
@@ -18,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -63,7 +68,8 @@ public class PatientInfoService {
         }
 
         //添加到his系统
-        hisUserManager.addUserInfo(idCard,idCardType,name,phone);
+        Credentials credentials = hisUserManager.addUserInfo(idCard, idCardType, name, phone);
+        log.info("his系统返回的病人信息：\n"+ JSONObject.toJSONString(credentials));
 
         PatientInfo newPatientInfo = new PatientInfo();
         newPatientInfo.setAccountId(accountId);
@@ -71,6 +77,8 @@ public class PatientInfoService {
         newPatientInfo.setPhone(phone);
         newPatientInfo.setIdCard(idCard);
         newPatientInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
+        newPatientInfo.setBrId(credentials.getBRID());
+        newPatientInfo.setMzh(credentials.getMZH());
         patientInfoMapper.insertReturnId(newPatientInfo);
 
 
@@ -98,15 +106,15 @@ public class PatientInfoService {
 
     /**
      * 查询就诊人信息
-     * @param patientInfoId
+     * @param id
      * @param accountId
      * @param enable
      * @return
      * @throws Exception
      */
-    public List<PatientInfo> queryPatientInfo(Long patientInfoId, Long accountId, Integer enable) throws Exception {
+    public List<PatientInfo> queryPatientInfo(Long id, Long accountId, Integer enable) throws Exception {
         PatientInfo queryPatientInfo = new PatientInfo();
-        queryPatientInfo.setId(patientInfoId);
+        queryPatientInfo.setId(id);
         queryPatientInfo.setAccountId(accountId);
         queryPatientInfo.setEnable(enable);
         return patientInfoMapper.select(queryPatientInfo);
@@ -134,10 +142,10 @@ public class PatientInfoService {
      * @param idCard
      * @throws Exception
      */
-    public void modifyPatientInfo(Long accountId,Long patientInfoId, String name, String phone, String idCard,Integer enable) throws Exception {
-        if (Helpers.isNullOrEmpty(patientInfoId))
+    public void modifyPatientInfo(Long accountId,Long id, String name, String phone, String idCard,Integer enable) throws Exception {
+        if (Helpers.isNullOrEmpty(id))
             throw new Exception("就诊人ID为空");
-        if(queryPatientInfo(patientInfoId,null,null) == null)
+        if(queryPatientInfo(id,null,null) == null)
             throw new Exception("没有查询到就诊人");
         if(idCard != null && !"".equals(idCard)){
             String errorInfo = CheckIdCard.IDCardValidate(idCard);
@@ -146,10 +154,10 @@ public class PatientInfoService {
                 throw new Exception("无效的身份证信息");
             }
         }
-        PatientInfo oldPatient = patientInfoMapper.queryById(patientInfoId);
+        PatientInfo oldPatient = patientInfoMapper.queryById(id);
         PatientInfo modifyPatientInfo = new PatientInfo();
 
-        modifyPatientInfo.setId(patientInfoId);
+        modifyPatientInfo.setId(id);
         modifyPatientInfo.setName(name!=null?name:oldPatient.getName());
         modifyPatientInfo.setPhone(phone !=null?phone:oldPatient.getPhone());
         modifyPatientInfo.setIdCard(idCard!=null?idCard:oldPatient.getIdCard());
@@ -184,5 +192,51 @@ public class PatientInfoService {
             patientInfo.setPregnantId(pregnant.getId());
 
         }
+    }
+
+    public List<String> queryBrIdByAccountId(Long accountId) {
+
+        List<String> brIdList = patientInfoMapper.queryBrIdByAccountId(accountId);
+        brIdList.removeAll(Collections.singleton(null));
+        return brIdList;
+    }
+
+    public PageInfo<HospitalizationInfoVO> wrapListToPage(List<HospitalizationInfoVO> list, Integer startPage, Integer pageSize) {
+
+
+        PageInfo<HospitalizationInfoVO>  page = new PageInfo<>();
+        List<HospitalizationInfoVO> result = new ArrayList<>();
+        int startRow = (startPage - 1)*pageSize;
+        int endRow = list.size()<startPage*pageSize-1?list.size():startPage*pageSize-1;
+        if(startPage == endRow)
+            endRow+=1;
+        if(endRow == 0)
+            endRow+=1;
+
+        log.info("endRow :"+endRow);
+        if(list.size()<endRow){
+            endRow = list.size();
+        }
+        for(int i = startRow;i<endRow;i++){
+            result.add(list.get(i));
+        }
+        page.setTotal(list.size());
+        page.setList(result);
+        Integer pages = (list.size()-1)/pageSize+1;
+        page.setPages(pages);
+        page.setPageNum(startPage);
+
+        return page;
+    }
+
+    public PatientInfo queryByBrId(String brId) {
+
+        return patientInfoMapper.queryByById(brId);
+    }
+
+    public boolean isAccountIdMatchBrid(Long accountId, String brId) {
+
+
+        return true;
     }
 }

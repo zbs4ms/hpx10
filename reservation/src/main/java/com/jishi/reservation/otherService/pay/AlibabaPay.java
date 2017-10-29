@@ -10,10 +10,14 @@ import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.doraemon.base.util.RandomUtil;
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.controller.protocol.OrderGenerateVO;
 import com.jishi.reservation.dao.mapper.OrderInfoMapper;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.otherService.pay.protocol.AliPayCallbackModel;
 import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
+import com.jishi.reservation.service.enumPackage.PayEnum;
+import com.jishi.reservation.util.Constant;
+import com.jishi.reservation.util.OrderInfoUtil2_0;
 import com.jishi.reservation.util.PayConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,25 +40,25 @@ public class AlibabaPay {
     @Autowired
     OrderInfoMapper orderInfoMapper;
 
-    public String generateOrder(String subject, BigDecimal price) throws Exception {
+    public OrderGenerateVO generateOrder(String orderNumber,String subject, BigDecimal price) throws Exception {
         AlipayClient client = new DefaultAlipayClient(
                 PayConstant.SERVER_URL,
                 PayConstant.APP_ID,
-                PayConstant.APP_PRIVATE_KEY,
+                PayConstant.APP_PRIVATE_KEY
+                ,
                 PayConstant.DATA_FORMAT,
                 PayConstant.CHARSET,
 
-                PayConstant.APP_PUBLIC_KEY,
+                PayConstant.ALI_PAY_PUBLIC_KEY,
                 PayConstant.ENCRYPT
         );
         AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
 
         //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
         AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-        model.setBody(subject);
+        model.setBody("test...");
         model.setSubject(subject);
-        //生成订单号
-        String orderNumber = generateUniqueOrderNumber();
+
         model.setOutTradeNo(orderNumber);
         model.setTimeoutExpress(PayConstant.TIME_OUT_EXPRESS);
         model.setTotalAmount(String.valueOf(price));
@@ -66,8 +70,12 @@ public class AlibabaPay {
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = client.sdkExecute(request);
             log.info("支付宝返回的处理结果：\n"+JSONObject.toJSONString(response));
-            log.info("支付宝订单号："+response.getTradeNo());
-            return response.getBody();
+
+            OrderGenerateVO vo = new OrderGenerateVO();
+            vo.setOrderNumber(orderNumber);
+            vo.setOrderString(response.getBody());
+            return vo;
+
         } catch (AlipayApiException e) {
             e.printStackTrace();
         }
@@ -85,7 +93,8 @@ public class AlibabaPay {
 
 
         try {
-            boolean flag = AlipaySignature.rsaCheckV1(params, PayConstant.APP_PUBLIC_KEY, PayConstant.CHARSET, PayConstant.ENCRYPT);
+            //加密采用RSA...
+            boolean flag = AlipaySignature.rsaCheckV1(params, PayConstant.ALI_PAY_PUBLIC_KEY, PayConstant.CHARSET,PayConstant.ENCRYPT);
             log.info("验证结果："+flag);
 
                 if("TRADE_SUCCESS".equals(params.get("trade_status"))){
@@ -105,9 +114,14 @@ public class AlibabaPay {
                     OrderInfo orderInfo =  orderInfoMapper.queryByOutTradeNo(outTradeNo);
                     Preconditions.checkNotNull(orderInfo,"找不到该订单信息");
                     log.info("订单信息：\n"+JSONObject.toJSONString(orderInfo));
+                    Preconditions.checkState(amount.equals(model.getTotal_fee()),"支付宝传递的订单金额与系统的订单金额不符合，回调失败");
+                    //todo  调取his的门诊号缴费单
+
                     //改变订单状态和支付时间
+                    //Preconditions.checkState(orderInfo.getStatus() == OrderStatusEnum.WAIT_PAYED.getCode(),"该订单不是待支付状态.");
                     orderInfo.setStatus(OrderStatusEnum.PAYED.getCode());
                     orderInfo.setPayTime(payTime);
+                    orderInfo.setPayType(PayEnum.ALI.getCode());
                     orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
                     log.info("订单状态修改为已支付。订单id:"+orderInfo.getId());
 

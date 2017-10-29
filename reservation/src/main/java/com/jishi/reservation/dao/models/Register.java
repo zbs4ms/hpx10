@@ -19,10 +19,18 @@ public class Register {
     private Long id;
     @ApiModelProperty("账号ID")
     private Long accountId;
+    @ApiModelProperty("订单ID")
+    private Long orderId;
     @ApiModelProperty("病人ID")
-    private Long patientinfoId;
+    private String brId;
+    @ApiModelProperty("病人名称")
+    private String patientName;
+    @ApiModelProperty("医生名称")
+    private String doctorName;
     @ApiModelProperty("科室ID")
     private Long departmentId;
+    @ApiModelProperty("科室名称")
+    private String  department;
     @ApiModelProperty("预约的医生ID")
     private Long doctorId;
     @ApiModelProperty("预约时间")
@@ -33,6 +41,10 @@ public class Register {
     private Integer enable;
     @ApiModelProperty("创建时间")
     private Date createTime;
+    @ApiModelProperty("his的号码 HM")
+    private String hm;
+    @ApiModelProperty("his的号序 HX")
+    private String hx;
 
     @ApiModelProperty("序列号")
     private String serialNumber;
@@ -43,9 +55,9 @@ public class Register {
     @Transient
     private BigDecimal price;  //支付金额
     @Transient
-    private Date payTime;       //支付时间
+    private String payTime;       //支付时间
     @Transient
-    private Date completeTime;  //完成时间
+    private String completeTime;  //完成时间
     @Transient
     private String orderCode;     //订单编号
     @Transient

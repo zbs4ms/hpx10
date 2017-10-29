@@ -5,17 +5,14 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.AdminLogInfoData;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.ManagerService;
-<<<<<<< HEAD
 import com.jishi.reservation.util.Constant;
-=======
 import com.jishi.reservation.service.PermissionService;
-import com.jishi.reservation.service.enumPackage.EnableEnum;
-import com.jishi.reservation.util.Common;
->>>>>>> e7bc321572438e5047eb8b46df3f4bf8fbb12924
+
 import com.jishi.reservation.util.CookieUtil;
 import com.jishi.reservation.util.SessionUtil;
 import com.us.base.common.controller.BaseController;
@@ -39,7 +36,7 @@ import java.util.List;
 @RequestMapping("/admin")
 @Slf4j
 @Api(description = "后台管理接口")
-public class AdminController extends BaseController {
+public class AdminController extends MyBaseController {
 
     @Autowired
     ManagerService managerService;
@@ -61,7 +58,6 @@ public class AdminController extends BaseController {
                             @RequestParam(value = "appKey", required = false) String appKey,
                             HttpServletRequest request,
                             HttpServletResponse response) throws Exception {
-
 
         Preconditions.checkNotNull(account, "请传入必要的参数：account");
         Preconditions.checkNotNull(password, "请传入必要的参数：password");
@@ -115,7 +111,7 @@ public class AdminController extends BaseController {
 
 
     @ApiOperation(value = "创建管理员账号")
-    @RequestMapping(value = "crete", method = RequestMethod.POST)
+    @RequestMapping(value = "create", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject create(
             @ApiParam(value = "账号") @RequestParam(value = "account") String account,
@@ -184,7 +180,10 @@ public class AdminController extends BaseController {
         String token = CookieUtil.getCookieByName(request, Constant.ADMIN_TOKEN).getValue();
         SessionUtil.deleteSession(request,token);
         CookieUtil.deleteCookieByName(request,response,token);
-        managerService.logout(token);
+        if(token != null && !"".equals(token)){
+            log.info("取到token..."+token);
+            managerService.logout(token);
+        }
 
         return ResponseWrapper().addMessage("退出成功").ExeSuccess(200);
 

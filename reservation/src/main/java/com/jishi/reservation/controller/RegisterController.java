@@ -3,7 +3,9 @@ package com.jishi.reservation.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
+import com.jishi.reservation.controller.protocol.OrderVO;
 import com.jishi.reservation.controller.protocol.RegisterCompleteVO;
 import com.jishi.reservation.controller.protocol.RegisterVO;
 import com.jishi.reservation.dao.models.*;
@@ -35,7 +37,7 @@ import java.util.List;
 @RequestMapping("/register")
 @Slf4j
 @Api(description = "预约相关接口")
-public class RegisterController extends BaseController {
+public class RegisterController extends MyBaseController {
 
     @Autowired
     RegisterService registerService;
@@ -51,20 +53,38 @@ public class RegisterController extends BaseController {
     @Autowired
     JpushSupport jpushSupport;
 
+    @Autowired
+    OrderInfoService orderInfoService;
+
+
+
+
+
+
+
     @ApiOperation(value = "增加预约信息")
     @RequestMapping(value = "addRegister", method = RequestMethod.PUT)
     @ResponseBody
     public JSONObject addRegister(HttpServletRequest request,
                                   HttpServletResponse response,
+
+
                                   @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-            @ApiParam(value = "病人ID", required = true) @RequestParam(value = "patientinfoId", required = true) Long patientinfoId,
-            @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
+                                  @ApiParam(value = "价格", required = true) @RequestParam(value = "price", required = true) String price,
+                                  @ApiParam(value = "支付名称", required = true) @RequestParam(value = "subject", required = true) String subject,
+                                  @ApiParam(value = "病人名称", required = true) @RequestParam(value = "brName", required = true) String brName,
+                                  @ApiParam(value = "医生名称", required = true) @RequestParam(value = "doctorName", required = true) String doctorName,
+                                  @ApiParam(value = "病人ID", required = true) @RequestParam(value = "brid", required = true) String brid,
+                                  @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
+                                  @ApiParam(value = "科室名称", required = true) @RequestParam(value = "department", required = true) String department,
+                                  @ApiParam(value = "his的号码 HM", required = true) @RequestParam(value = "hm", required = true) String hm,
+
             @ApiParam(value = "预约的医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId,
             @ApiParam(value = "预约的时间段", required = true) @RequestParam(value = "timeInterval", required = true) String timeInterval,
             @ApiParam(value = "预约时间", required = true) @RequestParam(value = "agreedTime", required = true) Long agreedTime
             ) throws Exception {
 
-        Preconditions.checkNotNull(patientinfoId,"请传入必须的参数：patientinfoId");
+        Preconditions.checkNotNull(brid,"请传入必须的参数：brid");
         Preconditions.checkNotNull(departmentId,"请传入必须的参数：departmentId");
         Preconditions.checkNotNull(doctorId,"请传入必须的参数：doctorId");
         Preconditions.checkNotNull(timeInterval,"请传入必须的参数：timeInterval");
@@ -81,24 +101,26 @@ public class RegisterController extends BaseController {
 
 
         // 10.17  在此处加入订单。。
-        RegisterCompleteVO completeVO = registerService.addRegister(accountId, patientinfoId, departmentId, doctorId, new Date(agreedTime),timeInterval);
-
+        RegisterCompleteVO completeVO = registerService.addRegister(accountId, brid, departmentId, doctorId, new Date(agreedTime),timeInterval,doctorName,price,subject,brName,department,hm);
+        if(completeVO == null){
+            return ResponseWrapper().addMessage("该医生挂号号源已满，请选择其他医生。").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+        }
         jpushSupport.sendPush(accountService.queryAccountById(accountId).getPushId(), Constant.REGISTER_SUCCESS_MGS);
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
-    @ApiOperation(value = "查询预约信息", response = RegisterVO.class)
+    @ApiOperation(value = "查询预约信息 ", response = RegisterVO.class)
     @RequestMapping(value = "queryRegister", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryRegister(HttpServletRequest request,
                                     HttpServletResponse response,
                                     @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-            @ApiParam(value = "预约ID", required = false) @RequestParam(value = "registerId", required = false) Long registerId,
-            @ApiParam(value = "状态", required = false) @RequestParam(value = "status", required = false) Integer status,
-            @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
-            @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
-            @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
-            @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
+                                    @ApiParam(value = "预约ID", required = false) @RequestParam(value = "registerId", required = false) Long registerId,
+                                    @ApiParam(value = "状态", required = false) @RequestParam(value = "status", required = false) Integer status,
+                                    @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                                    @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
+                                    @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
+                                    @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
         if (accountId == null) {
             //从登陆信息中获取登陆者ID
             accountId = accountService.returnIdByToken(request);
@@ -115,24 +137,33 @@ public class RegisterController extends BaseController {
 
         for (Register register : registerList) {
             RegisterVO registerVO = new RegisterVO();
-            List<Doctor> doctors = doctorService.queryDoctor(register.getDoctorId(), null, null,null, null);
-            List<Department> departments = departmentService.queryDepartment(register.getDepartmentId(), null);
+            //List<Doctor> doctors = doctorService.queryDoctor(null, String.valueOf(register.getDoctorId()),null, null,null, null);
+
+
             List<Account> accounts = accountService.queryAccount(register.getAccountId(), null, null);
-            List<PatientInfo> patientInfos = patientInfoService.queryPatientInfo(register.getPatientinfoId(), null, null);
-            //todo 还没对接支付，所以就先搞几个假数据，供前段解析展示
-            register.setPayType(PayEnum.WEIXIN.getCode());
-            register.setPayTime(new Date());
-            register.setCompleteTime(new Date());
-            register.setPrice(BigDecimal.valueOf(23.88));
-            register.setCountDownTime(register.getCreateTime().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
-            register.setOrderCode("wx568254965");
 
+            //OrderVO orderVO = orderInfoService.queryOrderInfoById(register.getOrderId());
+            OrderInfo orderInfo = orderInfoService.findOrderById(register.getOrderId());
+            register.setPayType(orderInfo.getPayType());
+            register.setPayTime(orderInfo.getPayTime());
+            register.setCompleteTime(orderInfo.getPayTime());
+            register.setPrice(orderInfo.getPrice());
+            //register.setCountDownTime(register.getCreateTime().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
+            register.setOrderCode(orderInfo.getOrderNumber());
 
+            Doctor doctor = doctorService.queryDoctorByHid(register.getDoctorId());
             registerVO.setRegister(register);
-            registerVO.setDoctor(doctors.size() > 0 ? doctors.get(0) : null);
+            registerVO.setDoctor(doctor);
+            accounts.get(0).setPasswd(null);
             registerVO.setAccount(accounts.size() > 0 ? accounts.get(0) : null);
-            registerVO.setDepartment(departments.size() > 0 ? departments.get(0) : null);
-            registerVO.setPatientInfo(patientInfos.size() > 0 ? patientInfos.get(0) : null);
+            Department department = new Department();
+            department.setName(register.getDepartment());
+            department.setId(register.getDepartmentId());
+            registerVO.setDepartment(department);
+            PatientInfo patientInfo = patientInfoService.queryByBrId(register.getBrId());
+
+
+            registerVO.setPatientInfo(patientInfo);
             registerVOList.add(registerVO);
         }
         pageInfo.setList(registerVOList);
@@ -170,6 +201,19 @@ public class RegisterController extends BaseController {
     @RequestMapping(value = "failureRegister", method = RequestMethod.DELETE)
     @ResponseBody
     public JSONObject failureRegister(
+            @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId
+    ) throws Exception {
+        Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
+
+        registerService.failureRegister(registerId);
+        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+
+    @ApiOperation(value = "锁定号源")
+    @RequestMapping(value = "lock", method = RequestMethod.DELETE)
+    @ResponseBody
+    public JSONObject lock(
             @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId
     ) throws Exception {
         Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");

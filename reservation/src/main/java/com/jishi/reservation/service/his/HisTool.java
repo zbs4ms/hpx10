@@ -30,9 +30,9 @@ public class HisTool {
      * @return
      * @throws Exception
      */
-    public static String getHisDataparam(MessageElement messageElement) throws Exception {
+    public static String getHisDataparam(MessageElement messageElement,String url) throws Exception {
         String xml = messageElement.getAsString();
-        log.info("解密前的完整xml为 : "+xml);
+        log.info(url+"解密前的完整xml为 : "+xml);
         String state = getXmlAttribute(xml,"STATE");
         if(!"T".equals(state)){
             log.error("his系统返回失败信息——>"+xml);

@@ -3,6 +3,7 @@ package com.jishi.reservation.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.dao.models.PatientInfo;
@@ -31,7 +32,8 @@ import java.util.List;
 @RequestMapping("/patientInfo")
 @Slf4j
 @Api(description = "就诊人相关接口")
-public class PatientInfoController extends BaseController {
+public class PatientInfoController extends MyBaseController
+{
 
     @Autowired
     PatientInfoService patientInfoService;

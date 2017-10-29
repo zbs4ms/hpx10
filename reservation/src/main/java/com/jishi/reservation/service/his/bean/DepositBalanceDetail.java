@@ -34,6 +34,10 @@ public class DepositBalanceDetail {
     @XStreamOmitField
     String zycs;
 
+    //住院次数
+    @XStreamOmitField
+    String yujiaojine;
+
     @Data
     public class Jbxx{
         //姓名

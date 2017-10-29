@@ -29,6 +29,7 @@ public class TotalDepositBalancePayDetail {
         //费用金额
         @XStreamAlias("FYJE")
         String fyje;
+
     }
 
 
