@@ -78,8 +78,7 @@ public class OrderController extends MyBaseController {
             Integer status = orderInfoService.confirmOrderHis(orderId, orderNumber, confirmOrder);
             switch (status){
                 case 200:
-                    return ResponseWrapper().addMessage("该订单尚未付款，不能确认").ExeFaild(ReturnCodeEnum.FAILED.getCode());
-                    //return ResponseWrapper().addData(orderVO).addMessage("确认成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+                    return ResponseWrapper().addData(orderVO).addMessage("确认成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
                 case 406:
                     return ResponseWrapper().addMessage("该订单尚未付款，不能确认").ExeFaild(ReturnCodeEnum.FAILED.getCode());
             }

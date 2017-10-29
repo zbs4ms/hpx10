@@ -56,7 +56,7 @@ public class AlibabaPay {
 
         //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
         AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-        model.setBody("test...");
+        model.setBody(subject);
         model.setSubject(subject);
 
         model.setOutTradeNo(orderNumber);
@@ -95,7 +95,7 @@ public class AlibabaPay {
         try {
             //加密采用RSA...
             boolean flag = AlipaySignature.rsaCheckV1(params, PayConstant.ALI_PAY_PUBLIC_KEY, PayConstant.CHARSET,PayConstant.ENCRYPT);
-            log.info("验证结果："+flag);
+            log.info(""+flag);
 
                 if("TRADE_SUCCESS".equals(params.get("trade_status"))){
                     //付款金额
