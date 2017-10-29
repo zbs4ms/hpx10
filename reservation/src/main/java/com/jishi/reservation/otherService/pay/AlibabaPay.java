@@ -99,7 +99,7 @@ public class AlibabaPay {
 
                 if("TRADE_SUCCESS".equals(params.get("trade_status"))){
                     //付款金额
-                    String amount =  params.get("total_fee");
+                    //String amount =  params.get("total_amount");
                     //商户订单号
                     String outTradeNo =  params.get("out_trade_no");
                     //支付宝交易号
@@ -114,7 +114,7 @@ public class AlibabaPay {
                     OrderInfo orderInfo =  orderInfoMapper.queryByOutTradeNo(outTradeNo);
                     Preconditions.checkNotNull(orderInfo,"找不到该订单信息");
                     log.info("订单信息：\n"+JSONObject.toJSONString(orderInfo));
-                    Preconditions.checkState(amount.equals(model.getTotal_fee()),"支付宝传递的订单金额与系统的订单金额不符合，回调失败");
+                    //Preconditions.checkState(amount.equals(model.getTotal_fee()),"支付宝传递的订单金额与系统的订单金额不符合，回调失败");
                     //todo  调取his的门诊号缴费单
 
                     //改变订单状态和支付时间
@@ -122,6 +122,7 @@ public class AlibabaPay {
                     orderInfo.setStatus(OrderStatusEnum.PAYED.getCode());
                     orderInfo.setPayTime(payTime);
                     orderInfo.setPayType(PayEnum.ALI.getCode());
+                    orderInfo.setThirdOrderNumber(trade_no);
                     orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
                     log.info("订单状态修改为已支付。订单id:"+orderInfo.getId());
 
