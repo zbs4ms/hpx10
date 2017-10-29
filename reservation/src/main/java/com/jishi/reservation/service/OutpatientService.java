@@ -5,6 +5,10 @@ import com.jishi.reservation.controller.protocol.*;
 import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.bean.OutpatientPaymentInfo;
+import com.jishi.reservation.service.his.bean.OutpatientVisitPrescription;
+import com.jishi.reservation.service.his.bean.OutpatientVisitReceipt;
+import com.jishi.reservation.service.his.bean.OutpatientVisitRecord;
+import com.jishi.reservation.util.Helpers;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,7 +45,7 @@ public class OutpatientService {
     public List<OutpatientPaymentInfoVO> queryOutpatientPamentInfo(long accountId) throws Exception {
         List<PatientInfo> patientInfoList = patientInfoService.queryPatientInfo(null,accountId, 0);
         if (patientInfoList == null || patientInfoList.isEmpty()) {
-            log.info(accountId + ": 门诊缴费列表为空");
+            log.info(accountId + ": 病人列表为空");
             return Collections.emptyList();
         }
         List<OutpatientPaymentInfoVO> paymentInfoList = new ArrayList<OutpatientPaymentInfoVO>();
@@ -155,6 +159,183 @@ public class OutpatientService {
         String czsj = hisOutpatient.batchPayModify(docIds, brId, zje, jsje, sfghd, null, null, null);
         log.info(czsj + " batchpayConfirm => 病人ID: " + brId + "单据号：" + docIds + "总/结算金额: " + zje + jsje);
         return czsj != null && !czsj.isEmpty();
+    }
+
+    /**
+     * @description
+     * @param accountId 用户账号
+     * @param pageNo 当前页数
+     * @param pageSize 每页记录数
+     * @throws
+    **/
+    public List<OutpatientVisitRecordVO> queryVisitRecord(long accountId, int pageNo, int pageSize) throws Exception {
+        List<PatientInfo> patientInfoList = patientInfoService.queryPatientInfo(null,accountId, 0);
+        if (patientInfoList == null || patientInfoList.isEmpty()) {
+          log.info(accountId + ": 病人列表为空");
+          return Collections.emptyList();
+        }
+        if (pageSize == 0) {
+            pageSize = Integer.MAX_VALUE;
+            pageNo = 1;
+        }
+        pageNo = pageNo < 0 ? 0 : pageNo;
+        List<OutpatientVisitRecordVO> recordVOList = new ArrayList<OutpatientVisitRecordVO>();
+        // TODO 确认his当前页数是否从1开始， 站点暂时传null
+        for (PatientInfo patientInfo : patientInfoList) {
+            OutpatientVisitRecord visitRecordData = hisOutpatient.queryOutpatientVisitRecord(patientInfo.getBrId(), pageNo, pageSize, null);
+            if (visitRecordData.getInfolist() == null || visitRecordData.getInfolist().getList() == null
+                      || visitRecordData.getInfolist().getList().isEmpty()) {
+                continue;
+            }
+            for (OutpatientVisitRecord.VisitRecord record : visitRecordData.getInfolist().getList()) {
+                OutpatientVisitRecordVO recordVO = new OutpatientVisitRecordVO();
+                recordVO.setBrid(patientInfo.getBrId());
+                recordVO.setRgisterNum(record.getGhdh());
+                recordVO.setAmount(Double.parseDouble(record.getJe()));
+                recordVO.setDate(formatDate(record.getRq()));
+                recordVO.setDepartment(record.getJzks());
+                recordVO.setDepartmentId(record.getJzksid());
+                recordVO.setDoctor(record.getYs());
+                recordVO.setZdxx(record.getZdxx());
+
+                List<OutpatientVisitRecord.RecordMX> mxList = record.getMxlist().getList();
+                if (mxList != null && !mxList.isEmpty()) {
+                    List<OutpatientVisitRecordVO.RecordMX> recordMXVOList = new ArrayList<OutpatientVisitRecordVO.RecordMX>();
+                        for (OutpatientVisitRecord.RecordMX mx : mxList) {
+                            OutpatientVisitRecordVO.RecordMX mxVO = new OutpatientVisitRecordVO.RecordMX();
+                            mxVO.setDocName(mx.getMc());
+                            mxVO.setDocNum(Integer.parseInt(mx.getSl()));
+                            recordMXVOList.add(mxVO);
+                        }
+                    recordVO.setDocList(recordMXVOList);
+                }
+                recordVOList.add(recordVO);
+              }
+          }
+
+        return recordVOList;
+    }
+
+    /**
+     * @description 获取指定就诊中的单据信息
+     * @param registerNum 挂号单号
+     * @throws Exception
+    **/
+    public List<OutpatientVisitPrescriptionVO> queryVisitPrescription(String registerNum) throws Exception {
+        if (Helpers.isNullOrEmpty(registerNum)) {
+          log.info("queryVisitPrescription: 参数registerNum不能为空");
+          return Collections.emptyList();
+        }
+        OutpatientVisitPrescription queryData = hisOutpatient.queryOutpatientVisitPrescription(registerNum);
+        if (queryData == null || queryData.getPrescriptionList() == null || queryData.getPrescriptionList().isEmpty()) {
+          log.info("就诊单据信息为空, 挂号单号(registerNum): " + registerNum);
+          return Collections.emptyList();
+        }
+
+        List<OutpatientVisitPrescriptionVO> prescriptionVOList = new ArrayList<OutpatientVisitPrescriptionVO>();
+        for (OutpatientVisitPrescription.Prescription prescription : queryData.getPrescriptionList()) {
+            OutpatientVisitPrescriptionVO prescriptionVO = new OutpatientVisitPrescriptionVO();
+            prescriptionVO.setDate(formatDate(prescription.getRq()));
+            prescriptionVO.setDocAmount(Double.parseDouble(prescription.getZfy()));
+            prescriptionVO.setDocNumber(prescription.getDjh());
+            prescriptionVO.setDoctor(prescription.getYs());
+            prescriptionVO.setInfo(prescription.getZd());
+
+            // 类别
+            if (prescription.getItemList() != null && prescription.getItemList().size() > 0) {
+                List<OutpatientVisitPrescriptionVO.PrescriptionDocment> docList = new ArrayList<OutpatientVisitPrescriptionVO.PrescriptionDocment>();
+                for (OutpatientVisitPrescription.PrescriptionItem item : prescription.getItemList()) {
+                    OutpatientVisitPrescriptionVO.PrescriptionDocment docment = new OutpatientVisitPrescriptionVO.PrescriptionDocment();
+                    docment.setType(item.getLb());
+
+                    // 明细和用法
+                    if (item.getGroup() != null && !item.getGroup().isEmpty()) {
+                        List<OutpatientVisitPrescriptionVO.PrescriptionMX> mxList = new ArrayList<OutpatientVisitPrescriptionVO.PrescriptionMX>();
+                        for (OutpatientVisitPrescription.PrescriptionYF yf : item.getGroup()) {
+                            if (yf.getMxList() != null && !yf.getMxList().isEmpty()) {
+
+                                //明细
+                                for (OutpatientVisitPrescription.PrescriptionMX mx : yf.getMxList()) {
+                                    OutpatientVisitPrescriptionVO.PrescriptionMX mxOV = new OutpatientVisitPrescriptionVO.PrescriptionMX();
+                                    mxOV.setUsage(yf.getYf());
+                                    mxOV.setName(mx.getMc());
+                                    mxOV.setFormat(mx.getGg());
+                                    mxOV.setMedicalRecordId(mx.getBlid());
+                                    mxOV.setReportSource(Integer.parseInt(mx.getBgly()));
+                                    mxOV.setReportSourceNote(mx.getBglysm());
+                                    mxOV.setUnit(mx.getDw());
+                                    mxOV.setSingleValue(Double.parseDouble(mx.getDl()));
+                                    mxOV.setUsageValue(Double.parseDouble(mx.getYl()));
+                                    mxList.add(mxOV);
+                                }
+                            }
+                        }
+                        docment.setMxList(mxList);
+                    }
+                  docList.add(docment);
+                }
+                prescriptionVO.setDocList(docList);
+            }
+            prescriptionVOList.add(prescriptionVO);
+        }
+        return prescriptionVOList;
+    }
+
+    /**
+     * @description 获取指定就诊的费用信息
+     * @param registerNum 挂号单号
+     * @throws Exception
+    **/
+    public List<OutpatientVisitReceiptVO> queryVisitReceipt(String registerNum) throws Exception {
+        if (Helpers.isNullOrEmpty(registerNum)) {
+            log.info("queryVisitReceipt: 参数registerNum不能为空");
+            return Collections.emptyList();
+        }
+        OutpatientVisitReceipt queryData = hisOutpatient.queryOutpatientVisitReceipt(registerNum);
+        if (queryData == null || queryData.getReceiptList() == null || queryData.getReceiptList().isEmpty()) {
+            log.info("就诊费用信息为空, 挂号单号(registerNum): " + registerNum);
+            return Collections.emptyList();
+        }
+        List<OutpatientVisitReceiptVO> receiptVOList = new ArrayList<OutpatientVisitReceiptVO>();
+        for (OutpatientVisitReceipt.Receipt receipt : queryData.getReceiptList()) {
+            OutpatientVisitReceiptVO receiptVO = new OutpatientVisitReceiptVO();
+            receiptVO.setDocNumber(receipt.getDjh());
+            receiptVO.setDate(formatDate(receipt.getSj()));
+            receiptVO.setDocAmount(Double.parseDouble(receipt.getFy()));
+            receiptVO.setDoctor(receipt.getYS());
+            receiptVO.setPaymentType(receipt.getZffs());
+
+            //费目
+            if (receipt.getItemList() != null && !receipt.getItemList().isEmpty()) {
+                List<OutpatientVisitReceiptVO.ReceiptItem> itemVOLIst = new ArrayList<OutpatientVisitReceiptVO.ReceiptItem>();
+                for (OutpatientVisitReceipt.ReceiptItem item : receipt.getItemList()) {
+                    OutpatientVisitReceiptVO.ReceiptItem itemVO = new OutpatientVisitReceiptVO.ReceiptItem();
+                    itemVO.setFm(item.getFm());
+
+                    //明细
+                    if (item.getMxList() != null && !item.getMxList().isEmpty()) {
+                        List<OutpatientVisitReceiptVO.ReceiptMX> mxVOList = new ArrayList<OutpatientVisitReceiptVO.ReceiptMX>();
+                        for (OutpatientVisitReceipt.ReceiptMX mx : item.getMxList()) {
+                            OutpatientVisitReceiptVO.ReceiptMX mxVO = new OutpatientVisitReceiptVO.ReceiptMX();
+                            mxVO.setName(mx.getMc());
+                            mxVO.setAmount(mx.getJe());
+                            mxVO.setFormat(mx.getGg());
+                            mxVO.setNumber(mx.getSl());
+                            mxVO.setUnit(mx.getDw());
+                            mxVO.setUnitPtrice(mx.getDj());
+                            mxVOList.add(mxVO);
+                        }
+
+                        itemVO.setMxList(mxVOList);
+                    }
+                    itemVOLIst.add(itemVO);
+                }
+
+                receiptVO.setItemLIst(itemVOLIst);
+            }
+            receiptVOList.add(receiptVO);
+        }
+        return receiptVOList;
     }
 
     private Date formatDate(String str) throws ParseException {

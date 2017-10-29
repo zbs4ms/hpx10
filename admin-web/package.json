@@ -7,6 +7,7 @@
   "scripts": {
     "dev:mock": "node build/dev-server.js mock",
     "dev": "node build/dev-server.js proxy",
+    "proxy-server": "node build/proxyServer.js",
     "build": "node build/build.js noserver",
     "build:server": "node build/build.js server",
     "build:report": "npm run build --report",

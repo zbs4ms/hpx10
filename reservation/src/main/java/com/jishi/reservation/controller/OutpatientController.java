@@ -3,6 +3,9 @@ package com.jishi.reservation.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.protocol.OutpatientPaymentInfoVO;
+import com.jishi.reservation.controller.protocol.OutpatientVisitPrescriptionVO;
+import com.jishi.reservation.controller.protocol.OutpatientVisitReceiptVO;
+import com.jishi.reservation.controller.protocol.OutpatientVisitRecordVO;
 import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.OutpatientService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
@@ -83,5 +86,54 @@ public class OutpatientController extends MyBaseController {
         boolean rslt = outpatientService.batchpayConfirm(docIds, brId, zje, jsje, sfghd, orderId);
         return rslt ? ResponseWrapper().addMessage("成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
                       ResponseWrapper().addMessage("失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+    }
+
+    @ApiOperation(value = "门诊记录", response = OutpatientVisitRecordVO.class)
+    @RequestMapping(value="/visitRecord", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject queryVisitRecord(HttpServletRequest request, HttpServletResponse response,
+                @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+                @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
+                @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize) throws Exception {
+        if (accountId == null) {
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1L)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+            }
+        }
+        List<OutpatientVisitRecordVO> recordVOList = outpatientService.queryVisitRecord(accountId, pageNum, pageSize);
+        return ResponseWrapper().addData(recordVOList).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+    @ApiOperation(value = "门诊记录的单据费用信息", response = OutpatientVisitReceiptVO.class)
+    @RequestMapping(value="/visitReceipt", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject visitReceipt(HttpServletRequest request, HttpServletResponse response,
+                                       @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+                                       @ApiParam(value = "挂号单号", required = false) @RequestParam(value = "registerNum", required = false) String registerNum) throws Exception {
+        if (accountId == null) {
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1L)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+            }
+        }
+        List<OutpatientVisitReceiptVO> receiptVOList = outpatientService.queryVisitReceipt(registerNum);
+        return ResponseWrapper().addData(receiptVOList).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+    @ApiOperation(value = "门诊记录的单据处方信息", response = OutpatientVisitPrescriptionVO.class)
+    @RequestMapping(value="/visitPrescription", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject queryVisitPrescription(HttpServletRequest request, HttpServletResponse response,
+                                           @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+                                           @ApiParam(value = "挂号单号", required = false) @RequestParam(value = "registerNum", required = false) String registerNum) throws Exception {
+        if (accountId == null) {
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1L)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+            }
+        }
+        List<OutpatientVisitPrescriptionVO> prescriptionVOList = outpatientService.queryVisitPrescription(registerNum);
+        return ResponseWrapper().addData(prescriptionVOList).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 }

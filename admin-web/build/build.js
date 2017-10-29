@@ -12,14 +12,6 @@ var webpackConfig = require('./webpack.prod.conf')
 // 替换css文件中错误的background-image地址
 var rewriteCss = require('./rewrite').rewriteCss
 
-if (process.argv.slice(2)[0] === 'server') {
-  var opn = require('opn')
-  var express = require('express')
-  var app = express()
-  var proxyTable = require('../config/proxy')
-  var proxyMiddleware = require('http-proxy-middleware')
-}
-
 var spinner = ora('building for production...')
 spinner.start()
 
@@ -45,18 +37,7 @@ rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), err => {
     rewriteCss()
 
     if (process.argv.slice(2)[0] === 'server') {
-      Object.keys(proxyTable).forEach(function (context) {
-        var options = proxyTable[context]
-        if (typeof options === 'string') {
-          options = { target: options }
-        }
-        app.use(proxyMiddleware(options.filter || context, options))
-      })
-      app.use(express.static(path.join(__dirname, '../')))
-      app.listen(9999, function () {
-        console.log('server start, listening port:9999')
-        opn('http://localhost:9999/dist')
-      })
+      require('./proxyServer')
     }
 
   })
