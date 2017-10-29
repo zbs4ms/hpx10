@@ -78,7 +78,7 @@
       init () {
         this.currentPage = 1
         return this.getList({
-          pageNum: 1
+          [this.apiKeys.currentPage]: 1
         })
       },
       getList (params) {

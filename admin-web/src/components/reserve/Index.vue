@@ -89,7 +89,7 @@
         attrs: {
           'prop': 'tel',
           'label': '预留手机号',
-          'min-width': '100'
+          'min-width': '120'
         }
       }, {
         attrs: {
@@ -101,7 +101,7 @@
         attrs: {
           'prop': 'status',
           'label': '状态',
-          'min-width': '100',
+          'min-width': '120',
           'render-header' (h, { column, $index }) {
             return (
               <el-dropdown>
