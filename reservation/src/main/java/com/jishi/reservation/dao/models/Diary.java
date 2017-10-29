@@ -34,8 +34,7 @@ public class Diary {
     private String title;
     @ApiModelProperty("创建时间")
     private Date createTime;
-    @ApiModelProperty("审核状态 0 已通过，1待审核 2未通过")
-    private Integer status;
+
     @ApiModelProperty("状态 0 正常")
     private Integer enable;
     @ApiModelProperty("排序")
@@ -44,6 +43,8 @@ public class Diary {
     private String content;
     @ApiModelProperty("简介 供首页列表显示")
     private String brief;
+    @ApiModelProperty("审核状态 0 已通过，1待审核 2未通过")
+    private Integer status;
     @ApiModelProperty("是否锁定 锁定0 只有自己能看  ，没有锁定1 公布")
     private Integer isLock;
 

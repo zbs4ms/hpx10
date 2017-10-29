@@ -207,6 +207,34 @@ public class HospitalizationController extends MyBaseController {
 
 
 
+    @ApiOperation(value = "预交款订单  确认订单，同步到his", response = HospitalizationInfoVO.class)
+    @RequestMapping(value = "confirmPrePayment", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject confirmPrePayment(
+            HttpServletRequest request,HttpServletResponse response,
+            @ApiParam(value = "预交的名称 eg:住院预交款", required = true) @RequestParam(value = "subject", required = true) String subject,
+            @ApiParam(value = "交易的金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
+            @ApiParam(value = "accountId 通过token找到", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+            @ApiParam(value = "brId", required = true) @RequestParam(value = "brId", required = true) String brId,
+            @ApiParam(value = "入院的次数", required = true) @RequestParam(value = "rycs", required = true) Integer rycs
+    ) throws Exception {
+
+        if (accountId == null) {
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1L)){
+                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
+
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+            }
+        }
+
+        OrderInfo orderInfo = orderInfoService.generatePrepayment(subject, price, accountId, brId, rycs);
+
+        return ResponseWrapper().addData(orderInfo).addMessage("订单生成成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+
+
 
 
     private HospitalizationInfoVO getHospitalizationInfoVO(DepositBalanceDetail depositBalanceDetail) throws Exception {

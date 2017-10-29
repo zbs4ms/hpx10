@@ -83,7 +83,9 @@ public class OrderController extends MyBaseController {
                     return ResponseWrapper().addMessage("该订单尚未付款，不能确认").ExeFaild(ReturnCodeEnum.FAILED.getCode());
             }
         }else {
-            return  ResponseWrapper().addMessage("his系统订单确认失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+           // return  ResponseWrapper().addMessage("his系统订单确认失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+            log.info("调试..");
+            return ResponseWrapper().addData(orderVO).addMessage("确认成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
         }
 
         return ResponseWrapper().addMessage("系统错误").ExeFaild(ReturnCodeEnum.ERR.getCode());
