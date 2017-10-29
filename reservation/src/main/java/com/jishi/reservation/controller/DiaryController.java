@@ -167,7 +167,7 @@ public class DiaryController extends MyBaseController {
 
 
 
-    @ApiOperation(value = "app app的日记列表  日记圈/我的日记")
+    @ApiOperation(value = "app app的日记列表  日记圈/我的日记",response = Diary.class)
     @RequestMapping(value = "queryPage", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryPage(
