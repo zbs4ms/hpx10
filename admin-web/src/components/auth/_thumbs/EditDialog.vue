@@ -3,6 +3,9 @@
  * Created by zhengji
  * Date: 2017/9/11
  */
+import {
+  getAllPermissionApi
+} from '../api'
 export default {
   name: 'AuthEditDialog',
   props: {
@@ -13,6 +16,17 @@ export default {
       type: Object
     }
   },
+  created () {
+    getAllPermissionApi().then(res => {
+      const content = res.content || []
+      this.authOptions = content.map(item => {
+        return {
+          value: item.permissionId,
+          label: item.name
+        }
+      })
+    })
+  },
   data () {
     return {
       form: {
@@ -20,19 +34,7 @@ export default {
         pickedAuth: [], // 权限
         psd: '' // 密码
       },
-      authOptions: [{
-        value: '选项1',
-        label: '运营管理'
-      }, {
-        value: '选项2',
-        label: '预约管理'
-      }, {
-        value: '选项3',
-        label: '信息录入'
-      }, {
-        value: '选项4',
-        label: '人员管理'
-      }],
+      authOptions: [],
       pickedAuth: [],
       submitLoading: false
     }
@@ -133,7 +135,7 @@ export default {
                 { required: true, message: '名称不能为空'},
                 { pattern: /^\s*\S{0,30}$/, message: '字体长度不能大于30', trigger: 'change, blur'}
               ]">
-              <el-input v-model="form.psd" auto-complete="off"></el-input>
+              <el-input v-model="form.psd" type="password" auto-complete="off"></el-input>
               <span class="name-length">{{ form.psd ? form.psd.length : 0 }}/30</span>
             </el-form-item>
           </el-col>
