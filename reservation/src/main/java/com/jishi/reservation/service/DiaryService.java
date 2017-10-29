@@ -91,7 +91,7 @@ public class DiaryService {
     }
 
 
-    public void update(Long id, String title,String brief, String content,Integer lock) {
+    public void update(Long id, String title, String content,Integer lock) {
 
 
         Diary diary = diaryMapper.queryById(id);
@@ -103,6 +103,14 @@ public class DiaryService {
                 new TypeToken<List<DiaryContentVO>>() {
                 }.getType());
 
+        String brief = "";
+        for (DiaryContentVO diaryContentVO : contentList) {
+            if(diaryContentVO.getType() == 1){
+                brief = diaryContentVO.getText();
+                break;
+            }
+            break;
+        }
         diary.setContent(JSONObject.toJSONString(contentList));
         diary.setIsLock(lock);
         diary.setBrief(brief);
@@ -110,7 +118,7 @@ public class DiaryService {
     }
 
 
-    public void publish(Long accountId,String title, String brief,String content,Integer lock) {
+    public void publish(Long accountId,String title,String content,Integer lock) {
 
         Gson gson = new Gson();
 
@@ -122,7 +130,15 @@ public class DiaryService {
         Diary diary = new Diary();
 
         diary.setTitle(title);
-
+        String brief = "";
+        for (DiaryContentVO diaryContentVO : contentList) {
+            if(diaryContentVO.getType() == 1){
+                //长度待定
+                brief = diaryContentVO.getText();
+                break;
+            }
+            break;
+        }
         diary.setContent(JSONObject.toJSONString(contentList));
         diary.setEnable(0);
         diary.setAccountId(accountId);

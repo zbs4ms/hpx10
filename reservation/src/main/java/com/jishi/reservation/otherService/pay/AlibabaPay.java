@@ -99,7 +99,12 @@ public class AlibabaPay {
 
                 if("TRADE_SUCCESS".equals(params.get("trade_status"))){
                     //付款金额
-                    //String amount =  params.get("total_amount");
+                    String amount =  params.get("total_amount");
+                    if(amount!=null&&!"".equals(amount)){
+                        System.out.println("金额："+amount);
+                    }else {
+                        System.out.println("~~~~~~~~~~~~~~");
+                    }
                     //商户订单号
                     String outTradeNo =  params.get("out_trade_no");
                     //支付宝交易号
