@@ -6,6 +6,9 @@
     width: 100%;
   }
 }
+.el-form--label-top .el-form-item__content {
+  margin-left: 0 !important;
+}
 
 // dialog 水平垂直居中
 .dialog--center {
@@ -65,3 +68,18 @@
   }
 }
 /* loading END */
+
+/* tab */
+.el-tabs__header {
+  margin: 0;
+}
+/* tab END */
+
+/* dropdown */
+.el-dropdown-menu__item {
+  &.active {
+    background: #20a0ff !important;
+    color: #fff !important;
+  }
+}
+/* dropdown END */

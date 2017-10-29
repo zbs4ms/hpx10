@@ -25,6 +25,7 @@
     },
     data () {
       let vm = this
+      // 状态筛选项
       const statusOptions = [{
         label: '全部',
         value: undefined
@@ -41,7 +42,8 @@
       this.tableAttrs = {
         'props': {
           'tooltip-effect': 'dark',
-          'style': 'width: 100%'
+          'style': 'width: 100%',
+          'align': 'center'
         }
       }
       this.columnData = [{
@@ -49,7 +51,6 @@
           'prop': 'estTime',
           'label': '创建时间',
           'min-width': '100',
-          'align': 'center',
           'formatter' (row, col) {
             return row.estTime ? convertDate(row.estTime) : '--'
           }
@@ -58,8 +59,7 @@
         attrs: {
           'prop': 'title',
           'label': '日记标题',
-          'min-width': '120',
-          'align': 'center'
+          'min-width': '120'
         },
         'scopedSlots': {
           default: (scope) => {
@@ -72,21 +72,17 @@
         attrs: {
           'prop': 'nick',
           'label': '用户昵称',
-          'min-width': '80',
-          'align': 'center'
+          'min-width': '80'
         }
       }, {
         attrs: {
           'prop': 'accountId',
           'label': '用户ID',
-          'min-width': '80',
-          'align': 'center'
+          'min-width': '80'
         }
       }, {
         attrs: {
           'prop': 'status',
-          'label': '审批状态',
-          'align': 'center',
           'render-header' (h, { column, $index }) {
             return (
               <el-dropdown>
@@ -102,7 +98,7 @@
                     statusOptions.map(item => {
                       return (
                         <el-dropdown-item
-                          class={{ 'status-active': item.value === (vm.apiKeysMap && vm.apiKeysMap.status.value) }}
+                          class={{ 'active': item.value === (vm.apiKeysMap && vm.apiKeysMap.status.value) }}
                           nativeOnClick={() => vm.selectStatus(item)}>
                           { item.label }
                         </el-dropdown-item>
@@ -118,10 +114,6 @@
           default: (scope) => {
             const statusMap = (status) => {
               const DICT = {
-                2: {
-                  text: '审核拒绝',
-                  class: 'status-refuse'
-                },
                 0: {
                   text: '审核通过',
                   class: 'status-pass'
@@ -129,6 +121,10 @@
                 1: {
                   text: '待审批',
                   class: 'status-wait'
+                },
+                2: {
+                  text: '审核拒绝',
+                  class: 'status-refuse'
                 }
               }
               return DICT[status]
@@ -142,37 +138,42 @@
       }, {
         attrs: {
           'label': '操作',
-          'width': 280,
-          'align': 'left'
+          'width': 280
         },
         scopedSlots: {
           default: (scope) => {
             return (
               <div class="flex--vcenter operations">
-                <span class="operate-item flex--vcenter">
+                <span class="operate-item flex--vcenter" style="width: 110px;">
                   <el-switch
                     style="margin-right: 10px;"
                     value={scope.row.isTop}
+                    onInput={(isTop) => (scope.row.isTop = isTop)}
                     onChange={() => this.switchTop(scope.row)}
                     {...{props: { 'on-text': '', 'off-text': '' }}}>
                   </el-switch>
-                  { scope.row.top === 1 ? '置顶' : '取消置顶' }
+                  { scope.row.isTop ? '置顶' : '取消置顶' }
                 </span>
-                <span
+                <el-button
+                  type="text"
                   class="operate-item"
-                  style="color: #20a0ff;"
+                  disabled={scope.row.status + '' !== '1'}
                   onClick={() => this.handleCheck(scope.row)}>
                   审核
-                </span>
-                <span
+                </el-button>
+                <el-button
+                  type="text"
                   class="operate-item"
-                  style="color: #20a0ff;"
-                  onClick={() => this.handleUnShelve(scope.row)}>{ scope.row.enable + '' === '0' ? '下架' : '上架' }</span>
+                  disabled={scope.row.status + '' !== '0'}
+                  onClick={() => this.handleUnShelve(scope.row)}>
+                  { scope.row.status + '' === '0' && scope.row.enable + '' !== '0' ? '上架' : '下架' }
+                </el-button>
               </div>
             )
           }
         }
       }]
+      // 列表请求配置
       this.listApi = {
         requestFn: getListApi,
         responseFn (data) {
@@ -192,6 +193,7 @@
           this.total = content.total || 0
         }
       }
+      // 审核可选项
       this.checkOptions = [{
         label: '审核通过',
         value: '0'
@@ -202,16 +204,16 @@
       return {
         apiKeysMap: {
           query: {
-            value: ''
+            value: undefined
           },
           status: {
             value: undefined
           },
           startTime: {
-            value: ''
+            value: undefined
           },
           endTime: {
-            value: ''
+            value: undefined
           },
           orderBy: {
             value: 'create_time'
@@ -240,9 +242,17 @@
       },
       handleSearch () {
         const createTimeRange = this.createTimeRange || []
-        this.apiKeysMap.startTime.value = new Date(createTimeRange[0] || '').getTime() || undefined
-        this.apiKeysMap.endTime.value = new Date(createTimeRange[1] || '').getTime() || undefined
-        this.apiKeysMap.query.value = this.searchKeyword || undefined
+        this.apiKeysMap = Object.assign({}, this.apiKeysMap, {
+          startTime: {
+            value: new Date(createTimeRange[0] || '').getTime() || undefined
+          },
+          endTime: {
+            value: new Date(createTimeRange[1] || '').getTime() || undefined
+          },
+          query: {
+            value: this.searchKeyword || undefined
+          }
+        })
       },
       // 切换置顶状态
       switchTop (rowData) {
@@ -385,17 +395,6 @@
         color: #ff4949;
         background: rgba(255,73,73,0.10);
         border: 1px solid rgba(255,73,73,0.20);
-      }
-    }
-
-    .operations {
-    }
-  }
-  .log-status-drodown-menu {
-    .el-dropdown-menu__item {
-      &.status-active {
-        background: #20a0ff;
-        color: #fff;
       }
     }
   }

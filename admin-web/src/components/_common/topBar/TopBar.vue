@@ -1,6 +1,9 @@
 <script>
   import { Cookie } from '@/utils/index'
-  import { Message } from 'element-ui'
+  import { mapState, mapMutations } from 'vuex'
+  import {
+    UPDATE_ACCOUNTINFO
+  } from '@/store/global'
 
   import {
     logoutApi
@@ -10,20 +13,26 @@
     name: 'TopBar',
     data () {
       return {
-        userName: '' // 姓名
       }
     },
-    created () {
-//      let accountInfo = JSON.parse(decodeURIComponent(Cookie.get('accountInfo')))
-//      this.userName = accountInfo.account
+    computed: {
+      ...mapState({
+        // 用户名
+        userName: state => state.accountInfo.account
+      })
     },
     methods: {
+      ...mapMutations({
+        updateAccountInfo: UPDATE_ACCOUNTINFO // 更新vuex中的accountInfo和auth
+      }),
       // 清除cookie
       logout () {
         logoutApi().then(() => {
           Cookie.remove('login')
+          localStorage.removeItem('accountInfo')
           this.$router.push('/login')
-          Message({
+          this.updateAccountInfo({})
+          this.$message({
             type: 'success',
             message: '退出成功'
           })
@@ -36,12 +45,13 @@
 <template>
   <div id="top-bar" class="clr">
     <div class="user flex--vcenter rt">
+      <i class="icon-user2"></i>
       <el-dropdown>
         <span class="el-dropdown-link">
-          {{ userName }}<i class="el-icon-caret-bottom el-icon--right"></i>
+          {{ userName }}
+          <i class="el-icon-caret-bottom el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <!--<el-dropdown-item @click.native="$router.push({name: 'user_index'})">我的帐号</el-dropdown-item>-->
           <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -55,11 +65,13 @@
   #top-bar {
     width: 100%;
     height: $topBar_h;
-    .user {
-      padding-left: 20px;
-      height: 100%;
-      background: url('./images/icon-user.png') no-repeat left center;
-      background-size: 18px 18px;
+
+    .icon-user2 {
+      font-size: 18px;
+      margin-right: 6px;
+      color: $color6;
+    }
+    .el-dropdown-link {
       cursor: pointer;
     }
   }

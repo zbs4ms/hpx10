@@ -114,6 +114,7 @@
                 return (
                   item.slotName ? this.$slots[item.slotName] : (
                     <el-table-column
+                      align={this.tableAttrs.props ? this.tableAttrs.props.align : 'left'}
                       {...{props: Object.assign({}, basicColCfg(item.attrs.prop), item.attrs)}}
                       scopedSlots={item.scopedSlots}>
                     </el-table-column>

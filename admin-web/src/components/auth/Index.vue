@@ -4,7 +4,9 @@
  * Date: 2017/9/11
  */
 import EditDialog from './_thumbs/EditDialog.vue'
-
+import {
+  createApi
+} from './api'
 let adding = false
 export default {
   name: 'Auth',
@@ -55,6 +57,20 @@ export default {
     },
     // 提交编辑或新增
     handleEditSubmit (data, respondCb) {
+      console.log(createApi, data)
+      if (adding) {
+        createApi({
+          account: data.name,
+          password: data.psd,
+          permission: JSON.stringify(data.pickedAuth)
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '新建成功'
+          })
+          respondCb(true)
+        })
+      }
       console.log(data, respondCb, 'respondCb')
     },
     handleEditCancel () {

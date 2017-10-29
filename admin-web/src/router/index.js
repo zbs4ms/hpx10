@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 Vue.use(Router)
+import NAVS from '@/components/_common/leftNav/NAVS'
+import $store from '@/store'
 
 /* 各模块路由配置项 */
 // banner
@@ -13,6 +15,10 @@ import authRouters from '@/components/auth/router'
 import logRouters from '@/components/log/router'
 // 预约管理
 import reserveRouters from '@/components/reserve/router'
+// 用户管理
+import userRouters from '@/components/user/router'
+// 推送管理
+import pushRouters from '@/components/push/router'
 
 // 登陆
 const Login = resolve => require(['@/components/login/Login'], resolve)
@@ -23,8 +29,7 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      name: 'Root',
-      redirect: '/banner'
+      name: 'Root'
     },
     {
       path: '/login',
@@ -36,6 +41,8 @@ const router = new Router({
     ...authRouters,
     ...logRouters,
     ...reserveRouters,
+    ...userRouters,
+    ...pushRouters,
     {
       path: '*',
       name: 'NotFound',
@@ -47,12 +54,33 @@ const router = new Router({
 // 全局路由验证登陆状态
 import { Cookie } from '@/utils/index'
 router.beforeEach((to, from, next) => {
+  const MY_AUTH = $store.state.auth || [] // 登陆人拥有的权限
   if (to.name !== 'Login' && !Cookie.get('login')) {
-    next({ name: 'Login' })
+    next({name: 'Login'})
   } else if (to.name === 'Login' && Cookie.get('login') === 'yes') {
     next(from.path || '/')
+  } else if (to.path === '/') {
+    let redirectPath
+    NAVS.find(function fn (nav) {
+      if (nav.children) {
+        nav.children.find(fn)
+      } else {
+        const matched = MY_AUTH.indexOf(nav.permissionId) !== -1
+        if (matched && !redirectPath) {
+          redirectPath = nav.path
+        }
+        return matched
+      }
+    })
+    next(redirectPath)
   } else {
-    next()
+    if (to.name === 'Login' || to.name === 'NotFound') {
+      next()
+    } else {
+      if (MY_AUTH.indexOf(to.meta.permissionId) !== -1) { // 校验权限
+        next()
+      }
+    }
   }
 })
 

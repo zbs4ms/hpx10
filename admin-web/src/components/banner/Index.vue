@@ -31,7 +31,8 @@ export default {
     this.tableAttrs = {
       'props': {
         'tooltip-effect': 'dark',
-        'style': 'width: 100%'
+        'style': 'width: 100%',
+        'align': 'center'
       },
       'on': {
         'selection-change': this.handleSelectionChange.bind(this)
@@ -40,7 +41,8 @@ export default {
     this.columnData = [{
       attrs: {
         'type': 'selection',
-        'width': '90'
+        'width': '90',
+        'align': 'left'
       }
     }, {
       attrs: {
@@ -126,7 +128,7 @@ export default {
           name: item.name,
           cover: item.bannerUrl,
           link: item.jumpUrl,
-          visible: !!item.display
+          visible: !item.display  // display: 0表示显示 1表示隐藏
         }))
         this.total = content.total || 0
       }
@@ -194,7 +196,7 @@ export default {
     handleSearch (e) {
       this.apiKeysMap = Object.assign({}, this.apiKeysMap, {
         name: {
-          value: this.searchKeyword
+          value: this.searchKeyword || undefined
         }
       })
     },
@@ -274,6 +276,7 @@ export default {
         respondCb()
       })
     },
+    // 显示／隐藏
     switchVisible (rowData) {
       switchVisibleApi({
         bannerId: rowData.id
@@ -367,15 +370,6 @@ export default {
       margin-top: 30px;
       justify-content: space-between;
     }
-    .search-input {
-      width: 300px;
-      input {
-        border-radius: 18px;
-      }
-    }
-    .search-label {
-      color: $color3;
-    }
     .btn-wrap {
       .el-button {
         border-radius: 18px;
@@ -391,9 +385,6 @@ export default {
 
     .el-table {
       margin-top: 20px;
-      th + th, td + td {
-        text-align: center;
-      }
       td {
         height: 80px;
       }
@@ -419,13 +410,6 @@ export default {
     }
 
     .operate-item {
-      color: $color4;
-      font-size: 18px;
-      cursor: pointer;
-      & + .operate-item {
-        margin-left: 20px;
-      }
-
       .el-switch {
         margin-right: 10px;
       }

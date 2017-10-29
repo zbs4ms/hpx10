@@ -28,7 +28,8 @@ export default {
     this.tableAttrs = {
       'props': {
         'tooltip-effect': 'dark',
-        'style': 'width: 100%'
+        'style': 'width: 100%',
+        'align': 'center'
       }
     }
     this.columnData = [{
@@ -83,7 +84,7 @@ export default {
                   onChange={() => this.switchTop(scope.row)}
                   {...{props: { 'on-text': '', 'off-text': '' }}}>
                 </el-switch>
-                { scope.row.top === 1 ? '置顶' : '取消置顶' }
+                { scope.row.top ? '置顶' : '取消置顶' }
               </span>
               <span
                   class="operate-item el-icon-edit"
@@ -121,7 +122,7 @@ export default {
       editData: {},
       apiKeysMap: {
         pageSize: {
-          value: 2,
+          value: 10,
           innerKey: 'pageSize' // searchTable组件内部映射的key
         },
         departmentId: {
@@ -177,10 +178,10 @@ export default {
     handleDepartmentSelect (item) {
       this.departmentId = item.id
     },
-    search () {
+    handleSearch () {
       this.apiKeysMap = Object.assign({}, this.apiKeysMap, {
         departmentId: {
-          value: this.departmentId
+          value: this.departmentId || undefined
         }
       })
     },
@@ -264,7 +265,7 @@ export default {
         <el-button
           class="tool-item"
           type="primary"
-          @click="search">搜索
+          @click="handleSearch">搜索
         </el-button>
       </div>
     </search-table>
@@ -317,9 +318,6 @@ export default {
 
     .el-table {
       margin-top: 20px;
-      th + th, td + td {
-        text-align: center;
-      }
       td {
         height: 80px;
       }

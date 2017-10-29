@@ -4,6 +4,7 @@
    * Date: 2017/10/21
    */
   import SearchTable from '@/components/_common/searchTable/SearchTable'
+  import EditDialog from './_thumbs/EditDialog.vue'
 
   import { Loading } from 'element-ui'
 
@@ -21,22 +22,20 @@
   export default {
     name: 'Diary',
     components: {
-      SearchTable
+      SearchTable,
+      EditDialog
     },
     data () {
-      const vm = this
+      let vm = this
       const statusOptions = [{
         label: '全部',
         value: undefined
       }, {
-        label: '过期未到诊',
+        label: '直接推送',
         value: 1
       }, {
-        label: '正常就诊',
+        label: '定时推送',
         value: 0
-      }, {
-        label: '预约就诊',
-        value: 2
       }]
       this.tableAttrs = {
         'props': {
@@ -47,18 +46,18 @@
       }
       this.columnData = [{
         attrs: {
-          'prop': 'date',
-          'label': '预约时间',
-          'min-width': '100',
+          'prop': 'pushTime',
+          'label': '发送时间',
+          'min-width': '150',
           'formatter' (row, col) {
-            return row.estTime ? convertDate(row.estTime) : '--'
+            return row.estTime ? convertDate(row.estTime, 'Y-M-D h:m:s') : '--'
           }
         }
       }, {
         attrs: {
-          'prop': 'userName',
-          'label': '客户姓名',
-          'min-width': '120'
+          'prop': 'content',
+          'label': '内容',
+          'min-width': '180'
         },
         'scopedSlots': {
           default: (scope) => {
@@ -69,63 +68,67 @@
         }
       }, {
         attrs: {
-          'prop': 'cardNo',
-          'label': '就诊卡号',
-          'min-width': '120'
-        }
-      }, {
-        attrs: {
-          'prop': 'doctor',
-          'label': '医生姓名',
-          'min-width': '120'
-        }
-      }, {
-        attrs: {
-          'prop': 'project',
-          'label': '项目名称',
+          'prop': 'target',
+          'label': '目标人群',
           'min-width': '100'
         }
       }, {
         attrs: {
-          'prop': 'tel',
-          'label': '预留手机号',
-          'min-width': '100'
-        }
-      }, {
-        attrs: {
-          'prop': 'ID_no',
-          'label': '身份证号',
-          'min-width': '160'
-        }
-      }, {
-        attrs: {
-          'prop': 'status',
-          'label': '状态',
-          'min-width': '100',
+          'prop': 'type',
+          'label': '类型',
           'render-header' (h, { column, $index }) {
             return (
               <el-dropdown>
                 <span class="el-dropdown-link">
-                  审批状态
+                  类型
                   <i
                     class="el-icon-arrow-down el-icon--right"
                     style="cursor: pointer;">
                   </i>
                 </span>
-                <el-dropdown-menu slot="dropdown" class="log-status-drodown-menu">
-                {
-                  statusOptions.map(item => {
-                    return (
-                      <el-dropdown-item
-                        class={{ 'status-active': item.value === (vm.apiKeysMap && vm.apiKeysMap.status.value) }}
-                        nativeOnClick={() => vm.selectStatus(item)}>
-                        { item.label }
-                      </el-dropdown-item>
-                    )
-                  })
-                }
+                <el-dropdown-menu slot="dropdown" class="push-type-drodown-menu">
+                  {
+                    statusOptions.map(item => {
+                      return (
+                        <el-dropdown-item
+                          class={{ 'active': item.value === (vm.apiKeysMap && vm.apiKeysMap.status.value) }}
+                          nativeOnClick={() => vm.selectStatus(item)}>
+                          { item.label }
+                        </el-dropdown-item>
+                      )
+                    })
+                  }
                 </el-dropdown-menu>
               </el-dropdown>
+            )
+          }
+        }
+      }, {
+        attrs: {
+          'label': '操作',
+          'width': 280
+        },
+        scopedSlots: {
+          default: (scope) => {
+            return (
+              <div class="flex--center operations">
+                <span
+                  class="operate-item"
+                  style="color: #20a0ff;"
+                  onClick={() => this.editRow(scope.row)}>
+                  编辑
+                </span>
+                <span
+                  class="operate-item"
+                  style="color: #20a0ff;"
+                  onClick={() => this.handleCheck(scope.row)}>
+                  转发
+                </span>
+                <span
+                  class="operate-item el-icon-delete"
+                  onClick={() => this.handleDelRow(scope.row)}>
+                </span>
+              </div>
             )
           }
         }
@@ -180,8 +183,7 @@
         },
         createTimeRange: '',
         searchKeyword: '',
-        checkDialogVisible: false, // 审核弹窗
-        checkStatus: '' // 当前选择的审核状态
+        editDialogVisible: false // 编辑弹框
       }
     },
     watch: {
@@ -263,16 +265,42 @@
             }
           }
         })
+      },
+      // 编辑
+      editRow () {
+        this.editDialogVisible = true
+      },
+      // 删除
+      handleDelRow (rowData) {
+        this.$confirm('是否删除该信息？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          beforeClose: (action, instance, done) => {
+            if (action === 'confirm') {
+              Promise.resolve().then(res => {
+                done()
+                this.$message({
+                  type: 'success',
+                  message: '删除成功'
+                })
+                this.$refs.searchTable.getList()
+              })
+            } else {
+              done()
+            }
+          }
+        })
       }
     }
   }
 </script>
 
 <template>
-  <div id="reverse-manage">
+  <div id="push-manage">
     <div class="flex--vcenter page-top">
       <div class="page-title">
-        预约管理
+        推送管理
       </div>
     </div>
     <search-table
@@ -282,86 +310,48 @@
       :list-api="listApi"
       :api-keys-map="apiKeysMap">
       <div class="table-tools flex--vcenter" slot="table-tools">
-        <div class="tool-item">
-          预约时间：
-          <el-date-picker
-            v-model="createTimeRange"
-            type="daterange"
-            style="width: 230px;"
-            placeholder="选择日期范围">
-          </el-date-picker>
+        <div class="table-tools__left flex--vcenter">
+          <div class="tool-item">
+            发送时间：
+            <el-date-picker
+              v-model="createTimeRange"
+              type="daterange"
+              style="width: 230px;"
+              placeholder="选择日期范围">
+            </el-date-picker>
+          </div>
+          <div class="tool-item">
+            搜索关键字：
+            <el-input
+              v-model="searchKeyword"
+              placeholder="请输入客户姓名／卡号..."
+              style="width: 290px;">
+            </el-input>
+          </div>
+          <div class="tool-item">
+            <el-button type="primary" @click="handleSearch">搜索</el-button>
+          </div>
         </div>
-        <div class="tool-item">
-          搜索关键字：
-          <el-input
-            v-model="searchKeyword"
-            placeholder="请输入ID号码 / 作者昵称 / 日记标题"
-            style="width: 290px;">
-          </el-input>
-        </div>
-        <div class="tool-item">
-          <el-button type="primary" @click="handleSearch">搜索</el-button>
+        <div class="table-tools__right">
+          <el-button
+            class="btn--add"
+            type="primary"
+            @click="openEditDialog(null, true)">
+            新增 <i class="el-icon-plus"></i>
+          </el-button>
         </div>
       </div>
     </search-table>
-    <el-dialog
-      title="审核"
-      :visible.sync="checkDialogVisible"
-      size="tiny">
-      <div style="text-align: center;height: 100px;">
-        <span>审核操作：</span>
-        <el-select v-model="checkStatus" placeholder="请选择">
-          <el-option
-            v-for="item in checkOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="checkDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleCheckSubmit">确 定</el-button>
-      </span>
-    </el-dialog>
+    <edit-dialog
+      v-model="editDialogVisible">
+    </edit-dialog>
   </div>
 </template>
 
 <style lang="scss">
-  #reverse-manage {
-    .status-label {
-      display: inline-block;
-      width: 60px;
-      height: 24px;
-      border-radius: 4px;
-      font-size: 12px;
-
-      &.status-pass {
-        color: #10ad57;
-        background: rgba(19,206,102,0.10);
-        border: 1px solid rgba(19,206,102,0.20);
-      }
-      &.status-wait {
-        color: #20a0ff;
-        background: rgba(32,160,255,0.10);
-        border: 1px solid rgba(32,160,255,0.20);
-      }
-      &.status-refuse {
-        color: #ff4949;
-        background: rgba(255,73,73,0.10);
-        border: 1px solid rgba(255,73,73,0.20);
-      }
-    }
-
-    .operations {
-    }
-  }
-  .log-status-drodown-menu {
-    .el-dropdown-menu__item {
-      &.status-active {
-        background: #20a0ff;
-        color: #fff;
-      }
+  #push-manage {
+    .table-tools {
+      justify-content: space-between;
     }
   }
 </style>
