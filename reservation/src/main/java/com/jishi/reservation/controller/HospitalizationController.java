@@ -102,7 +102,7 @@ public class HospitalizationController extends MyBaseController {
             if (depositBalanceDetails == null)
                 return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
             for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
-                list.add(getHospitalizationInfoVO(depositBalanceDetail));
+                list.add(getHospitalizationInfoVO(depositBalanceDetail,"3987"));
             }
 
 
@@ -127,7 +127,7 @@ public class HospitalizationController extends MyBaseController {
 //                    if(status == 1){
 //                        if(depositBalanceDetail.getZyzt())
 //                    }
-                    list.add(getHospitalizationInfoVO(depositBalanceDetail));
+                    list.add(getHospitalizationInfoVO(depositBalanceDetail,brId));
                 }
             }
         }
@@ -147,7 +147,7 @@ public class HospitalizationController extends MyBaseController {
         DepositBalanceDetail depositBalanceDetail = hospitalizationService.queryInfo(brId, rycs, null);
         if (depositBalanceDetail == null)
             return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-        HospitalizationInfoVO vo = getHospitalizationInfoVO(depositBalanceDetail);
+        HospitalizationInfoVO vo = getHospitalizationInfoVO(depositBalanceDetail,brId);
         return ResponseWrapper().addData(vo).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
@@ -241,7 +241,7 @@ public class HospitalizationController extends MyBaseController {
 
 
 
-    private HospitalizationInfoVO getHospitalizationInfoVO(DepositBalanceDetail depositBalanceDetail) throws Exception {
+    private HospitalizationInfoVO getHospitalizationInfoVO(DepositBalanceDetail depositBalanceDetail,String brId) throws Exception {
         HospitalizationInfoVO hospitalizationInfoVO = new HospitalizationInfoVO();
         hospitalizationInfoVO.setState(depositBalanceDetail.getZyzt());
         hospitalizationInfoVO.setName(depositBalanceDetail.getJbxx().getXm());
@@ -254,6 +254,7 @@ public class HospitalizationController extends MyBaseController {
         hospitalizationInfoVO.setYyje(depositBalanceDetail.getFyxx().getYjfy().getZyfy());
         hospitalizationInfoVO.setRycs(depositBalanceDetail.getZycs());
         hospitalizationInfoVO.setYujiaojine(depositBalanceDetail.getYujiaojine());
+        hospitalizationInfoVO.setBrid(brId);
         return hospitalizationInfoVO;
     }
 

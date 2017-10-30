@@ -57,7 +57,7 @@ public class Register {
     @Transient
     private String payTime;       //支付时间
     @Transient
-    private String completeTime;  //完成时间
+    private Date completeTime;  //完成时间
     @Transient
     private String orderCode;     //订单编号
     @Transient

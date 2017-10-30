@@ -34,6 +34,8 @@ public class HospitalizationInfoVO {
     String rycs;
     @ApiModelProperty("预缴金额")
     String yujiaojine;
+    @ApiModelProperty("病人id")
+    String brid;
 
 
 

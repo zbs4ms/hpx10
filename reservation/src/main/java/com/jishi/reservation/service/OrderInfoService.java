@@ -28,6 +28,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,23 +50,23 @@ public class OrderInfoService {
     @Autowired
     PatientInfoService patientService;
 
-    public OrderVO queryOrderVoById(Long orderId,String orderNumber) {
+    public OrderVO queryOrderVoById(Long orderId,String orderNumber) throws ParseException {
 
         OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(orderId,orderNumber);
         Register register =  registerMapper.queryByOrderId(orderInfo.getId());
 
         OrderVO orderVO = new OrderVO();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+       // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         orderVO.setOrderNumber(orderInfo.getOrderNumber());
         orderVO.setSerialNumber(register.getSerialNumber());
         orderVO.setDoctorName(register.getDoctorName());
         orderVO.setPayType(orderInfo.getPayType());
         orderVO.setPrice(orderInfo.getPrice());
         orderVO.setPosition("泸州锦欣医院");
-        orderVO.setCompletedTime(orderInfo.getPayTime());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        orderVO.setCompletedTime(sdf.parse(orderInfo.getPayTime()));
         orderVO.setDepartment(register.getDepartment());
         orderVO.setPatientName(register.getPatientName());
-
         orderVO.setTimeInterval(sdf.format(register.getAgreedTime()).contains("14:00")?"下午":"上午");
         orderVO.setRegisterTime(register.getAgreedTime());
 

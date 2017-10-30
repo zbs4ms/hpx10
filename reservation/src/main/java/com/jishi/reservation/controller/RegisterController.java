@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -147,7 +148,8 @@ public class RegisterController extends MyBaseController {
             OrderInfo orderInfo = orderInfoService.findOrderById(register.getOrderId());
             register.setPayType(orderInfo.getPayType());
             register.setPayTime(orderInfo.getPayTime());
-            register.setCompleteTime(orderInfo.getPayTime());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss");
+            register.setCompleteTime(sdf.parse(orderInfo.getPayTime()));
             register.setPrice(orderInfo.getPrice());
             //register.setCountDownTime(register.getCreateTime().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
             register.setOrderCode(orderInfo.getOrderNumber());
