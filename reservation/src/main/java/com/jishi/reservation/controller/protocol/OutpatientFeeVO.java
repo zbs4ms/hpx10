@@ -10,7 +10,7 @@ import java.util.List;
  * Created by liangxiong on 2017/10/25.
  */
 @Data
-@ApiModel("门诊缴费医费目")
+@ApiModel("门诊缴费费目")
 public class OutpatientFeeVO {
     @ApiModelProperty("费目名称")
     private String feeName;

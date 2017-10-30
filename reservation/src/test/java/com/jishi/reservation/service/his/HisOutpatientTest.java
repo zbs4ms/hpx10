@@ -16,7 +16,7 @@ public class HisOutpatientTest {
     @Test
     public void queryPayReceiptTest() throws Exception {
         HisOutpatient hisOutpatient = new HisOutpatient();
-        System.out.println(hisOutpatient.queryPayReceipt("215","","500","1"));
+        System.out.println(hisOutpatient.queryPayReceipt("215","",500,"1"));
     }
 
 

@@ -36,6 +36,8 @@ public class OutpatientService {
     @Autowired
     private OrderInfoService orderInfoService;
 
+    private static final int OUTPATIENT_PAMENT_INFO_QUERY_DAY = 30;
+
     /**
      * 获取用户门诊缴费列表
      * @param accountId
@@ -51,7 +53,7 @@ public class OutpatientService {
         List<OutpatientPaymentInfoVO> paymentInfoList = new ArrayList<OutpatientPaymentInfoVO>();
         for (PatientInfo info : patientInfoList) {
             // TODO 结算卡类别和站点暂时传null
-            OutpatientPaymentInfo data = hisOutpatient.queryPayReceipt(info.getBrId(), "", "", "");
+            OutpatientPaymentInfo data = hisOutpatient.queryPayReceipt(info.getBrId(), "", OUTPATIENT_PAMENT_INFO_QUERY_DAY, "");
             List<OutpatientPaymentInfo.Ghlist> ghList = data.getGhlist();
             if (ghList == null || ghList.isEmpty()) {
               log.info(info.getBrId() + ": 门诊缴费列表为空");

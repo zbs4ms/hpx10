@@ -287,7 +287,7 @@ public class HisOutpatient {
      * @return
      * @throws Exception
      */
-    public OutpatientPaymentInfo queryPayReceipt(String brid, String jsklb, String cxts, String zd) throws Exception {
+    public OutpatientPaymentInfo queryPayReceipt(String brid, String jsklb, int cxts, String zd) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<BRID>").append(brid).append("</BRID>");
         sb.append("<CXTS>").append(cxts).append("</CXTS>");
