@@ -98,7 +98,7 @@ public class HisTool {
         sb.append(Codec.Encrypt(data, Constant.HIS_KEYS));
         sb.append("]]></DATAPARAM>");
         sb.append("</ROOT>");
-        log.info(sb.toString());
+      //  log.info(sb.toString());
         return sb.toString();
     }
 
