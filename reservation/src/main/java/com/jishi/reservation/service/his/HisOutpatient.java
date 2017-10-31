@@ -7,6 +7,7 @@ import org.apache.axis.message.MessageElement;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 /**
@@ -287,7 +288,7 @@ public class HisOutpatient {
      * @return
      * @throws Exception
      */
-    public OutpatientPaymentInfo queryPayReceipt(String brid, String jsklb, int cxts, String zd) throws Exception {
+    public OutpatientPaymentInfo queryPayReceipt(String brid, String jsklb, String cxts, String zd) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<BRID>").append(brid).append("</BRID>");
         sb.append("<CXTS>").append(cxts).append("</CXTS>");
@@ -304,33 +305,78 @@ public class HisOutpatient {
 
     /**
      * @description 门诊缴费多张单据一次支付
-     * @param docIds 收费单据号串，逗号分隔多个单据号
+     * @param docmentId 收费单据号串，逗号分隔多个单据号
      * @param brId 病人ID
-     * @param zje 总金额
-     * @param jsje 结算金额
-     * @param sfghd 是否挂号单，0-收费单，1-挂号单
-     * @param jylsh 交易流水号
-     * @param jynr 交易内容，传“支付帐号|姓名”
+     * @param price 总金额
+     * @param payPrice 结算金额
+     * @param documentType 是否挂号单，0-收费单，1-挂号单
+     * @param thirdOrderNumber 交易流水号
+     * @param paymentContent 交易内容，传“支付帐号|姓名”
+     * @param jsklb 结算卡类别，固定传入第三方名称
      * @throws Exception
      * @date 2017/10/26
      **/
-    public String batchPayModify(String docIds, String brId, double zje, double jsje, int sfghd, String jylsh, String jynr, String dsfmc) throws Exception {
+    public String confirmPayment(String accountId, String brId, String docmentId, BigDecimal price, BigDecimal payPrice, int documentType,
+                              String thirdOrderNumber, String paymentContent, String jsklb) throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append("<DJH>").append(docIds).append("</DJH>");
-        sb.append("<JE>").append(zje).append("</JE>");
-        sb.append("<SFGH>").append(sfghd).append("</SFGH>");
+        sb.append("<DJH>").append(docmentId).append("</DJH>");
+        sb.append("<JE>").append(price).append("</JE>");
+        sb.append("<SFGH>").append(documentType).append("</SFGH>");
         sb.append("<BRID>").append(brId).append("</BRID>");
         sb.append("<JSLIST>");
         sb.append("<JS>");
-        sb.append("<JSKLB>").append(dsfmc).append("</JSKLB>");
+        sb.append("<JSKLB>").append(jsklb).append("</JSKLB>");
         sb.append("<JSKH>").append("</JSKH>");
         sb.append("<JSFS>").append("</JSFS>");
-        sb.append("<JSJE>").append(jsje).append("</JSJE>");
-        sb.append("<JYLSH>").append(jylsh).append("</JYLSH>");
+        sb.append("<JSJE>").append(payPrice).append("</JSJE>");
+        sb.append("<JYLSH>").append(thirdOrderNumber).append("</JYLSH>");
         sb.append("<EXPENDLIST>");
         sb.append("<EXPEND>");
         sb.append("<JYMC>").append("交易信息").append("</JYMC>");
-        sb.append("<JYLR>").append(jynr).append("</JYLR>");
+        sb.append("<JYLR>").append(paymentContent).append("</JYLR>");
+        sb.append("</EXPEND>");
+        sb.append("</EXPENDLIST>");
+        sb.append("</JS>");
+        sb.append("</JSLIST>");
+        String reData = HisTool.toXMLString("Payment.BatchPay.Modify", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            String xml = HisTool.getHisDataparam(me,"Payment.BatchPay.Modify");
+            return HisTool.getXmlAttribute(xml,"JZID");
+        }
+        return null;
+    }
+
+    /**
+     * @description 门诊缴费多张单据一次支付
+     * @param docIds 收费单据号串，逗号分隔多个单据号
+     * @param brId 病人ID
+     * @param price 总金额
+     * @param payPrice 结算金额
+     * @param documentType 是否挂号单，0-收费单，1-挂号单
+     * @param thirdOrderNumber 交易流水号
+     * @param paymentContent 交易内容，传“支付帐号|姓名”
+     * @param jsklb 结算卡类别，固定传入第三方名称
+     * @throws Exception
+     * @date 2017/10/26
+     **/
+    public String batchPayModify(String docIds, String brId, BigDecimal price, BigDecimal payPrice, int documentType, String thirdOrderNumber, String paymentContent, String jsklb) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<DJH>").append(docIds).append("</DJH>");
+        sb.append("<JE>").append(price).append("</JE>");
+        sb.append("<SFGH>").append(documentType).append("</SFGH>");
+        sb.append("<BRID>").append(brId).append("</BRID>");
+        sb.append("<JSLIST>");
+        sb.append("<JS>");
+        sb.append("<JSKLB>").append(jsklb).append("</JSKLB>");
+        sb.append("<JSKH>").append("</JSKH>");
+        sb.append("<JSFS>").append("</JSFS>");
+        sb.append("<JSJE>").append(payPrice).append("</JSJE>");
+        sb.append("<JYLSH>").append(thirdOrderNumber).append("</JYLSH>");
+        sb.append("<EXPENDLIST>");
+        sb.append("<EXPEND>");
+        sb.append("<JYMC>").append("交易信息").append("</JYMC>");
+        sb.append("<JYLR>").append(paymentContent).append("</JYLR>");
         sb.append("</EXPEND>");
         sb.append("</EXPENDLIST>");
         sb.append("</JS>");

@@ -13,17 +13,12 @@ import java.util.List;
 @Data
 public class OutpatientPaymentInfo {
 
-    @XStreamImplicit(itemFieldName="GHLIST")
-    List<Ghlist> ghlist;
+    @XStreamAlias("GHLIST")
+    List<Gh> ghlist;
 
     @Data
-    public class Ghlist{
-        @XStreamAlias("GH")
-        Gh gh;
-    }
-
-    @Data
-    public class Gh{
+    @XStreamAlias("GH")
+    public static class Gh{
         //单据号
         @XStreamAlias("DJH")
         String djh;
@@ -60,19 +55,14 @@ public class OutpatientPaymentInfo {
         //是否结算卡支付，0-否，1-是。即是否通过第三方支付
         @XStreamAlias("SFJSK")
         String sfjsk;
-        @XStreamImplicit(itemFieldName="YZLIST")
-        List<Yzlist> yzlists;
+        @XStreamAlias("YZLIST")
+        List<Yz> yzlists;
 
     }
 
     @Data
-    public class Yzlist{
-        @XStreamAlias("YZ")
-        Yz yz ;
-    }
-
-    @Data
-    public class Yz{
+    @XStreamAlias("YZ")
+    public static class Yz{
         //医嘱类型
         @XStreamAlias("YZLX")
         String yzlx;
@@ -83,21 +73,15 @@ public class OutpatientPaymentInfo {
         @XStreamAlias("YZMC")
         String yzmc;
         //费目列表
-        @XStreamImplicit(itemFieldName="FMLIST")
-        List<Fmlist> fmlists;
-        @XStreamImplicit(itemFieldName="DJLIST")
-        List<Djlist> djlists;
+        @XStreamAlias("FMLIST")
+        List<Fm> fmlists;
+        @XStreamAlias("DJLIST")
+        List<Dj> djlists;
     }
 
     @Data
-    public class Djlist{
-        //医嘱名称
-        @XStreamAlias("DJ")
-        Dj dj;
-    }
-
-    @Data
-    public class Dj{
+    @XStreamAlias("DJ")
+    public static class Dj{
         //单据号
         @XStreamAlias("DJH")
         String djh;
@@ -122,13 +106,8 @@ public class OutpatientPaymentInfo {
     }
 
     @Data
-    public class Fmlist{
-        @XStreamAlias("FM")
-        Fm fm;
-    }
-
-    @Data
-    public class Fm{
+    @XStreamAlias("FM")
+    public static class Fm{
         //费目名称
         @XStreamAlias("MC")
         String mc;
@@ -139,18 +118,13 @@ public class OutpatientPaymentInfo {
         @XStreamAlias("ZFZT")
         String zfzt;
         //明细列表
-        @XStreamImplicit(itemFieldName="MXLIST")
-        List<Mxlist> mxlists ;
+        @XStreamAlias("MXLIST")
+        List<Mx> mxlists ;
     }
 
     @Data
-    public class Mxlist{
-        @XStreamAlias("MX")
-        Mx mx;
-    }
-
-    @Data
-    public class Mx{
+    @XStreamAlias("MX")
+    public static class Mx{
         //名称
         @XStreamAlias("MC")
         String mc;

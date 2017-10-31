@@ -6,7 +6,9 @@ import com.jishi.reservation.controller.protocol.OutpatientPaymentInfoVO;
 import com.jishi.reservation.controller.protocol.OutpatientVisitPrescriptionVO;
 import com.jishi.reservation.controller.protocol.OutpatientVisitReceiptVO;
 import com.jishi.reservation.controller.protocol.OutpatientVisitRecordVO;
+import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.service.AccountService;
+import com.jishi.reservation.service.OrderInfoService;
 import com.jishi.reservation.service.OutpatientService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import io.swagger.annotations.Api;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -35,6 +38,10 @@ public class OutpatientController extends MyBaseController {
     @Autowired
     private OutpatientService outpatientService;
 
+    @Autowired
+    OrderInfoService orderInfoService;
+
+
     @ApiOperation(value = "门诊缴费列表", response = OutpatientPaymentInfoVO.class)
     @RequestMapping(value="/paymentInfo", method = RequestMethod.GET)
     @ResponseBody
@@ -48,6 +55,29 @@ public class OutpatientController extends MyBaseController {
         }
         List<OutpatientPaymentInfoVO> outpatientPamentInfo = outpatientService.queryOutpatientPamentInfo(accountId);
         return ResponseWrapper().addData(outpatientPamentInfo).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+    @ApiOperation(value = "生成订单", response = OrderInfo.class)
+    @RequestMapping(value = "generateOrder", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject generateOrder(HttpServletRequest request,HttpServletResponse response,
+            @ApiParam(value = "accountId 通过token找到", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+            @ApiParam(value = "预交的名称 eg:住院预交款", required = true) @RequestParam(value = "subject", required = true) String subject,
+            @ApiParam(value = "交易的金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
+            @ApiParam(value = "brId", required = true) @RequestParam(value = "brId", required = true) String brId) throws Exception {
+
+        if (accountId == null) {
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1L)){
+                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
+
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+            }
+        }
+
+        OrderInfo orderInfo = orderInfoService.generateOutpatient(accountId, brId, subject, price);
+
+        return ResponseWrapper().addData(orderInfo).addMessage("订单生成成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     /*
@@ -66,25 +96,47 @@ public class OutpatientController extends MyBaseController {
     }
     */
 
+    @ApiOperation(value = "门诊缴费确认(单个医嘱)")
+    @RequestMapping(value="/confirmPayment", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject confirmPayment(HttpServletRequest request, HttpServletResponse response,
+                  @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+                  @ApiParam(value = "单据ID", required = true) @RequestParam(value = "docmentId", required = true) String docmentId,
+                  @ApiParam(value = "病人ID", required = true) @RequestParam(value = "brId", required = true) String brId,
+                  @ApiParam(value = "总金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
+                  @ApiParam(value = "总结算金额", required = false) @RequestParam(value = "payPrice", required = false) BigDecimal payPrice,
+                  @ApiParam(value = "单据类型，1-收费单，4-挂号单", required = true) @RequestParam(value = "documentType", required = true) Integer documentType,
+                  @ApiParam(value = "订单号", required = true) @RequestParam(value = "orderNumber", required = true) String orderNumber) throws Exception {
+        if (accountId == null) {
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1L)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+            }
+        }
+        //boolean rslt = outpatientService.batchpayConfirm(docIds, brId, zje, jsje, sfghd, orderId);
+        return true ? ResponseWrapper().addMessage("成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
+        ResponseWrapper().addMessage("失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+    }
+
     @ApiOperation(value = "门诊缴费确认(可多个单据)")
     @RequestMapping(value="/batchpayConfirm", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject outpatientPamentConfirm(HttpServletRequest request, HttpServletResponse response,
+    public JSONObject outpatientPaymentConfirm(HttpServletRequest request, HttpServletResponse response,
                 @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
                 @ApiParam(value = "单据ID，可以多个单据，以','分隔", required = true) @RequestParam(value = "docIds", required = true) String docIds,
                 @ApiParam(value = "病人ID", required = true) @RequestParam(value = "brId", required = true) String brId,
-                @ApiParam(value = "总金额", required = true) @RequestParam(value = "zje", required = true) Double zje,
-                @ApiParam(value = "总结算金额", required = true) @RequestParam(value = "jsje", required = true) Double jsje,
-                @ApiParam(value = "是否挂号单", required = true) @RequestParam(value = "sfghd", required = true) Integer sfghd,
-                @ApiParam(value = "交易单ID", required = true) @RequestParam(value = "orderId", required = true) Long orderId) throws Exception {
+                @ApiParam(value = "总金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
+                @ApiParam(value = "总结算金额", required = false) @RequestParam(value = "payPrice", required = false) BigDecimal payPrice,
+                @ApiParam(value = "单据类型，1-收费单，4-挂号单", required = true) @RequestParam(value = "documentType", required = true) Integer documentType,
+                @ApiParam(value = "订单号", required = true) @RequestParam(value = "orderNumber", required = true) Long orderNumber) throws Exception {
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1L)){
               return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
-        boolean rslt = outpatientService.batchpayConfirm(docIds, brId, zje, jsje, sfghd, orderId);
-        return rslt ? ResponseWrapper().addMessage("成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
+        //boolean rslt = outpatientService.batchpayConfirm(docIds, brId, zje, jsje, sfghd, orderId);
+        return true ? ResponseWrapper().addMessage("成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
                       ResponseWrapper().addMessage("失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
     }
 
