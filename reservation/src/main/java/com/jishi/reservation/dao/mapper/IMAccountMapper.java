@@ -15,8 +15,8 @@ public interface IMAccountMapper extends MyMapper<IMAccount> {
     @Select({"SELECT * FROM im_account where account_id = ${accountId}"})
     IMAccount selectByAccountId(@Param("accountId") long accountId);
 
-    @Select({"SELECT * FROM im_account where doctor_id = ${doctord}"})
-    IMAccount selectByDoctorId(@Param("doctord") long doctord);
+    @Select({"SELECT * FROM im_account where doctor_id = ${doctorId}"})
+    IMAccount selectByDoctorId(@Param("doctorId") long doctorId);
 
     @Select({"SELECT * FROM im_account where doctor_his_id = ${doctorHisd}"})
     IMAccount selectByDoctorhisId(@Param("doctorHisd") long doctorHisd);

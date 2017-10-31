@@ -97,4 +97,5 @@ public class Constant {
     /** =========================   网易云信相关    ==============================**/
     public static final String IM_NETEASY_APPKEY = "b183b56ab35717b01f2ad925a8e6cc89";
     public static final String IM_NETEASY_APPSECRET = "8071e83e5b74";
+    public static final int IM_HISTORY_VISIT_DOCTOR_SIZE = 10;  //用户端默认只返回10条咨询过的医生记录
 }

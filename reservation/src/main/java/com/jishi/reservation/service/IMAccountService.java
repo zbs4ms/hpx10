@@ -1,18 +1,23 @@
 package com.jishi.reservation.service;
 
+import com.jishi.reservation.controller.protocol.IMChatInfo;
+import com.jishi.reservation.dao.mapper.IMAccessRecordMapper;
 import com.jishi.reservation.dao.mapper.IMAccountMapper;
 import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.dao.models.Doctor;
+import com.jishi.reservation.dao.models.IMAccessRecord;
 import com.jishi.reservation.dao.models.IMAccount;
 import com.jishi.reservation.otherService.im.neteasy.IMClientNeteasy;
 import com.jishi.reservation.otherService.im.neteasy.model.IMUser;
 import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by liangxiong on 2017/10/27.
@@ -28,6 +33,9 @@ public class IMAccountService {
 
     @Autowired
     private IMAccountMapper imAccountMapper;
+
+    @Autowired
+    private IMAccessRecordMapper imAccessRecordMapper;
 
     private IMClientNeteasy imClientNeteasy = IMClientNeteasy.getInstance(
             Constant.IM_NETEASY_APPKEY, Constant.IM_NETEASY_APPSECRET);
@@ -158,6 +166,9 @@ public class IMAccountService {
                 log.error("未找到用户：" + accId);
                 return null;
             }
+            String identify = UUID.randomUUID().toString().replace("-", "");
+            imUser.setAccid(identify);
+            imUser.setToken(identify);
             imUser.setName(account.getNick());
             imUser.setMobile(account.getPhone());
             imUser.setEmail(account.getEmail());
@@ -171,6 +182,9 @@ public class IMAccountService {
                 return null;
             }
             Doctor doctor = doctorList.iterator().next();
+            String identify = UUID.randomUUID().toString().replace("-", "");
+            imUser.setAccid(identify);
+            imUser.setToken(identify);
             imUser.setName(doctor.getName());
             imUser.setIcon(doctor.getHeadPortrait());
             imUser.setSign(doctor.getAbout());
@@ -179,12 +193,77 @@ public class IMAccountService {
             imAccount.setType(1); //医生
         }
         IMUser resUser = imClientNeteasy.getUserOperation().createUser(imUser);
-        log.info("网易云信创建账号成功:  imaccid" + resUser.getAccid() + " token: " + resUser.getToken());
+        log.info("网易云信创建账号成功:  imaccid " + resUser.getAccid() + " token " + resUser.getToken());
 
         imAccount.setImAccId(resUser.getAccid());
         imAccount.setImToken(resUser.getToken());
-        imAccountMapper.insert(imAccount);
+        imAccountMapper.insertReturnId(imAccount);
 
         return imAccount;
+    }
+
+    /**
+     * @description 咨询医生，返回im信息
+     * @param accountId 用户id
+     * @param doctorId 医生id
+     * @throws
+    **/
+    public IMChatInfo chatToDocter(Long accountId, Long doctorId) throws Exception {
+        IMAccount imUserAccount = getUserIMAccount(accountId);
+        IMAccount imDoctorAccount = getDoctorIMAccount(doctorId);
+        IMChatInfo info = new IMChatInfo();
+        info.setImSourceId(imUserAccount.getImAccId());
+        info.setImDestId(imDoctorAccount.getImAccId());
+        info.setImToken(imUserAccount.getImToken());
+
+        updateVisitRecord(accountId, doctorId);
+        return info;
+    }
+
+    /**
+     * @description 更新用户访问记录
+     * @param accountId 用户id
+     * @param doctorId 医生id
+     * @throws
+    **/
+    public boolean updateVisitRecord(Long accountId, Long doctorId) {
+        IMAccessRecord record = imAccessRecordMapper.selectAppointRecord(accountId, doctorId);
+        if (record == null) {
+            record = new IMAccessRecord();
+            record.setUserId(accountId);
+            record.setDoctorId(doctorId);
+            Date date = new Date();
+            record.setFirstAccessDate(date);
+            record.setLastAccessDate(date);
+            imAccessRecordMapper.insertReturnId(record);
+        } else {
+            record.setLastAccessDate(new Date());
+            imAccessRecordMapper.updateByPrimaryKey(record);
+        }
+        return true;
+    }
+
+    /**
+     * @description 获取用户咨询列表
+     * @param accountId 用户账号ID
+     * @throws
+    **/
+    public List<Doctor> queryUserIMAccessRecord(Long accountId) throws Exception {
+        List<IMAccessRecord> accessRecordList = imAccessRecordMapper.selectByUserId(accountId, Constant.IM_HISTORY_VISIT_DOCTOR_SIZE);
+        if (accessRecordList == null || accessRecordList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Doctor> doctorList = new ArrayList<Doctor>();
+        List<Doctor> doctorAllList = doctorService.queryDoctor(null, null, null, null, null, 0);
+        for (IMAccessRecord accessRecord : accessRecordList) {
+            for (int i = 0; i < doctorAllList.size(); ++i) {
+                Doctor item = doctorAllList.get(i);
+                if (item.getId().equals(accessRecord.getDoctorId())) {
+                    doctorList.add(item);
+                    break;
+                }
+            }
+        }
+        return doctorList;
     }
 }
