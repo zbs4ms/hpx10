@@ -3,6 +3,8 @@ package com.jishi.reservation.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.protocol.IMChatInfo;
+import com.jishi.reservation.dao.models.Doctor;
+import com.jishi.reservation.dao.models.IMAccessRecord;
 import com.jishi.reservation.dao.models.IMAccount;
 import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.IMAccountService;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Created by liangxiong on 2017/10/27.
@@ -53,15 +56,7 @@ public class IMAccountController extends MyBaseController {
     @RequestMapping(value = "/getDoctorToken", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject getDoctorToken(HttpServletRequest request, HttpServletResponse response,
-                               @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
                                @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
-
-        if (accountId == null) {
-            accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1L)){
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-            }
-        }
         String imToken = imAccountService.getDoctorIMAccount(doctorId).getImToken();
         return ResponseWrapper().addData(imToken).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -86,8 +81,17 @@ public class IMAccountController extends MyBaseController {
     @RequestMapping(value = "/refreshDoctorToken", method = RequestMethod.PUT)
     @ResponseBody
     public JSONObject refreshDoctorToken(HttpServletRequest request, HttpServletResponse response,
-                                 @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
                                  @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
+        String imToken = imAccountService.refreshDoctorToken(doctorId);
+        return ResponseWrapper().addData(imToken).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+    @ApiOperation(value = "获取聊天信息，医生im账户，用户im账号和token", response = IMChatInfo.class)
+    @RequestMapping(value = "/chatToDocter", method = RequestMethod.PUT)
+    @ResponseBody
+    public JSONObject chatToDocter(HttpServletRequest request, HttpServletResponse response,
+                                         @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+                                         @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
 
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
@@ -95,29 +99,41 @@ public class IMAccountController extends MyBaseController {
                 return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
-        String imToken = imAccountService.refreshDoctorToken(doctorId);
-        return ResponseWrapper().addData(imToken).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        IMChatInfo info = imAccountService.chatToDocter(accountId, doctorId);
+        return ResponseWrapper().addData(info).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
-  @ApiOperation(value = "获取聊天信息，医生im账户，用户im账号和token", response = String.class)
-  @RequestMapping(value = "/chatToDocter", method = RequestMethod.PUT)
-  @ResponseBody
-  public JSONObject chatToDocter(HttpServletRequest request, HttpServletResponse response,
-                                       @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-                                       @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
+    @ApiOperation(value = "获取咨询医生历史列表", response = Doctor.class)
+    @RequestMapping(value = "/visitHistory", method = RequestMethod.PUT)
+    @ResponseBody
+    public JSONObject visitHistory(HttpServletRequest request, HttpServletResponse response,
+                                   @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId", required = false) Long accountId) throws Exception {
 
-      if (accountId == null) {
-          accountId = accountService.returnIdByToken(request);
-          if(accountId.equals(-1L)){
-              return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-          }
-      }
-      IMAccount imUserAccount = imAccountService.getUserIMAccount(accountId);
-      IMAccount imDoctorAccount = imAccountService.getDoctorIMAccount(doctorId);
-      IMChatInfo info = new IMChatInfo();
-      info.setImSourceId(imUserAccount.getImAccId());
-      info.setImDestId(imDoctorAccount.getImAccId());
-      info.setImToken(imUserAccount.getImToken());
-      return ResponseWrapper().addData(info).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-  }
+        if (accountId == null) {
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1L)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+            }
+        }
+        List<Doctor> imAccessRecordList = imAccountService.queryUserIMAccessRecord(accountId);
+        return ResponseWrapper().addData(imAccessRecordList).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+    @ApiOperation(value = "更新咨询医生时间", response = Doctor.class)
+    @RequestMapping(value = "/updateVisitTime", method = RequestMethod.PUT)
+    @ResponseBody
+    public JSONObject updateVisitTime(HttpServletRequest request, HttpServletResponse response,
+                      @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+                      @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
+
+        if (accountId == null) {
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1L)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+            }
+        }
+        boolean rslt = imAccountService.updateVisitRecord(accountId, doctorId);
+        return rslt ? ResponseWrapper().addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode())
+                      : ResponseWrapper().addMessage("failed").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+    }
 }

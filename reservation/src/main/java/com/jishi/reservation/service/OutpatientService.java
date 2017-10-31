@@ -61,6 +61,9 @@ public class OutpatientService {
             }
             log.info(info.getBrId() + "的his门诊缴费列表返回值：" + JSONObject.toJSONString(ghList));
             for (OutpatientPaymentInfo.Ghlist gh : ghList) {
+                if (gh == null || gh.getGh() == null) {
+                    continue;
+                }
                 OutpatientPaymentInfoVO paymentInfo = new OutpatientPaymentInfoVO();
                 paymentInfo.setBrid(info.getBrId());
                 paymentInfo.setDocumentNum(gh.getGh().getDjh());
