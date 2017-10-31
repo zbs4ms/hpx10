@@ -113,6 +113,7 @@ public class HospitalizationService {
                                 medicItem.setJe(mx.getJe());
                                 medicItem.setSfxm(mx.getSfxm());
                                 medicItem.setYblx(mx.getYblx());
+                                medicItem.setSl(mx.getSl());
                                 medicItemList.add(medicItem);
                             }
                         }
