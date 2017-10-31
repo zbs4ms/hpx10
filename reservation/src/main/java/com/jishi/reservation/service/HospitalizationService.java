@@ -125,6 +125,7 @@ public class HospitalizationService {
         page.setList(result);
         Integer pages = (list.size()-1)/pageSize+1;
         page.setPages(pages);
+        page.setSize(pageSize);
         page.setPageNum(startPage);
         page.setHasNextPage(pages>startPage);
 

@@ -112,6 +112,12 @@ public class AlibabaPay {
                     //支付时间
                     String payTime = params.get("notify_time");
                     //附加数据
+                    //购买者邮箱
+                    String buyerEmail = params.get("buyer_email");
+                    //购买者id
+                    String buyerId = params.get("buyer_id");
+                    //商家邮箱
+                    String sellerEmail = params.get("seller_email");
                     //String passback_params = URLDecoder.decode(params.get("passback_params"));
 
 
@@ -127,6 +133,9 @@ public class AlibabaPay {
                     //Preconditions.checkState(orderInfo.getStatus() == OrderStatusEnum.WAIT_PAYED.getCode(),"该订单不是待支付状态.");
                     orderInfo.setStatus(OrderStatusEnum.PAYED.getCode());
                     orderInfo.setPayTime(payTime);
+                    orderInfo.setBuyerEmail(buyerEmail);
+                    orderInfo.setSellerEmail(sellerEmail);
+                    orderInfo.setBuyerId(buyerId);
                     orderInfo.setPayType(PayEnum.ALI.getCode());
                     orderInfo.setThirdOrderNumber(trade_no);
                     orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
