@@ -71,6 +71,8 @@ public class PatientInfoService {
         Credentials credentials = hisUserManager.addUserInfo(idCard, idCardType, name, phone);
         log.info("his系统返回的病人信息：\n"+ JSONObject.toJSONString(credentials));
 
+        Preconditions.checkState(isExistPatient(accountId,name,idCard,credentials.getBRID()),"该账号已有此病人信息，不能添加");
+
         PatientInfo newPatientInfo = new PatientInfo();
         newPatientInfo.setAccountId(accountId);
         newPatientInfo.setName(name);
@@ -92,6 +94,12 @@ public class PatientInfoService {
 
         return newPatientInfo.getId();
 
+    }
+
+    private boolean isExistPatient(Long accountId, String name, String idCard, String brid) {
+
+        PatientInfo patientInfo =  patientInfoMapper.queryForExist(accountId,name,idCard,brid);
+        return patientInfo != null;
     }
 
     /**

@@ -146,11 +146,13 @@ public class RegisterController extends MyBaseController {
 
             //OrderVO orderVO = orderInfoService.queryOrderInfoById(register.getOrderId());
             OrderInfo orderInfo = orderInfoService.findOrderById(register.getOrderId());
-            register.setPayType(orderInfo.getPayType());
-            register.setPayTime(orderInfo.getPayTime());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            if(orderInfo.getPayTime()!=null)
-                {register.setCompleteTime(sdf.parse(orderInfo.getPayTime()));}
+            register.setPayType(orderInfo.getPayType());
+
+            if(orderInfo.getPayTime()!=null) {
+                register.setCompleteTime(sdf.parse(orderInfo.getPayTime()));
+                register.setPayTime(sdf.parse(orderInfo.getPayTime()));
+                }
             register.setPrice(orderInfo.getPrice());
             //register.setCountDownTime(register.getCreateTime().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
             register.setOrderCode(orderInfo.getOrderNumber());

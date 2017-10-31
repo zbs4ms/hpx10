@@ -99,7 +99,7 @@ public class HisHospitalization {
         String reData = HisTool.toXMLString("Information.DailyPayDetail.Query", sb.toString());
         HospitalizationResponseHospitalizationResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"Information.DailyPayDetail.Query");
+            String xml = HisTool.getHisDataparamNoLog(me,"Information.DailyPayDetail.Query");
             return (DepositBalanceDailyPayDetail) HisTool.toBean(DepositBalanceDailyPayDetail.class, xml);
         }
         return null;

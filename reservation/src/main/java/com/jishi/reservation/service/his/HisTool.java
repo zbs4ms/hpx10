@@ -43,6 +43,25 @@ public class HisTool {
         return req;
     }
 
+
+    /**
+     * 解析his系统返回的xml,提取其中的data param  不打印日志
+     * @param messageElement
+     * @return
+     * @throws Exception
+     */
+    public static String getHisDataparamNoLog(MessageElement messageElement, String url) throws Exception {
+        String xml = messageElement.getAsString();
+        String state = getXmlAttribute(xml,"STATE");
+        if(!"T".equals(state)){
+            log.error("his系统返回失败信息——>"+xml);
+            return null;
+        }
+        String req =  "<ROOT>"+Codec.Decrypt(getXmlAttribute(xml,"DATAPARAM"), Constant.HIS_KEYS)+"</ROOT>";
+        return req;
+
+    }
+
     /**
      * 获取xml某个节点的属性
      *
