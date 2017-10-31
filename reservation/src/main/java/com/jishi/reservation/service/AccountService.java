@@ -141,6 +141,7 @@ public class AccountService {
         loginData.setNickname(accountLogin.getNick());
         loginData.setTelephone(accountLogin.getPhone());
         loginData.setPushId(accountLogin.getPushId());
+        loginData.setAccountId(accountLogin.getId());
 
         return loginData;
 
