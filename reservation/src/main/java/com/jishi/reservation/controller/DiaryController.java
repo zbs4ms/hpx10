@@ -171,6 +171,7 @@ public class DiaryController extends MyBaseController {
             HttpServletRequest request,HttpServletResponse response,
 
             @ApiParam(value = "是否查\"我的日记\" 0 查，1 不查", required = false) @RequestParam(value = "isMy", defaultValue = "1") Integer isMy,
+            @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId",required = false) Long accountId,
 
             @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
 
@@ -178,7 +179,7 @@ public class DiaryController extends MyBaseController {
 
 
     ) throws Exception {
-        Long accountId = null;
+       // Long accountId = null;
         if(isMy != 1){
             accountId = isMy == 0?accountService.returnIdByToken(request):null;
             if(accountId == -1L) {
