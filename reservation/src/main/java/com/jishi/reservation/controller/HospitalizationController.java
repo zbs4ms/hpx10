@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.HospitalizationInfoVO;
+import com.jishi.reservation.controller.protocol.PrePaymentRecordVO;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.service.AccountService;
@@ -26,7 +27,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -174,8 +177,23 @@ public class HospitalizationController extends MyBaseController {
             @ApiParam(value = "brId", required = true) @RequestParam(value = "brId", required = true) String brId
     ) throws Exception {
         DepositBalanceLog balanceLog = hospitalizationService.queryPaymentRecord(brId);
+        List<PrePaymentRecordVO> list = new ArrayList<>();
+        List<DepositBalanceLog.DB3> paramList = balanceLog.getGroup().getItem();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        if(paramList!=null && paramList.size() != 0){
+            for (DepositBalanceLog.DB3 db3 : paramList) {
+                PrePaymentRecordVO vo = new PrePaymentRecordVO();
+                vo.setJe(db3.getJe());
+                if(db3.getJksh() != null && !"".equals(db3.getJksh())){
+                    vo.setJksh(sdf.parse(db3.getJksh()));
+                }
+                vo.setLx(db3.getLx());
+                vo.setZffs(db3.getZffs());
+            }
+        }
 
-        return ResponseWrapper().addData(balanceLog).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+
+        return ResponseWrapper().addData(list).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 
