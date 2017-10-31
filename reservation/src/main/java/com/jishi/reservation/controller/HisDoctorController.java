@@ -92,9 +92,9 @@ public class HisDoctorController extends MyBaseController {
                 int endRow = hbList.size()<startPage*pageSize-1?hbList.size():startPage*pageSize-1;
                 log.info(hbList.size()+"~~"+(startPage*pageSize-1));
                 if(startPage == endRow)
-                    endRow+=1;
+                    endRow+=pageSize;
                 if(endRow == 0)
-                    endRow+=1;
+                    endRow+=pageSize;
                 log.info("start:"+startRow);
                 log.info("end:"+endRow);
                 log.info("list:"+hbList.size());

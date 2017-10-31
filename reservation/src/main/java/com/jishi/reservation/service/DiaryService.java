@@ -200,8 +200,9 @@ public class DiaryService {
                     vo.setWidth(diaryContentVO.getWidth());
 
                     paramList.add(vo);
+                    i++;
                 }
-                i++;
+
             }
             diary.setImgList(paramList);
             diary.setContent(null);
@@ -217,6 +218,7 @@ public class DiaryService {
         DiaryLiked param = new DiaryLiked();
         param.setDiaryId(diaryId);
         param.setAccountId(accountId);
+        param.setCreateTime(new Date());
 
         DiaryLiked liked = diaryLikedMapper.selectOne(param);
         if(liked == null){
@@ -233,15 +235,16 @@ public class DiaryService {
     public void addScanNum(Long diaryId, String ip, Long accountId) {
 
         DiaryScan scan = new DiaryScan();
-        if(accountId != -1L) {
-            scan.setAccountId(String.valueOf(accountId));
-        }else{
-            scan.setAccountId(ip);
-        }
+//        if(accountId != -1L) {
+//            scan.setAccountId(String.valueOf(accountId));
+//        }else{
+//            scan.setAccountId(ip);
+//        }
         scan.setDiaryId(diaryId);
-        if(diaryScanMapper.selectOne(scan) == null) {
-            diaryScanMapper.insert(scan);
-        }
+//        if(diaryScanMapper.selectOne(scan) == null) {
+//            diaryScanMapper.insert(scan);
+//        }
+        diaryScanMapper.insert(scan);
     }
 
     public Integer delete(Long diaryId, Long accountId) {

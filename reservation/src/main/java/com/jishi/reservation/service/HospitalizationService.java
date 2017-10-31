@@ -110,9 +110,9 @@ public class HospitalizationService {
         int startRow = (startPage - 1)*pageSize;
         int endRow = list.size()<startPage*pageSize-1?list.size():startPage*pageSize-1;
         if(startPage == endRow)
-            endRow+=1;
+            endRow+=pageSize;
         if(endRow == 0)
-            endRow+=1;
+            endRow+=pageSize;
 
         log.info("endRow :"+endRow);
         if(list.size()<endRow){
