@@ -124,6 +124,7 @@ public class HisDoctorController extends MyBaseController {
             pageInfo.setPages(hbList != null?hbList.size()/pageSize +1:0);
             pageInfo.setPageNum(startPage);
             pageInfo.setPageSize(pageSize);
+            pageInfo.setHasNextPage(hbList != null && hbList.size()/pageSize +1>startPage);
 
             log.info(JSONObject.toJSONString(info));
         }
