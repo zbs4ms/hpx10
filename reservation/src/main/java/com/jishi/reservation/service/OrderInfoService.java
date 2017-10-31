@@ -172,6 +172,35 @@ public class OrderInfoService {
 
     }
 
+    /**
+     * 生成门诊订单
+     * @param subject
+     * @param price
+     * @param accountId
+     * @param brId
+     */
+    public OrderInfo generateOutpatient(Long accountId, String brId, String subject, BigDecimal price) throws Exception {
+
+      //todo 判断accountId和brId是否匹配
+      Preconditions.checkState(patientService.isAccountIdMatchBrid(accountId,brId),"账号和brId不匹配，不能执行操作");
+
+      OrderInfo orderInfo = new OrderInfo();
+      orderInfo.setSubject(subject);
+      orderInfo.setDes(subject);
+      orderInfo.setOrderNumber(AlibabaPay.generateUniqueOrderNumber());
+      orderInfo.setPrice(price);
+      orderInfo.setAccountId(accountId);
+      orderInfo.setBrId(brId);
+      orderInfo.setType(OrderTypeEnum.Outpatient.getCode());
+      orderInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
+      orderInfo.setStatus(OrderStatusEnum.WAIT_PAYED.getCode());
+      orderInfo.setCreateTime(new Date());
+      orderInfoMapper.insertSelectiveReturnId(orderInfo);
+
+      return orderInfo;
+
+    }
+
     public OrderInfo queryOrderByOrderNumber(String orderNumber) {
         return orderInfoMapper.queryByNumber(orderNumber);
     }
