@@ -97,7 +97,32 @@ public class HospitalizationService {
             PayItem vo = new PayItem();
             vo.setFyje(item.getFyje());
             vo.setLbmc(item.getLbmc());
-            vo.setDetail(detail);
+            List<MedicItem> medicItemList = new ArrayList<>();
+
+            if(detail!=null){
+                List<DepositBalanceDailyPayDetail.Item> itemList = detail.getItemList();
+
+                if(itemList != null && itemList.size() != 0){
+                    for (DepositBalanceDailyPayDetail.Item item1 : itemList) {
+                        List<DepositBalanceDailyPayDetail.Mx> mxList = item1.getMxList();
+                        if(mxList!=null && mxList.size() != 0){
+                            for (DepositBalanceDailyPayDetail.Mx mx : mxList) {
+                                MedicItem medicItem = new MedicItem();
+                                medicItem.setDj(mx.getDj());
+                                medicItem.setDw(mx.getDw());
+                                medicItem.setJe(mx.getJe());
+                                medicItem.setSfxm(mx.getSfxm());
+                                medicItem.setYblx(mx.getYblx());
+                                medicItemList.add(medicItem);
+                            }
+                        }
+
+                    }
+                }
+            }
+
+
+            vo.setDetailList(medicItemList);
 
             voList.add(vo);
         }
@@ -170,11 +195,22 @@ public class HospitalizationService {
     @ApiModel("住院清单对象")
     public class PayItem{
         @ApiModelProperty(name = "费用金额")
-        String fyje;
+        private  String fyje;
         @ApiModelProperty(name = "类别名称  日期/收费类型")
+        private String lbmc;
 
-        String lbmc;
-        DepositBalanceDailyPayDetail detail;
+        private List<MedicItem> detailList;
+        //DepositBalanceDailyPayDetail detail;
+    }
+
+    @Data
+    public class MedicItem {
+        private  String dw;
+        private  String dj;
+        private String sl;
+        private String je;
+        private String sfxm;
+        private String yblx;
     }
 
 }
