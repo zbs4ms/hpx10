@@ -189,6 +189,9 @@ public class HospitalizationController extends MyBaseController {
                 }
                 vo.setLx(db3.getLx());
                 vo.setZffs(db3.getZffs());
+
+
+                list.add(vo);
             }
         }
 

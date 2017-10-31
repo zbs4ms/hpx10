@@ -63,7 +63,7 @@ public class OrderInfoService {
         orderVO.setPayType(orderInfo.getPayType());
         orderVO.setPrice(orderInfo.getPrice());
         orderVO.setPosition("泸州锦欣医院");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if(orderInfo.getPayTime()!=null){
             orderVO.setCompletedTime(sdf.parse(orderInfo.getPayTime()));
         }
