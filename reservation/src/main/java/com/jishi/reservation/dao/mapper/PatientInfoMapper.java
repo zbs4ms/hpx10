@@ -27,7 +27,7 @@ public interface PatientInfoMapper extends MyMapper<PatientInfo> {
     @Select({
             "select br_id from patientInfo where account_id = #{accountId}"
     })
-   String queryBrIdByAccountId(@Param("accountId") Long accountId);
+    List<String> queryBrIdByAccountId(@Param("accountId") Long accountId);
 
 
     @Select({
@@ -40,4 +40,11 @@ public interface PatientInfoMapper extends MyMapper<PatientInfo> {
             "select * from patientInfo where account_id = #{accountId} and name = #{name} and id_card = #{idCard} and br_id = #{brid}"
     })
     PatientInfo queryForExist(@Param("accountId") Long accountId,@Param("name") String name,@Param("idCard") String idCard,@Param("brid") String brid);
+
+
+
+    @Select({
+            "select account_id from patientInfo where br_id = #{brId} "
+    })
+    Long queryAccountIdByBrId(@Param("brId") String brId);
 }
