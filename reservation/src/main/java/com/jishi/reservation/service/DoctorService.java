@@ -7,8 +7,10 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.jishi.reservation.controller.base.Paging;
+import com.jishi.reservation.dao.mapper.DepartmentMapper;
 import com.jishi.reservation.dao.mapper.DoctorMapper;
 import com.jishi.reservation.dao.models.Banner;
+import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.his.bean.RegisteredNumberInfo;
@@ -30,6 +32,9 @@ public class DoctorService {
 
     @Autowired
     DoctorMapper doctorMapper;
+
+    @Autowired
+    DepartmentMapper departmentMapper;
 
     /**
      * 增加科室
@@ -194,5 +199,17 @@ public class DoctorService {
 
     public Doctor queryDoctorByHid(Long hDoctorId) {
         return doctorMapper.queryByHdoctorId(hDoctorId);
+    }
+
+
+
+    public  List<Department> queryDepartmentAndDoctor() {
+        List<Department> departmentList =  departmentMapper.queryAllEnable();
+        for (Department department : departmentList) {
+            List<Doctor> doctorList =  doctorMapper.queryByDepartmentHid(department.getHId());
+            department.setDoctorList(doctorList);
+        }
+
+        return departmentList;
     }
 }

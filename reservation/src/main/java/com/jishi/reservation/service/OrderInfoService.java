@@ -8,9 +8,11 @@ import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.OrderVO;
 import com.jishi.reservation.dao.mapper.DoctorMapper;
 import com.jishi.reservation.dao.mapper.OrderInfoMapper;
+import com.jishi.reservation.dao.mapper.PrePaymentMapper;
 import com.jishi.reservation.dao.mapper.RegisterMapper;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.dao.models.OrderInfo;
+import com.jishi.reservation.dao.models.PrePayment;
 import com.jishi.reservation.dao.models.Register;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
@@ -49,6 +51,9 @@ public class OrderInfoService {
 
     @Autowired
     PatientInfoService patientService;
+
+    @Autowired
+    PrePaymentMapper prePaymentMapper;
 
     public OrderVO queryOrderVoById(Long orderId,String orderNumber) throws ParseException {
 
@@ -153,6 +158,7 @@ public class OrderInfoService {
     public OrderInfo generatePrepayment(String subject, BigDecimal price, Long accountId, String brId, Integer rycs) throws Exception {
 
         //todo 判断accountId和brId是否匹配
+        log.info("accountId:"+accountId+",brId:"+brId);
         Preconditions.checkState(patientService.isAccountIdMatchBrid(accountId,brId),"账号和brId不匹配，不能执行操作");
 
         OrderInfo orderInfo = new OrderInfo();
@@ -168,6 +174,13 @@ public class OrderInfoService {
         orderInfo.setCreateTime(new Date());
         orderInfoMapper.insertSelectiveReturnId(orderInfo);
 
+        PrePayment prePayment = new PrePayment();
+        prePayment.setOrderId(orderInfo.getId());
+        prePayment.setBrId(brId);
+        prePayment.setAccountId(accountId);
+        prePayment.setRycs(rycs);
+
+        prePaymentMapper.insertSelectiveReturnId(prePayment);
         return orderInfo;
 
     }
