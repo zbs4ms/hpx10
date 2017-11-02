@@ -3,6 +3,7 @@ package com.jishi.reservation.dao.models;
 import lombok.Data;
 
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Created by sloan on 2017/10/29.
@@ -10,6 +11,7 @@ import javax.persistence.Id;
 
 
 @Data
+@Table(name = "pre_payment")
 public class PrePayment {
 
     @Id
