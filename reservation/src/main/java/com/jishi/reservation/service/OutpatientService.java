@@ -40,13 +40,13 @@ public class OutpatientService {
 
     private static final int OUTPATIENT_PAMENT_INFO_QUERY_DAY = 30;
 
-    /**
-     * 获取用户门诊缴费列表
-     * @param accountId
-     * @return
-     * @throws Exception
-     */
-    public List<OutpatientPaymentInfoVO> queryOutpatientPamentInfo(long accountId) throws Exception {
+      /**
+       * 获取用户门诊缴费列表
+       * @param accountId
+       * @return
+       * @throws Exception
+       */
+    public List<OutpatientPaymentInfoVO> queryOutpatientPamentInfo(long accountId, Integer paymentStatus, Integer pageNo, Integer pageSize) throws Exception {
 
         List<PatientInfo> patientInfoList = patientInfoService.queryPatientInfo(null,accountId, 0);
         if (patientInfoList == null || patientInfoList.isEmpty()) {
@@ -57,6 +57,9 @@ public class OutpatientService {
         for (PatientInfo info : patientInfoList) {
             // TODO 结算卡类别和站点暂时传null
             OutpatientPaymentInfo data = hisOutpatient.queryPayReceipt(info.getBrId(), "", String.valueOf(OUTPATIENT_PAMENT_INFO_QUERY_DAY), "");
+            if (data == null) {
+                continue;
+            }
             List<OutpatientPaymentInfo.Gh> ghList = data.getGhlist();
             if (ghList == null || ghList.isEmpty()) {
               log.info(info.getBrId() + ": 门诊缴费列表为空");
@@ -64,11 +67,16 @@ public class OutpatientService {
             }
             log.info(info.getBrId() + "的his门诊缴费列表返回值：" + JSONObject.toJSONString(ghList));
             for (OutpatientPaymentInfo.Gh gh : ghList) {
-                if (gh == null || gh == null) {
+                if (gh == null) {
                     continue;
                 }
+                if (paymentStatus == 0 && Integer.parseInt(gh.getZfzt()) != 0) {
+                    continue;
+                }
+                double unpaidAmount = 0.0;
                 OutpatientPaymentInfoVO paymentInfo = new OutpatientPaymentInfoVO();
                 paymentInfo.setBrid(info.getBrId());
+                paymentInfo.setPatientName(info.getName());
                 paymentInfo.setDocumentNum(gh.getDjh());
                 paymentInfo.setRegisterType(gh.getHl());
                 paymentInfo.setRegisterDate(formatDate(gh.getYysj()));
@@ -78,8 +86,8 @@ public class OutpatientService {
                 paymentInfo.setPaymentStatus(Integer.parseInt(gh.getZfzt()));
                 paymentInfo.setHasRegister(Integer.parseInt(gh.getSfyy()));
                 paymentInfo.setPaymentAmount(Double.parseDouble(gh.getJe()));
-                paymentInfo.setDockerId(gh.getYsid());
-                paymentInfo.setDockerName(gh.getYsxm());
+                paymentInfo.setDoctorId(gh.getYsid());
+                paymentInfo.setDoctorName(gh.getYsxm());
                 paymentInfo.setHasPayCard(Integer.parseInt(gh.getSfjsk()));
                 List<OutpatientPaymentInfo.Yz> yzLists = gh.getYzlists();
                 if (yzLists == null || yzLists.isEmpty()) {
@@ -103,7 +111,11 @@ public class OutpatientService {
                             fee.setFeeName(fm.getMc());
                             fee.setFeeAmount(Double.parseDouble(fm.getJe()));
                             fee.setFeeStatus(Integer.parseInt(fm.getZfzt()));
+                            if (fee.getFeeStatus() == 0) {
+                                unpaidAmount += fee.getFeeAmount();
+                            }
 
+                            /** 暂时不提供明细
                             // 费目明细列表
                             List<OutpatientPaymentInfo.Mx> mxlists = fm.getMxlists();
                             if (mxlists!= null && !mxlists.isEmpty()) {
@@ -120,7 +132,7 @@ public class OutpatientService {
                                 }
 
                                 fee.setFeeItemList(itemList);
-                            }
+                            }**/
 
                             feeList.add(fee);
                         }
@@ -144,45 +156,63 @@ public class OutpatientService {
 
                             feeDocList.add(doc);
                         }
-                        advice.setFeeDocList(feeDocList);
+                        //advice.setFeeDocList(feeDocList);
                     }
 
                     adviceList.add(advice);
                 }
                 paymentInfo.setAdviceList(adviceList);
+                paymentInfo.setUnpaidAmount(unpaidAmount);
                 paymentInfoList.add(paymentInfo);
             }
         }
         if (paymentInfoList != null) {
             Collections.sort(paymentInfoList);
+            if (paymentStatus != 0 && pageSize > 0) {
+                int beginIndex = (pageNo - 1) * pageSize;
+                int endIndex = beginIndex + pageSize - 1;
+                endIndex = endIndex > paymentInfoList.size() ? paymentInfoList.size() : pageSize;
+                if (beginIndex < paymentInfoList.size()) {
+                    return paymentInfoList.subList(beginIndex, endIndex);
+                } else {
+                    return Collections.emptyList();
+                }
+            }
         }
         return paymentInfoList;
     }
 
-    public boolean confirmPayment(String accountId, String brId, String docmentId, BigDecimal price, BigDecimal payPrice, int documentType, String orderNumber) throws Exception {
+    public boolean confirmPayment(String brId, String docmentId, int documentType, String orderNumber) throws Exception {
         OrderInfo order = orderInfoService.queryOrderByOrderNumber(orderNumber);
-        log.info("confirmPayment => OrderNumber: " + order.getOrderNumber() + "病人Id" + brId + docmentId + "金额：" + price);
-        if (order == null && !order.getPrice().equals(price)) {
+        log.info("confirmPayment => OrderNumber: " + order.getOrderNumber() + " 病人Id: " + brId + docmentId + " 金额：" + order.getPrice());
+        if (order == null) {
             // TODO  返回false是否不太好？
-            return false;
+            //return false;
         }
-        // TODO 校验总金额和支付结果
-        // TODO 第三方名称, 暂时传空, 交易流水号 交易内容
-        String paymentContent = "";
-        String jzid = hisOutpatient.confirmPayment(accountId, brId, docmentId, price, payPrice, documentType, order.getThirdOrderNumber(), paymentContent, null);
-        log.info(jzid + " batchpayConfirm => 病人ID: " + brId + "单据号：" + docmentId + "总算金额: " + price );
+        // 订单状态0：已支付，是否有效的标志0：有效，订单类型3：门诊订单
+        if (order.getStatus() != 0 || order.getEnable() != 0 || order.getType() != 3) {
+            //return false;
+        }
+        // TODO 第三方名称（结算卡类别）暂时传空
+        String paymentContent = order.getBuyerId() + "|" + order.getSubject();
+        String jzid = hisOutpatient.confirmPayment(brId, docmentId, order.getPrice(), order.getPrice(), documentType, order.getThirdOrderNumber(), paymentContent, null);
+        log.info(jzid + " batchpayConfirm => 病人ID: " + brId + "单据号：" + docmentId + "金额: " + order.getPrice() );
         return jzid != null && !jzid.isEmpty();
     }
 
-    public boolean batchpayConfirm(String docIds, String brId, BigDecimal price, BigDecimal payPrice, int documentType, String orderNumber) throws Exception {
+    public boolean batchpayConfirm(String brId, String docIds, int documentType, String orderNumber) throws Exception {
         OrderInfo order = orderInfoService.queryOrderByOrderNumber(orderNumber);
-        log.info("batchpayConfirm => OrderNumber: " + order.getOrderNumber() + "病人Id" + brId + "单据号" + docIds);
-        if (order == null && !order.getPrice().equals(price)) {
-            return false;
+        log.info("batchpayConfirm => OrderNumber: " + order.getOrderNumber() + " 病人Id: " + brId + " 单据号: " + docIds);
+        if (order == null) {
+            //return false;
         }
-        String paymentContent = "";
-        String czsj = hisOutpatient.batchPayModify(docIds, brId, price, payPrice, documentType, order.getThirdOrderNumber(), paymentContent, null);
-        log.info(czsj + " batchpayConfirm => 病人ID: " + brId + "单据号：" + docIds + "总算金额: " + price);
+        // 订单状态0：已支付，是否有效的标志0：有效，订单类型3：门诊订单
+        if (order.getStatus() != 0 || order.getEnable() != 0 || order.getType() != 3) {
+            //return false;
+        }
+        String paymentContent = order.getBuyerId() + "|" + order.getSubject();
+        String czsj = hisOutpatient.batchPayModify(brId, docIds, order.getPrice(), order.getPrice(), documentType, order.getThirdOrderNumber(), paymentContent, null);
+        log.info(czsj + " batchpayConfirm => 病人ID: " + brId + "单据号：" + docIds + "金额: " + order.getPrice());
         return czsj != null && !czsj.isEmpty();
     }
 

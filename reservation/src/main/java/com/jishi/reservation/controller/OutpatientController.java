@@ -46,14 +46,19 @@ public class OutpatientController extends MyBaseController {
     @RequestMapping(value="/paymentInfo", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryOutpatientPamentInfo(HttpServletRequest request, HttpServletResponse response,
-            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId) throws Exception {
+                      @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+                      @ApiParam(value = "支付状态，0-待支付，1-待支付已支付已退费(默认)", required = false) @RequestParam(value = "status", defaultValue = "1", required = false) Integer status,
+                      @ApiParam(value = "页数(支付状态为1时提供，默认第一页，页数从1开始)", required = false) @RequestParam(value = "startPage", defaultValue = "1", required = false) Integer startPage,
+                      @ApiParam(value = "每页多少条(支付状态为1时提供)，默认10", required = false) @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize) throws Exception {
         if (accountId == null) {
           accountId = accountService.returnIdByToken(request);
           if(accountId.equals(-1L)){
             return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
           }
         }
-        List<OutpatientPaymentInfoVO> outpatientPamentInfo = outpatientService.queryOutpatientPamentInfo(accountId);
+        // TODO his返回的支付状态全部为1，待解决！！！
+        status = 1;
+        List<OutpatientPaymentInfoVO> outpatientPamentInfo = outpatientService.queryOutpatientPamentInfo(accountId, status, startPage, pageSize);
         return ResponseWrapper().addData(outpatientPamentInfo).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
@@ -103,8 +108,8 @@ public class OutpatientController extends MyBaseController {
                   @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
                   @ApiParam(value = "单据ID", required = true) @RequestParam(value = "docmentId", required = true) String docmentId,
                   @ApiParam(value = "病人ID", required = true) @RequestParam(value = "brId", required = true) String brId,
-                  @ApiParam(value = "总金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
-                  @ApiParam(value = "总结算金额", required = false) @RequestParam(value = "payPrice", required = false) BigDecimal payPrice,
+                  //@ApiParam(value = "总金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
+                  //@ApiParam(value = "总结算金额", required = false) @RequestParam(value = "payPrice", required = false) BigDecimal payPrice,
                   @ApiParam(value = "单据类型，1-收费单，4-挂号单", required = true) @RequestParam(value = "documentType", required = true) Integer documentType,
                   @ApiParam(value = "订单号", required = true) @RequestParam(value = "orderNumber", required = true) String orderNumber) throws Exception {
         if (accountId == null) {
@@ -113,8 +118,9 @@ public class OutpatientController extends MyBaseController {
                 return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
-        //boolean rslt = outpatientService.batchpayConfirm(docIds, brId, zje, jsje, sfghd, orderId);
-        return true ? ResponseWrapper().addMessage("成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
+        //boolean rslt = outpatientService.confirmPayment(brId, docmentId, price, payPrice, documentType, orderNumber);
+        boolean rslt = outpatientService.confirmPayment(brId, docmentId, documentType, orderNumber);
+        return rslt ? ResponseWrapper().addMessage("成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
         ResponseWrapper().addMessage("失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
     }
 
@@ -125,18 +131,19 @@ public class OutpatientController extends MyBaseController {
                 @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
                 @ApiParam(value = "单据ID，可以多个单据，以','分隔", required = true) @RequestParam(value = "docIds", required = true) String docIds,
                 @ApiParam(value = "病人ID", required = true) @RequestParam(value = "brId", required = true) String brId,
-                @ApiParam(value = "总金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
-                @ApiParam(value = "总结算金额", required = false) @RequestParam(value = "payPrice", required = false) BigDecimal payPrice,
+                //@ApiParam(value = "总金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
+                //@ApiParam(value = "总结算金额", required = false) @RequestParam(value = "payPrice", required = false) BigDecimal payPrice,
                 @ApiParam(value = "单据类型，1-收费单，4-挂号单", required = true) @RequestParam(value = "documentType", required = true) Integer documentType,
-                @ApiParam(value = "订单号", required = true) @RequestParam(value = "orderNumber", required = true) Long orderNumber) throws Exception {
+                @ApiParam(value = "订单号", required = true) @RequestParam(value = "orderNumber", required = true) String orderNumber) throws Exception {
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1L)){
               return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
-        //boolean rslt = outpatientService.batchpayConfirm(docIds, brId, zje, jsje, sfghd, orderId);
-        return true ? ResponseWrapper().addMessage("成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
+        //boolean rslt = outpatientService.batchpayConfirm(brId, docIds, price, payPrice, documentType, orderNumber);
+        boolean rslt = outpatientService.batchpayConfirm(brId, docIds, documentType, orderNumber);
+        return rslt ? ResponseWrapper().addMessage("成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
                       ResponseWrapper().addMessage("失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
     }
 
