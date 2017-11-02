@@ -65,9 +65,9 @@ public class AccountService {
     //保存登陆信息
     public final static String ADD_TOKEN = ""
             + " local token = redis.call('get', KEYS[1]); "
-            + " if token then "
-            + "     redis.call('del',token); "
-            + " end "
+//            + " if token then "
+//            + "     redis.call('del',token); "
+//            + " end "
             + " redis.call('set',KEYS[1],KEYS[2]); "
             + " redis.call('set',KEYS[2],KEYS[1]); "
             + " return 1 ";
