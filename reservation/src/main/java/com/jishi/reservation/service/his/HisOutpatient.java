@@ -316,11 +316,11 @@ public class HisOutpatient {
      * @throws Exception
      * @date 2017/10/26
      **/
-    public String confirmPayment(String accountId, String brId, String docmentId, BigDecimal price, BigDecimal payPrice, int documentType,
+    public String confirmPayment(String brId, String docmentId, BigDecimal price, BigDecimal payPrice, int documentType,
                               String thirdOrderNumber, String paymentContent, String jsklb) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<DJH>").append(docmentId).append("</DJH>");
-        sb.append("<JE>").append(price).append("</JE>");
+        sb.append("<JE>").append(price.toString()).append("</JE>");
         sb.append("<SFGH>").append(documentType).append("</SFGH>");
         sb.append("<BRID>").append(brId).append("</BRID>");
         sb.append("<JSLIST>");
@@ -328,7 +328,7 @@ public class HisOutpatient {
         sb.append("<JSKLB>").append(jsklb).append("</JSKLB>");
         sb.append("<JSKH>").append("</JSKH>");
         sb.append("<JSFS>").append("</JSFS>");
-        sb.append("<JSJE>").append(payPrice).append("</JSJE>");
+        sb.append("<JSJE>").append(payPrice.toString()).append("</JSJE>");
         sb.append("<JYLSH>").append(thirdOrderNumber).append("</JYLSH>");
         sb.append("<EXPENDLIST>");
         sb.append("<EXPEND>");
@@ -349,8 +349,8 @@ public class HisOutpatient {
 
     /**
      * @description 门诊缴费多张单据一次支付
-     * @param docIds 收费单据号串，逗号分隔多个单据号
      * @param brId 病人ID
+     * @param docIds 收费单据号串，逗号分隔多个单据号
      * @param price 总金额
      * @param payPrice 结算金额
      * @param documentType 是否挂号单，0-收费单，1-挂号单
@@ -360,10 +360,10 @@ public class HisOutpatient {
      * @throws Exception
      * @date 2017/10/26
      **/
-    public String batchPayModify(String docIds, String brId, BigDecimal price, BigDecimal payPrice, int documentType, String thirdOrderNumber, String paymentContent, String jsklb) throws Exception {
+    public String batchPayModify(String brId, String docIds, BigDecimal price, BigDecimal payPrice, int documentType, String thirdOrderNumber, String paymentContent, String jsklb) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<DJH>").append(docIds).append("</DJH>");
-        sb.append("<JE>").append(price).append("</JE>");
+        sb.append("<JE>").append(price.toString()).append("</JE>");
         sb.append("<SFGH>").append(documentType).append("</SFGH>");
         sb.append("<BRID>").append(brId).append("</BRID>");
         sb.append("<JSLIST>");
@@ -371,7 +371,7 @@ public class HisOutpatient {
         sb.append("<JSKLB>").append(jsklb).append("</JSKLB>");
         sb.append("<JSKH>").append("</JSKH>");
         sb.append("<JSFS>").append("</JSFS>");
-        sb.append("<JSJE>").append(payPrice).append("</JSJE>");
+        sb.append("<JSJE>").append(payPrice.toString()).append("</JSJE>");
         sb.append("<JYLSH>").append(thirdOrderNumber).append("</JYLSH>");
         sb.append("<EXPENDLIST>");
         sb.append("<EXPEND>");

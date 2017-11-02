@@ -20,7 +20,7 @@ public class OutpatientAdviceVO {
     private String adviceName;
     @ApiModelProperty("费目列表")
     private List<OutpatientFeeVO> feeList;
-    @ApiModelProperty("单据列表")
-    private List<OutpatientFeeDocVO> feeDocList;
+    //@ApiModelProperty("单据列表")
+    //private List<OutpatientFeeDocVO> feeDocList;
 
 }
