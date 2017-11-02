@@ -114,6 +114,7 @@ public class DiaryService {
         diary.setContent(JSONObject.toJSONString(contentList));
         diary.setIsLock(lock);
         diary.setBrief(brief);
+        diary.setStatus(1);
         diaryMapper.updateByPrimaryKeySelective(diary);
     }
 
