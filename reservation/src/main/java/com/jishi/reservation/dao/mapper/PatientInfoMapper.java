@@ -47,4 +47,10 @@ public interface PatientInfoMapper extends MyMapper<PatientInfo> {
             "select account_id from patientInfo where br_id = #{brId} "
     })
     Long queryAccountIdByBrId(@Param("brId") String brId);
+
+
+    @Select({
+            "select * from patientInfo where account_id = #{accountId}"
+    })
+    List<PatientInfo> queryByAccountId(Long accountId);
 }

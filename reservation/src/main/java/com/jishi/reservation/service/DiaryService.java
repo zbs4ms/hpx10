@@ -133,12 +133,11 @@ public class DiaryService {
         diary.setTitle(title);
         String brief = "";
         for (DiaryContentVO diaryContentVO : contentList) {
-            if(diaryContentVO.getType() == 1){
+            if(diaryContentVO.getType() == 1 && !diaryContentVO.getText().equals("")){
                 //长度待定
                 brief = diaryContentVO.getText();
                 break;
             }
-            break;
         }
         diary.setContent(JSONObject.toJSONString(contentList));
         diary.setEnable(0);

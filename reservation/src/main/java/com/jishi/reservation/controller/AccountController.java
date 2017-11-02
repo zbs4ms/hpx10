@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
+import com.jishi.reservation.controller.protocol.AccountDetailVO;
 import com.jishi.reservation.controller.protocol.DoctorVO;
 import com.jishi.reservation.controller.protocol.LoginData;
 import com.jishi.reservation.dao.models.Account;
@@ -270,6 +271,20 @@ public class AccountController extends MyBaseController {
 
         PageInfo<Account> page = accountService.queryAccountPage(key,startPage,pageSize);
         return ResponseWrapper().addData(page).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+
+
+    @ApiOperation(value = "admin 用户二级页面查询接口",response=DoctorVO.class)
+    @RequestMapping(value = "queryUserDetail", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject queryUserDetail(
+            @ApiParam(value = "用户的id", required = true) @RequestParam(value = "accountId", required = true) Long accountId
+    ) throws Exception {
+
+
+        AccountDetailVO vo = accountService.queryUserDetail(accountId);
+        return ResponseWrapper().addData(vo).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 

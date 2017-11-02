@@ -5,15 +5,14 @@ import com.doraemon.base.redis.RedisOperation;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.jishi.reservation.controller.protocol.AccountDetailVO;
 import com.jishi.reservation.controller.protocol.BridAndMzh;
+import com.jishi.reservation.controller.protocol.DiaryContentVO;
 import com.jishi.reservation.controller.protocol.LoginData;
-import com.jishi.reservation.dao.mapper.AccountMapper;
-import com.jishi.reservation.dao.mapper.CredentialsMapper;
-import com.jishi.reservation.dao.mapper.IdentityInfoMapper;
-import com.jishi.reservation.dao.models.Account;
-import com.jishi.reservation.dao.models.Credentials;
-import com.jishi.reservation.dao.models.IdentityInfo;
-import com.jishi.reservation.dao.models.PatientInfo;
+import com.jishi.reservation.dao.mapper.*;
+import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 
 import com.jishi.reservation.service.enumPackage.SmsEnum;
@@ -57,6 +56,18 @@ public class AccountService {
     IdentityInfoMapper identityInfoMapper;
     @Autowired
     CredentialsMapper credentialsMapper;
+
+    @Autowired
+    PatientInfoMapper patientInfoMapper;
+
+    @Autowired
+    DiaryMapper diaryMapper;
+
+    @Autowired
+    DiaryScanMapper diaryScanMapper;
+
+    @Autowired
+    DiaryLikedMapper diaryLikedMapper;
 
 
 
@@ -526,5 +537,36 @@ public class AccountService {
             account.setPasswd(null);
         }
         return new PageInfo<>(list);
+    }
+
+    public AccountDetailVO queryUserDetail(Long accountId) {
+
+        AccountDetailVO vo = new AccountDetailVO();
+        Account account = accountMapper.queryById(accountId);
+        account.setPasswd(null);
+        vo.setAccount(account);
+        Gson gson = new Gson();
+
+        List<PatientInfo> patientInfoList =  patientInfoMapper.queryByAccountId(accountId);
+        vo.setPatientInfoList(patientInfoList);
+        List<Diary> diaryList =  diaryMapper.queryByAccountId(accountId);
+        for (Diary diary : diaryList) {
+            diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));
+            diary.setLikedNum(diaryLikedMapper.queryCountByDiaryId(diary.getId()));
+
+            String content = diary.getContent();
+
+
+
+            List<DiaryContentVO> contentList = gson.fromJson(content,
+                    new TypeToken<List<DiaryContentVO>>() {
+                    }.getType());
+            diary.setContentVOList(contentList);
+
+        }
+        vo.setDiaryList(diaryList);
+
+        return vo;
+
     }
 }
