@@ -124,6 +124,7 @@ public class DiaryService {
         Gson gson = new Gson();
 
 
+        //gson处理，把内容解析为内容数组
         List<DiaryContentVO> contentList = gson.fromJson(content,
                 new TypeToken<List<DiaryContentVO>>() {
                 }.getType());
@@ -131,10 +132,12 @@ public class DiaryService {
         Diary diary = new Diary();
 
         diary.setTitle(title);
+        //设置简介的默认值
         String brief = "";
         for (DiaryContentVO diaryContentVO : contentList) {
+            //遍历日记内容，取到第一个type是text且内容不为""的文本作为简介
             if(diaryContentVO.getType() == 1 && !diaryContentVO.getText().equals("")){
-                //长度待定
+                //长度待定,,
                 brief = diaryContentVO.getText();
                 break;
             }
@@ -182,8 +185,10 @@ public class DiaryService {
         PageInfo<Diary> pageInfo = new PageInfo<>(list);
         log.info("返回日记长度："+list.size());
         for (Diary diary : list) {
+            //获取浏览数和点赞数
             diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));
             diary.setLikedNum(diaryLikedMapper.queryCountByDiaryId(diary.getId()));
+            //查询用户头像
             diary.setAvatar(accountMapper.queryById(diary.getAccountId()).getHeadPortrait());
             List<ImageVO> paramList = new ArrayList<>();
             List<DiaryContentVO> contentList = gson.fromJson(diary.getContent(),

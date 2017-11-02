@@ -15,7 +15,7 @@ public interface PrePaymentMapper extends MyMapper<PrePayment> {
 
 
     @Select({
-            "select * from pre_prement where order_id = #{orderId}"
+            "select * from pre_payment where order_id = #{orderId}"
     })
     PrePayment queryByOrderId(@Param("orderId") Long orderId);
 }
