@@ -253,9 +253,8 @@ public class HospitalizationController extends MyBaseController {
             return ResponseWrapper().addMessage("确认失败!").addData(vo).ExeFaild(ReturnCodeEnum.FAILED.getCode());
 
         }else {
-            return ResponseWrapper().addMessage("确认失败!").addData(vo).ExeFaild(ReturnCodeEnum.FAILED.getCode());
 
-//            return ResponseWrapper().addData(vo).addMessage("确认成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+            return ResponseWrapper().addData(vo).addMessage("确认成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
         }
 

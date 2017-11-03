@@ -211,6 +211,7 @@ public class HospitalizationService {
             }
             vo.setStatus(SuccessEnum.FAILED.getCode());
             vo.setOrderNumber(orderNumber);
+            vo.setPrice(orderInfo.getPrice());
             return vo;
 
         }
