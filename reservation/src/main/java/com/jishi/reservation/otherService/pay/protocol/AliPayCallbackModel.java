@@ -35,6 +35,7 @@ public class AliPayCallbackModel {
     private String trade_no;
     private String sign_type;   //加密方式
     private String is_total_fee_adjust;
+    private String total_amount;
 
     public Map<String,String> toMap(){
         Map<String,String> map = new HashMap<String, String>();

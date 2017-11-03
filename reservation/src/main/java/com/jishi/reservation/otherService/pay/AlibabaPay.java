@@ -126,7 +126,7 @@ public class AlibabaPay {
                     OrderInfo orderInfo =  orderInfoMapper.queryByOutTradeNo(outTradeNo);
                     Preconditions.checkNotNull(orderInfo,"找不到该订单信息");
                     log.info("订单信息：\n"+JSONObject.toJSONString(orderInfo));
-                    //Preconditions.checkState(amount.equals(model.getTotal_fee()),"支付宝传递的订单金额与系统的订单金额不符合，回调失败");
+                    Preconditions.checkState(orderInfo.getPrice().equals(model.getTotal_fee()),"支付宝传递的订单金额与系统的订单金额不符合，回调失败");
                     //todo  调取his的门诊号缴费单
 
                     //改变订单状态和支付时间
