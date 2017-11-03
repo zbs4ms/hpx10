@@ -3,7 +3,6 @@ package com.jishi.reservation.service;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
-import com.jishi.reservation.controller.protocol.HospitaliztionOrderConfirmVO;
 import com.jishi.reservation.controller.protocol.OrderVO;
 import com.jishi.reservation.dao.mapper.PrePaymentMapper;
 import com.jishi.reservation.dao.models.OrderInfo;
@@ -19,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -173,13 +173,13 @@ public class HospitalizationService {
 
     }
 
-    public HospitaliztionOrderConfirmVO confirmPrePayment(String orderNumber, Long accountId) throws Exception {
+    public OrderVO confirmPrePayment(String orderNumber, Long accountId) throws Exception {
 
 
         OrderInfo orderInfo = orderInfoService.queryOrderByOrderNumber(orderNumber);
         Preconditions.checkState(orderInfo.getAccountId().equals(accountId),"该用户无权执行此操作");
         PrePayment prePayment =  prePaymentMapper.queryByOrderId(orderInfo.getId());
-        HospitaliztionOrderConfirmVO vo = new HospitaliztionOrderConfirmVO();
+        OrderVO vo = new OrderVO();
 
         String pay = hisHospitalization.pay
                 (orderInfo.getBrId(),String.valueOf(prePayment.getRycs()), "", String.valueOf(orderInfo.getPrice()),
@@ -187,10 +187,14 @@ public class HospitalizationService {
         if(pay!=null && !"".equals(pay)){
             log.info("更新预交订单状态...");
             prePayment.setYjdh(pay);
-            vo.setStatus( prePaymentMapper.updateByPrimaryKeySelective(prePayment));
-            vo.setPayType(orderInfo.getPayType().equals(PayEnum.ALI.getCode())?"支付宝":"微信");
-            vo.setPrice(String .valueOf(orderInfo.getPrice()));
+            vo.setPayType(orderInfo.getPayType());
+            vo.setPrice(orderInfo.getPrice());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
+            if(orderInfo.getPayTime() !=null){
+                vo.setCompletedTime(sdf.parse(orderInfo.getPayTime()));
+            }
+            vo.setOrderNumber(orderNumber);
             return vo;
         }else {
            return null;

@@ -6,6 +6,7 @@ import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.HospitalizationInfoVO;
 import com.jishi.reservation.controller.protocol.HospitaliztionOrderConfirmVO;
+import com.jishi.reservation.controller.protocol.OrderVO;
 import com.jishi.reservation.controller.protocol.PrePaymentRecordVO;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.PatientInfo;
@@ -229,7 +230,7 @@ public class HospitalizationController extends MyBaseController {
 
 
 
-    @ApiOperation(value = "预交款订单  确认订单，同步到his", response = HospitalizationInfoVO.class)
+    @ApiOperation(value = "预交款订单  确认订单，同步到his", response = OrderVO.class)
     @RequestMapping(value = "confirmPrePayment", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject confirmPrePayment(
@@ -247,15 +248,15 @@ public class HospitalizationController extends MyBaseController {
             }
         }
 
-        HospitaliztionOrderConfirmVO vo = hospitalizationService.confirmPrePayment(orderNumber, accountId);
-        switch (vo.getStatus()){
-            case 1:
-                return ResponseWrapper().addData(vo).addMessage("确认成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-             case 0:
-                 return ResponseWrapper().addMessage("确认失败!").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+        OrderVO vo = hospitalizationService.confirmPrePayment(orderNumber, accountId);
+        if(vo == null){
+            return ResponseWrapper().addMessage("确认失败!").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+
+        }else {
+            return ResponseWrapper().addData(vo).addMessage("确认成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
         }
-        return ResponseWrapper().addMessage("系统错误").ExeSuccess(ReturnCodeEnum.ERR.getCode());
+
 
     }
 
