@@ -202,7 +202,7 @@ public class HospitalizationController extends MyBaseController {
 
 
     @ApiOperation(value = "生成 预交款订单", response = HospitalizationInfoVO.class)
-    @RequestMapping(value = "generatePrepaymentOrder", method = RequestMethod.GET)
+    @RequestMapping(value = "generatePrepaymentOrder", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject generatePrepaymentOrder(
             HttpServletRequest request,HttpServletResponse response,
@@ -230,7 +230,7 @@ public class HospitalizationController extends MyBaseController {
 
 
     @ApiOperation(value = "预交款订单  确认订单，同步到his", response = OrderVO.class)
-    @RequestMapping(value = "confirmPrePayment", method = RequestMethod.GET)
+    @RequestMapping(value = "confirmPrePayment", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject confirmPrePayment(
             HttpServletRequest request,HttpServletResponse response,
