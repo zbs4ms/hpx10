@@ -17,7 +17,9 @@ public class OutpatientFeeDocVO {
       private String documentNum;
       @ApiModelProperty("单据类型")
       private String documentType;
-      @ApiModelProperty("开单时间，格式(YYYY-MM-DD hh24:mm:ss)")
+      @ApiModelProperty("单据金额")
+      private double documentAmount;
+      @ApiModelProperty("开单时间")
       private Date documentDate;
       @ApiModelProperty("是否结算卡支付，0-否，1-是")
       private int hasPayCard;

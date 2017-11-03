@@ -2,10 +2,7 @@ package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jishi.reservation.controller.base.MyBaseController;
-import com.jishi.reservation.controller.protocol.OutpatientPaymentInfoVO;
-import com.jishi.reservation.controller.protocol.OutpatientVisitPrescriptionVO;
-import com.jishi.reservation.controller.protocol.OutpatientVisitReceiptVO;
-import com.jishi.reservation.controller.protocol.OutpatientVisitRecordVO;
+import com.jishi.reservation.controller.protocol.*;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.OrderInfoService;
@@ -101,10 +98,10 @@ public class OutpatientController extends MyBaseController {
     }
     */
 
-    @ApiOperation(value = "门诊缴费确认(单个医嘱)")
-    @RequestMapping(value="/confirmPayment", method = RequestMethod.POST)
+    @ApiOperation(value = "门诊缴费确认(单个)", response = OrderVO.class)
+    @RequestMapping(value="/payConfirm", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject confirmPayment(HttpServletRequest request, HttpServletResponse response,
+    public JSONObject payModify(HttpServletRequest request, HttpServletResponse response,
                   @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
                   @ApiParam(value = "单据ID", required = true) @RequestParam(value = "docmentId", required = true) String docmentId,
                   @ApiParam(value = "病人ID", required = true) @RequestParam(value = "brId", required = true) String brId,
@@ -119,12 +116,12 @@ public class OutpatientController extends MyBaseController {
             }
         }
         //boolean rslt = outpatientService.confirmPayment(brId, docmentId, price, payPrice, documentType, orderNumber);
-        boolean rslt = outpatientService.confirmPayment(brId, docmentId, documentType, orderNumber);
-        return rslt ? ResponseWrapper().addMessage("成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
+        OrderVO orderVO = outpatientService.payConfirm(brId, docmentId, documentType, orderNumber);
+        return orderVO != null ? ResponseWrapper().addMessage("成功").addData(orderVO).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
         ResponseWrapper().addMessage("失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
     }
 
-    @ApiOperation(value = "门诊缴费确认(可多个单据)")
+    @ApiOperation(value = "门诊缴费确认(可多个单据)", response = OrderVO.class)
     @RequestMapping(value="/batchpayConfirm", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject outpatientPaymentConfirm(HttpServletRequest request, HttpServletResponse response,
@@ -142,8 +139,8 @@ public class OutpatientController extends MyBaseController {
             }
         }
         //boolean rslt = outpatientService.batchpayConfirm(brId, docIds, price, payPrice, documentType, orderNumber);
-        boolean rslt = outpatientService.batchpayConfirm(brId, docIds, documentType, orderNumber);
-        return rslt ? ResponseWrapper().addMessage("成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
+        OrderVO orderVO = outpatientService.batchpayConfirm(brId, docIds, documentType, orderNumber);
+        return orderVO != null ? ResponseWrapper().addMessage("成功").addData(orderVO).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
                       ResponseWrapper().addMessage("失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
     }
 

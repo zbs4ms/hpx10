@@ -304,24 +304,24 @@ public class HisOutpatient {
     }
 
     /**
-     * @description 门诊缴费多张单据一次支付
-     * @param docmentId 收费单据号串，逗号分隔多个单据号
+     * @description 对一个单据进行交费
+     * @param docmentId 收费单据号
      * @param brId 病人ID
      * @param price 总金额
      * @param payPrice 结算金额
-     * @param documentType 是否挂号单，0-收费单，1-挂号单
+     * @param isRegisterDoc 是否挂号单，0-收费单，1-挂号单
      * @param thirdOrderNumber 交易流水号
      * @param paymentContent 交易内容，传“支付帐号|姓名”
      * @param jsklb 结算卡类别，固定传入第三方名称
      * @throws Exception
      * @date 2017/10/26
      **/
-    public String confirmPayment(String brId, String docmentId, BigDecimal price, BigDecimal payPrice, int documentType,
+    public String payModify(String brId, String docmentId, BigDecimal price, BigDecimal payPrice, int isRegisterDoc,
                               String thirdOrderNumber, String paymentContent, String jsklb) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<DJH>").append(docmentId).append("</DJH>");
         sb.append("<JE>").append(price.toString()).append("</JE>");
-        sb.append("<SFGH>").append(documentType).append("</SFGH>");
+        sb.append("<SFGH>").append(isRegisterDoc).append("</SFGH>");
         sb.append("<BRID>").append(brId).append("</BRID>");
         sb.append("<JSLIST>");
         sb.append("<JS>");
@@ -338,10 +338,11 @@ public class HisOutpatient {
         sb.append("</EXPENDLIST>");
         sb.append("</JS>");
         sb.append("</JSLIST>");
-        String reData = HisTool.toXMLString("Payment.BatchPay.Modify", sb.toString());
+        log.info("Payment.Pay.Modify: " + sb.toString());
+        String reData = HisTool.toXMLString("Payment.Pay.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"Payment.BatchPay.Modify");
+            String xml = HisTool.getHisDataparam(me,"Payment.Pay.Modify");
             return HisTool.getXmlAttribute(xml,"JZID");
         }
         return null;
@@ -353,18 +354,18 @@ public class HisOutpatient {
      * @param docIds 收费单据号串，逗号分隔多个单据号
      * @param price 总金额
      * @param payPrice 结算金额
-     * @param documentType 是否挂号单，0-收费单，1-挂号单
+     * @param isRegisterDoc 是否挂号单，0-收费单，1-挂号单
      * @param thirdOrderNumber 交易流水号
      * @param paymentContent 交易内容，传“支付帐号|姓名”
      * @param jsklb 结算卡类别，固定传入第三方名称
      * @throws Exception
      * @date 2017/10/26
      **/
-    public String batchPayModify(String brId, String docIds, BigDecimal price, BigDecimal payPrice, int documentType, String thirdOrderNumber, String paymentContent, String jsklb) throws Exception {
+    public String batchPayModify(String brId, String docIds, BigDecimal price, BigDecimal payPrice, int isRegisterDoc, String thirdOrderNumber, String paymentContent, String jsklb) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<DJH>").append(docIds).append("</DJH>");
         sb.append("<JE>").append(price.toString()).append("</JE>");
-        sb.append("<SFGH>").append(documentType).append("</SFGH>");
+        sb.append("<SFGH>").append(isRegisterDoc).append("</SFGH>");
         sb.append("<BRID>").append(brId).append("</BRID>");
         sb.append("<JSLIST>");
         sb.append("<JS>");
@@ -381,6 +382,7 @@ public class HisOutpatient {
         sb.append("</EXPENDLIST>");
         sb.append("</JS>");
         sb.append("</JSLIST>");
+        log.info("Payment.BatchPay.Modify: " + sb.toString());
         String reData = HisTool.toXMLString("Payment.BatchPay.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {

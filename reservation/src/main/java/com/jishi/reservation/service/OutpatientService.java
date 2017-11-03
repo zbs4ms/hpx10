@@ -43,7 +43,6 @@ public class OutpatientService {
       /**
        * 获取用户门诊缴费列表
        * @param accountId
-       * @return
        * @throws Exception
        */
     public List<OutpatientPaymentInfoVO> queryOutpatientPamentInfo(long accountId, Integer paymentStatus, Integer pageNo, Integer pageSize) throws Exception {
@@ -74,6 +73,7 @@ public class OutpatientService {
                     continue;
                 }
                 double unpaidAmount = 0.0;
+                StringBuffer unpaidDocIdBuffer = new StringBuffer();
                 OutpatientPaymentInfoVO paymentInfo = new OutpatientPaymentInfoVO();
                 paymentInfo.setBrid(info.getBrId());
                 paymentInfo.setPatientName(info.getName());
@@ -111,9 +111,6 @@ public class OutpatientService {
                             fee.setFeeName(fm.getMc());
                             fee.setFeeAmount(Double.parseDouble(fm.getJe()));
                             fee.setFeeStatus(Integer.parseInt(fm.getZfzt()));
-                            if (fee.getFeeStatus() == 0) {
-                                unpaidAmount += fee.getFeeAmount();
-                            }
 
                             /** 暂时不提供明细
                             // 费目明细列表
@@ -146,6 +143,7 @@ public class OutpatientService {
                         for (OutpatientPaymentInfo.Dj dj : djLists) {
                             OutpatientFeeDocVO doc = new OutpatientFeeDocVO();
                             doc.setDocumentNum(dj.getDjh());
+                            doc.setDocumentAmount(Double.parseDouble(dj.getJe()));
                             doc.setDocumentDate(formatDate(dj.getKdsj()));
                             doc.setDocumentType(dj.getDjlx());
                             doc.setHasPayCard(Integer.parseInt(dj.getSfjsk()));
@@ -153,6 +151,12 @@ public class OutpatientService {
                             String ytje = dj.getYtje();
                             double returnNum = (ytje == null || ytje.isEmpty()) ? 0.0 : Double.parseDouble(ytje);
                             doc.setReturnNumber(returnNum);
+
+                            if (doc.getPayStatus() == 0) {
+                                unpaidAmount += doc.getDocumentAmount();
+                                unpaidDocIdBuffer.append(doc.getDocumentNum());
+                                unpaidDocIdBuffer.append(",");
+                            }
 
                             feeDocList.add(doc);
                         }
@@ -163,6 +167,16 @@ public class OutpatientService {
                 }
                 paymentInfo.setAdviceList(adviceList);
                 paymentInfo.setUnpaidAmount(unpaidAmount);
+                String unpaidDocIds = unpaidDocIdBuffer.toString();
+                if (unpaidDocIds != null && !unpaidDocIds.isEmpty()) {
+                    unpaidDocIds = unpaidDocIds.substring(0, unpaidDocIds.length() - 1);
+                }
+                paymentInfo.setUnpaidDocIds(unpaidDocIds);
+                //不知道his返回的挂号单下面的支付状态是不是挂号单的支付状态，每次返回1，这里通过未支付单据进行处理，后期有需要再调整
+                //  1 已支付， 0 待支付
+                int PaymentStatus = unpaidDocIds == null || unpaidDocIds.isEmpty() ? 1 : 0;
+                paymentInfo.setPaymentStatus(PaymentStatus);
+
                 paymentInfoList.add(paymentInfo);
             }
         }
@@ -182,38 +196,57 @@ public class OutpatientService {
         return paymentInfoList;
     }
 
-    public boolean confirmPayment(String brId, String docmentId, int documentType, String orderNumber) throws Exception {
+    /**
+     * @description 门诊缴费确认(单个)
+     * @param brId 病人ID
+     * @param docmentId 单据ID
+     * @param documentType 单据类型，1-收费单，4-挂号单
+     * @param orderNumber 订单号
+     * @throws Exception
+    **/
+    public OrderVO payConfirm(String brId, String docmentId, int documentType, String orderNumber) throws Exception {
         OrderInfo order = orderInfoService.queryOrderByOrderNumber(orderNumber);
-        log.info("confirmPayment => OrderNumber: " + order.getOrderNumber() + " 病人Id: " + brId + docmentId + " 金额：" + order.getPrice());
-        if (order == null) {
-            // TODO  返回false是否不太好？
-            //return false;
+        log.info("payConfirm => OrderNumber: " + order.getOrderNumber() + " 病人Id: " + brId + " 单据号：" + docmentId + " 金额：" + order.getPrice());
+        if (order == null || !order.getBrId().equals(brId)) {
+            return null;
         }
         // 订单状态0：已支付，是否有效的标志0：有效，订单类型3：门诊订单
         if (order.getStatus() != 0 || order.getEnable() != 0 || order.getType() != 3) {
-            //return false;
+            return null;
         }
         // TODO 第三方名称（结算卡类别）暂时传空
         String paymentContent = order.getBuyerId() + "|" + order.getSubject();
-        String jzid = hisOutpatient.confirmPayment(brId, docmentId, order.getPrice(), order.getPrice(), documentType, order.getThirdOrderNumber(), paymentContent, null);
-        log.info(jzid + " batchpayConfirm => 病人ID: " + brId + "单据号：" + docmentId + "金额: " + order.getPrice() );
-        return jzid != null && !jzid.isEmpty();
+        //documentType: 单据类型，1-收费单，4-挂号单    isRegisterDoc: 是否挂号单，0-收费单，1-挂号单
+        int isRegisterDoc = documentType == 4 ? 1 : 0;
+        String jzid = hisOutpatient.payModify(brId, docmentId, order.getPrice(), order.getPrice(), isRegisterDoc, order.getThirdOrderNumber(), paymentContent, null);
+        log.info(" payConfirm => 就诊ID: " + jzid);
+        return jzid != null && !jzid.isEmpty() ? toOrderVO(order) : null;
     }
 
-    public boolean batchpayConfirm(String brId, String docIds, int documentType, String orderNumber) throws Exception {
+    /**
+     * @description 门诊缴费确认(可多个单据)
+     * @param brId 病人ID
+     * @param docIds 单据ID，可以多个单据，以','分隔
+     * @param documentType 单据类型，1-收费单，4-挂号单
+     * @param orderNumber 订单号
+     * @throws Exception
+     **/
+    public OrderVO batchpayConfirm(String brId, String docIds, int documentType, String orderNumber) throws Exception {
         OrderInfo order = orderInfoService.queryOrderByOrderNumber(orderNumber);
-        log.info("batchpayConfirm => OrderNumber: " + order.getOrderNumber() + " 病人Id: " + brId + " 单据号: " + docIds);
-        if (order == null) {
-            //return false;
+        log.info("batchpayConfirm => OrderNumber: " + order.getOrderNumber() + " 病人Id: " + brId + " 单据号: " + docIds + " 金额：" + order.getPrice());
+        if (order == null || !order.getBrId().equals(brId)) {
+            return null;
         }
         // 订单状态0：已支付，是否有效的标志0：有效，订单类型3：门诊订单
         if (order.getStatus() != 0 || order.getEnable() != 0 || order.getType() != 3) {
-            //return false;
+            return null;
         }
         String paymentContent = order.getBuyerId() + "|" + order.getSubject();
-        String czsj = hisOutpatient.batchPayModify(brId, docIds, order.getPrice(), order.getPrice(), documentType, order.getThirdOrderNumber(), paymentContent, null);
-        log.info(czsj + " batchpayConfirm => 病人ID: " + brId + "单据号：" + docIds + "金额: " + order.getPrice());
-        return czsj != null && !czsj.isEmpty();
+        //documentType: 单据类型，1-收费单，4-挂号单    isRegisterDoc: 是否挂号单，0-收费单，1-挂号单
+        int isRegisterDoc = documentType == 4 ? 1 : 0;
+        String czsj = hisOutpatient.batchPayModify(brId, docIds, order.getPrice(), order.getPrice(), isRegisterDoc, order.getThirdOrderNumber(), paymentContent, null);
+        log.info(" batchpayConfirm => 操作时间: " + czsj);
+        return czsj != null && !czsj.isEmpty() ? toOrderVO(order) : null;
     }
 
     /**
@@ -221,7 +254,7 @@ public class OutpatientService {
      * @param accountId 用户账号
      * @param pageNo 当前页数
      * @param pageSize 每页记录数
-     * @throws
+     * @throws Exception
     **/
     public List<OutpatientVisitRecordVO> queryVisitRecord(long accountId, int pageNo, int pageSize) throws Exception {
         List<PatientInfo> patientInfoList = patientInfoService.queryPatientInfo(null,accountId, 0);
@@ -396,5 +429,16 @@ public class OutpatientService {
     private Date formatDate(String str) throws ParseException {
         SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return formater.parse(str);
+    }
+
+    private OrderVO toOrderVO(OrderInfo order) {
+        if (order == null) {
+            return null;
+        }
+        OrderVO orderVO = new OrderVO();
+        orderVO.setOrderNumber(order.getOrderNumber());
+        orderVO.setPayType(order.getPayType());
+        orderVO.setPrice(order.getPrice());
+        return orderVO;
     }
 }
