@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.HospitalizationInfoVO;
+import com.jishi.reservation.controller.protocol.HospitaliztionOrderConfirmVO;
 import com.jishi.reservation.controller.protocol.PrePaymentRecordVO;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.PatientInfo;
@@ -246,10 +247,10 @@ public class HospitalizationController extends MyBaseController {
             }
         }
 
-        Integer status = hospitalizationService.confirmPrePayment(orderNumber, accountId);
-        switch (status){
+        HospitaliztionOrderConfirmVO vo = hospitalizationService.confirmPrePayment(orderNumber, accountId);
+        switch (vo.getStatus()){
             case 1:
-                return ResponseWrapper().addMessage("确认成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+                return ResponseWrapper().addData(vo).addMessage("确认成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
              case 0:
                  return ResponseWrapper().addMessage("确认失败!").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
 
