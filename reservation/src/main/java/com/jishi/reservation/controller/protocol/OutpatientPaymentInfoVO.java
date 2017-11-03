@@ -37,6 +37,8 @@ public class OutpatientPaymentInfoVO implements Comparable<OutpatientPaymentInfo
     private double paymentAmount;
     @ApiModelProperty("未支付金额")
     private double unpaidAmount;
+    @ApiModelProperty("未支付单据列表，以','分隔")
+    private String unpaidDocIds;
     @ApiModelProperty("医生ID")
     private String doctorId;
     @ApiModelProperty("医生姓名")
