@@ -5,7 +5,6 @@ import com.github.pagehelper.PageInfo;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.HospitalizationInfoVO;
-import com.jishi.reservation.controller.protocol.HospitaliztionOrderConfirmVO;
 import com.jishi.reservation.controller.protocol.OrderVO;
 import com.jishi.reservation.controller.protocol.PrePaymentRecordVO;
 import com.jishi.reservation.dao.models.OrderInfo;
