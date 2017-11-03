@@ -249,7 +249,7 @@ public class HospitalizationController extends MyBaseController {
 
         OrderVO vo = hospitalizationService.confirmPrePayment(orderNumber, accountId);
         if(vo == null){
-            return ResponseWrapper().addMessage("确认失败!").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+            return ResponseWrapper().addMessage("确认失败!").ExeFaild(ReturnCodeEnum.FAILED.getCode());
 
         }else {
             return ResponseWrapper().addData(vo).addMessage("确认成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
