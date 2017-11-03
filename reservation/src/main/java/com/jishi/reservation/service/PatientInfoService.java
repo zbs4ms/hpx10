@@ -191,14 +191,16 @@ public class PatientInfoService {
         if(patientInfos!=null && patientInfos.size() !=0){
             for (PatientInfo patientInfo : patientInfos) {
                 Pregnant pregnant = pregnantMapper.queryByPatientId(patientInfo.getId());
-                patientInfo.setRemark(pregnant.getRemark());
-                patientInfo.setBirth(pregnant.getBirth());
-                patientInfo.setPregnantEnable(pregnant.getEnable());
-                patientInfo.setHusbandName(pregnant.getHusbandName());
-                patientInfo.setHusbandTelephone(pregnant.getHusbandTelephone());
-                patientInfo.setLastMenses(pregnant.getLastMenses());
-                patientInfo.setLivingAddress(pregnant.getLivingAddress());
-                patientInfo.setPregnantId(pregnant.getId());
+                if(pregnant != null){
+                    patientInfo.setRemark(pregnant.getRemark());
+                    patientInfo.setBirth(pregnant.getBirth());
+                    patientInfo.setPregnantEnable(pregnant.getEnable());
+                    patientInfo.setHusbandName(pregnant.getHusbandName());
+                    patientInfo.setHusbandTelephone(pregnant.getHusbandTelephone());
+                    patientInfo.setLastMenses(pregnant.getLastMenses());
+                    patientInfo.setLivingAddress(pregnant.getLivingAddress());
+                    patientInfo.setPregnantId(pregnant.getId());
+                }
 
             }
         }
