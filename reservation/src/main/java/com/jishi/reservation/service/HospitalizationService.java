@@ -7,8 +7,7 @@ import com.jishi.reservation.controller.protocol.OrderVO;
 import com.jishi.reservation.dao.mapper.PrePaymentMapper;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.PrePayment;
-import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
-import com.jishi.reservation.service.enumPackage.PayEnum;
+import com.jishi.reservation.service.enumPackage.*;
 import com.jishi.reservation.service.his.HisHospitalization;
 import com.jishi.reservation.service.his.bean.*;
 import io.swagger.annotations.ApiModel;
@@ -194,10 +193,25 @@ public class HospitalizationService {
             if(orderInfo.getPayTime() !=null){
                 vo.setCompletedTime(sdf.parse(orderInfo.getPayTime()));
             }
+            prePaymentMapper.updateByPrimaryKeySelective(prePayment);
+            log.info("更新预交单号...");
+
             vo.setOrderNumber(orderNumber);
+            vo.setStatus(SuccessEnum.SUCCESS.getCode());
             return vo;
         }else {
-           return null;
+            log.info("同步失败...");
+
+            vo.setPayType(orderInfo.getPayType());
+            vo.setPrice(orderInfo.getPrice());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+            if(orderInfo.getPayTime() !=null){
+                vo.setCompletedTime(sdf.parse(orderInfo.getPayTime()));
+            }
+            vo.setStatus(SuccessEnum.FAILED.getCode());
+            vo.setOrderNumber(orderNumber);
+            return vo;
 
         }
 

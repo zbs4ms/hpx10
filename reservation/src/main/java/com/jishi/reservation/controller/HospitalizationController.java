@@ -14,6 +14,7 @@ import com.jishi.reservation.service.HospitalizationService;
 import com.jishi.reservation.service.OrderInfoService;
 import com.jishi.reservation.service.PatientInfoService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.enumPackage.SuccessEnum;
 import com.jishi.reservation.service.his.bean.DepositBalanceDetail;
 import com.jishi.reservation.service.his.bean.DepositBalanceLog;
 import com.jishi.reservation.service.his.bean.TotalDepositBalancePayDetail;
@@ -248,8 +249,8 @@ public class HospitalizationController extends MyBaseController {
         }
 
         OrderVO vo = hospitalizationService.confirmPrePayment(orderNumber, accountId);
-        if(vo == null){
-            return ResponseWrapper().addMessage("确认失败!").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+        if(vo.getStatus().equals(SuccessEnum.FAILED.getCode())){
+            return ResponseWrapper().addMessage("确认失败!").addData(vo).ExeFaild(ReturnCodeEnum.FAILED.getCode());
 
         }else {
             return ResponseWrapper().addData(vo).addMessage("确认成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());

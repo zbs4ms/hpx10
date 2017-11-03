@@ -36,6 +36,8 @@ public class OrderVO {
     private Integer payType;
     @ApiModelProperty("支付金额")
     private BigDecimal price;
+    @ApiModelProperty("确认状态  1失败  0成功")
+    private Integer status;
 
 
 }
