@@ -1,6 +1,7 @@
 package com.jishi.reservation.service.his.bean;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import lombok.Data;
 
 import java.util.List;
@@ -14,10 +15,11 @@ import java.util.List;
 public class OutpatientVisitPrescription {
 
     //prescription
-    @XStreamAlias("GROUP")
+    @XStreamImplicit(itemFieldName="GROUP")
     private List<Prescription> prescriptionList;
 
     @Data
+    //@XStreamAlias("GROUP")
     public class Prescription {
         //单据号
         @XStreamAlias("DJH")
@@ -34,18 +36,17 @@ public class OutpatientVisitPrescription {
         //诊断信息
         @XStreamAlias("ZD")
         private String zd;
-        //
-        @XStreamAlias("ITEM")
+        @XStreamImplicit(itemFieldName="ITEM")
         private List<PrescriptionItem> itemList;
     }
 
     @Data
+    //@XStreamAlias("ITEM")
     public class PrescriptionItem {
         //类别，处方、检验、检查等等
         @XStreamAlias("LB")
         private String lb;
-        //
-        @XStreamAlias("GROUP")
+        @XStreamImplicit(itemFieldName="GROUP")
         private List<PrescriptionYF> group;
     }
 
@@ -54,12 +55,13 @@ public class OutpatientVisitPrescription {
         //用法
         @XStreamAlias("YF")
         private String yf;
-        //明细
-        @XStreamAlias("MX")
+        @XStreamImplicit(itemFieldName="MX")
         private List<PrescriptionMX> mxList;
     }
 
     @Data
+    //明细
+    //@XStreamAlias("MX")
     public class PrescriptionMX {
         //名称
         @XStreamAlias("MC")

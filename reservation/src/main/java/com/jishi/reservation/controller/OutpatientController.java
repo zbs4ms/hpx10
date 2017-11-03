@@ -149,8 +149,8 @@ public class OutpatientController extends MyBaseController {
     @ResponseBody
     public JSONObject queryVisitRecord(HttpServletRequest request, HttpServletResponse response,
                 @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-                @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
-                @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize) throws Exception {
+                @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", defaultValue = "1", required = false) Integer pageNum,
+                @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize) throws Exception {
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1L)){

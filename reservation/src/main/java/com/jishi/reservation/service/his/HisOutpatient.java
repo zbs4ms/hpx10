@@ -400,7 +400,7 @@ public class HisOutpatient {
      * @param zd 站点（用于区分多院区）
      * @throws Exception
     **/
-    public OutpatientVisitRecord queryOutpatientVisitRecord(String brId, long dqys, long jlts, String zd) throws Exception {
+    public OutpatientVisitRecord queryOutpatientVisitRecord(String brId, Integer dqys, Integer jlts, String zd) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<BRID>").append(brId).append("</BRID>");
         sb.append("<DQYS>").append(dqys).append("</DQYS>");

@@ -15,7 +15,7 @@ public class OutpatientVisitRecord {
 
     //无此节点表示没找到记录
     @XStreamAlias("INFOLIST")
-    private VisitRecordInfo infolist;
+    private List<VisitRecord> infolist;
 
     @Data
     public class VisitRecordInfo {
@@ -24,6 +24,7 @@ public class OutpatientVisitRecord {
     }
 
     @Data
+    @XStreamAlias("INFO")
     public class VisitRecord {
         //日期
         @XStreamAlias("RQ")
@@ -48,7 +49,7 @@ public class OutpatientVisitRecord {
         private String je;
         //
         @XStreamAlias("XMLIST")
-        private RecordMXList mxlist;
+        private List<RecordMX> mxlist;
     }
 
     @Data
@@ -58,6 +59,7 @@ public class OutpatientVisitRecord {
     }
 
     @Data
+    @XStreamAlias("XM")
     public class RecordMX {
         //单据名称
         @XStreamAlias("MC")

@@ -1,6 +1,7 @@
 package com.jishi.reservation.service.his.bean;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import lombok.Data;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
 public class OutpatientVisitReceipt {
 
     //receipt
-    @XStreamAlias("GROUP")
+    @XStreamImplicit(itemFieldName="GROUP")
     private List<Receipt> receiptList;
 
     @Data
@@ -35,7 +36,7 @@ public class OutpatientVisitReceipt {
         @XStreamAlias("FY")
         private String fy;
         //receiptItem
-        @XStreamAlias("ITEM")
+        @XStreamImplicit(itemFieldName="ITEM")
         private List<ReceiptItem> itemList;
     }
 
@@ -45,7 +46,7 @@ public class OutpatientVisitReceipt {
         @XStreamAlias("FM")
         private String fm;
         //receiptMX
-        @XStreamAlias("MX")
+        @XStreamImplicit(itemFieldName="MX")
         private List<ReceiptMX> mxList;
     }
 
