@@ -50,6 +50,32 @@ public class HisOutpatient {
         return null;
     }
 
+
+    /**
+     * 	获取挂号项目最后得金额
+     * @param brid 病人ID
+     * @param xmid 项目id
+     * @return
+     * @throws Exception
+     */
+    public RegisteredNumberInfo queryLastPrice(String xmid,String brid) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<XMID>").append(xmid).append("</XMID>");
+        sb.append("<BRID>").append(brid).append("</BRID>");
+
+        String reData = HisTool.toXMLString("Register.Preferential.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            String xml = HisTool.getHisDataparam(me,"Register.Preferential.Query");
+            return (RegisteredNumberInfo) HisTool.toBean(RegisteredNumberInfo.class, xml);
+        }
+        return null;
+    }
+
+
+
+
+
     /**
      * 获取挂号限制条件
      * @param brid 病人id

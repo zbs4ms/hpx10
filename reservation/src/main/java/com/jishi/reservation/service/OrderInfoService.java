@@ -63,19 +63,24 @@ public class OrderInfoService {
         OrderVO orderVO = new OrderVO();
        // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         orderVO.setOrderNumber(orderInfo.getOrderNumber());
-        orderVO.setSerialNumber(register.getSerialNumber());
-        orderVO.setDoctorName(register.getDoctorName());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        if(register != null){
+            orderVO.setSerialNumber(register.getSerialNumber());
+            orderVO.setDoctorName(register.getDoctorName());
+            orderVO.setDepartment(register.getDepartment());
+            orderVO.setPatientName(register.getPatientName());
+            orderVO.setTimeInterval(sdf.format(register.getAgreedTime()).contains("14:00")?"下午":"上午");
+            orderVO.setRegisterTime(register.getAgreedTime());
+        }
+
         orderVO.setPayType(orderInfo.getPayType());
         orderVO.setPrice(orderInfo.getPrice());
         orderVO.setPosition("泸州锦欣医院");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if(orderInfo.getPayTime()!=null){
             orderVO.setCompletedTime(sdf.parse(orderInfo.getPayTime()));
         }
-        orderVO.setDepartment(register.getDepartment());
-        orderVO.setPatientName(register.getPatientName());
-        orderVO.setTimeInterval(sdf.format(register.getAgreedTime()).contains("14:00")?"下午":"上午");
-        orderVO.setRegisterTime(register.getAgreedTime());
+
 
         return orderVO;
     }
