@@ -138,6 +138,7 @@ public class RegisterService {
         //Department department = departmentMapper.queryById(departmentId);
         completeVO.setDepartment(department);
         completeVO.setAgreeTime(agreedTime);
+        //todo 真实的地址
         completeVO.setPosition("交子路");
         completeVO.setTimeInterval(timeInterval);
         completeVO.setPatient(brName);

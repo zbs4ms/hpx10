@@ -210,6 +210,8 @@ public class HisOutpatient {
         sb.append("<JYLR>").append(confirmRegister.getJylr()).append("</JYLR>");
         sb.append("</EXPEND></EXPENDLIST>");
         sb.append("</JS></JSLIST>");
+
+        log.info("請求的數據：\n"+sb.toString());
         String reData = HisTool.toXMLString("Register.Confirm.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
