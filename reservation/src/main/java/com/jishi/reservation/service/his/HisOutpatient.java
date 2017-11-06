@@ -290,6 +290,7 @@ public class HisOutpatient {
      */
     public OutpatientPaymentInfo queryPayReceipt(String brid, String jsklb, String cxts, String zd) throws Exception {
         StringBuffer sb = new StringBuffer();
+        zd = zd == null ? "" : zd;
         sb.append("<BRID>").append(brid).append("</BRID>");
         sb.append("<CXTS>").append(cxts).append("</CXTS>");
         sb.append("<JSKLB>").append(jsklb).append("</JSKLB>");
@@ -402,6 +403,7 @@ public class HisOutpatient {
     **/
     public OutpatientVisitRecord queryOutpatientVisitRecord(String brId, Integer dqys, Integer jlts, String zd) throws Exception {
         StringBuffer sb = new StringBuffer();
+        zd = zd == null ? "" : zd;
         sb.append("<BRID>").append(brId).append("</BRID>");
         sb.append("<DQYS>").append(dqys).append("</DQYS>");
         sb.append("<JLTS>").append(jlts).append("</JLTS>");
