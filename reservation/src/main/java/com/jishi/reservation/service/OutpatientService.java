@@ -73,7 +73,7 @@ public class OutpatientService {
                     continue;
                 }
                 double unpaidAmount = 0.0;
-                StringBuffer unpaidDocIdBuffer = new StringBuffer();
+                String unpaidDocIds = "";
                 OutpatientPaymentInfoVO paymentInfo = new OutpatientPaymentInfoVO();
                 paymentInfo.setBrid(info.getBrId());
                 paymentInfo.setPatientName(info.getName());
@@ -152,10 +152,9 @@ public class OutpatientService {
                             double returnNum = (ytje == null || ytje.isEmpty()) ? 0.0 : Double.parseDouble(ytje);
                             doc.setReturnNumber(returnNum);
 
-                            if (doc.getPayStatus() == 0) {
+                            if (doc.getPayStatus() == 0 && !unpaidDocIds.contains(doc.getDocumentNum())) {
                                 unpaidAmount += doc.getDocumentAmount();
-                                unpaidDocIdBuffer.append(doc.getDocumentNum());
-                                unpaidDocIdBuffer.append(",");
+                                unpaidDocIds += doc.getDocumentNum() + ",";
                             }
 
                             feeDocList.add(doc);
@@ -167,7 +166,6 @@ public class OutpatientService {
                 }
                 paymentInfo.setAdviceList(adviceList);
                 paymentInfo.setUnpaidAmount(unpaidAmount);
-                String unpaidDocIds = unpaidDocIdBuffer.toString();
                 if (unpaidDocIds != null && !unpaidDocIds.isEmpty()) {
                     unpaidDocIds = unpaidDocIds.substring(0, unpaidDocIds.length() - 1);
                 }
