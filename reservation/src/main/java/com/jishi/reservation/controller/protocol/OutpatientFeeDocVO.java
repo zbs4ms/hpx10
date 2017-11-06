@@ -16,7 +16,7 @@ public class OutpatientFeeDocVO {
       @ApiModelProperty("单据号")
       private String documentNum;
       @ApiModelProperty("单据类型")
-      private String documentType;
+      private int documentType;
       @ApiModelProperty("单据金额")
       private double documentAmount;
       @ApiModelProperty("开单时间")

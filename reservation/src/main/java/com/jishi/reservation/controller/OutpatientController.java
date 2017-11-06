@@ -39,7 +39,7 @@ public class OutpatientController extends MyBaseController {
     OrderInfoService orderInfoService;
 
 
-    @ApiOperation(value = "门诊缴费列表", response = OutpatientPaymentInfoVO.class)
+    @ApiOperation(value = "门诊缴费列表，默认处理收费单，挂号单不处理", response = OutpatientPaymentInfoVO.class)
     @RequestMapping(value="/paymentInfo", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryOutpatientPamentInfo(HttpServletRequest request, HttpServletResponse response,

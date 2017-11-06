@@ -82,7 +82,7 @@ public class OutpatientService {
                 paymentInfo.setRegisterDate(formatDate(gh.getYysj()));
                 paymentInfo.setDepartment(gh.getKdks());
                 paymentInfo.setExeStatus(gh.getZxzt());
-                paymentInfo.setDocumentType(Integer.parseInt(gh.getDjlx()));
+                //paymentInfo.setDocumentType(Integer.parseInt(gh.getDjlx()));
                 paymentInfo.setPaymentStatus(Integer.parseInt(gh.getZfzt()));
                 paymentInfo.setHasRegister(Integer.parseInt(gh.getSfyy()));
                 paymentInfo.setPaymentAmount(Double.parseDouble(gh.getJe()));
@@ -145,14 +145,15 @@ public class OutpatientService {
                             doc.setDocumentNum(dj.getDjh());
                             doc.setDocumentAmount(Double.parseDouble(dj.getJe()));
                             doc.setDocumentDate(formatDate(dj.getKdsj()));
-                            doc.setDocumentType(dj.getDjlx());
+                            doc.setDocumentType(Integer.parseInt(dj.getDjlx()));
                             doc.setHasPayCard(Integer.parseInt(dj.getSfjsk()));
                             doc.setPayStatus(Integer.parseInt(dj.getZfzt()));
                             String ytje = dj.getYtje();
                             double returnNum = (ytje == null || ytje.isEmpty()) ? 0.0 : Double.parseDouble(ytje);
                             doc.setReturnNumber(returnNum);
 
-                            if (doc.getPayStatus() == 0 && !unpaidDocIds.contains(doc.getDocumentNum())) {
+                            //默认处理收费单(单据类型，1-收费单，4-挂号单)，挂号单不处理
+                            if (doc.getPayStatus() == 0 && doc.getDocumentType() == 1 && !unpaidDocIds.contains(doc.getDocumentNum())) {
                                 unpaidAmount += doc.getDocumentAmount();
                                 unpaidDocIds += doc.getDocumentNum() + ",";
                             }
@@ -174,6 +175,7 @@ public class OutpatientService {
                 //  1 已支付， 0 待支付
                 int PaymentStatus = unpaidDocIds == null || unpaidDocIds.isEmpty() ? 1 : 0;
                 paymentInfo.setPaymentStatus(PaymentStatus);
+                paymentInfo.setDocumentType(1);   //默认处理收费单(单据类型，1-收费单，4-挂号单)，挂号单不处理
 
                 paymentInfoList.add(paymentInfo);
             }
