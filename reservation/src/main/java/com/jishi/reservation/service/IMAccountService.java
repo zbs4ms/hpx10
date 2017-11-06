@@ -175,7 +175,7 @@ public class IMAccountService {
             imUser.setIcon(account.getHeadPortrait());
             imAccount.setAccountId(accId);
             imAccount.setType(0); //普通用户
-        } else if (doctorId != null) {
+        } else if (doctorId != null || doctorHisId != null) {
             List<Doctor> doctorList = doctorService.queryDoctor(doctorId, doctorHisId, null, null, null, 0);
             if (doctorList == null || doctorList.size() != 1) {
                 log.error("医生列表为空或大于1：doctorId " + doctorId + " doctorHisId " +  doctorHisId);
@@ -188,8 +188,8 @@ public class IMAccountService {
             imUser.setName(doctor.getName());
             imUser.setIcon(doctor.getHeadPortrait());
             imUser.setSign(doctor.getAbout());
-            imAccount.setDoctorId(doctorId);
-            imAccount.setDoctorHisId(doctorHisId);
+            imAccount.setDoctorId(doctor.getId());
+            imAccount.setDoctorHisId(doctor.getHId());
             imAccount.setType(1); //医生
         }
         IMUser resUser = imClientNeteasy.getUserOperation().createUser(imUser);

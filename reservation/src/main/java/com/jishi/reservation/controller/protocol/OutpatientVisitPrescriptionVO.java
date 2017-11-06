@@ -45,7 +45,7 @@ public class OutpatientVisitPrescriptionVO {
         @ApiModelProperty("规格(LB为处方时返回)")
         private String format;
         @ApiModelProperty("单量(LB为处方时返回)")
-        private double singleValue;
+        private String singleValue;
         @ApiModelProperty("用量(LB为处方时返回)")
         private double usageValue;
         @ApiModelProperty("单位(LB为处方时返回)")

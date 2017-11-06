@@ -292,6 +292,7 @@ public class HisOutpatient {
      */
     public OutpatientPaymentInfo queryPayReceipt(String brid, String jsklb, String cxts, String zd) throws Exception {
         StringBuffer sb = new StringBuffer();
+        zd = zd == null ? "" : zd;
         sb.append("<BRID>").append(brid).append("</BRID>");
         sb.append("<CXTS>").append(cxts).append("</CXTS>");
         sb.append("<JSKLB>").append(jsklb).append("</JSKLB>");
@@ -322,7 +323,7 @@ public class HisOutpatient {
                               String thirdOrderNumber, String paymentContent, String jsklb) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<DJH>").append(docmentId).append("</DJH>");
-        sb.append("<JE>").append(price.toString()).append("</JE>");
+        sb.append("<JE>").append(String.valueOf(price.stripTrailingZeros())).append("</JE>");
         sb.append("<SFGH>").append(isRegisterDoc).append("</SFGH>");
         sb.append("<BRID>").append(brId).append("</BRID>");
         sb.append("<JSLIST>");
@@ -330,7 +331,7 @@ public class HisOutpatient {
         sb.append("<JSKLB>").append(jsklb).append("</JSKLB>");
         sb.append("<JSKH>").append("</JSKH>");
         sb.append("<JSFS>").append("</JSFS>");
-        sb.append("<JSJE>").append(payPrice.toString()).append("</JSJE>");
+        sb.append("<JSJE>").append(String.valueOf(payPrice.stripTrailingZeros())).append("</JSJE>");
         sb.append("<JYLSH>").append(thirdOrderNumber).append("</JYLSH>");
         sb.append("<EXPENDLIST>");
         sb.append("<EXPEND>");
@@ -366,7 +367,7 @@ public class HisOutpatient {
     public String batchPayModify(String brId, String docIds, BigDecimal price, BigDecimal payPrice, int isRegisterDoc, String thirdOrderNumber, String paymentContent, String jsklb) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<DJH>").append(docIds).append("</DJH>");
-        sb.append("<JE>").append(price.toString()).append("</JE>");
+        sb.append("<JE>").append(String.valueOf(price.stripTrailingZeros())).append("</JE>");
         sb.append("<SFGH>").append(isRegisterDoc).append("</SFGH>");
         sb.append("<BRID>").append(brId).append("</BRID>");
         sb.append("<JSLIST>");
@@ -374,7 +375,7 @@ public class HisOutpatient {
         sb.append("<JSKLB>").append(jsklb).append("</JSKLB>");
         sb.append("<JSKH>").append("</JSKH>");
         sb.append("<JSFS>").append("</JSFS>");
-        sb.append("<JSJE>").append(payPrice.toString()).append("</JSJE>");
+        sb.append("<JSJE>").append(String.valueOf(payPrice.stripTrailingZeros())).append("</JSJE>");
         sb.append("<JYLSH>").append(thirdOrderNumber).append("</JYLSH>");
         sb.append("<EXPENDLIST>");
         sb.append("<EXPEND>");
@@ -402,8 +403,9 @@ public class HisOutpatient {
      * @param zd 站点（用于区分多院区）
      * @throws Exception
     **/
-    public OutpatientVisitRecord queryOutpatientVisitRecord(String brId, long dqys, long jlts, String zd) throws Exception {
+    public OutpatientVisitRecord queryOutpatientVisitRecord(String brId, Integer dqys, Integer jlts, String zd) throws Exception {
         StringBuffer sb = new StringBuffer();
+        zd = zd == null ? "" : zd;
         sb.append("<BRID>").append(brId).append("</BRID>");
         sb.append("<DQYS>").append(dqys).append("</DQYS>");
         sb.append("<JLTS>").append(jlts).append("</JLTS>");

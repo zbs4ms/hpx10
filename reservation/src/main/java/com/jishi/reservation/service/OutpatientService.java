@@ -73,7 +73,7 @@ public class OutpatientService {
                     continue;
                 }
                 double unpaidAmount = 0.0;
-                StringBuffer unpaidDocIdBuffer = new StringBuffer();
+                String unpaidDocIds = "";
                 OutpatientPaymentInfoVO paymentInfo = new OutpatientPaymentInfoVO();
                 paymentInfo.setBrid(info.getBrId());
                 paymentInfo.setPatientName(info.getName());
@@ -152,10 +152,9 @@ public class OutpatientService {
                             double returnNum = (ytje == null || ytje.isEmpty()) ? 0.0 : Double.parseDouble(ytje);
                             doc.setReturnNumber(returnNum);
 
-                            if (doc.getPayStatus() == 0) {
+                            if (doc.getPayStatus() == 0 && !unpaidDocIds.contains(doc.getDocumentNum())) {
                                 unpaidAmount += doc.getDocumentAmount();
-                                unpaidDocIdBuffer.append(doc.getDocumentNum());
-                                unpaidDocIdBuffer.append(",");
+                                unpaidDocIds += doc.getDocumentNum() + ",";
                             }
 
                             feeDocList.add(doc);
@@ -167,7 +166,6 @@ public class OutpatientService {
                 }
                 paymentInfo.setAdviceList(adviceList);
                 paymentInfo.setUnpaidAmount(unpaidAmount);
-                String unpaidDocIds = unpaidDocIdBuffer.toString();
                 if (unpaidDocIds != null && !unpaidDocIds.isEmpty()) {
                     unpaidDocIds = unpaidDocIds.substring(0, unpaidDocIds.length() - 1);
                 }
@@ -271,11 +269,11 @@ public class OutpatientService {
         // TODO 确认his当前页数是否从1开始， 站点暂时传null
         for (PatientInfo patientInfo : patientInfoList) {
             OutpatientVisitRecord visitRecordData = hisOutpatient.queryOutpatientVisitRecord(patientInfo.getBrId(), pageNo, pageSize, null);
-            if (visitRecordData.getInfolist() == null || visitRecordData.getInfolist().getList() == null
-                      || visitRecordData.getInfolist().getList().isEmpty()) {
+            if (visitRecordData == null || visitRecordData.getInfolist() == null || visitRecordData.getInfolist() == null
+                      || visitRecordData.getInfolist().isEmpty()) {
                 continue;
             }
-            for (OutpatientVisitRecord.VisitRecord record : visitRecordData.getInfolist().getList()) {
+            for (OutpatientVisitRecord.VisitRecord record : visitRecordData.getInfolist()) {
                 OutpatientVisitRecordVO recordVO = new OutpatientVisitRecordVO();
                 recordVO.setBrid(patientInfo.getBrId());
                 recordVO.setRgisterNum(record.getGhdh());
@@ -286,7 +284,7 @@ public class OutpatientService {
                 recordVO.setDoctor(record.getYs());
                 recordVO.setZdxx(record.getZdxx());
 
-                List<OutpatientVisitRecord.RecordMX> mxList = record.getMxlist().getList();
+                List<OutpatientVisitRecord.RecordMX> mxList = record.getMxlist();
                 if (mxList != null && !mxList.isEmpty()) {
                     List<OutpatientVisitRecordVO.RecordMX> recordMXVOList = new ArrayList<OutpatientVisitRecordVO.RecordMX>();
                         for (OutpatientVisitRecord.RecordMX mx : mxList) {
@@ -298,8 +296,8 @@ public class OutpatientService {
                     recordVO.setDocList(recordMXVOList);
                 }
                 recordVOList.add(recordVO);
-              }
-          }
+            }
+        }
 
         return recordVOList;
     }
@@ -349,11 +347,11 @@ public class OutpatientService {
                                     mxOV.setName(mx.getMc());
                                     mxOV.setFormat(mx.getGg());
                                     mxOV.setMedicalRecordId(mx.getBlid());
-                                    mxOV.setReportSource(Integer.parseInt(mx.getBgly()));
+                                    mxOV.setReportSource(parseInt(mx.getBgly()));
                                     mxOV.setReportSourceNote(mx.getBglysm());
                                     mxOV.setUnit(mx.getDw());
-                                    mxOV.setSingleValue(Double.parseDouble(mx.getDl()));
-                                    mxOV.setUsageValue(Double.parseDouble(mx.getYl()));
+                                    mxOV.setSingleValue(mx.getDl());
+                                    mxOV.setUsageValue(parseDouble(mx.getYl()));
                                     mxList.add(mxOV);
                                 }
                             }
@@ -429,6 +427,23 @@ public class OutpatientService {
     private Date formatDate(String str) throws ParseException {
         SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return formater.parse(str);
+    }
+
+
+    private int parseInt(String str) throws ParseException {
+        int rslt = 0;
+        if (str != null && !str.isEmpty()){
+            rslt = Integer.parseInt(str);
+        }
+        return rslt;
+    }
+
+    private double parseDouble(String str) throws ParseException {
+        double rslt = 0.0;
+        if (str != null && !str.isEmpty()){
+            rslt = Double.parseDouble(str);
+        }
+        return rslt;
     }
 
     private OrderVO toOrderVO(OrderInfo order) {
