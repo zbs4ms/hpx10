@@ -14,7 +14,9 @@ public class HttpParam {
         stringBuffer.append("&");
         stringBuffer.append(name);
         stringBuffer.append("=");
-        stringBuffer.append(value);
+        if (value != null) {
+            stringBuffer.append(value);
+        }
         return this;
     }
 

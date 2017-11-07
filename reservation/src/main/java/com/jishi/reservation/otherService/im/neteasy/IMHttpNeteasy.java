@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
+import java.util.Date;
 
 
 /**
@@ -32,7 +33,7 @@ public class IMHttpNeteasy {
 
     public String doPost(String serviceName, HttpParam httpParam) throws Exception {
         URL url = new URL(IM_NETEASY_URL + serviceName);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        HttpURLConnection conn = initConnection((HttpURLConnection) url.openConnection());
         if (httpParam.hasParam()) {
             DataOutputStream out = new DataOutputStream(conn.getOutputStream());
             try {
@@ -52,11 +53,11 @@ public class IMHttpNeteasy {
 
     public HttpURLConnection initConnection(HttpURLConnection conn) throws Exception {
         String nonce = String.valueOf(Math.random() * 1000000);
-        String timestamp = String.valueOf(System.currentTimeMillis() / 1000);
+        String curTime = String.valueOf((new Date()).getTime() / 1000L);
         conn.setRequestProperty("AppKey", appKey);
         conn.setRequestProperty("Nonce", nonce);
-        conn.setRequestProperty("CurTime", timestamp);
-        conn.setRequestProperty("CheckSum", getCheckSum(appSecret, nonce, timestamp));
+        conn.setRequestProperty("CurTime", curTime);
+        conn.setRequestProperty("CheckSum", getCheckSum(appSecret, nonce, curTime));
 
         conn.setUseCaches(false);
         conn.setDoInput(true);

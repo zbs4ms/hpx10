@@ -10,7 +10,7 @@ import java.util.List;
  * Created by liangxiong on 2017/10/25.
  */
 @Data
-@ApiModel("门诊缴费医费目")
+@ApiModel("门诊缴费费目")
 public class OutpatientFeeVO {
     @ApiModelProperty("费目名称")
     private String feeName;
@@ -18,10 +18,11 @@ public class OutpatientFeeVO {
     private double feeAmount;
     @ApiModelProperty("支付状态，1-已支付，0-未支付")
     private int feeStatus;
-    @ApiModelProperty("明细列表")
-    private List<OutpatientFeeItemVO> feeItemList;
+    //@ApiModelProperty("明细列表")
+    //private List<OutpatientFeeItemVO> feeItemList;
 
     @Data
+    @ApiModel("门诊缴费费目明细")
     public static class OutpatientFeeItemVO {
       @ApiModelProperty("名称")
       private String itemName;

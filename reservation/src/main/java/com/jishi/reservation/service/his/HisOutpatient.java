@@ -7,6 +7,7 @@ import org.apache.axis.message.MessageElement;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 
 /**
@@ -48,6 +49,32 @@ public class HisOutpatient {
         }
         return null;
     }
+
+
+    /**
+     * 	获取挂号项目最后得金额
+     * @param brid 病人ID
+     * @param xmid 项目id
+     * @return
+     * @throws Exception
+     */
+    public RegisteredNumberInfo queryLastPrice(String xmid,String brid) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<XMID>").append(xmid).append("</XMID>");
+        sb.append("<BRID>").append(brid).append("</BRID>");
+
+        String reData = HisTool.toXMLString("Register.Preferential.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            String xml = HisTool.getHisDataparam(me,"Register.Preferential.Query");
+            return (RegisteredNumberInfo) HisTool.toBean(RegisteredNumberInfo.class, xml);
+        }
+        return null;
+    }
+
+
+
+
 
     /**
      * 获取挂号限制条件
@@ -209,6 +236,8 @@ public class HisOutpatient {
         sb.append("<JYLR>").append(confirmRegister.getJylr()).append("</JYLR>");
         sb.append("</EXPEND></EXPENDLIST>");
         sb.append("</JS></JSLIST>");
+
+        log.info("請求的數據：\n"+sb.toString());
         String reData = HisTool.toXMLString("Register.Confirm.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
@@ -289,6 +318,7 @@ public class HisOutpatient {
      */
     public OutpatientPaymentInfo queryPayReceipt(String brid, String jsklb, String cxts, String zd) throws Exception {
         StringBuffer sb = new StringBuffer();
+        zd = zd == null ? "" : zd;
         sb.append("<BRID>").append(brid).append("</BRID>");
         sb.append("<CXTS>").append(cxts).append("</CXTS>");
         sb.append("<JSKLB>").append(jsklb).append("</JSKLB>");
@@ -303,43 +333,151 @@ public class HisOutpatient {
     }
 
     /**
-     * @description 门诊缴费多张单据一次支付
-     * @param docIds 收费单据号串，逗号分隔多个单据号
+     * @description 对一个单据进行交费
+     * @param docmentId 收费单据号
      * @param brId 病人ID
-     * @param zje 总金额
-     * @param jsje 结算金额
-     * @param sfghd 是否挂号单，0-收费单，1-挂号单
-     * @param jylsh 交易流水号
-     * @param jynr 交易内容，传“支付帐号|姓名”
+     * @param price 总金额
+     * @param payPrice 结算金额
+     * @param isRegisterDoc 是否挂号单，0-收费单，1-挂号单
+     * @param thirdOrderNumber 交易流水号
+     * @param paymentContent 交易内容，传“支付帐号|姓名”
+     * @param jsklb 结算卡类别，固定传入第三方名称
      * @throws Exception
      * @date 2017/10/26
      **/
-    public String batchPayModify(String docIds, String brId, double zje, double jsje, int sfghd, String jylsh, String jynr, String dsfmc) throws Exception {
+    public String payModify(String brId, String docmentId, BigDecimal price, BigDecimal payPrice, int isRegisterDoc,
+                              String thirdOrderNumber, String paymentContent, String jsklb) throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append("<DJH>").append(docIds).append("</DJH>");
-        sb.append("<JE>").append(zje).append("</JE>");
-        sb.append("<SFGH>").append(sfghd).append("</SFGH>");
+        sb.append("<DJH>").append(docmentId).append("</DJH>");
+        sb.append("<JE>").append(String.valueOf(price.stripTrailingZeros())).append("</JE>");
+        sb.append("<SFGH>").append(isRegisterDoc).append("</SFGH>");
         sb.append("<BRID>").append(brId).append("</BRID>");
         sb.append("<JSLIST>");
         sb.append("<JS>");
-        sb.append("<JSKLB>").append(dsfmc).append("</JSKLB>");
+        sb.append("<JSKLB>").append(jsklb).append("</JSKLB>");
         sb.append("<JSKH>").append("</JSKH>");
         sb.append("<JSFS>").append("</JSFS>");
-        sb.append("<JSJE>").append(jsje).append("</JSJE>");
-        sb.append("<JYLSH>").append(jylsh).append("</JYLSH>");
+        sb.append("<JSJE>").append(String.valueOf(payPrice.stripTrailingZeros())).append("</JSJE>");
+        sb.append("<JYLSH>").append(thirdOrderNumber).append("</JYLSH>");
         sb.append("<EXPENDLIST>");
         sb.append("<EXPEND>");
         sb.append("<JYMC>").append("交易信息").append("</JYMC>");
-        sb.append("<JYLR>").append(jynr).append("</JYLR>");
+        sb.append("<JYLR>").append(paymentContent).append("</JYLR>");
         sb.append("</EXPEND>");
         sb.append("</EXPENDLIST>");
         sb.append("</JS>");
         sb.append("</JSLIST>");
+        log.info("Payment.Pay.Modify: " + sb.toString());
+        String reData = HisTool.toXMLString("Payment.Pay.Modify", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            String xml = HisTool.getHisDataparam(me,"Payment.Pay.Modify");
+            return HisTool.getXmlAttribute(xml,"JZID");
+        }
+        return null;
+    }
+
+    /**
+     * @description 门诊缴费多张单据一次支付
+     * @param brId 病人ID
+     * @param docIds 收费单据号串，逗号分隔多个单据号
+     * @param price 总金额
+     * @param payPrice 结算金额
+     * @param isRegisterDoc 是否挂号单，0-收费单，1-挂号单
+     * @param thirdOrderNumber 交易流水号
+     * @param paymentContent 交易内容，传“支付帐号|姓名”
+     * @param jsklb 结算卡类别，固定传入第三方名称
+     * @throws Exception
+     * @date 2017/10/26
+     **/
+    public String batchPayModify(String brId, String docIds, BigDecimal price, BigDecimal payPrice, int isRegisterDoc, String thirdOrderNumber, String paymentContent, String jsklb) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<DJH>").append(docIds).append("</DJH>");
+        sb.append("<JE>").append(String.valueOf(price.stripTrailingZeros())).append("</JE>");
+        sb.append("<SFGH>").append(isRegisterDoc).append("</SFGH>");
+        sb.append("<BRID>").append(brId).append("</BRID>");
+        sb.append("<JSLIST>");
+        sb.append("<JS>");
+        sb.append("<JSKLB>").append(jsklb).append("</JSKLB>");
+        sb.append("<JSKH>").append("</JSKH>");
+        sb.append("<JSFS>").append("</JSFS>");
+        sb.append("<JSJE>").append(String.valueOf(payPrice.stripTrailingZeros())).append("</JSJE>");
+        sb.append("<JYLSH>").append(thirdOrderNumber).append("</JYLSH>");
+        sb.append("<EXPENDLIST>");
+        sb.append("<EXPEND>");
+        sb.append("<JYMC>").append("交易信息").append("</JYMC>");
+        sb.append("<JYLR>").append(paymentContent).append("</JYLR>");
+        sb.append("</EXPEND>");
+        sb.append("</EXPENDLIST>");
+        sb.append("</JS>");
+        sb.append("</JSLIST>");
+        log.info("Payment.BatchPay.Modify: " + sb.toString());
         String reData = HisTool.toXMLString("Payment.BatchPay.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             String xml = HisTool.getHisDataparam(me,"Payment.BatchPay.Modify");
             return HisTool.getXmlAttribute(xml,"CZSJ");
+        }
+        return null;
+    }
+
+    /**
+     * @description 获取病人的门诊就诊记录
+     * @param brId 病人ID
+     * @param dqys 当前页数
+     * @param jlts 记录条数
+     * @param zd 站点（用于区分多院区）
+     * @throws Exception
+    **/
+    public OutpatientVisitRecord queryOutpatientVisitRecord(String brId, Integer dqys, Integer jlts, String zd) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        zd = zd == null ? "" : zd;
+        sb.append("<BRID>").append(brId).append("</BRID>");
+        sb.append("<DQYS>").append(dqys).append("</DQYS>");
+        sb.append("<JLTS>").append(jlts).append("</JLTS>");
+        sb.append("<ZD>").append(zd).append("</ZD>");
+        String reData = HisTool.toXMLString("Visit.Record.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            log.info(me.getAsString());
+            String xml = HisTool.getHisDataparam(me, "Visit.Record.Query");
+            return (OutpatientVisitRecord)HisTool.toBean(OutpatientVisitRecord.class, xml);
+        }
+        return null;
+    }
+
+    /**
+     * @description 获取指定就诊的单据信息
+     * @param ghdh 挂号单号
+     * @throws Exception
+    **/
+    public OutpatientVisitPrescription queryOutpatientVisitPrescription(String ghdh) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<GHDH>").append(ghdh).append("</GHDH>");
+        String reData = HisTool.toXMLString("Visit.Prescription.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            log.info(me.getAsString());
+            String xml = HisTool.getHisDataparam(me, "Visit.Prescription.Query");
+            return (OutpatientVisitPrescription)HisTool.toBean(OutpatientVisitPrescription.class, xml);
+        }
+        return null;
+    }
+
+    /**
+     * @description 获取指定就诊的费用信息
+     * @param ghdh 挂号单号
+     * @throws Exception
+     **/
+    public OutpatientVisitReceipt queryOutpatientVisitReceipt(String ghdh) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<GHDH>").append(ghdh).append("</GHDH>");
+        String reData = HisTool.toXMLString("Visit.Receipt.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            log.info(me.getAsString());
+            String xml = HisTool.getHisDataparam(me, "Visit.Receipt.Query");
+            return (OutpatientVisitReceipt)HisTool.toBean(OutpatientVisitReceipt.class, xml);
         }
         return null;
     }

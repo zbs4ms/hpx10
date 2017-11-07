@@ -30,5 +30,11 @@ public interface AccountMapper extends MyMapper<Account>{
     Account queryById(@Param("accountId") Long accountId);
 
 
+    @Select({
+            "<script>select  * from account where 1 =1  " +
+                    "<if test = \"key != null\"> AND ( nick like concat('%',#{key},'%') or phone like concat('%',#{key},'%') ) </if>" +
 
+                    "</script>"
+    })
+    List<Account> queryCondition(@Param("key") String key);
 }

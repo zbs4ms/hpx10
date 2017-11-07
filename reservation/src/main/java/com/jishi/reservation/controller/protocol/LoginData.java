@@ -19,6 +19,7 @@ public class LoginData {
     private String headPortrait;
     private String telephone;
     private String pushId;
+    private Long accountId;
 
     private List<IdentityInfo> identityInfoList;
     private List<Credentials> credentialsList;

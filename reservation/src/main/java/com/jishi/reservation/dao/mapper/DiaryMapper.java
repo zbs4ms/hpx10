@@ -46,4 +46,10 @@ public interface DiaryMapper extends MyMapper<Diary>{
                     "</script>"
     })
     List<Diary> queryEnableAndVerified(@Param("accountId") Long accountId);
+
+
+    @Select({
+            "select * from diary where account_id = #{accountId}"
+    })
+    List<Diary> queryByAccountId(@Param("accountId") Long accountId);
 }

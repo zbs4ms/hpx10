@@ -60,6 +60,17 @@ public class OrderInfo {
 
 
 
+    @ApiModelProperty("购买者邮箱")
+    private String buyerEmail;
+
+    @ApiModelProperty("商家邮箱")
+    private String sellerEmail;
+
+    @ApiModelProperty("购买者id")
+    private String buyerId;
+
+
+
 
 
 }

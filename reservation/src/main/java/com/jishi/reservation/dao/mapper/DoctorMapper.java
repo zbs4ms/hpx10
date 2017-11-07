@@ -63,4 +63,9 @@ public interface DoctorMapper extends MyMapper<Doctor> {
             "select * from doctor where h_id = #{hDoctorId}"
     })
     Doctor queryByHdoctorId(@Param("hDoctorId") Long hDoctorId);
+
+    @Select({
+            "select * from doctor where department_id = #{hId}"
+    })
+    List<Doctor> queryByDepartmentHid(@Param("hId") String hId);
 }

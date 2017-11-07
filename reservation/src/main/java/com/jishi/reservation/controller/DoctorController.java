@@ -7,6 +7,7 @@ import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.DateVO;
 import com.jishi.reservation.controller.protocol.DoctorVO;
+import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.service.DepartmentService;
 import com.jishi.reservation.service.DoctorService;
@@ -130,15 +131,7 @@ public class DoctorController extends MyBaseController {
         if(Helpers.isNullOrEmpty(departmentId))
             throw new Exception("请传入有效的参数");
         PageInfo doctors = doctorService.queryDoctorPageInfo(null,name,String.valueOf(departmentId),null,EnableEnum.EFFECTIVE.getCode(),Paging.create(pageNum,pageSize,orderBy,desc));
-        List<Doctor> doctorList = doctors.getList();
 
-
-        DoctorVO doctorVO = new DoctorVO();
-   //     List<Doctor> doctors = doctorService.queryDoctorByDepartment(doctorList,departmentId,EnableEnum.EFFECTIVE.getCode());
-//        if(doctors.size()>0){
-//            doctorVO.setDoctor(doctors.get(0));
-//            doctorVO.setDepartmentList(departmentService.batchQueryDepartment(doctors.get(0).getDepartmentIds().split(",")));
-//        }
         return ResponseWrapper().addData(doctors).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
@@ -215,6 +208,20 @@ public class DoctorController extends MyBaseController {
         doctorService.topDoctor(doctorId);
 
         return ResponseWrapper().addMessage("操作成功！").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+
+    }
+
+
+
+    @ApiOperation(value = "返回所有科室的所有医生",response = Department.class)
+    @RequestMapping(value = "queryDepDoc", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject queryDepartmentAndDoctor() throws Exception {
+
+
+        List<Department> departmentList = doctorService.queryDepartmentAndDoctor();
+
+        return ResponseWrapper().addMessage("查询成功！").addData(departmentList).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
     }
 

@@ -71,6 +71,8 @@ public class PatientInfoService {
         Credentials credentials = hisUserManager.addUserInfo(idCard, idCardType, name, phone);
         log.info("his系统返回的病人信息：\n"+ JSONObject.toJSONString(credentials));
 
+        Preconditions.checkState(isExistPatient(accountId,name,idCard,credentials.getBRID()),"该账号已有此病人信息，不能添加");
+
         PatientInfo newPatientInfo = new PatientInfo();
         newPatientInfo.setAccountId(accountId);
         newPatientInfo.setName(name);
@@ -92,6 +94,12 @@ public class PatientInfoService {
 
         return newPatientInfo.getId();
 
+    }
+
+    private boolean isExistPatient(Long accountId, String name, String idCard, String brid) {
+
+        PatientInfo patientInfo =  patientInfoMapper.queryForExist(accountId,name,idCard,brid);
+        return patientInfo != null;
     }
 
     /**
@@ -180,18 +188,23 @@ public class PatientInfoService {
 
     public void wrapPregnant(List<PatientInfo> patientInfos) {
 
-        for (PatientInfo patientInfo : patientInfos) {
-            Pregnant pregnant = pregnantMapper.queryByPatientId(patientInfo.getId());
-            patientInfo.setRemark(pregnant.getRemark());
-            patientInfo.setBirth(pregnant.getBirth());
-            patientInfo.setPregnantEnable(pregnant.getEnable());
-            patientInfo.setHusbandName(pregnant.getHusbandName());
-            patientInfo.setHusbandTelephone(pregnant.getHusbandTelephone());
-            patientInfo.setLastMenses(pregnant.getLastMenses());
-            patientInfo.setLivingAddress(pregnant.getLivingAddress());
-            patientInfo.setPregnantId(pregnant.getId());
+        if(patientInfos!=null && patientInfos.size() !=0){
+            for (PatientInfo patientInfo : patientInfos) {
+                Pregnant pregnant = pregnantMapper.queryByPatientId(patientInfo.getId());
+                if(pregnant != null){
+                    patientInfo.setRemark(pregnant.getRemark());
+                    patientInfo.setBirth(pregnant.getBirth());
+                    patientInfo.setPregnantEnable(pregnant.getEnable());
+                    patientInfo.setHusbandName(pregnant.getHusbandName());
+                    patientInfo.setHusbandTelephone(pregnant.getHusbandTelephone());
+                    patientInfo.setLastMenses(pregnant.getLastMenses());
+                    patientInfo.setLivingAddress(pregnant.getLivingAddress());
+                    patientInfo.setPregnantId(pregnant.getId());
+                }
 
+            }
         }
+
     }
 
     public List<String> queryBrIdByAccountId(Long accountId) {
@@ -209,9 +222,9 @@ public class PatientInfoService {
         int startRow = (startPage - 1)*pageSize;
         int endRow = list.size()<startPage*pageSize-1?list.size():startPage*pageSize-1;
         if(startPage == endRow)
-            endRow+=1;
+            endRow+=pageSize;
         if(endRow == 0)
-            endRow+=1;
+            endRow+=pageSize;
 
         log.info("endRow :"+endRow);
         if(list.size()<endRow){
@@ -225,6 +238,7 @@ public class PatientInfoService {
         Integer pages = (list.size()-1)/pageSize+1;
         page.setPages(pages);
         page.setPageNum(startPage);
+        page.setHasNextPage(pages>startPage);
 
         return page;
     }
@@ -236,6 +250,9 @@ public class PatientInfoService {
 
     public boolean isAccountIdMatchBrid(Long accountId, String brId) {
 
-        return patientInfoMapper.queryById(accountId).getBrId().equals(brId);
+       // return patientInfoMapper.queryBrIdByAccountId(accountId).equals(brId);
+        //传入brid是否和account_id对应
+        return patientInfoMapper.queryAccountIdByBrId(brId).equals(accountId);
+
     }
 }

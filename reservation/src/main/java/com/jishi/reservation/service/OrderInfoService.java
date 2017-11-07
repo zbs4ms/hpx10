@@ -8,9 +8,11 @@ import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.OrderVO;
 import com.jishi.reservation.dao.mapper.DoctorMapper;
 import com.jishi.reservation.dao.mapper.OrderInfoMapper;
+import com.jishi.reservation.dao.mapper.PrePaymentMapper;
 import com.jishi.reservation.dao.mapper.RegisterMapper;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.dao.models.OrderInfo;
+import com.jishi.reservation.dao.models.PrePayment;
 import com.jishi.reservation.dao.models.Register;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
@@ -28,6 +30,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,25 +52,35 @@ public class OrderInfoService {
     @Autowired
     PatientInfoService patientService;
 
-    public OrderVO queryOrderInfoById(Long orderId,String orderNumber) {
+    @Autowired
+    PrePaymentMapper prePaymentMapper;
+
+    public OrderVO queryOrderVoById(Long orderId,String orderNumber) throws ParseException {
 
         OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(orderId,orderNumber);
         Register register =  registerMapper.queryByOrderId(orderInfo.getId());
 
         OrderVO orderVO = new OrderVO();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+       // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         orderVO.setOrderNumber(orderInfo.getOrderNumber());
-        orderVO.setSerialNumber(register.getSerialNumber());
-        orderVO.setDoctorName(register.getDoctorName());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        if(register != null){
+            orderVO.setSerialNumber(register.getSerialNumber());
+            orderVO.setDoctorName(register.getDoctorName());
+            orderVO.setDepartment(register.getDepartment());
+            orderVO.setPatientName(register.getPatientName());
+            orderVO.setTimeInterval(sdf.format(register.getAgreedTime()).contains("14:00")?"下午":"上午");
+            orderVO.setRegisterTime(register.getAgreedTime());
+        }
+
         orderVO.setPayType(orderInfo.getPayType());
         orderVO.setPrice(orderInfo.getPrice());
         orderVO.setPosition("泸州锦欣医院");
-        orderVO.setCompletedTime(orderInfo.getPayTime());
-        orderVO.setDepartment(register.getDepartment());
-        orderVO.setPatientName(register.getPatientName());
+        if(orderInfo.getPayTime()!=null){
+            orderVO.setCompletedTime(sdf.parse(orderInfo.getPayTime()));
+        }
 
-        orderVO.setTimeInterval(sdf.format(register.getAgreedTime()).contains("14:00")?"下午":"上午");
-        orderVO.setRegisterTime(register.getAgreedTime());
 
         return orderVO;
     }
@@ -150,6 +163,7 @@ public class OrderInfoService {
     public OrderInfo generatePrepayment(String subject, BigDecimal price, Long accountId, String brId, Integer rycs) throws Exception {
 
         //todo 判断accountId和brId是否匹配
+        log.info("accountId:"+accountId+",brId:"+brId);
         Preconditions.checkState(patientService.isAccountIdMatchBrid(accountId,brId),"账号和brId不匹配，不能执行操作");
 
         OrderInfo orderInfo = new OrderInfo();
@@ -165,7 +179,47 @@ public class OrderInfoService {
         orderInfo.setCreateTime(new Date());
         orderInfoMapper.insertSelectiveReturnId(orderInfo);
 
+        PrePayment prePayment = new PrePayment();
+        prePayment.setOrderId(orderInfo.getId());
+        prePayment.setBrId(brId);
+        prePayment.setAccountId(accountId);
+        prePayment.setRycs(rycs);
+
+        prePaymentMapper.insertSelectiveReturnId(prePayment);
         return orderInfo;
 
+    }
+
+    /**
+     * 生成门诊订单
+     * @param subject
+     * @param price
+     * @param accountId
+     * @param brId
+     */
+    public OrderInfo generateOutpatient(Long accountId, String brId, String subject, BigDecimal price) throws Exception {
+
+      //todo 判断accountId和brId是否匹配
+      Preconditions.checkState(patientService.isAccountIdMatchBrid(accountId,brId),"账号和brId不匹配，不能执行操作");
+
+      OrderInfo orderInfo = new OrderInfo();
+      orderInfo.setSubject(subject);
+      orderInfo.setDes(subject);
+      orderInfo.setOrderNumber(AlibabaPay.generateUniqueOrderNumber());
+      orderInfo.setPrice(price);
+      orderInfo.setAccountId(accountId);
+      orderInfo.setBrId(brId);
+      orderInfo.setType(OrderTypeEnum.Outpatient.getCode());
+      orderInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
+      orderInfo.setStatus(OrderStatusEnum.WAIT_PAYED.getCode());
+      orderInfo.setCreateTime(new Date());
+      orderInfoMapper.insertSelectiveReturnId(orderInfo);
+
+      return orderInfo;
+
+    }
+
+    public OrderInfo queryOrderByOrderNumber(String orderNumber) {
+        return orderInfoMapper.queryByNumber(orderNumber);
     }
 }

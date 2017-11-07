@@ -19,7 +19,7 @@ public class OrderVO {
     @ApiModelProperty("订单号")
     private String orderNumber;
     @ApiModelProperty("完成时间")
-    private String completedTime;
+    private Date completedTime;
     @ApiModelProperty("部门")
     private String department;
     @ApiModelProperty("医生名称")
@@ -36,6 +36,8 @@ public class OrderVO {
     private Integer payType;
     @ApiModelProperty("支付金额")
     private BigDecimal price;
+    @ApiModelProperty("确认状态  1失败  0成功")
+    private Integer status;
 
 
 }

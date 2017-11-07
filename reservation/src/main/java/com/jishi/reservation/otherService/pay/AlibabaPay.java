@@ -112,20 +112,31 @@ public class AlibabaPay {
                     //支付时间
                     String payTime = params.get("notify_time");
                     //附加数据
+                    //购买者邮箱
+                    String buyerEmail = params.get("buyer_email");
+                    //购买者id
+                    String buyerId = params.get("buyer_id");
+                    //商家邮箱
+                    String sellerEmail = params.get("seller_email");
                     //String passback_params = URLDecoder.decode(params.get("passback_params"));
 
 
                     //判断支付金额和商户订单号和自己系统中的信息是否吻合，做判断
+                    log.info("订单号："+outTradeNo);
                     OrderInfo orderInfo =  orderInfoMapper.queryByOutTradeNo(outTradeNo);
                     Preconditions.checkNotNull(orderInfo,"找不到该订单信息");
                     log.info("订单信息：\n"+JSONObject.toJSONString(orderInfo));
-                    //Preconditions.checkState(amount.equals(model.getTotal_fee()),"支付宝传递的订单金额与系统的订单金额不符合，回调失败");
+                    // TODO 暂时注释，用于调试
+                    //Preconditions.checkState(String.valueOf(orderInfo.getPrice()).equals(amount),"支付宝传递的订单金额与系统的订单金额不符合，回调失败");
                     //todo  调取his的门诊号缴费单
 
                     //改变订单状态和支付时间
                     //Preconditions.checkState(orderInfo.getStatus() == OrderStatusEnum.WAIT_PAYED.getCode(),"该订单不是待支付状态.");
                     orderInfo.setStatus(OrderStatusEnum.PAYED.getCode());
                     orderInfo.setPayTime(payTime);
+                    orderInfo.setBuyerEmail(buyerEmail);
+                    orderInfo.setSellerEmail(sellerEmail);
+                    orderInfo.setBuyerId(buyerId);
                     orderInfo.setPayType(PayEnum.ALI.getCode());
                     orderInfo.setThirdOrderNumber(trade_no);
                     orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
@@ -150,7 +161,4 @@ public class AlibabaPay {
     }
 
 
-    public OrderGenerateVO generatePrePayOrder(String orderNumber, String subject, BigDecimal price) {
-        return null;
-    }
 }

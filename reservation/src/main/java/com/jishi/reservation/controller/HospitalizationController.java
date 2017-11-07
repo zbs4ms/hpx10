@@ -5,6 +5,8 @@ import com.github.pagehelper.PageInfo;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.HospitalizationInfoVO;
+import com.jishi.reservation.controller.protocol.OrderVO;
+import com.jishi.reservation.controller.protocol.PrePaymentRecordVO;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.service.AccountService;
@@ -12,6 +14,7 @@ import com.jishi.reservation.service.HospitalizationService;
 import com.jishi.reservation.service.OrderInfoService;
 import com.jishi.reservation.service.PatientInfoService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.enumPackage.SuccessEnum;
 import com.jishi.reservation.service.his.bean.DepositBalanceDetail;
 import com.jishi.reservation.service.his.bean.DepositBalanceLog;
 import com.jishi.reservation.service.his.bean.TotalDepositBalancePayDetail;
@@ -26,7 +29,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -50,7 +55,7 @@ public class HospitalizationController extends MyBaseController {
 
 
     //selectTotalPayDetail
-    @ApiOperation(value = "查询住院費用清單", response = HospitalizationService.PayItem.class)
+    @ApiOperation(value = "查询住院费用清单", response = HospitalizationService.PayItem.class)
     @RequestMapping(value = "queryHospitalDetail", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryPrepay(@ApiParam(value = "brId", required = false) @RequestParam(value = "brId", required = false) String brId,
@@ -102,7 +107,7 @@ public class HospitalizationController extends MyBaseController {
             if (depositBalanceDetails == null)
                 return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
             for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
-                list.add(getHospitalizationInfoVO(depositBalanceDetail));
+                list.add(getHospitalizationInfoVO(depositBalanceDetail,"3987"));
             }
 
 
@@ -127,7 +132,7 @@ public class HospitalizationController extends MyBaseController {
 //                    if(status == 1){
 //                        if(depositBalanceDetail.getZyzt())
 //                    }
-                    list.add(getHospitalizationInfoVO(depositBalanceDetail));
+                    list.add(getHospitalizationInfoVO(depositBalanceDetail,brId));
                 }
             }
         }
@@ -147,7 +152,7 @@ public class HospitalizationController extends MyBaseController {
         DepositBalanceDetail depositBalanceDetail = hospitalizationService.queryInfo(brId, rycs, null);
         if (depositBalanceDetail == null)
             return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-        HospitalizationInfoVO vo = getHospitalizationInfoVO(depositBalanceDetail);
+        HospitalizationInfoVO vo = getHospitalizationInfoVO(depositBalanceDetail,brId);
         return ResponseWrapper().addData(vo).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
@@ -174,13 +179,31 @@ public class HospitalizationController extends MyBaseController {
             @ApiParam(value = "brId", required = true) @RequestParam(value = "brId", required = true) String brId
     ) throws Exception {
         DepositBalanceLog balanceLog = hospitalizationService.queryPaymentRecord(brId);
+        List<PrePaymentRecordVO> list = new ArrayList<>();
+        List<DepositBalanceLog.DB3> paramList = balanceLog.getGroup().getItem();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        if(paramList!=null && paramList.size() != 0){
+            for (DepositBalanceLog.DB3 db3 : paramList) {
+                PrePaymentRecordVO vo = new PrePaymentRecordVO();
+                vo.setJe(db3.getJe());
+                if(db3.getJksh() != null && !"".equals(db3.getJksh())){
+                    vo.setJksh(sdf.parse(db3.getJksh()));
+                }
+                vo.setLx(db3.getLx());
+                vo.setZffs(db3.getZffs());
 
-        return ResponseWrapper().addData(balanceLog).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+
+                list.add(vo);
+            }
+        }
+
+
+        return ResponseWrapper().addData(list).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 
     @ApiOperation(value = "生成 预交款订单", response = HospitalizationInfoVO.class)
-    @RequestMapping(value = "generatePrepaymentOrder", method = RequestMethod.GET)
+    @RequestMapping(value = "generatePrepaymentOrder", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject generatePrepaymentOrder(
             HttpServletRequest request,HttpServletResponse response,
@@ -207,18 +230,15 @@ public class HospitalizationController extends MyBaseController {
 
 
 
-    @ApiOperation(value = "预交款订单  确认订单，同步到his", response = HospitalizationInfoVO.class)
-    @RequestMapping(value = "confirmPrePayment", method = RequestMethod.GET)
+    @ApiOperation(value = "预交款订单  确认订单，同步到his", response = OrderVO.class)
+    @RequestMapping(value = "confirmPrePayment", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject confirmPrePayment(
             HttpServletRequest request,HttpServletResponse response,
-            @ApiParam(value = "预交的名称 eg:住院预交款", required = true) @RequestParam(value = "subject", required = true) String subject,
-            @ApiParam(value = "交易的金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
-            @ApiParam(value = "accountId 通过token找到", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-            @ApiParam(value = "brId", required = true) @RequestParam(value = "brId", required = true) String brId,
-            @ApiParam(value = "入院的次数", required = true) @RequestParam(value = "rycs", required = true) Integer rycs
+            @ApiParam(value = "订单号", required = true) @RequestParam(value = "orderNumber", required = true) String orderNumber,
+            @ApiParam(value = "账号id", required = false) @RequestParam(value = "accountId", required = false) Long accountId
     ) throws Exception {
-
+    //PrePayment.Pay.Modify
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1L)){
@@ -228,16 +248,24 @@ public class HospitalizationController extends MyBaseController {
             }
         }
 
-        OrderInfo orderInfo = orderInfoService.generatePrepayment(subject, price, accountId, brId, rycs);
+        OrderVO vo = hospitalizationService.confirmPrePayment(orderNumber, accountId);
+        if(vo.getStatus().equals(SuccessEnum.FAILED.getCode())){
+            return ResponseWrapper().addMessage("确认失败!").addData(vo).ExeFaild(ReturnCodeEnum.FAILED.getCode());
 
-        return ResponseWrapper().addData(orderInfo).addMessage("订单生成成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        }else {
+
+            return ResponseWrapper().addData(vo).addMessage("确认成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+
+        }
+
+
     }
 
 
 
 
 
-    private HospitalizationInfoVO getHospitalizationInfoVO(DepositBalanceDetail depositBalanceDetail) throws Exception {
+    private HospitalizationInfoVO getHospitalizationInfoVO(DepositBalanceDetail depositBalanceDetail,String brId) throws Exception {
         HospitalizationInfoVO hospitalizationInfoVO = new HospitalizationInfoVO();
         hospitalizationInfoVO.setState(depositBalanceDetail.getZyzt());
         hospitalizationInfoVO.setName(depositBalanceDetail.getJbxx().getXm());
@@ -250,6 +278,7 @@ public class HospitalizationController extends MyBaseController {
         hospitalizationInfoVO.setYyje(depositBalanceDetail.getFyxx().getYjfy().getZyfy());
         hospitalizationInfoVO.setRycs(depositBalanceDetail.getZycs());
         hospitalizationInfoVO.setYujiaojine(depositBalanceDetail.getYujiaojine());
+        hospitalizationInfoVO.setBrid(brId);
         return hospitalizationInfoVO;
     }
 

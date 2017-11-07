@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public interface DepartmentMapper extends MyMapper<Department> {
@@ -16,4 +18,10 @@ public interface DepartmentMapper extends MyMapper<Department> {
             "select * from department where id = #{id}"
     })
     Department queryById(@Param("id") Long id);
+
+
+    @Select({
+            "select * from department where enable = 0"
+    })
+    List<Department> queryAllEnable();
 }

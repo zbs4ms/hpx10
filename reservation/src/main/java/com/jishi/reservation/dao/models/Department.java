@@ -6,6 +6,8 @@ import lombok.Data;
 import javax.persistence.Id;
 
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.List;
 
 @Data
 @ApiModel("科室信息")
@@ -23,5 +25,9 @@ public class Department {
 
     @ApiModelProperty("his存的科室id")
     private String hId;
+
+    @Transient
+    @ApiModelProperty("医生列表")
+    private List<Doctor> doctorList;
 
 }

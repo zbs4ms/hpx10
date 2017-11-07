@@ -114,6 +114,7 @@ public class DiaryService {
         diary.setContent(JSONObject.toJSONString(contentList));
         diary.setIsLock(lock);
         diary.setBrief(brief);
+        diary.setStatus(1);
         diaryMapper.updateByPrimaryKeySelective(diary);
     }
 
@@ -123,6 +124,7 @@ public class DiaryService {
         Gson gson = new Gson();
 
 
+        //gson处理，把内容解析为内容数组
         List<DiaryContentVO> contentList = gson.fromJson(content,
                 new TypeToken<List<DiaryContentVO>>() {
                 }.getType());
@@ -130,14 +132,15 @@ public class DiaryService {
         Diary diary = new Diary();
 
         diary.setTitle(title);
+        //设置简介的默认值
         String brief = "";
         for (DiaryContentVO diaryContentVO : contentList) {
-            if(diaryContentVO.getType() == 1){
-                //长度待定
+            //遍历日记内容，取到第一个type是text且内容不为""的文本作为简介
+            if(diaryContentVO.getType() == 1 && !diaryContentVO.getText().equals("")){
+                //长度待定,,
                 brief = diaryContentVO.getText();
                 break;
             }
-            break;
         }
         diary.setContent(JSONObject.toJSONString(contentList));
         diary.setEnable(0);
@@ -179,9 +182,13 @@ public class DiaryService {
         Gson gson = new Gson();
         PageHelper.startPage(startPage,pageSize).setOrderBy("create_time desc");
         List<Diary> list =  diaryMapper.queryEnableAndVerified(accountId);
+        PageInfo<Diary> pageInfo = new PageInfo<>(list);
+        log.info("返回日记长度："+list.size());
         for (Diary diary : list) {
+            //获取浏览数和点赞数
             diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));
             diary.setLikedNum(diaryLikedMapper.queryCountByDiaryId(diary.getId()));
+            //查询用户头像
             diary.setAvatar(accountMapper.queryById(diary.getAccountId()).getHeadPortrait());
             List<ImageVO> paramList = new ArrayList<>();
             List<DiaryContentVO> contentList = gson.fromJson(diary.getContent(),
@@ -199,15 +206,15 @@ public class DiaryService {
                     vo.setWidth(diaryContentVO.getWidth());
 
                     paramList.add(vo);
+                    i++;
                 }
-                i++;
+
             }
             diary.setImgList(paramList);
             diary.setContent(null);
 
         }
 
-        PageInfo<Diary> pageInfo = new PageInfo<>(list);
         return  pageInfo;
     }
 
@@ -216,6 +223,7 @@ public class DiaryService {
         DiaryLiked param = new DiaryLiked();
         param.setDiaryId(diaryId);
         param.setAccountId(accountId);
+        param.setCreateTime(new Date());
 
         DiaryLiked liked = diaryLikedMapper.selectOne(param);
         if(liked == null){
@@ -232,15 +240,16 @@ public class DiaryService {
     public void addScanNum(Long diaryId, String ip, Long accountId) {
 
         DiaryScan scan = new DiaryScan();
-        if(accountId != -1L) {
-            scan.setAccountId(String.valueOf(accountId));
-        }else{
-            scan.setAccountId(ip);
-        }
+//        if(accountId != -1L) {
+//            scan.setAccountId(String.valueOf(accountId));
+//        }else{
+//            scan.setAccountId(ip);
+//        }
         scan.setDiaryId(diaryId);
-        if(diaryScanMapper.selectOne(scan) == null) {
-            diaryScanMapper.insert(scan);
-        }
+//        if(diaryScanMapper.selectOne(scan) == null) {
+//            diaryScanMapper.insert(scan);
+//        }
+        diaryScanMapper.insert(scan);
     }
 
     public Integer delete(Long diaryId, Long accountId) {

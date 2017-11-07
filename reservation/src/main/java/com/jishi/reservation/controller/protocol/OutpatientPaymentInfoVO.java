@@ -15,6 +15,8 @@ import java.util.List;
 public class OutpatientPaymentInfoVO implements Comparable<OutpatientPaymentInfoVO> {
     @ApiModelProperty("病人ID")
     private String brid;
+    @ApiModelProperty("病人姓名")
+    private String patientName;
     @ApiModelProperty("单据号")
     private String documentNum;
     @ApiModelProperty("挂号类型")
@@ -33,10 +35,14 @@ public class OutpatientPaymentInfoVO implements Comparable<OutpatientPaymentInfo
     private int hasRegister;
     @ApiModelProperty("金额")
     private double paymentAmount;
+    @ApiModelProperty("未支付金额")
+    private double unpaidAmount;
+    @ApiModelProperty("未支付单据列表，以','分隔")
+    private String unpaidDocIds;
     @ApiModelProperty("医生ID")
-    private String dockerId;
+    private String doctorId;
     @ApiModelProperty("医生姓名")
-    private String dockerName;
+    private String doctorName;
     @ApiModelProperty("是否结算卡支付，0-否，1-是")
     private int hasPayCard;
     @ApiModelProperty("医嘱列表")
