@@ -1,26 +1,30 @@
 package com.jishi.reservation.otherService.im.neteasy.operation;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.jishi.reservation.otherService.im.HttpParam;
 import com.jishi.reservation.otherService.im.neteasy.IMHttpNeteasy;
 import com.jishi.reservation.otherService.im.neteasy.model.IMUser;
 import com.jishi.reservation.otherService.im.neteasy.response.ResComm;
 import com.jishi.reservation.otherService.im.neteasy.response.ResUserCreate;
+import com.jishi.reservation.otherService.im.neteasy.util.JsonUtil;
+
+import java.util.List;
 
 /**
  * Created by liangxiong on 2017/10/24.
  */
 public class UserOperation {
 
-    public static final String USER_CREATE = "/user/create.action";
-    public static final String USER_UPDATE = "/user/update.action";
-    public static final String USER_REFRESH_TOKEN = "/user/refreshToken.action";
-    public static final String USER_BLOCK = "/user/block.action";
-    public static final String USER_UNBLOCK = "/user/unblock.action";
+    private static final String USER_CREATE = "/user/create.action";
+    private static final String USER_UPDATE = "/user/update.action";
+    private static final String USER_REFRESH_TOKEN = "/user/refreshToken.action";
+    private static final String USER_BLOCK = "/user/block.action";
+    private static final String USER_UNBLOCK = "/user/unblock.action";
 
-    public static final String USER_UPDATE_UINFO = "/user/updateUinfo.action";
-    public static final String USER_GET_UINFOS = "/user/getUinfos.action";
-    public static final String USER_SET_DONNOP = "/user/setDonnop.action";
+    private static final String USER_UPDATE_UINFO = "/user/updateUinfo.action";
+    private static final String USER_GET_UINFOS = "/user/getUinfos.action";
+    private static final String USER_SET_DONNOP = "/user/setDonnop.action";
 
     private IMHttpNeteasy imHttpNeteasy;
 
@@ -65,8 +69,8 @@ public class UserOperation {
         	httpParam.add("token", token, 128);
         }
         String httpRslt = imHttpNeteasy.doPost(USER_UPDATE, httpParam);
-        ResComm userCreate = JSONArray.parseObject(httpRslt, ResComm.class);
-        return userCreate.getCode() == 200;
+        ResComm resUpdate = JSONArray.parseObject(httpRslt, ResComm.class);
+        return resUpdate.isSuccess();
     }
 
     //更新并获取新token
@@ -77,8 +81,8 @@ public class UserOperation {
         HttpParam httpParam = new HttpParam();
         httpParam.add("accid", accid, 32);
         String httpRslt = imHttpNeteasy.doPost(USER_REFRESH_TOKEN, httpParam);
-        ResUserCreate userCreate = JSONArray.parseObject(httpRslt, ResUserCreate.class);
-        return userCreate.getInfo().getToken();
+        ResUserCreate resRefresh = JSONArray.parseObject(httpRslt, ResUserCreate.class);
+        return resRefresh.getInfo().getToken();
     }
 
     //封禁/解禁网易云通信ID
@@ -90,8 +94,8 @@ public class UserOperation {
         httpParam.add("accid", accid, 32);
         String serverName = block ? USER_BLOCK : USER_UNBLOCK;
         String httpRslt = imHttpNeteasy.doPost(serverName, httpParam);
-        ResComm userCreate = JSONArray.parseObject(httpRslt, ResComm.class);
-        return userCreate.getCode() == 200;
+        ResComm res = JSONArray.parseObject(httpRslt, ResComm.class);
+        return res.isSuccess();
     }
 
     //更新用户名片除props和token外
@@ -111,20 +115,20 @@ public class UserOperation {
         httpParam.add("mobile", user.getMobile(), 32);
         httpParam.add("gender", user.getGender());
         httpParam.add("ex", user.getEx(), 1024);
-        String httpRslt = imHttpNeteasy.doPost(USER_CREATE, httpParam);
-        ResComm userCreate = JSONArray.parseObject(httpRslt, ResComm.class);
-        return userCreate.getCode() == 200;
+        String httpRslt = imHttpNeteasy.doPost(USER_UPDATE_UINFO, httpParam);
+        ResComm res = JSONArray.parseObject(httpRslt, ResComm.class);
+        return res.isSuccess();
     }
 
     //获取用户名片
-    public IMUser getUinfos(String accid) throws Exception {
-        if (accid == null) {
+    public List<IMUser> getUinfos(List<String> accidList) throws Exception {
+        if (accidList == null || accidList.isEmpty()) {
             return null;
         }
         HttpParam httpParam = new HttpParam();
-        httpParam.add("accid", accid, 32);
+        httpParam.add("accids", JSONObject.toJSONString(accidList));
         String httpRslt = imHttpNeteasy.doPost(USER_GET_UINFOS, httpParam);
-        return JSONArray.parseObject(httpRslt, IMUser.class);
+        return JsonUtil.parseObjectList(USER_GET_UINFOS, httpRslt, "uinfos", IMUser.class);
     }
 
     //设置桌面端在线时，移动端是否需要推送
@@ -137,6 +141,6 @@ public class UserOperation {
         httpParam.add("donnopOpen", Boolean.toString(isDonnop).toLowerCase());
         String httpRslt = imHttpNeteasy.doPost(USER_SET_DONNOP, httpParam);
         ResComm res = JSONArray.parseObject(httpRslt, ResComm.class);
-        return res.getCode() == 200;
+        return res.isSuccess();
     }
 }

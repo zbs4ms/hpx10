@@ -188,9 +188,9 @@ public class OutpatientService {
             Collections.sort(paymentInfoList);
             if (paymentStatus != 0 && pageSize > 0) {
                 int beginIndex = (pageNo - 1) * pageSize;
-                int endIndex = beginIndex + pageSize - 1;
-                endIndex = endIndex > paymentInfoList.size() ? paymentInfoList.size() : pageSize;
-                if (beginIndex < paymentInfoList.size()) {
+                int endIndex = beginIndex + pageSize;
+                endIndex = endIndex > paymentInfoList.size() ? paymentInfoList.size() : endIndex;
+                if (beginIndex < paymentInfoList.size() && beginIndex <= endIndex) {
                     return paymentInfoList.subList(beginIndex, endIndex);
                 } else {
                     return Collections.emptyList();

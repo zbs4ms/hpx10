@@ -6,6 +6,7 @@ import com.jishi.reservation.controller.protocol.IMChatInfo;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.dao.models.IMAccessRecord;
 import com.jishi.reservation.dao.models.IMAccount;
+import com.jishi.reservation.otherService.im.neteasy.model.IMUser;
 import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.IMAccountService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
@@ -62,7 +63,7 @@ public class IMAccountController extends MyBaseController {
     }
 
     @ApiOperation(value = "更新普通用户im token，token失效时调用", response = String.class)
-    @RequestMapping(value = "/refreshUserToken", method = RequestMethod.PUT)
+    @RequestMapping(value = "/refreshUserToken", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject refreshUserToken(HttpServletRequest request, HttpServletResponse response,
                                  @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId", required = false) Long accountId) throws Exception {
@@ -78,7 +79,7 @@ public class IMAccountController extends MyBaseController {
     }
 
     @ApiOperation(value = "更新医生im token，token失效时调用", response = String.class)
-    @RequestMapping(value = "/refreshDoctorToken", method = RequestMethod.PUT)
+    @RequestMapping(value = "/refreshDoctorToken", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject refreshDoctorToken(HttpServletRequest request, HttpServletResponse response,
                                  @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
@@ -87,7 +88,7 @@ public class IMAccountController extends MyBaseController {
     }
 
     @ApiOperation(value = "获取聊天信息，医生im账户，用户im账号和token", response = IMChatInfo.class)
-    @RequestMapping(value = "/chatToDocter", method = RequestMethod.PUT)
+    @RequestMapping(value = "/chatToDocter", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject chatToDocter(HttpServletRequest request, HttpServletResponse response,
                                          @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
@@ -104,7 +105,7 @@ public class IMAccountController extends MyBaseController {
     }
 
     @ApiOperation(value = "获取咨询医生历史列表", response = Doctor.class)
-    @RequestMapping(value = "/visitHistory", method = RequestMethod.PUT)
+    @RequestMapping(value = "/visitHistory", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject visitHistory(HttpServletRequest request, HttpServletResponse response,
                                    @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId", required = false) Long accountId) throws Exception {
@@ -120,7 +121,7 @@ public class IMAccountController extends MyBaseController {
     }
 
     @ApiOperation(value = "更新咨询医生时间", response = Doctor.class)
-    @RequestMapping(value = "/updateVisitTime", method = RequestMethod.PUT)
+    @RequestMapping(value = "/updateVisitTime", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject updateVisitTime(HttpServletRequest request, HttpServletResponse response,
                       @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
@@ -135,5 +136,32 @@ public class IMAccountController extends MyBaseController {
         boolean rslt = imAccountService.updateVisitRecord(accountId, doctorId);
         return rslt ? ResponseWrapper().addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode())
                       : ResponseWrapper().addMessage("failed").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+    }
+
+    @ApiOperation(value = "获取用户IM账号信息", response = IMUser.class)
+    @RequestMapping(value = "/getUserDetail", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject getUserDetail(HttpServletRequest request, HttpServletResponse response,
+                        @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId", required = false) Long accountId) throws Exception {
+
+        if (accountId == null) {
+          accountId = accountService.returnIdByToken(request);
+          if(accountId.equals(-1L)){
+            return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+          }
+        }
+        IMUser imUserVO = imAccountService.queryUser(accountId, false);
+        return ResponseWrapper().addMessage("success").addData(imUserVO).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+    @ApiOperation(value = "获取医生IM账号信息", response = IMUser.class)
+    @RequestMapping(value = "/getDoctorDetail", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject getDoctorDetail(HttpServletRequest request, HttpServletResponse response,
+                          @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
+
+        // TODO 医生账号怎么验证账号已登录
+        IMUser imUserVO = imAccountService.queryUser(doctorId, true);
+        return ResponseWrapper().addMessage("success").addData(imUserVO).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 }
