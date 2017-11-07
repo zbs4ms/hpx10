@@ -4,15 +4,16 @@
    * Date: 2017/10/21
    */
   import SearchTable from '@/components/_common/searchTable/SearchTable'
-
-  import { Loading } from 'element-ui'
+//  import { Loading } from 'element-ui'
+  import HeaderSearchSelect from '@/components/_common/headerSearchSelect/HeaderSearchSelect.vue'
 
   import {
-    getListApi,
-    shelveApi,
-    topApi,
-    checkApi
-  } from '../log/api'
+    getListApi as getDoctorListApi,
+    queryDepartmentApi
+  } from '@/components/doctor/api'
+  import {
+    getListApi
+  } from './api'
 
   import {
     convertDate
@@ -38,6 +39,11 @@
         label: '预约就诊',
         value: 2
       }]
+      const statusDict = {
+        0: '正常就诊',
+        1: '过期未到诊',
+        2: '预约就诊'
+      }
       this.tableAttrs = {
         'props': {
           'tooltip-effect': 'dark',
@@ -47,53 +53,110 @@
       }
       this.columnData = [{
         attrs: {
-          'prop': 'date',
+          'prop': 'registerTime',
           'label': '预约时间',
-          'min-width': '100',
+          'min-width': '180',
           'formatter' (row, col) {
-            return row.estTime ? convertDate(row.estTime) : '--'
+            return row.registerTime ? convertDate(row.registerTime, 'Y-M-D h:m') : '--'
           }
         }
       }, {
         attrs: {
-          'prop': 'userName',
+          'prop': 'patientName',
           'label': '客户姓名',
           'min-width': '120'
-        },
-        'scopedSlots': {
-          default: (scope) => {
-            return (
-              <a href={scope.row.url} target="_blank">{ scope.row.title }</a>
-            )
-          }
         }
       }, {
         attrs: {
-          'prop': 'cardNo',
+          'prop': 'idCard',
           'label': '就诊卡号',
           'min-width': '120'
         }
       }, {
         attrs: {
-          'prop': 'doctor',
+          'prop': 'doctorName',
           'label': '医生姓名',
-          'min-width': '120'
+          'min-width': '120',
+          'render-header' (h, { column, $index }) {
+            return h(HeaderSearchSelect, {
+              props: {
+                label: '医生姓名',
+                options: vm.doctorList,
+                value: vm.apiKeysMap.doctorId.value
+              },
+              on: {
+                input (val) {
+                  vm.apiKeysMap.doctorId.value = val
+                },
+                visibleChange (visible) {
+                  if (visible) {
+                    getDoctorListApi().then(res => {
+                      const content = res.content || {}
+                      const list = (content.list || []).map(item => {
+                        const doctor = item.doctor || {}
+                        return {
+                          label: doctor.name,
+                          value: doctor.id
+                        }
+                      })
+                      vm.doctorList = [{
+                        label: '全部',
+                        value: undefined
+                      }].concat(list)
+                    })
+                  }
+                }
+              }
+            })
+          }
         }
       }, {
         attrs: {
-          'prop': 'project',
-          'label': '项目名称',
-          'min-width': '100'
+          'prop': 'department',
+          'label': '科室',
+          'min-width': '120',
+          'render-header' (h, { column, $index }) {
+            return h(HeaderSearchSelect, {
+              props: {
+                label: '科室',
+                options: vm.departmentList,
+                value: vm.apiKeysMap.departmentId.value
+              },
+              on: {
+                input (val) {
+                  vm.apiKeysMap.departmentId.value = val
+                },
+                visibleChange (visible) {
+                  if (visible) {
+                    if (vm.departmentList.length === 0) {
+                      queryDepartmentApi().then(res => {
+                        const content = (res.content || {}).map(item => {
+                          return {
+                            label: item.name,
+                            value: item.id
+                          }
+                        })
+                        vm.departmentList = [{
+                          label: '全部',
+                          value: undefined
+                        }].concat(content)
+                      })
+                    }
+                  }
+                }
+              }
+            })
+          }
         }
       }, {
         attrs: {
-          'prop': 'tel',
+          'prop': 'phone',
           'label': '预留手机号',
           'min-width': '120'
         }
       }, {
         attrs: {
-          'prop': 'ID_no',
+          'prop': 'idCard',
           'label': '身份证号',
           'min-width': '160'
         }
@@ -102,11 +165,14 @@
           'prop': 'status',
           'label': '状态',
           'min-width': '120',
+          'formatter' (row, col) {
+            return statusDict[row.status]
+          },
           'render-header' (h, { column, $index }) {
             return (
               <el-dropdown>
                 <span class="el-dropdown-link">
-                  审批状态
+                  状态
                   <i
                     class="el-icon-arrow-down el-icon--right"
                     style="cursor: pointer;">
@@ -134,18 +200,7 @@
         requestFn: getListApi,
         responseFn (data) {
           let content = data.content || {}
-          this.tableData = (content.list || []).map((item) => ({
-            estTime: item.createTime,
-            accountId: item.accountId,
-            id: item.id,
-            title: item.title,
-            nick: item.nick,
-            status: item.status,
-            isTop: item.isTop,
-            url: item.url,
-            enable: item.enable // 0表示正常
-          }))
-          console.log('this.tableData', this.tableData)
+          this.tableData = content.list || []
           this.total = content.total || 0
         }
       }
@@ -158,37 +213,30 @@
       }]
       return {
         apiKeysMap: {
-          query: {
-            value: ''
+          key: {
+            value: undefined
           },
           status: {
             value: undefined
           },
           startTime: {
-            value: ''
+            value: undefined
           },
           endTime: {
-            value: ''
+            value: undefined
           },
-          orderBy: {
-            value: 'create_time'
+          doctorId: {
+            value: undefined
           },
-          desc: {
-            value: true
+          departmentId: {
+            value: undefined
           },
-          currentPage: 'pageNum'
+          currentPage: 'startPage'
         },
-        createTimeRange: '',
+        createTimeRange: [],
         searchKeyword: '',
-        checkDialogVisible: false, // 审核弹窗
-        checkStatus: '' // 当前选择的审核状态
-      }
-    },
-    watch: {
-      checkDialogVisible (visible) {
-        if (!visible) {
-          this.checkStatus = ''
-        }
+        doctorList: [], // 医生列表
+        departmentList: [] // 科室列表
       }
     },
     methods: {
@@ -204,63 +252,8 @@
           endTime: {
             value: new Date(createTimeRange[1] || '').getTime() || undefined
           },
-          query: {
+          key: {
             value: this.searchKeyword || undefined
-          }
-        })
-      },
-      // 切换置顶状态
-      switchTop (rowData) {
-        topApi(rowData.id).then(res => {
-          this.$message({
-            type: 'success',
-            message: '操作成功'
-          })
-        }).finally(() => {
-          this.$refs.searchTable.init()
-        })
-      },
-      // 审核（打开审核弹窗）
-      handleCheck (rowData) {
-        this.onRowData = rowData // 暂存当前行的数据
-        this.checkDialogVisible = true
-      },
-      // 审核（提交）
-      handleCheckSubmit () {
-        checkApi(this.onRowData.id, this.checkStatus).then(res => {
-          this.$message({
-            type: 'success',
-            message: '审核成功'
-          })
-          this.$refs.searchTable.getList()
-        }).finally(() => {
-          this.checkDialogVisible = false
-        })
-      },
-      // 上下架
-      handleUnShelve (rowData) {
-        const enable = rowData.enable
-        const operateText = enable + '' === '0' ? '下架' : '上架'
-        this.$confirm(`是否${operateText}该日志？`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-          beforeClose: (action, instance, done) => {
-            if (action === 'confirm') {
-              const loading = Loading.service({ fullscreen: true })
-              shelveApi(rowData.id).then(res => {
-                this.$message({
-                  type: 'success',
-                  message: `${operateText}成功`
-                })
-                this.$refs.searchTable.getList()
-              }).finally(() => {
-                loading.close()
-                done()
-              })
-            } else {
-              done()
-            }
           }
         })
       }
@@ -295,7 +288,7 @@
           搜索关键字：
           <el-input
             v-model="searchKeyword"
-            placeholder="请输入ID号码 / 作者昵称 / 日记标题"
+            placeholder="请输入客户姓名／卡号..."
             style="width: 290px;">
           </el-input>
         </div>
@@ -304,26 +297,6 @@
         </div>
       </div>
     </search-table>
-    <el-dialog
-      title="审核"
-      :visible.sync="checkDialogVisible"
-      size="tiny">
-      <div style="text-align: center;height: 100px;">
-        <span>审核操作：</span>
-        <el-select v-model="checkStatus" placeholder="请选择">
-          <el-option
-            v-for="item in checkOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="checkDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleCheckSubmit">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 

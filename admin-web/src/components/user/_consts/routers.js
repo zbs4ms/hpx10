@@ -14,6 +14,6 @@ export const INDEX = {
 
 // 个人主页
 export const PERSONAL_PAGE = {
-  path: MOUDLE_ROOT + '/personPage',
+  path: MOUDLE_ROOT + '/:accountId',
   name: `${MOUDLE_PREDIX}_personal_page`
 }

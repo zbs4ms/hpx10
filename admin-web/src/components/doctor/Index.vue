@@ -34,12 +34,6 @@ export default {
     }
     this.columnData = [{
       attrs: {
-        'prop': 'no',
-        'label': '序号',
-        'min-width': '50'
-      }
-    }, {
-      attrs: {
         'prop': 'name',
         'label': '姓名',
         'min-width': '100',
@@ -63,7 +57,7 @@ export default {
       }
     }, {
       attrs: {
-        'prop': 'describe',
+        'prop': 'goodDescribe',
         'label': '描述',
         'min-width': '160',
         'show-overflow-tooltip': true

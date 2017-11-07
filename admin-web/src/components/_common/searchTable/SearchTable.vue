@@ -2,6 +2,9 @@
   export default {
     name: 'SearchTable',
     props: {
+      initData: {
+        type: Array
+      },
       listApi: { // 查询列表的api方法：包括请求和响应
         type: Object,
         default () {
@@ -25,7 +28,9 @@
       }
     },
     created () {
-      this.init()
+      if (!this.initData) { // 传入表格数据的表格不需要请求后台
+        this.init()
+      }
     },
     data () {
       return {
@@ -107,7 +112,7 @@
           {this.$slots['table-tools']}
           <el-table
             {...this.tableAttrs}
-            data={this.tableData}
+            data={this.initData || this.tableData}
             {...{directives: [{ name: 'loading', value: this.loading }]}}>
             {
               this.columnData.map(item => {

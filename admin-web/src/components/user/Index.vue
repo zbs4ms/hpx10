@@ -5,6 +5,9 @@
    */
   import SearchTable from '@/components/_common/searchTable/SearchTable'
   import {
+    PERSONAL_PAGE
+  } from './_consts/routers'
+  import {
     getListApi
   } from './api'
   export default {
@@ -25,6 +28,15 @@
           'prop': 'userName',
           'label': '用户名',
           'min-width': '140'
+        },
+        scopedSlots: {
+          default: (scope) => {
+            return (
+              <router-link to={{name: PERSONAL_PAGE.name, params: { accountId: scope.row.id }}}>
+                {scope.row.userName}
+              </router-link>
+            )
+          }
         }
       }, {
         attrs: {

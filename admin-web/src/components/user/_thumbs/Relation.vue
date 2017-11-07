@@ -26,7 +26,7 @@
         }
       }, {
         attrs: {
-          'prop': 'tel',
+          'prop': 'phone',
           'label': '手机号',
           'min-width': '140'
         }
@@ -38,7 +38,7 @@
         }
       }, {
         attrs: {
-          'prop': 'ID_no',
+          'prop': 'idCard',
           'label': '身份证号',
           'min-width': '180'
         }

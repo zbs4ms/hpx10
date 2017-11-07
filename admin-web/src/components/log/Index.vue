@@ -64,7 +64,7 @@
         'scopedSlots': {
           default: (scope) => {
             return (
-              <a href={scope.row.url} target="_blank">{ scope.row.title }</a>
+              <a href={scope.row.url} target="_blank">{ scope.row.title || '--' }</a>
             )
           }
         }

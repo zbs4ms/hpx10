@@ -5,19 +5,18 @@
  */
 export default {
   name: 'Info',
+  props: {
+    data: {
+      type: Object
+    }
+  },
   data () {
     this.dataList = [{
       key: 'name',
       label: '姓名'
     }, {
-      key: 'tel',
+      key: 'phone',
       label: '手机号'
-    }, {
-      key: 'visitNo',
-      label: '就诊号'
-    }, {
-      key: 'ID_no',
-      label: '身份证号'
     }, {
       key: 'age',
       label: '年龄'
@@ -26,7 +25,6 @@ export default {
       label: '用户ID'
     }]
     return {
-      data: []
     }
   }
 }
@@ -34,14 +32,21 @@ export default {
 
 <template>
   <div>
-    <el-row
-      class="data-item flex"
-      v-for="item in dataList"
-      :key="item.label">
-      <span class="flex-item--none data-item__label">{{ item.label }}</span>
-      <span class="colon">:</span>
-      <span class="flex-item data-item__value"></span>
-    </el-row>
+    <template v-if="data">
+      <el-row
+        class="data-item flex"
+        v-for="item in dataList"
+        :key="item.label">
+        <span class="flex-item--none data-item__label">{{ item.label }}</span>
+        <span class="colon">:</span>
+        <span class="flex-item data-item__value">
+          {{ data[item.key] || '--' }}
+        </span>
+      </el-row>
+    </template>
+    <div v-else>
+      暂无数据
+    </div>
   </div>
 </template>
 
@@ -56,6 +61,7 @@ export default {
     }
     .colon {
       color: #b2b2b2;
+      margin-right: 20px;
     }
     &__value {
     }
