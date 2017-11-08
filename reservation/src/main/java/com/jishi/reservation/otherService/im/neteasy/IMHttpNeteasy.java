@@ -38,6 +38,7 @@ public class IMHttpNeteasy {
     public String doPost(String serviceName, HttpParam httpParam) throws Exception {
         URL url = new URL(IM_NETEASY_URL + serviceName);
         HttpURLConnection conn = initConnection((HttpURLConnection) url.openConnection());
+        logger.debug(conn.toString() + "  参数：" + httpParam);
 
         if (httpParam != null && httpParam.hasParam()) {
             DataOutputStream out = new DataOutputStream(conn.getOutputStream());
@@ -96,7 +97,6 @@ public class IMHttpNeteasy {
 
     private String returnResult(HttpURLConnection conn, URL url) throws Exception {
         InputStream input = null;
-        logger.info(conn.toString());
         int code = conn.getResponseCode();
         if (code == 200) {
             input = conn.getInputStream();
@@ -105,7 +105,7 @@ public class IMHttpNeteasy {
             throw new IMException(code, url.toString(), null);
         }
         String result = new String(readInputStream(input, url), "UTF-8");
-        logger.info(result);
+        logger.debug(result);
         return result;
     }
 
