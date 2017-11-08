@@ -12,8 +12,6 @@ import com.jishi.reservation.otherService.im.neteasy.model.IMUser;
 import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -175,7 +173,7 @@ public class IMAccountService {
             imUser.setIcon(account.getHeadPortrait());
             imAccount.setAccountId(accId);
             imAccount.setType(0); //普通用户
-        } else if (doctorId != null || doctorHisId != null) {
+        } else {
             List<Doctor> doctorList = doctorService.queryDoctor(doctorId, doctorHisId, null, null, null, 0);
             if (doctorList == null || doctorList.size() != 1) {
                 log.error("医生列表为空或大于1：doctorId " + doctorId + " doctorHisId " +  doctorHisId);
@@ -224,7 +222,7 @@ public class IMAccountService {
      * @description 更新用户访问记录
      * @param accountId 用户id
      * @param doctorId 医生id
-     * @throws
+     * @throws Exception
     **/
     public boolean updateVisitRecord(Long accountId, Long doctorId) {
         IMAccessRecord record = imAccessRecordMapper.selectAppointRecord(accountId, doctorId);
@@ -246,7 +244,7 @@ public class IMAccountService {
     /**
      * @description 获取用户咨询列表
      * @param accountId 用户账号ID
-     * @throws
+     * @throws Exception
     **/
     public List<Doctor> queryUserIMAccessRecord(Long accountId) throws Exception {
         List<IMAccessRecord> accessRecordList = imAccessRecordMapper.selectByUserId(accountId, Constant.IM_HISTORY_VISIT_DOCTOR_SIZE);
@@ -256,8 +254,7 @@ public class IMAccountService {
         List<Doctor> doctorList = new ArrayList<Doctor>();
         List<Doctor> doctorAllList = doctorService.queryDoctor(null, null, null, null, null, 0);
         for (IMAccessRecord accessRecord : accessRecordList) {
-            for (int i = 0; i < doctorAllList.size(); ++i) {
-                Doctor item = doctorAllList.get(i);
+            for (Doctor item : doctorAllList) {
                 if (item.getId().equals(accessRecord.getDoctorId())) {
                     doctorList.add(item);
                     break;
@@ -265,5 +262,17 @@ public class IMAccountService {
             }
         }
         return doctorList;
+    }
+
+    public IMUser queryUser(Long id, boolean isDoctor) throws Exception {
+        IMAccount imAccount = isDoctor ? imAccountMapper.selectByDoctorId(id) : imAccountMapper.selectByAccountId(id);
+        if (imAccount == null) {
+            return null;
+        }
+        List<IMUser> imUserList = imClientNeteasy.getUserOperation().getUinfos(Collections.singletonList(imAccount.getImAccId()));
+        if (imUserList != null && imUserList.size() == 1) {
+            return imUserList.get(0);
+        }
+        return null;
     }
 }

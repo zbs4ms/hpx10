@@ -2,7 +2,9 @@ package com.jishi.reservation.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jishi.reservation.controller.protocol.*;
+import com.jishi.reservation.dao.mapper.OutpatientPaymentMapper;
 import com.jishi.reservation.dao.models.OrderInfo;
+import com.jishi.reservation.dao.models.OutpatientPayment;
 import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.bean.OutpatientPaymentInfo;
@@ -38,6 +40,9 @@ public class OutpatientService {
     @Autowired
     private OrderInfoService orderInfoService;
 
+    @Autowired
+    private OutpatientPaymentMapper outpatientPaymentMapper;
+
     private static final int OUTPATIENT_PAMENT_INFO_QUERY_DAY = 30;
 
       /**
@@ -67,9 +72,6 @@ public class OutpatientService {
             log.info(info.getBrId() + "的his门诊缴费列表返回值：" + JSONObject.toJSONString(ghList));
             for (OutpatientPaymentInfo.Gh gh : ghList) {
                 if (gh == null) {
-                    continue;
-                }
-                if (paymentStatus == 0 && Integer.parseInt(gh.getZfzt()) != 0) {
                     continue;
                 }
                 double unpaidAmount = 0.0;
@@ -177,16 +179,18 @@ public class OutpatientService {
                 paymentInfo.setPaymentStatus(PaymentStatus);
                 paymentInfo.setDocumentType(1);   //默认处理收费单(单据类型，1-收费单，4-挂号单)，挂号单不处理
 
-                paymentInfoList.add(paymentInfo);
+                if (PaymentStatus == paymentStatus || paymentStatus == 1) {
+                    paymentInfoList.add(paymentInfo);
+                }
             }
         }
         if (paymentInfoList != null) {
             Collections.sort(paymentInfoList);
             if (paymentStatus != 0 && pageSize > 0) {
                 int beginIndex = (pageNo - 1) * pageSize;
-                int endIndex = beginIndex + pageSize - 1;
-                endIndex = endIndex > paymentInfoList.size() ? paymentInfoList.size() : pageSize;
-                if (beginIndex < paymentInfoList.size()) {
+                int endIndex = beginIndex + pageSize;
+                endIndex = endIndex > paymentInfoList.size() ? paymentInfoList.size() : endIndex;
+                if (beginIndex < paymentInfoList.size() && beginIndex <= endIndex) {
                     return paymentInfoList.subList(beginIndex, endIndex);
                 } else {
                     return Collections.emptyList();
@@ -197,17 +201,43 @@ public class OutpatientService {
     }
 
     /**
+     * @description
+     * @param accountId
+     * @param brId his系统病人id
+     * @param subject 预交的名称
+     * @param price 交易的金额
+     * @param docIds 单据ID，可以多个单据，以','分隔
+     * @param docmentType 单据类型，1-收费单，4-挂号单
+     * @throws Exception
+    **/
+    public OrderInfo generatePaymentOrder(Long accountId, String brId, String subject, BigDecimal price, String docIds, Integer docmentType) throws Exception {
+        OrderInfo orderInfo = orderInfoService.generateOutpatient(accountId, brId, subject, price);
+        log.info(" generatePaymentOrder =>  订单号: " + orderInfo.getOrderNumber());
+        OutpatientPayment payment = new OutpatientPayment();
+        payment.setAccountId(accountId);
+        payment.setBrId(brId);
+        payment.setDocmentId(docIds);
+        payment.setDocmentType(docmentType);
+        payment.setStatus(0); //创建订单，初始化为未支付
+        payment.setOrderId(orderInfo.getId());
+        payment.setOrderNumber(orderInfo.getOrderNumber());
+        payment.setCreateTime(new Date());
+
+        outpatientPaymentMapper.insert(payment);
+        log.info(" generatePaymentOrder => 门诊订单信息，病人id: " + payment.getBrId() + " 单据号：" + payment.getDocmentId());
+        return orderInfo;
+    }
+
+    /**
      * @description 门诊缴费确认(单个)
-     * @param brId 病人ID
-     * @param docmentId 单据ID
-     * @param documentType 单据类型，1-收费单，4-挂号单
      * @param orderNumber 订单号
      * @throws Exception
     **/
-    public OrderVO payConfirm(String brId, String docmentId, int documentType, String orderNumber) throws Exception {
+    public OrderVO payConfirm(String orderNumber) throws Exception {
         OrderInfo order = orderInfoService.queryOrderByOrderNumber(orderNumber);
-        log.info("payConfirm => OrderNumber: " + order.getOrderNumber() + " 病人Id: " + brId + " 单据号：" + docmentId + " 金额：" + order.getPrice());
-        if (order == null || !order.getBrId().equals(brId)) {
+        OutpatientPayment payment = outpatientPaymentMapper.queryByOrderNumber(orderNumber);
+        log.info("payConfirm => OrderNumber: " + order.getOrderNumber() + " 病人Id: " + payment.getBrId() + " 单据号：" + payment.getDocmentId() + " 金额：" + order.getPrice());
+        if (order == null || !order.getBrId().equals(payment.getBrId())) {
             return null;
         }
         // 订单状态0：已支付，是否有效的标志0：有效，订单类型3：门诊订单
@@ -217,24 +247,28 @@ public class OutpatientService {
         // TODO 第三方名称（结算卡类别）暂时传空
         String paymentContent = order.getBuyerId() + "|" + order.getSubject();
         //documentType: 单据类型，1-收费单，4-挂号单    isRegisterDoc: 是否挂号单，0-收费单，1-挂号单
-        int isRegisterDoc = documentType == 4 ? 1 : 0;
-        String jzid = hisOutpatient.payModify(brId, docmentId, order.getPrice(), order.getPrice(), isRegisterDoc, order.getThirdOrderNumber(), paymentContent, null);
+        int isRegisterDoc = payment.getDocmentType() == 4 ? 1 : 0;
+        String jzid = hisOutpatient.payModify(payment.getBrId(), payment.getDocmentId(), order.getPrice(), order.getPrice(),
+                  isRegisterDoc, order.getThirdOrderNumber(), paymentContent, null);
         log.info(" payConfirm => 就诊ID: " + jzid);
-        return jzid != null && !jzid.isEmpty() ? toOrderVO(order) : null;
+        boolean rslt = jzid != null && !jzid.isEmpty();
+        if (rslt) {
+            payment.setStatus(3);
+            outpatientPaymentMapper.updateByPrimaryKeySelective(payment);
+        }
+        return rslt ? toOrderVO(order) : null;
     }
 
     /**
      * @description 门诊缴费确认(可多个单据)
-     * @param brId 病人ID
-     * @param docIds 单据ID，可以多个单据，以','分隔
-     * @param documentType 单据类型，1-收费单，4-挂号单
      * @param orderNumber 订单号
      * @throws Exception
      **/
-    public OrderVO batchpayConfirm(String brId, String docIds, int documentType, String orderNumber) throws Exception {
+    public OrderVO batchpayConfirm(String orderNumber) throws Exception {
         OrderInfo order = orderInfoService.queryOrderByOrderNumber(orderNumber);
-        log.info("batchpayConfirm => OrderNumber: " + order.getOrderNumber() + " 病人Id: " + brId + " 单据号: " + docIds + " 金额：" + order.getPrice());
-        if (order == null || !order.getBrId().equals(brId)) {
+        OutpatientPayment payment = outpatientPaymentMapper.queryByOrderNumber(orderNumber);
+        log.info("batchpayConfirm => OrderNumber: " + order.getOrderNumber() + " 病人Id: " + payment.getBrId() + " 单据号: " + payment.getDocmentId() + " 金额：" + order.getPrice());
+        if (order == null || !order.getBrId().equals(payment.getBrId())) {
             return null;
         }
         // 订单状态0：已支付，是否有效的标志0：有效，订单类型3：门诊订单
@@ -243,10 +277,16 @@ public class OutpatientService {
         }
         String paymentContent = order.getBuyerId() + "|" + order.getSubject();
         //documentType: 单据类型，1-收费单，4-挂号单    isRegisterDoc: 是否挂号单，0-收费单，1-挂号单
-        int isRegisterDoc = documentType == 4 ? 1 : 0;
-        String czsj = hisOutpatient.batchPayModify(brId, docIds, order.getPrice(), order.getPrice(), isRegisterDoc, order.getThirdOrderNumber(), paymentContent, null);
+        int isRegisterDoc = payment.getDocmentType() == 4 ? 1 : 0;
+        String czsj = hisOutpatient.batchPayModify(payment.getBrId(), payment.getDocmentId(), order.getPrice(), order.getPrice(),
+                  isRegisterDoc, order.getThirdOrderNumber(), paymentContent, null);
         log.info(" batchpayConfirm => 操作时间: " + czsj);
-        return czsj != null && !czsj.isEmpty() ? toOrderVO(order) : null;
+        boolean rslt = czsj != null && !czsj.isEmpty();
+        if (rslt) {
+            payment.setStatus(3);
+            outpatientPaymentMapper.updateByPrimaryKeySelective(payment);
+        }
+        return rslt ? toOrderVO(order) : null;
     }
 
     /**

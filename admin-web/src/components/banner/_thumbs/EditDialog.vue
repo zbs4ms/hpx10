@@ -142,7 +142,7 @@ export default {
           required
           :rules="[
             { required: true, message: '跳转链接不能为空'},
-            { pattern: /^((https?):\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/, message: '请输入正确的链接地址', trigger: 'blur'}
+            { pattern: /https?:\/\/[a-z0-9_.:]+\/[-a-z0-9_:@&?=+,.!/~*%$]*(\.(html|htm|shtml))?/, message: '请输入正确的链接地址', trigger: 'blur'}
           ]">
           <el-input
             v-model="form.link"

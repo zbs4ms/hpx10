@@ -7,6 +7,14 @@
   import Log from './_thumbs/Log.vue'
   import Relation from './_thumbs/Relation.vue'
 
+  import {
+    INDEX
+  } from './_consts/routers'
+
+  import {
+    userInfoApi
+  } from './api'
+
   export default {
     name: 'HomePage',
     components: {
@@ -14,9 +22,29 @@
       log: Log,
       relation: Relation
     },
+    created () {
+      userInfoApi(this.accountId).then(res => {
+        console.log(res, '----')
+        const content = res.content || {}
+        this.data.info = content.account || {}
+        this.data.log = content.diaryList || []
+        this.data.relation = content.patientInfoList || []
+      })
+    },
     data () {
+      this.INDEX = INDEX
       return {
-        activeTab: 'info'
+        activeTab: 'info',
+        data: {
+          info: {},
+          log: [],
+          relation: []
+        }
+      }
+    },
+    computed: {
+      accountId () {
+        return this.$route.params.accountId
       }
     }
   }
@@ -26,18 +54,18 @@
   <div class="personal-homepage">
     <div class="flex--vcenter page-top">
       <div class="page-title">
-        用户管理 &gt; 个人主页
+        <router-link :to="{name: INDEX.name}">用户管理</router-link> &gt; 个人主页
       </div>
     </div>
     <div class="content-wrap flex">
       <div class="content-lt flex-item--none">
         <img
-          src="http://www.baidu.com"
+          :src="data.info.headPortrait"
           class="avatar"
           width="80"
           height="80"
           alt=""/>
-        <p class="text-center">很长的昵称</p>
+        <p class="text-center">{{ data.info.nick }}</p>
         <el-button type="primary" size="small" style="width: 100%;">发私信</el-button>
       </div>
       <div class="content-rt flex-item">
@@ -48,7 +76,10 @@
         </el-tabs>
         <div class="content-body">
           <keep-alive>
-            <component :is="activeTab"></component>
+            <component 
+              :is="activeTab"
+              :data="data[activeTab]">
+            </component>
           </keep-alive>
         </div>
       </div>

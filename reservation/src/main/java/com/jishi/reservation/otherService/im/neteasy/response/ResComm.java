@@ -8,4 +8,9 @@ import lombok.Data;
 @Data
 public class ResComm {
     private int code;
+    private String desc;
+
+    public boolean isSuccess() {
+        return code == 200;
+    }
 }

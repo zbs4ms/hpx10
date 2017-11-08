@@ -53,8 +53,6 @@ public class OutpatientController extends MyBaseController {
             return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
           }
         }
-        // TODO his返回的支付状态全部为1，待解决！！！
-        status = 1;
         List<OutpatientPaymentInfoVO> outpatientPamentInfo = outpatientService.queryOutpatientPamentInfo(accountId, status, startPage, pageSize);
         return ResponseWrapper().addData(outpatientPamentInfo).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -64,9 +62,11 @@ public class OutpatientController extends MyBaseController {
     @ResponseBody
     public JSONObject generateOrder(HttpServletRequest request,HttpServletResponse response,
             @ApiParam(value = "accountId 通过token找到", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-            @ApiParam(value = "预交的名称 eg:住院预交款", required = true) @RequestParam(value = "subject", required = true) String subject,
+            @ApiParam(value = "预交的名称 eg:...门诊缴费", required = true) @RequestParam(value = "subject", required = true) String subject,
             @ApiParam(value = "交易的金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
-            @ApiParam(value = "brId", required = true) @RequestParam(value = "brId", required = true) String brId) throws Exception {
+            @ApiParam(value = "brId(his病人ID)", required = true) @RequestParam(value = "brId", required = true) String brId,
+            @ApiParam(value = "单据ID，可以多个单据，以','分隔", required = true) @RequestParam(value = "docIds", required = true) String docIds,
+            @ApiParam(value = "单据类型，1-收费单，4-挂号单", required = true) @RequestParam(value = "documentType", required = true) Integer documentType) throws Exception {
 
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
@@ -77,7 +77,7 @@ public class OutpatientController extends MyBaseController {
             }
         }
 
-        OrderInfo orderInfo = orderInfoService.generateOutpatient(accountId, brId, subject, price);
+        OrderInfo orderInfo = outpatientService.generatePaymentOrder(accountId, brId, subject, price, docIds, documentType);
 
         return ResponseWrapper().addData(orderInfo).addMessage("订单生成成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -103,11 +103,6 @@ public class OutpatientController extends MyBaseController {
     @ResponseBody
     public JSONObject payModify(HttpServletRequest request, HttpServletResponse response,
                   @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-                  @ApiParam(value = "单据ID", required = true) @RequestParam(value = "docmentId", required = true) String docmentId,
-                  @ApiParam(value = "病人ID", required = true) @RequestParam(value = "brId", required = true) String brId,
-                  //@ApiParam(value = "总金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
-                  //@ApiParam(value = "总结算金额", required = false) @RequestParam(value = "payPrice", required = false) BigDecimal payPrice,
-                  @ApiParam(value = "单据类型，1-收费单，4-挂号单", required = true) @RequestParam(value = "documentType", required = true) Integer documentType,
                   @ApiParam(value = "订单号", required = true) @RequestParam(value = "orderNumber", required = true) String orderNumber) throws Exception {
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
@@ -115,8 +110,7 @@ public class OutpatientController extends MyBaseController {
                 return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
-        //boolean rslt = outpatientService.confirmPayment(brId, docmentId, price, payPrice, documentType, orderNumber);
-        OrderVO orderVO = outpatientService.payConfirm(brId, docmentId, documentType, orderNumber);
+        OrderVO orderVO = outpatientService.payConfirm(orderNumber);
         return orderVO != null ? ResponseWrapper().addMessage("成功").addData(orderVO).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
         ResponseWrapper().addMessage("失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
     }
@@ -126,11 +120,6 @@ public class OutpatientController extends MyBaseController {
     @ResponseBody
     public JSONObject outpatientPaymentConfirm(HttpServletRequest request, HttpServletResponse response,
                 @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-                @ApiParam(value = "单据ID，可以多个单据，以','分隔", required = true) @RequestParam(value = "docIds", required = true) String docIds,
-                @ApiParam(value = "病人ID", required = true) @RequestParam(value = "brId", required = true) String brId,
-                //@ApiParam(value = "总金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
-                //@ApiParam(value = "总结算金额", required = false) @RequestParam(value = "payPrice", required = false) BigDecimal payPrice,
-                @ApiParam(value = "单据类型，1-收费单，4-挂号单", required = true) @RequestParam(value = "documentType", required = true) Integer documentType,
                 @ApiParam(value = "订单号", required = true) @RequestParam(value = "orderNumber", required = true) String orderNumber) throws Exception {
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
@@ -138,8 +127,7 @@ public class OutpatientController extends MyBaseController {
               return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
-        //boolean rslt = outpatientService.batchpayConfirm(brId, docIds, price, payPrice, documentType, orderNumber);
-        OrderVO orderVO = outpatientService.batchpayConfirm(brId, docIds, documentType, orderNumber);
+        OrderVO orderVO = outpatientService.batchpayConfirm(orderNumber);
         return orderVO != null ? ResponseWrapper().addMessage("成功").addData(orderVO).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
                       ResponseWrapper().addMessage("失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
     }

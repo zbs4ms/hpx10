@@ -4,6 +4,12 @@
    * Date: 2017/10/20
    */
   import SearchTable from '@/components/_common/searchTable/SearchTable'
+  import {
+    PERSONAL_PAGE
+  } from './_consts/routers'
+  import {
+    getListApi
+  } from './api'
   export default {
     name: 'UserManage',
     components: {
@@ -19,15 +25,18 @@
       }
       this.columnData = [{
         attrs: {
-          'prop': 'no',
-          'label': '序号',
-          'min-width': '80'
-        }
-      }, {
-        attrs: {
           'prop': 'userName',
           'label': '用户名',
           'min-width': '140'
+        },
+        scopedSlots: {
+          default: (scope) => {
+            return (
+              <router-link to={{name: PERSONAL_PAGE.name, params: { accountId: scope.row.id }}}>
+                {scope.row.userName}
+              </router-link>
+            )
+          }
         }
       }, {
         attrs: {
@@ -55,28 +64,38 @@
         }
       }]
       this.listApi = {
-        requestFn: () => {
-          return Promise.resolve([{
-            no: 1
-          }])
-        },
+        requestFn: getListApi,
         responseFn (res) {
-          this.tableData = res
+          console.log(res, 'res')
+          const content = res.content || {}
+          const list = content.list || []
+          this.tableData = list.map(item => {
+            return {
+              no: item.no,
+              userName: item.account,
+              id: item.id,
+              tel: item.phone
+            }
+          })
         }
       }
       return {
         searchKeyword: '',
         apiKeysMap: {
+          key: {
+            value: undefined
+          },
+          currentPage: 'startPage'
         }
       }
     },
     methods: {
       handleSearch () {
-//        this.apiKeysMap = Object.assign({}, this.apiKeysMap, {
-//          departmentId: {
-//            value: this.departmentId || undefined
-//          }
-//        })
+        this.apiKeysMap = Object.assign({}, this.apiKeysMap, {
+          key: {
+            value: this.searchKeyword || undefined
+          }
+        })
       }
     }
   }
