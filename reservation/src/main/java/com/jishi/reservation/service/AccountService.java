@@ -43,32 +43,34 @@ import java.util.Random;
 public class AccountService {
 
     @Autowired
-    AccountMapper accountMapper;
+    private AccountMapper accountMapper;
     @Autowired
-    RedisOperation redisOperation;
+    private RedisOperation redisOperation;
     @Autowired
-    AliDayuSupport dayuSupport;
+    private AliDayuSupport dayuSupport;
 
     @Autowired
-    HisUserManager hisUserManager;
+    private HisUserManager hisUserManager;
 
     @Autowired
-    IdentityInfoMapper identityInfoMapper;
+    private IdentityInfoMapper identityInfoMapper;
     @Autowired
-    CredentialsMapper credentialsMapper;
+    private CredentialsMapper credentialsMapper;
 
     @Autowired
-    PatientInfoMapper patientInfoMapper;
+    private PatientInfoMapper patientInfoMapper;
 
     @Autowired
-    DiaryMapper diaryMapper;
+    private DiaryMapper diaryMapper;
 
     @Autowired
-    DiaryScanMapper diaryScanMapper;
+    private DiaryScanMapper diaryScanMapper;
 
     @Autowired
-    DiaryLikedMapper diaryLikedMapper;
+    private DiaryLikedMapper diaryLikedMapper;
 
+    @Autowired
+    private IMAccountService imAccountService;
 
 
 
@@ -278,6 +280,7 @@ public class AccountService {
         newAccount.setPhone(phone);
         newAccount.setEnable(enable);
         Preconditions.checkState(accountMapper.updateByPrimaryKeySelective(newAccount) == 1,"更新失败!");
+        imAccountService.updateUser(queryAccountList.get(0).getId()); //更改账户信息时同步更新IM账号
     }
 
     /**
@@ -294,6 +297,7 @@ public class AccountService {
         newAccount.setId(queryAccountList.get(0).getId());
         newAccount.setPhone(phone);
         Preconditions.checkState(accountMapper.updateByPrimaryKeySelective(newAccount) == 1,"更新失败!");
+        imAccountService.updateUser(queryAccountList.get(0).getId()); //更改账户信息时同步更新IM账号
     }
 
     /**

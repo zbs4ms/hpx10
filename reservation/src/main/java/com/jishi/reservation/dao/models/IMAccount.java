@@ -22,7 +22,7 @@ public class IMAccount {
     @ApiModelProperty("医生账号id")
     private Long doctorId;
     @ApiModelProperty("医生his账号id")
-    private String doctorHisId;
+    private Long doctorHisId;
     @ApiModelProperty("im账号id")
     private String imAccId;
     @ApiModelProperty("im token，客户端用于登录等操作")

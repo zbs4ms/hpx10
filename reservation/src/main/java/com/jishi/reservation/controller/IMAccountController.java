@@ -63,7 +63,7 @@ public class IMAccountController extends MyBaseController {
     }
 
     @ApiOperation(value = "更新普通用户im token，token失效时调用", response = String.class)
-    @RequestMapping(value = "/refreshUserToken", method = RequestMethod.GET)
+    @RequestMapping(value = "/refreshUserToken", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject refreshUserToken(HttpServletRequest request, HttpServletResponse response,
                                  @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId", required = false) Long accountId) throws Exception {
@@ -79,7 +79,7 @@ public class IMAccountController extends MyBaseController {
     }
 
     @ApiOperation(value = "更新医生im token，token失效时调用", response = String.class)
-    @RequestMapping(value = "/refreshDoctorToken", method = RequestMethod.GET)
+    @RequestMapping(value = "/refreshDoctorToken", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject refreshDoctorToken(HttpServletRequest request, HttpServletResponse response,
                                  @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
@@ -139,23 +139,23 @@ public class IMAccountController extends MyBaseController {
     }
 
     @ApiOperation(value = "获取用户IM账号信息", response = IMUser.class)
-    @RequestMapping(value = "/getUserDetail", method = RequestMethod.GET)
+    @RequestMapping(value = "/getUserIMDetail", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject getUserDetail(HttpServletRequest request, HttpServletResponse response,
                         @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId", required = false) Long accountId) throws Exception {
 
         if (accountId == null) {
-          accountId = accountService.returnIdByToken(request);
-          if(accountId.equals(-1L)){
-            return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-          }
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1L)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+            }
         }
         IMUser imUserVO = imAccountService.queryUser(accountId, false);
         return ResponseWrapper().addMessage("success").addData(imUserVO).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "获取医生IM账号信息", response = IMUser.class)
-    @RequestMapping(value = "/getDoctorDetail", method = RequestMethod.GET)
+    @RequestMapping(value = "/getDoctorIMDetail", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject getDoctorDetail(HttpServletRequest request, HttpServletResponse response,
                           @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {

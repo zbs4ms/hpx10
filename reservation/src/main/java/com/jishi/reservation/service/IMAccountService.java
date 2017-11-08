@@ -157,20 +157,14 @@ public class IMAccountService {
         }
 
         IMAccount imAccount = new IMAccount();
-        IMUser imUser = new IMUser();
+        IMUser imUser;
         if (accId != null) {
             Account account = accountService.queryAccountById(accId);
             if (account == null) {
                 log.error("未找到用户：" + accId);
                 return null;
             }
-            String identify = UUID.randomUUID().toString().replace("-", "");
-            imUser.setAccid(identify);
-            imUser.setToken(identify);
-            imUser.setName(account.getNick());
-            imUser.setMobile(account.getPhone());
-            imUser.setEmail(account.getEmail());
-            imUser.setIcon(account.getHeadPortrait());
+            imUser = generateIMUser(account);
             imAccount.setAccountId(accId);
             imAccount.setType(0); //普通用户
         } else {
@@ -180,14 +174,10 @@ public class IMAccountService {
                 return null;
             }
             Doctor doctor = doctorList.iterator().next();
-            String identify = UUID.randomUUID().toString().replace("-", "");
-            imUser.setAccid(identify);
-            imUser.setToken(identify);
-            imUser.setName(doctor.getName());
-            imUser.setIcon(doctor.getHeadPortrait());
-            imUser.setSign(doctor.getAbout());
+            imUser = generateIMUser(doctor);
             imAccount.setDoctorId(doctor.getId());
-            imAccount.setDoctorHisId(doctor.getHId());
+            // TODO 医生hisID格式，待解决
+            //imAccount.setDoctorHisId(doctor.getHId());
             imAccount.setType(1); //医生
         }
         IMUser resUser = imClientNeteasy.getUserOperation().createUser(imUser);
@@ -264,6 +254,11 @@ public class IMAccountService {
         return doctorList;
     }
 
+    /**
+     * @description 获取IM账号信息
+     * @param id 用户id或医生id
+     * @throws Exception
+    **/
     public IMUser queryUser(Long id, boolean isDoctor) throws Exception {
         IMAccount imAccount = isDoctor ? imAccountMapper.selectByDoctorId(id) : imAccountMapper.selectByAccountId(id);
         if (imAccount == null) {
@@ -274,5 +269,73 @@ public class IMAccountService {
             return imUserList.get(0);
         }
         return null;
+    }
+
+    /**
+     * @description 更新IM账号信息
+     * @param accountId 本系统账号id
+     * @throws Exception
+    **/
+    public boolean updateUser(Long accountId) throws Exception {
+        log.info("更新IM账号信息: accountId: " + accountId);
+        IMAccount imAccount = imAccountMapper.selectByAccountId(accountId);
+        Account account = accountService.queryAccountById(accountId);
+        if (imAccount == null || account == null) {
+            log.info("账号不存在: imAccount: " + imAccount + "  account: " + account);
+            return false;
+        }
+        IMUser imUser = generateIMUser(imAccount.getImAccId(), imAccount.getImToken(), account);
+        return imClientNeteasy.getUserOperation().updateUinfo(imUser);
+    }
+
+    /**
+     * @description 更新IM账号信息
+     * @param doctorId 本系统医生id
+     * @throws Exception
+     **/
+    public boolean updateDoctor(Long doctorId) throws Exception {
+        log.info("更新IM账号信息: doctorId: " + doctorId);
+        IMAccount imAccount = imAccountMapper.selectByDoctorId(doctorId);
+        Doctor doctor = doctorService.queryDoctorByHid(imAccount.getDoctorHisId());
+        if (imAccount == null || doctor == null) {
+            log.info("账号不存在: imAccount: " + imAccount + "  doctor: " + doctor);
+            return false;
+        }
+        IMUser imUser = generateIMUser(imAccount.getImAccId(), imAccount.getImToken(), doctor);
+        return imClientNeteasy.getUserOperation().updateUinfo(imUser);
+    }
+
+    private IMUser generateIMUser(Account account) {
+        String identify = UUID.randomUUID().toString().replace("-", "");
+        return generateIMUser(identify, identify, account);
+    }
+
+    private IMUser generateIMUser(String imAccId, String imToken, Account account) {
+        IMUser imUser = new IMUser();
+        imUser.setAccid(imAccId);
+        imUser.setToken(imToken);
+        imUser.setName(account.getNick());
+        imUser.setMobile(account.getPhone());
+        imUser.setEmail(account.getEmail());
+        imUser.setIcon(account.getHeadPortrait());
+        imUser.setProps(account.getAccount());
+        return imUser;
+    }
+
+    private IMUser generateIMUser(Doctor doctor) {
+        String identify = UUID.randomUUID().toString().replace("-", "");
+        return generateIMUser(identify, identify, doctor);
+    }
+
+    private IMUser generateIMUser(String imAccId, String imToken, Doctor doctor) {
+        String identify = UUID.randomUUID().toString().replace("-", "");
+        IMUser imUser = new IMUser();
+        imUser.setAccid(identify);
+        imUser.setToken(identify);
+        imUser.setName(doctor.getName());
+        imUser.setIcon(doctor.getHeadPortrait());
+        imUser.setSign(doctor.getAbout());
+        imUser.setProps(doctor.getId().toString());
+        return imUser;
     }
 }
