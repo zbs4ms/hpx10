@@ -112,14 +112,14 @@ public class HospitalizationController extends MyBaseController {
 
 
         }else {
-            if (accountId == null) {
-                accountId = accountService.returnIdByToken(request);
+            accountId = accountService.returnIdByToken(request);
+
                 if(accountId.equals(-1L)){
                     response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
 
                     return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
                 }
-            }
+
 
             List<String> brIdList = patientInfoService.queryBrIdByAccountId(accountId);
             log.info("该账号拥有的病人id:"+JSONObject.toJSONString(brIdList));
