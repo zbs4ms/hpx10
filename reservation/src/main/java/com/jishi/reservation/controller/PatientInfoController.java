@@ -165,15 +165,15 @@ public class PatientInfoController extends MyBaseController
     }
 
 
-    @ApiOperation(value = "admin 根据用户id查询对应的就诊人")
+    @ApiOperation(value = "admin 根据用户id查询对应的就诊人",response = PatientInfo.class)
     @RequestMapping(value = "queryForAdmin", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryPatientForAdmin(
-            @ApiParam(value = "账号id", required = true) @RequestParam(value = "id", required = true) Long id
+            @ApiParam(value = "账号id", required = true) @RequestParam(value = "accountId", required = true) Long accountId
     ) throws Exception {
 
 
-        List<PatientInfo> list = patientInfoService.queryPatientInfo(null, id, 0);
+        List<PatientInfo> list = patientInfoService.queryPatientInfo(null, accountId, 0);
         return ResponseWrapper().addData("ok").addData(list).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 }

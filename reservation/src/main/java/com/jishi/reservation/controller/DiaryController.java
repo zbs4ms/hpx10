@@ -61,6 +61,20 @@ public class DiaryController extends MyBaseController {
 
     }
 
+
+    @ApiOperation(value = "admin 根据用户id查询日记  分页",response = Diary.class)
+    @RequestMapping(value = "queryByAccountId", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject queryByAccountId(
+            @ApiParam(value = "用户id eg:24", required = true) @RequestParam(value = "accountId", required = true) Long accountId,
+            @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
+            @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize
+    ){
+        PageInfo<Diary> diaryPageInfo = diaryService.queryPage(accountId,startPage,pageSize);
+        return ResponseWrapper().addMessage("查询成功").addData(diaryPageInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+
+    }
+
     @ApiOperation(value = "admin 审核日记")
     @RequestMapping(value = "verify", method = RequestMethod.POST)
     @ResponseBody

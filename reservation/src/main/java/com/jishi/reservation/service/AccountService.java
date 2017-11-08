@@ -539,34 +539,14 @@ public class AccountService {
         return new PageInfo<>(list);
     }
 
-    public AccountDetailVO queryUserDetail(Long accountId) {
+    public Account queryUserDetail(Long accountId) {
 
-        AccountDetailVO vo = new AccountDetailVO();
+        //AccountDetailVO vo = new AccountDetailVO();
         Account account = accountMapper.queryById(accountId);
         account.setPasswd(null);
-        vo.setAccount(account);
-        Gson gson = new Gson();
-
-        List<PatientInfo> patientInfoList =  patientInfoMapper.queryByAccountId(accountId);
-        vo.setPatientInfoList(patientInfoList);
-        List<Diary> diaryList =  diaryMapper.queryByAccountId(accountId);
-        for (Diary diary : diaryList) {
-            diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));
-            diary.setLikedNum(diaryLikedMapper.queryCountByDiaryId(diary.getId()));
-
-            String content = diary.getContent();
 
 
-
-            List<DiaryContentVO> contentList = gson.fromJson(content,
-                    new TypeToken<List<DiaryContentVO>>() {
-                    }.getType());
-            diary.setContentVOList(contentList);
-
-        }
-        vo.setDiaryList(diaryList);
-
-        return vo;
+        return account;
 
     }
 }

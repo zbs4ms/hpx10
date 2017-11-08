@@ -275,16 +275,15 @@ public class AccountController extends MyBaseController {
 
 
 
-    @ApiOperation(value = "admin 用户二级页面查询接口",response=DoctorVO.class)
+    @ApiOperation(value = "admin 用户二级页面查询接口",response=AccountDetailVO.class)
     @RequestMapping(value = "queryUserDetail", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryUserDetail(
             @ApiParam(value = "用户的id", required = true) @RequestParam(value = "accountId", required = true) Long accountId
     ) throws Exception {
 
-
-        AccountDetailVO vo = accountService.queryUserDetail(accountId);
-        return ResponseWrapper().addData(vo).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        Account account = accountService.queryUserDetail(accountId);
+        return ResponseWrapper().addData(account).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 
