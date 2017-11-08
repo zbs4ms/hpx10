@@ -30,4 +30,6 @@ public class RegisterCompleteVO {
     private String serialNumber;     //序列号
     private String subject; //商品名称
     private String des;     //商品描述
+    private BigDecimal yhje;  //优惠金额
+
 }

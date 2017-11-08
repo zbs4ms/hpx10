@@ -11,10 +11,17 @@ import lombok.Data;
 @Data
 public class LastPrice {
 
-
+    //实收金额
     @XStreamAlias("je")
     String je;
 
+    //优惠金额
     @XStreamAlias("YHJE")
     String yhje;
+
+    //费别 （普通）
+    @XStreamAlias("FB")
+    String fb;
+
+
 }

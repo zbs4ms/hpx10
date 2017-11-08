@@ -12,6 +12,7 @@ import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.service.enumPackage.*;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.HisUserManager;
+import com.jishi.reservation.service.his.bean.LastPrice;
 import com.jishi.reservation.service.his.bean.LockRegister;
 import com.jishi.reservation.util.Helpers;
 import com.jishi.reservation.util.NewRandomUtil;
@@ -96,12 +97,15 @@ public class RegisterService {
 
             return null;
 
-        String priceStr = hisOutpatient.queryLastPrice(xmid, brid);
-        BigDecimal truePrice=new BigDecimal(priceStr);
+        LastPrice lastPrice = hisOutpatient.queryLastPrice(xmid, brid);
+        BigDecimal truePrice=new BigDecimal(lastPrice.getJe());
+        BigDecimal yhje = new BigDecimal(lastPrice.getYhje());
         log.info("获取到真实价格（未处理格式）："+truePrice);
+        log.info("获取到的优惠金额（未处理格式）："+yhje);
         BigDecimal truePriceFormat = truePrice.setScale(2, RoundingMode.HALF_UP);
+        BigDecimal yhjeFormat = yhje.setScale(2,RoundingMode.HALF_UP);
         log.info("获取到真实价格（处理格式）："+truePriceFormat);
-
+        log.info("获取到的优惠金额（处理格式）："+yhjeFormat);
         OrderInfo order = new OrderInfo();
         order.setAccountId(accountId);
         order.setBrId(brid);
@@ -161,7 +165,7 @@ public class RegisterService {
         completeVO.setSubject(subject);
         completeVO.setDes(subject);
         completeVO.setOrderId(order.getId());
-
+        completeVO.setYhje(yhjeFormat);
         register.setHx(hx);
         registerMapper.updateByPrimaryKeySelective(register);
 
