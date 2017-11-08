@@ -163,4 +163,17 @@ public class PatientInfoController extends MyBaseController
         patientInfoService.deletePatientInfo(patientInfoId);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
+
+
+    @ApiOperation(value = "admin 根据用户id查询对应的就诊人")
+    @RequestMapping(value = "queryForAdmin", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject queryPatientForAdmin(
+            @ApiParam(value = "账号id", required = true) @RequestParam(value = "id", required = true) Long id
+    ) throws Exception {
+
+
+        List<PatientInfo> list = patientInfoService.queryPatientInfo(null, id, 0);
+        return ResponseWrapper().addData("ok").addData(list).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
 }

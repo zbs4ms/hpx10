@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -79,7 +80,7 @@ public class RegisterService {
      * @throws Exception
      */
     @Transactional
-    public RegisterCompleteVO addRegister(Long accountId,String brid,Long departmentId,Long doctorId,
+    public RegisterCompleteVO addRegister(Long accountId,String brid,Long departmentId,Long doctorId,String xmid,
                                           Date agreedTime,String timeInterval,String doctorName,
                                           String price,String subject,String brName,String department,String hm) throws Exception {
         if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
@@ -92,9 +93,14 @@ public class RegisterService {
         //his 锁定号源,返回hx 号序
         String hx = this.lockRegister(hm, agreedTime);
         if(hx.equals("invalid hx"))
+
             return null;
 
-        BigDecimal bd=new BigDecimal(price);
+        String priceStr = hisOutpatient.queryLastPrice(xmid, brid);
+        BigDecimal truePrice=new BigDecimal(priceStr);
+        log.info("获取到真实价格（未处理格式）："+truePrice);
+        BigDecimal truePriceFormat = truePrice.setScale(2, RoundingMode.HALF_UP);
+        log.info("获取到真实价格（处理格式）："+truePriceFormat);
 
         OrderInfo order = new OrderInfo();
         order.setAccountId(accountId);
@@ -102,7 +108,7 @@ public class RegisterService {
         order.setCreateTime(new Date());
         order.setSubject(subject);
         order.setDes(subject);
-        order.setPrice(bd);
+        order.setPrice(truePriceFormat);
         order.setEnable(EnableEnum.EFFECTIVE.getCode());
         String orderNumber = AlibabaPay.generateUniqueOrderNumber();
         order.setOrderNumber(orderNumber);
@@ -147,7 +153,7 @@ public class RegisterService {
         completeVO.setPayType(PayEnum.ALI.getCode());
         completeVO.setPayTime(new Date());
         completeVO.setCompleteTime(new Date());
-        completeVO.setPrice(bd);
+        completeVO.setPrice(truePriceFormat);
         //completeVO.setPrice(BigDecimal.valueOf(0.01));
         completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
         completeVO.setOrderCode(orderNumber);

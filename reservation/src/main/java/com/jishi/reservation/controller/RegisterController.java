@@ -96,6 +96,8 @@ public class RegisterController extends MyBaseController {
                                   @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
                                   @ApiParam(value = "科室名称", required = true) @RequestParam(value = "department", required = true) String department,
                                   @ApiParam(value = "his的号码 HM", required = true) @RequestParam(value = "hm", required = true) String hm,
+                                  @ApiParam(value = "项目id", required = true) @RequestParam(value = "xmid", required = true) String xmid,
+
 
             @ApiParam(value = "预约的医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId,
             @ApiParam(value = "预约的时间段", required = true) @RequestParam(value = "timeInterval", required = true) String timeInterval,
@@ -119,7 +121,7 @@ public class RegisterController extends MyBaseController {
 
 
         // 10.17  在此处加入订单。。
-        RegisterCompleteVO completeVO = registerService.addRegister(accountId, brid, departmentId, doctorId, new Date(agreedTime),timeInterval,doctorName,price,subject,brName,department,hm);
+        RegisterCompleteVO completeVO = registerService.addRegister(accountId, brid, departmentId, doctorId,xmid, new Date(agreedTime),timeInterval,doctorName,price,subject,brName,department,hm);
         if(completeVO == null){
             return ResponseWrapper().addMessage("该医生挂号号源已满，请选择其他医生。").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
         }
