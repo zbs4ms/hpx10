@@ -23,5 +23,7 @@ public class PrePaymentRecordVO {
     private String lx;
     @ApiModelProperty("支付方式")
     private String zffs;
+    @ApiModelProperty("订单号")
+    private String orderNumber;
 
 }

@@ -109,6 +109,11 @@ public class RegisterController extends MyBaseController {
         Preconditions.checkNotNull(doctorId,"请传入必须的参数：doctorId");
         Preconditions.checkNotNull(timeInterval,"请传入必须的参数：timeInterval");
         Preconditions.checkNotNull(agreedTime,"请传入必须的参数：agreedTime");
+
+        //验证br_id 是否存在..
+        if(patientInfoService.queryByBrId(brid) == null)
+            return ResponseWrapper().addMessage("该病人id不存在，请检查").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1L)){

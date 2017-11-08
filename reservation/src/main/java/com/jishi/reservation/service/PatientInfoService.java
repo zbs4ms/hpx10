@@ -67,11 +67,13 @@ public class PatientInfoService {
             throw new Exception("该账号最大病号数已达最大5个");
         }
 
+
+        Preconditions.checkState(isExistPatient(accountId, name, idCard),"该账号已有此病人信息，不能添加");
+
         //添加到his系统
         Credentials credentials = hisUserManager.addUserInfo(idCard, idCardType, name, phone);
         log.info("his系统返回的病人信息：\n"+ JSONObject.toJSONString(credentials));
 
-        Preconditions.checkState(isExistPatient(accountId, name, idCard, credentials.getBRID()),"该账号已有此病人信息，不能添加");
 
         PatientInfo newPatientInfo = new PatientInfo();
         newPatientInfo.setAccountId(accountId);
@@ -96,9 +98,9 @@ public class PatientInfoService {
 
     }
 
-    private boolean isExistPatient(Long accountId, String name, String idCard, String brid) {
+    private boolean isExistPatient(Long accountId, String name, String idCard) {
 
-        PatientInfo patientInfo =  patientInfoMapper.queryForExist(accountId,name,idCard,brid);
+        PatientInfo patientInfo =  patientInfoMapper.queryForExist(accountId,name,idCard);
         return patientInfo == null;
     }
 
