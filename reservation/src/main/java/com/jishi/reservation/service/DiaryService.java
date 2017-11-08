@@ -235,7 +235,6 @@ public class DiaryService {
             return 0;
         }
 
-
     }
 
     public void addScanNum(Long diaryId, String ip, Long accountId) {

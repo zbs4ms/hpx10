@@ -12,7 +12,7 @@ import lombok.Data;
 public class LastPrice {
 
     //实收金额
-    @XStreamAlias("je")
+    @XStreamAlias("JE")
     String je;
 
     //优惠金额
