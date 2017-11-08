@@ -80,7 +80,7 @@ public class RegisterController extends MyBaseController {
 
 
 
-    @ApiOperation(value = "增加预约信息")
+    @ApiOperation(value = "增加预约信息",response = RegisterCompleteVO.class)
     @RequestMapping(value = "addRegister", method = RequestMethod.PUT)
     @ResponseBody
     public JSONObject addRegister(HttpServletRequest request,
