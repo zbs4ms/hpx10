@@ -72,6 +72,8 @@ public class OrderInfoService {
             orderVO.setPatientName(register.getPatientName());
             orderVO.setTimeInterval(sdf.format(register.getAgreedTime()).contains("14:00")?"下午":"上午");
             orderVO.setRegisterTime(register.getAgreedTime());
+        }else {
+            log.info("非预约订单，没有预约信息。");
         }
 
         orderVO.setPayType(orderInfo.getPayType());

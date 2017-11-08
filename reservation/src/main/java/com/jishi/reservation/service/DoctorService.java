@@ -80,15 +80,15 @@ public class DoctorService {
         log.info("查询医生 doctorId:"+doctorId+" doctorName:"+doctorName+" type:"+type +" enable:"+enable);
         Doctor queryDoctor = new Doctor();
         queryDoctor.setType(type);
-        if(departmentId!=null &&!"null".equals(departmentId)&& !"".equals(departmentId)){
-            queryDoctor.setDepartmentIds("\""+departmentId+"\"");
-        }
+//        if(departmentId!=null &&!"null".equals(departmentId)&& !"".equals(departmentId)){
+//            queryDoctor.setDepartmentIds("\""+departmentId+"\"");
+//        }
         queryDoctor.setName(doctorName);
         queryDoctor.setId(doctorId);
         queryDoctor.setEnable(enable);
         queryDoctor.setHId(hDoctorId);
         List<Doctor> list = doctorMapper.select(queryDoctor);
-        log.info("查询结果："+JSONObject.toJSONString(list));
+        log.info("查询长度："+list.size());
 
         return list;
     }

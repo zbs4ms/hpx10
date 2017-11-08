@@ -14,6 +14,7 @@ import com.jishi.reservation.service.*;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.PayEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.support.JpushSupport;
 import com.jishi.reservation.util.Constant;
 import com.us.base.common.controller.BaseController;
@@ -58,8 +59,23 @@ public class RegisterController extends MyBaseController {
     @Autowired
     OrderInfoService orderInfoService;
 
+    @Autowired
+    HisOutpatient hisOutpatient;
 
 
+    @ApiOperation(value = "根据项目id和病人id brid查询挂号的真实价格")
+    @RequestMapping(value = "queryTruePrice", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject addRegister(
+                                  @ApiParam(value = "病人id", required = true) @RequestParam(value = "brid", required = true) String brid,
+                                  @ApiParam(value = "项目id", required = true) @RequestParam(value = "xmid", required = true) String xmid
+    ) throws Exception {
+
+
+        String price = hisOutpatient.queryLastPrice(xmid, brid);
+
+        return ResponseWrapper().addData(price).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        }
 
 
 

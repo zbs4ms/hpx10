@@ -58,7 +58,7 @@ public class HisOutpatient {
      * @return
      * @throws Exception
      */
-    public RegisteredNumberInfo queryLastPrice(String xmid,String brid) throws Exception {
+    public String  queryLastPrice(String xmid,String brid) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<XMID>").append(xmid).append("</XMID>");
         sb.append("<BRID>").append(brid).append("</BRID>");
@@ -67,7 +67,7 @@ public class HisOutpatient {
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             String xml = HisTool.getHisDataparam(me,"Register.Preferential.Query");
-            return (RegisteredNumberInfo) HisTool.toBean(RegisteredNumberInfo.class, xml);
+            return HisTool.getXmlAttribute(xml,"JE");
         }
         return null;
     }

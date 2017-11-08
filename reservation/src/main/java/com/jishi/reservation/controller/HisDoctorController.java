@@ -9,6 +9,7 @@ import com.jishi.reservation.controller.protocol.LoginData;
 import com.jishi.reservation.controller.protocol.PatientHisVO;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.service.AccountService;
+import com.jishi.reservation.service.DoctorService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.HisUserManager;
@@ -44,6 +45,9 @@ public class HisDoctorController extends MyBaseController {
 
     @Autowired
     HisUserManager hisUserManager;
+
+    @Autowired
+    DoctorService doctorService;
 
 
 
@@ -82,10 +86,12 @@ public class HisDoctorController extends MyBaseController {
 
         if(startPage <0)
             startPage = 1;
+        //todo  还要与我们自己系统的医生信息结合。
+        List<Doctor> selfDoctorList = doctorService.queryDoctor(null, ysid.equals("")?null:ysid, name.equals("")?null:name,
+                ksid.equals("")?null:ksid, String.valueOf(0), 0);
         RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", ksid, ysid, name, "", "");
         if(info.getGroup().getHblist().get(0)!=null){
             List<RegisteredNumberInfo.Hb> hbList = info.getGroup().getHblist().get(0).getHbList();
-            //log.info("总的医生数："+hbList.size());
             List<Doctor> doctorList = new ArrayList<>();
             Integer startRow = (startPage - 1)*pageSize;
             if(hbList != null ){
@@ -101,19 +107,31 @@ public class HisDoctorController extends MyBaseController {
                 if(hbList.size()<endRow){
                     endRow = hbList.size();
                 }
+                //遍历从his取过来的医生信息，并与我们自己系统的医生信息做整合
                 for(int i = startRow;i<endRow;i++){
                     Doctor doctor = new Doctor();
                     RegisteredNumberInfo.Hb hb = hbList.get(i);
+                    if(selfDoctorList!=null && selfDoctorList.size() != 0){
+                        for (Doctor self : selfDoctorList) {
+                            if(hb.getYsid().equals(self.getHId())){
+                                doctor.setGoodDescribe(self.getGoodDescribe());
+                                doctor.setAbout(self.getAbout());
+                                doctor.setHeadPortrait(self.getHeadPortrait());
+
+                            }
+                        }
+                    }
+
                     doctor.setName(hb.getYs());
-                    //TODO his返回的信息没有头像
-                    doctor.setHeadPortrait("http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/doctor/hack.png");
+                    doctor.setXmid(hb.getXmid());
                     doctor.setHymc(hb.getHymc());
                     doctor.setDj(hb.getDj());
-                    doctor.setGoodDescribe("医生擅长各种疑难杂症");
                     doctor.setYsid(hb.getYsid());
                     doctor.setKsmc(hb.getKsmc());
                     doctor.setHm(hb.getHm());
-
+                    doctor.setDepartmentId(hb.getKsid());
+                    doctor.setHId(hb.getYsid());
+                    doctor.setTitle(hb.getZc());
                     doctorList.add(doctor);
             }
 
