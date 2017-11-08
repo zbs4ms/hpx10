@@ -72,9 +72,9 @@ public class RegisterController extends MyBaseController {
     ) throws Exception {
 
 
-        String price = hisOutpatient.queryLastPrice(xmid, brid);
+        //String price = hisOutpatient.queryLastPrice(xmid, brid);
 
-        return ResponseWrapper().addData(price).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        return ResponseWrapper().addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
         }
 
 
