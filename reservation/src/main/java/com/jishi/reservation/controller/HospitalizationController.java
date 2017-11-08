@@ -102,23 +102,26 @@ public class HospitalizationController extends MyBaseController {
             pageSize = 100;
         }
         //供测试数据使用。。。
-        if(accountId == 3987){
-            List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo("3987");
-            if (depositBalanceDetails == null)
-                return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-            for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
-                list.add(getHospitalizationInfoVO(depositBalanceDetail,"3987"));
-            }
-
-
-        }else {
+//        if(accountId == 3987){
+//            List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo("3987");
+//            if (depositBalanceDetails == null)
+//                return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+//            for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
+//                list.add(getHospitalizationInfoVO(depositBalanceDetail,"3987"));
+//            }
+//
+//
+//        }else {
+        if(accountId == null){
             accountId = accountService.returnIdByToken(request);
 
-                if(accountId.equals(-1L)){
-                    response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
+            if(accountId.equals(-1L)){
+                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
 
-                    return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-                }
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+            }
+        }
+
 
 
             List<String> brIdList = patientInfoService.queryBrIdByAccountId(accountId);
@@ -137,7 +140,7 @@ public class HospitalizationController extends MyBaseController {
 
                 }
             }
-        }
+//        }
 
 
 

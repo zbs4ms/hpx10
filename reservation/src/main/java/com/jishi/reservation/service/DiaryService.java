@@ -223,10 +223,11 @@ public class DiaryService {
         DiaryLiked param = new DiaryLiked();
         param.setDiaryId(diaryId);
         param.setAccountId(accountId);
-        param.setCreateTime(new Date());
+       // param.setCreateTime(new Date());
 
         DiaryLiked liked = diaryLikedMapper.selectOne(param);
         if(liked == null){
+            param.setCreateTime(new Date());
             Preconditions.checkState(diaryLikedMapper.insert(param) == 1,"评论点赞失败");
             return 1;
         }else {
