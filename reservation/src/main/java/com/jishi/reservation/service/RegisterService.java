@@ -98,15 +98,27 @@ public class RegisterService {
             return null;
 
         LastPrice lastPrice = hisOutpatient.queryLastPrice(xmid, brid);
-        BigDecimal truePrice=new BigDecimal(lastPrice.getJe());
-        BigDecimal yhje = new BigDecimal(lastPrice.getYhje());
-        log.info("获取到真实价格（未处理格式）："+truePrice);
-        log.info("获取到的优惠金额（未处理格式）："+yhje);
-        BigDecimal truePriceFormat = truePrice.setScale(2, RoundingMode.HALF_UP);
-        BigDecimal yhjeFormat = yhje.setScale(2,RoundingMode.HALF_UP);
-        log.info("获取到真实价格（处理格式）："+truePriceFormat);
-        log.info("获取到的优惠金额（处理格式）："+yhjeFormat);
+
+
+        BigDecimal truePriceFormat = BigDecimal.valueOf(Double.valueOf(price));
+        BigDecimal yhjeFormat = BigDecimal.valueOf(0);
         OrderInfo order = new OrderInfo();
+        if(lastPrice!=null){
+            if(lastPrice.getYhje() != null && !"".equals(lastPrice.getYhje())){
+                BigDecimal yhje = new BigDecimal(lastPrice.getYhje());
+                log.info("获取到的优惠金额（未处理格式）："+yhje);
+                yhjeFormat = yhje.setScale(2,RoundingMode.HALF_UP);
+                log.info("获取到的优惠金额（处理格式）："+yhjeFormat);
+
+            }
+            if(lastPrice.getJe()!=null && !"".equals(lastPrice.getJe())){
+                BigDecimal truePrice=new BigDecimal(lastPrice.getJe());
+                log.info("获取到真实价格（未处理格式）："+truePrice);
+                truePriceFormat = truePrice.setScale(2, RoundingMode.HALF_UP);
+                log.info("获取到真实价格（处理格式）："+truePriceFormat);
+            }
+
+        }
         order.setAccountId(accountId);
         order.setBrId(brid);
         order.setCreateTime(new Date());
