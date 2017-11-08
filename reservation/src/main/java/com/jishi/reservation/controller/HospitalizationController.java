@@ -125,14 +125,16 @@ public class HospitalizationController extends MyBaseController {
             log.info("该账号拥有的病人id:"+JSONObject.toJSONString(brIdList));
             for (String brId : brIdList) {
                 List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo(brId);
-                if (depositBalanceDetails == null)
-                    return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-                for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
+                if (depositBalanceDetails != null){
+                    for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
 //
 //                    if(status == 1){
 //                        if(depositBalanceDetail.getZyzt())
 //                    }
-                    list.add(getHospitalizationInfoVO(depositBalanceDetail,brId));
+                        list.add(getHospitalizationInfoVO(depositBalanceDetail,brId));
+                }
+                    //return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+
                 }
             }
         }
