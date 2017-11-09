@@ -270,6 +270,5 @@ public class RegisterController extends MyBaseController {
         PageInfo<RegisterAdminVO> page  = registerService.queryRegisterAdmin(key,startTime,endTime,doctorId,departmentId,status,startPage,pageSize);
         return ResponseWrapper().addMessage("查询成功").addData(page).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
-
     }
 }

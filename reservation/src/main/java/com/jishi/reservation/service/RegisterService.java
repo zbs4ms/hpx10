@@ -109,6 +109,7 @@ public class RegisterService {
                 log.info("获取到的优惠金额（未处理格式）："+yhje);
                 yhjeFormat = yhje.setScale(2,RoundingMode.HALF_UP);
                 log.info("获取到的优惠金额（处理格式）："+yhjeFormat);
+                order.setDiscount(yhjeFormat);
 
             }
             if(lastPrice.getJe()!=null && !"".equals(lastPrice.getJe())){

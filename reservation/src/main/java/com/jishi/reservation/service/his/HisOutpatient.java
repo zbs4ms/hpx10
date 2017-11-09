@@ -62,7 +62,7 @@ public class HisOutpatient {
         StringBuffer sb = new StringBuffer();
         sb.append("<XMID>").append(xmid).append("</XMID>");
         sb.append("<BRID>").append(brid).append("</BRID>");
-
+        log.info("获取挂号项目最后得金额请求参数:\n"+sb.toString());
         String reData = HisTool.toXMLString("Register.Preferential.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {

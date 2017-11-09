@@ -34,6 +34,9 @@ public class OrderInfo {
     private String des;
     @ApiModelProperty("价格")
     private BigDecimal price;
+
+    @ApiModelProperty("优惠金额")
+    private BigDecimal discount;
     @ApiModelProperty("订单类型  1：挂号订单  2：住院预交款订单 ，3 门诊订单  之后加的往后累加.")
     private Integer type;
     @ApiModelProperty("支付方式  1 支付宝；2 微信")
