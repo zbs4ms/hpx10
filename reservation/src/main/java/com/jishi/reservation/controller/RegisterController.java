@@ -179,7 +179,7 @@ public class RegisterController extends MyBaseController {
             register.setPrice(orderInfo.getPrice());
             //register.setCountDownTime(register.getCreateTime().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
             register.setOrderCode(orderInfo.getOrderNumber());
-
+            register.setDiscount(orderInfo.getDiscount());
             Doctor doctor = doctorService.queryDoctorByHid(register.getDoctorId());
             registerVO.setRegister(register);
             registerVO.setDoctor(doctor);
