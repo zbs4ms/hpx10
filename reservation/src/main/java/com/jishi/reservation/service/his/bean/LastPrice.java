@@ -23,5 +23,4 @@ public class LastPrice {
     @XStreamAlias("FB")
     String fb;
 
-
 }

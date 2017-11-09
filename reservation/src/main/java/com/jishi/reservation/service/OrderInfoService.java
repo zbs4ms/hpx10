@@ -119,18 +119,20 @@ public class OrderInfoService {
         return confirmRegister;
     }
 
-    public PageInfo queryOrderList(Integer status, Integer enable, Paging paging) {
-
+    public PageInfo queryOrderList(Long accountId,Integer status, Integer enable, Paging paging) {
+        if(paging.getPageSize() == 0){
+            paging.setPageSize( queryOrderList(accountId,status,enable).size());
+        }
         if(!Helpers.isNullOrEmpty(paging))
             PageHelper.startPage(paging.getPageNum(),paging.getPageSize(),paging.getOrderBy());
-        return new PageInfo(queryOrderList(status,enable));
+        return new PageInfo(queryOrderList(accountId,status,enable));
 
 
     }
 
-    private List queryOrderList(Integer status, Integer enable) {
+    private List queryOrderList(Long accountId,Integer status, Integer enable) {
 
-        return orderInfoMapper.queryOrderList(status,enable);
+        return orderInfoMapper.queryOrderList( accountId,status,enable);
 
     }
 
@@ -227,6 +229,9 @@ public class OrderInfoService {
 
     public PageInfo<PrePaymentRecordVO> queryPrePayment(String brId,Integer startPage,Integer pageSize) throws ParseException {
 
+        if(pageSize == 0){
+            pageSize = orderInfoMapper.queryPrePayment(brId).size();
+        }
         PageHelper.startPage(startPage,pageSize).setOrderBy(" create_time desc ");
         List<OrderInfo> list =  orderInfoMapper.queryPrePayment(brId);
         PageInfo<OrderInfo> page = new PageInfo<>(list);
@@ -237,7 +242,7 @@ public class OrderInfoService {
         for (OrderInfo orderInfo : list) {
             PrePayment prePayment = prePaymentMapper.queryByOrderId(orderInfo.getId());
             PrePaymentRecordVO vo = new PrePaymentRecordVO();
-            vo.setZffs(orderInfo.getPayType()== PayEnum.ALI.getCode()?"支付宝":"微信");
+            vo.setZffs(orderInfo.getPayType());
             vo.setOrderNumber(orderInfo.getOrderNumber());
             vo.setJe(String.valueOf(orderInfo.getPrice()));
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

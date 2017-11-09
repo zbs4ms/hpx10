@@ -225,8 +225,13 @@ public class RegisterService {
      * @throws Exception
      */
     public PageInfo queryRegisterPageInfo(Long registerId,Long accountId ,Integer status,Integer enable,Paging paging) throws Exception {
-        if(!Helpers.isNullOrEmpty(paging))
+        if(!Helpers.isNullOrEmpty(paging)){
+            if(paging.getPageSize() == 0){
+                paging.setPageSize(queryRegister(registerId,accountId,status,enable).size());
+            }
             PageHelper.startPage(paging.getPageNum(),paging.getPageSize(),paging.getOrderBy());
+
+        }
         return new PageInfo(queryRegister(registerId,accountId,status,enable));
     }
 

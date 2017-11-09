@@ -27,12 +27,12 @@ public interface OrderInfoMapper extends MyMapper<OrderInfo>{
 
     @Select({
             "<script>" +
-                    "select * from order_info where 1 =1 " +
+                    "select * from order_info where 1 =1 and account_id = #{accountId} " +
                     " and enable = #{enable}" +
                     "<if test = \"status != null\"> AND status = #{status}</if>" +
                     "</script>"
     })
-    List queryOrderList(@Param("status") Integer status,@Param("enable") Integer enable);
+    List queryOrderList(@Param("accountId") Long accountId,@Param("status") Integer status,@Param("enable") Integer enable);
 
 
 

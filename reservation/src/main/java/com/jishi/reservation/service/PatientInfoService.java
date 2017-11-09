@@ -219,6 +219,9 @@ public class PatientInfoService {
     public PageInfo<HospitalizationInfoVO> wrapListToPage(List<HospitalizationInfoVO> list, Integer startPage, Integer pageSize) {
 
 
+        if(pageSize == 0){
+            pageSize = list.size();
+        }
         PageInfo<HospitalizationInfoVO>  page = new PageInfo<>();
         List<HospitalizationInfoVO> result = new ArrayList<>();
         int startRow = (startPage - 1)*pageSize;

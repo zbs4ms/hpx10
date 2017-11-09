@@ -193,6 +193,8 @@ public class DiaryController extends MyBaseController {
 
 
     ) throws Exception {
+
+
        // Long accountId = null;
         if(isMy != 1){
             accountId = isMy == 0?accountService.returnIdByToken(request):null;
@@ -200,6 +202,8 @@ public class DiaryController extends MyBaseController {
                 return ResponseWrapper().addMessage("请登录").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
+
+
 
         PageInfo<Diary> page = diaryService.queryPage(accountId,startPage,pageSize);
 

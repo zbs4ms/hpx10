@@ -180,6 +180,10 @@ public class DiaryService {
     public PageInfo<Diary> queryPage(Long accountId,Integer startPage, Integer pageSize) {
 
         Gson gson = new Gson();
+        if(pageSize == 0){
+            pageSize = diaryMapper.queryEnableAndVerified(accountId).size();
+        }
+
         PageHelper.startPage(startPage,pageSize).setOrderBy("create_time desc");
         List<Diary> list =  diaryMapper.queryEnableAndVerified(accountId);
         PageInfo<Diary> pageInfo = new PageInfo<>(list);
@@ -196,7 +200,7 @@ public class DiaryService {
                     }.getType());
             int i = 0;
             for (DiaryContentVO diaryContentVO : contentList) {
-                log.info(JSONObject.toJSON(diaryContentVO));
+
                 if(i == 4)
                     break;
                 if(diaryContentVO.getType() == 0){
