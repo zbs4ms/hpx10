@@ -145,9 +145,15 @@ public class OrderInfoService {
         orderInfo.setGhdh(confirmOrder.getGhdh());
         orderInfo.setCzsj(confirmOrder.getCzsj());
         orderInfo.setJsid(confirmOrder.getJzid());
+        orderInfo.setStatus(OrderStatusEnum.PAYED.getCode());
+
         orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
 
-        log.info("his订单信息已同步到系统中.."+orderId);
+        Register register = registerMapper.queryByOrderId(orderInfo.getId());
+        register.setStatus(StatusEnum.REGISTER_STATUS_PAYMENT.getCode());
+        registerMapper.updateByPrimaryKeySelective(register);
+
+        log.info("his订单信息已同步到系统中..预约信息已更新");
         return ReturnCodeEnum.SUCCESS.getCode();
     }
 

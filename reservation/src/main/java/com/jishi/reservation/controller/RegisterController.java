@@ -141,7 +141,7 @@ public class RegisterController extends MyBaseController {
                                     HttpServletResponse response,
                                     @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
                                     @ApiParam(value = "预约ID", required = false) @RequestParam(value = "registerId", required = false) Long registerId,
-                                    @ApiParam(value = "状态", required = false) @RequestParam(value = "status", required = false) Integer status,
+                                    @ApiParam(value = "状态 0：已完成(已付款)； 1：待付款 ；2：已取消", required = false) @RequestParam(value = "status", required = false) Integer status,
                                     @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                     @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
                                     @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
