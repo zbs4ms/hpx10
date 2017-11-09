@@ -159,13 +159,13 @@ public class RegisterController extends MyBaseController {
         PageInfo pageInfo = registerService.queryRegisterPageInfo(registerId, accountId, status, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum, pageSize, orderBy, desc));
         List<Register> registerList = pageInfo.getList();
 
-
+        List<Account> accountList = accountService.queryAccount(accountId, null, null);
         for (Register register : registerList) {
             RegisterVO registerVO = new RegisterVO();
             //List<Doctor> doctors = doctorService.queryDoctor(null, String.valueOf(register.getDoctorId()),null, null,null, null);
 
 
-            List<Account> accounts = accountService.queryAccount(register.getAccountId(), null, null);
+
 
             //OrderVO orderVO = orderInfoService.queryOrderInfoById(register.getOrderId());
             OrderInfo orderInfo = orderInfoService.findOrderById(register.getOrderId());
@@ -183,8 +183,8 @@ public class RegisterController extends MyBaseController {
             Doctor doctor = doctorService.queryDoctorByHid(register.getDoctorId());
             registerVO.setRegister(register);
             registerVO.setDoctor(doctor);
-            accounts.get(0).setPasswd(null);
-            registerVO.setAccount(accounts.size() > 0 ? accounts.get(0) : null);
+            accountList.get(0).setPasswd(null);
+            registerVO.setAccount(accountList.size() > 0 ? accountList.get(0) : null);
             Department department = new Department();
             department.setName(register.getDepartment());
             department.setId(register.getDepartmentId());
