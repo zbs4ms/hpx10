@@ -140,10 +140,6 @@
           accountId: {
             value: this.$route.params.accountId
           },
-          pageSize: {
-            value: 1,
-            innerKey: 'pageSize'
-          },
           currentPage: 'startPage'
         },
         checkDialogVisible: false, // 审核弹窗

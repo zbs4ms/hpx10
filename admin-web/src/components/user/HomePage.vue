@@ -24,7 +24,6 @@
     },
     created () {
       userInfoApi(this.accountId).then(res => {
-        console.log(res, '----')
         this.data.info = res.content || {}
       })
     },
