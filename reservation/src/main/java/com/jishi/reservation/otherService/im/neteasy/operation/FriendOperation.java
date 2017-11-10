@@ -17,12 +17,12 @@ import java.util.List;
  * Created by liangxiong on 2017/10/24.
  */
 public class FriendOperation {
-    public static final String FRIEND_ADD = "/friend/add.action";
-    public static final String FRIEND_UPDATE = "/friend/update.action";
-    public static final String FRIEND_DELETE = "/friend/delete.action";
-    public static final String FRIEND_GET = "/friend/get.action";
-    public static final String FRIEND_SET_SPECIAL_RELATION = "/friend/setSpecialRelation.action";
-    public static final String FRIEND_LIST_BLACK_AND_MUTELIST = "/friend/listBlackAndMuteList.action";
+    private static final String FRIEND_ADD = "/friend/add.action";
+    private static final String FRIEND_UPDATE = "/friend/update.action";
+    private static final String FRIEND_DELETE = "/friend/delete.action";
+    private static final String FRIEND_GET = "/friend/get.action";
+    private static final String FRIEND_SET_SPECIAL_RELATION = "/friend/setSpecialRelation.action";
+    private static final String FRIEND_LIST_BLACK_AND_MUTELIST = "/friend/listBlackAndMuteList.action";
 
 
     private IMHttpNeteasy imHttpNeteasy;
@@ -51,7 +51,7 @@ public class FriendOperation {
         httpParam.add("msg", msg, 256);
         String httpRslt = imHttpNeteasy.doPost(FRIEND_ADD, httpParam);
         ResComm res = JSONArray.parseObject(httpRslt, ResComm.class);
-        return res.getCode() == 200;
+        return res.isSuccess();
     }
 
     //更新好友相关信息
@@ -75,7 +75,7 @@ public class FriendOperation {
         }
         String httpRslt = imHttpNeteasy.doPost(FRIEND_UPDATE, httpParam);
         ResComm res = JSONArray.parseObject(httpRslt, ResComm.class);
-        return res.getCode() == 200;
+        return res.isSuccess();
     }
 
     //删除好友
@@ -88,7 +88,7 @@ public class FriendOperation {
         httpParam.add("faccid", destAccid, 32);
         String httpRslt = imHttpNeteasy.doPost(FRIEND_DELETE, httpParam);
         ResComm res = JSONArray.parseObject(httpRslt, ResComm.class);
-        return res.getCode() == 200;
+        return res.isSuccess();
     }
 
     //获取好友关系, 查询某时间点起到现在有更新的双向好友       是否应该返回状态码？？？
@@ -124,7 +124,7 @@ public class FriendOperation {
         httpParam.add("value", value);
         String httpRslt = imHttpNeteasy.doPost(FRIEND_SET_SPECIAL_RELATION, httpParam);
         ResComm res = JSONArray.parseObject(httpRslt, ResComm.class);
-        return res.getCode() == 200;
+        return res.isSuccess();
     }
 
     //查看指定用户的黑名单和静音列表

@@ -132,6 +132,11 @@ public class HospitalizationService {
     }
 
     public PageInfo<PayItem> wrapPage(List<PayItem> list, Integer startPage, Integer pageSize) {
+
+        if(pageSize == 0){
+            pageSize = list.size();
+        }
+
         PageInfo<PayItem>  page = new PageInfo<>();
         List<PayItem> result = new ArrayList<>();
         int startRow = (startPage - 1)*pageSize;

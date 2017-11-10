@@ -31,4 +31,10 @@ public interface RegisterMapper extends MyMapper<Register> {
             "select * from register"
     })
     List<Register> queryAllRegister();
+
+
+    @Select({
+            "select * from register where id = #{registerId}"
+    })
+    Register queryById(@Param("registerId") Long registerId);
 }

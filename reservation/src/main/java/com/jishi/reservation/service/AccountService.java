@@ -43,32 +43,34 @@ import java.util.Random;
 public class AccountService {
 
     @Autowired
-    AccountMapper accountMapper;
+    private AccountMapper accountMapper;
     @Autowired
-    RedisOperation redisOperation;
+    private RedisOperation redisOperation;
     @Autowired
-    AliDayuSupport dayuSupport;
+    private AliDayuSupport dayuSupport;
 
     @Autowired
-    HisUserManager hisUserManager;
+    private HisUserManager hisUserManager;
 
     @Autowired
-    IdentityInfoMapper identityInfoMapper;
+    private IdentityInfoMapper identityInfoMapper;
     @Autowired
-    CredentialsMapper credentialsMapper;
+    private CredentialsMapper credentialsMapper;
 
     @Autowired
-    PatientInfoMapper patientInfoMapper;
+    private PatientInfoMapper patientInfoMapper;
 
     @Autowired
-    DiaryMapper diaryMapper;
+    private DiaryMapper diaryMapper;
 
     @Autowired
-    DiaryScanMapper diaryScanMapper;
+    private DiaryScanMapper diaryScanMapper;
 
     @Autowired
-    DiaryLikedMapper diaryLikedMapper;
+    private DiaryLikedMapper diaryLikedMapper;
 
+    @Autowired
+    private IMAccountService imAccountService;
 
 
 
@@ -278,6 +280,7 @@ public class AccountService {
         newAccount.setPhone(phone);
         newAccount.setEnable(enable);
         Preconditions.checkState(accountMapper.updateByPrimaryKeySelective(newAccount) == 1,"更新失败!");
+        imAccountService.updateUser(queryAccountList.get(0).getId()); //更改账户信息时同步更新IM账号
     }
 
     /**
@@ -294,6 +297,7 @@ public class AccountService {
         newAccount.setId(queryAccountList.get(0).getId());
         newAccount.setPhone(phone);
         Preconditions.checkState(accountMapper.updateByPrimaryKeySelective(newAccount) == 1,"更新失败!");
+        imAccountService.updateUser(queryAccountList.get(0).getId()); //更改账户信息时同步更新IM账号
     }
 
     /**
@@ -539,34 +543,14 @@ public class AccountService {
         return new PageInfo<>(list);
     }
 
-    public AccountDetailVO queryUserDetail(Long accountId) {
+    public Account queryUserDetail(Long accountId) {
 
-        AccountDetailVO vo = new AccountDetailVO();
+        //AccountDetailVO vo = new AccountDetailVO();
         Account account = accountMapper.queryById(accountId);
         account.setPasswd(null);
-        vo.setAccount(account);
-        Gson gson = new Gson();
-
-        List<PatientInfo> patientInfoList =  patientInfoMapper.queryByAccountId(accountId);
-        vo.setPatientInfoList(patientInfoList);
-        List<Diary> diaryList =  diaryMapper.queryByAccountId(accountId);
-        for (Diary diary : diaryList) {
-            diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));
-            diary.setLikedNum(diaryLikedMapper.queryCountByDiaryId(diary.getId()));
-
-            String content = diary.getContent();
 
 
-
-            List<DiaryContentVO> contentList = gson.fromJson(content,
-                    new TypeToken<List<DiaryContentVO>>() {
-                    }.getType());
-            diary.setContentVOList(contentList);
-
-        }
-        vo.setDiaryList(diaryList);
-
-        return vo;
+        return account;
 
     }
 }

@@ -13,11 +13,14 @@ import com.jishi.reservation.service.DepartmentService;
 import com.jishi.reservation.service.DoctorService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.enumPackage.ReturnMessageEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.bean.RegisteredNumberInfo;
 import com.jishi.reservation.service.support.AliOssSupport;
 import com.jishi.reservation.service.support.DateSupport;
+import com.jishi.reservation.service.support.FileSupport;
 import com.jishi.reservation.util.Constant;
+import com.jishi.reservation.util.FileCheckUtil;
 import com.jishi.reservation.util.Helpers;
 
 import io.swagger.annotations.Api;
@@ -68,9 +71,16 @@ public class DoctorController extends MyBaseController {
         Preconditions.checkNotNull(doctorName,"请传入必须的参数：doctorName");
         Preconditions.checkNotNull(file,"请传入必须的参数：file");
         Preconditions.checkNotNull(departmentIds,"请传入必须的参数：departmentIds");
-        String headPortrait = ossSupport.uploadImage(file, Constant.DOCTOR_PATH);
-        doctorService.addDoctor(doctorName,type,headPortrait,departmentIds,about,title,school,goodDescribe);
-        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+
+        //上传之前，校验文件格式和大小
+        if(FileSupport.checkImageFile(file.getOriginalFilename(), file)){
+            String headPortrait = ossSupport.uploadImage(file, Constant.DOCTOR_PATH);
+            doctorService.addDoctor(doctorName,type,headPortrait,departmentIds,about,title,school,goodDescribe);
+            return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        }else {
+            return ResponseWrapper().addMessage(ReturnMessageEnum.FILE_NOT_FIX.getMessage()).ExeFaild(ReturnCodeEnum.FAILED.getCode());
+        }
+
     }
 
     @ApiOperation(value = "查询全部医生",response=DoctorVO.class)
@@ -151,8 +161,13 @@ public class DoctorController extends MyBaseController {
         Preconditions.checkNotNull(doctorId,"请传入必须的参数：doctorId");
 
         if(file!=null){
-            String headPortrait = ossSupport.uploadImage(file, Constant.DOCTOR_PATH);
-            doctorService.modifyDoctor(doctorId,doctorName,type,headPortrait,describe,title,school,goodDescribe,null);
+            if(FileSupport.checkImageFile(file.getOriginalFilename(), file)) {
+                String headPortrait = ossSupport.uploadImage(file, Constant.DOCTOR_PATH);
+                doctorService.modifyDoctor(doctorId, doctorName, type, headPortrait, describe, title, school, goodDescribe, null);
+            }else {
+                return ResponseWrapper().addMessage(ReturnMessageEnum.FILE_NOT_FIX.getMessage()).ExeFaild(ReturnCodeEnum.FAILED.getCode());
+
+            }
         }else {
             doctorService.modifyDoctor(doctorId,doctorName,type,null,describe,title,school,goodDescribe,null);
 

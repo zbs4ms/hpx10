@@ -58,7 +58,7 @@ public class OutpatientController extends MyBaseController {
     }
 
     @ApiOperation(value = "生成订单", response = OrderInfo.class)
-    @RequestMapping(value = "generateOrder", method = RequestMethod.GET)
+    @RequestMapping(value = "generateOrder", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject generateOrder(HttpServletRequest request,HttpServletResponse response,
             @ApiParam(value = "accountId 通过token找到", required = false) @RequestParam(value = "accountId", required = false) Long accountId,

@@ -54,6 +54,7 @@ public class Diary {
     private Boolean isTop;
 
     @Transient
+    @ApiModelProperty("日记内容列表")
     private List<DiaryContentVO> contentVOList;
 
     @Transient

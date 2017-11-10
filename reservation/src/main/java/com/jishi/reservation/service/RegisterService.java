@@ -12,6 +12,7 @@ import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.service.enumPackage.*;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.HisUserManager;
+import com.jishi.reservation.service.his.bean.LastPrice;
 import com.jishi.reservation.service.his.bean.LockRegister;
 import com.jishi.reservation.util.Helpers;
 import com.jishi.reservation.util.NewRandomUtil;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -79,7 +81,7 @@ public class RegisterService {
      * @throws Exception
      */
     @Transactional
-    public RegisterCompleteVO addRegister(Long accountId,String brid,Long departmentId,Long doctorId,
+    public RegisterCompleteVO addRegister(Long accountId,String brid,Long departmentId,Long doctorId,String xmid,
                                           Date agreedTime,String timeInterval,String doctorName,
                                           String price,String subject,String brName,String department,String hm) throws Exception {
         if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
@@ -92,17 +94,38 @@ public class RegisterService {
         //his 锁定号源,返回hx 号序
         String hx = this.lockRegister(hm, agreedTime);
         if(hx.equals("invalid hx"))
+
             return null;
 
-        BigDecimal bd=new BigDecimal(price);
+        LastPrice lastPrice = hisOutpatient.queryLastPrice(xmid, brid);
 
+
+        BigDecimal truePriceFormat = BigDecimal.valueOf(Double.valueOf(price));
+        BigDecimal yhjeFormat = BigDecimal.valueOf(0);
         OrderInfo order = new OrderInfo();
+        if(lastPrice!=null){
+            if(lastPrice.getYhje() != null && !"".equals(lastPrice.getYhje())){
+                BigDecimal yhje = new BigDecimal(lastPrice.getYhje());
+                log.info("获取到的优惠金额（未处理格式）："+yhje);
+                yhjeFormat = yhje.setScale(2,RoundingMode.HALF_UP);
+                log.info("获取到的优惠金额（处理格式）："+yhjeFormat);
+                order.setDiscount(yhjeFormat);
+
+            }
+            if(lastPrice.getJe()!=null && !"".equals(lastPrice.getJe())){
+                BigDecimal truePrice=new BigDecimal(lastPrice.getJe());
+                log.info("获取到真实价格（未处理格式）："+truePrice);
+                truePriceFormat = truePrice.setScale(2, RoundingMode.HALF_UP);
+                log.info("获取到真实价格（处理格式）："+truePriceFormat);
+            }
+
+        }
         order.setAccountId(accountId);
         order.setBrId(brid);
         order.setCreateTime(new Date());
         order.setSubject(subject);
         order.setDes(subject);
-        order.setPrice(bd);
+        order.setPrice(truePriceFormat);
         order.setEnable(EnableEnum.EFFECTIVE.getCode());
         String orderNumber = AlibabaPay.generateUniqueOrderNumber();
         order.setOrderNumber(orderNumber);
@@ -121,7 +144,7 @@ public class RegisterService {
         register.setDoctorName(doctorName);
         register.setOrderId(order.getId());
         register.setAgreedTime(agreedTime);
-        register.setStatus(StatusEnum.REGISTER_STATUS_PAYMENT.getCode());
+        register.setStatus(StatusEnum.REGISTER_STATUS_NO_PAYMENT.getCode());
         register.setEnable(EnableEnum.EFFECTIVE.getCode());
         register.setCreateTime(new Date());
         register.setHm(hm);
@@ -147,7 +170,7 @@ public class RegisterService {
         completeVO.setPayType(PayEnum.ALI.getCode());
         completeVO.setPayTime(new Date());
         completeVO.setCompleteTime(new Date());
-        completeVO.setPrice(bd);
+        completeVO.setPrice(truePriceFormat);
         //completeVO.setPrice(BigDecimal.valueOf(0.01));
         completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
         completeVO.setOrderCode(orderNumber);
@@ -155,7 +178,7 @@ public class RegisterService {
         completeVO.setSubject(subject);
         completeVO.setDes(subject);
         completeVO.setOrderId(order.getId());
-
+        completeVO.setYhje(yhjeFormat);
         register.setHx(hx);
         registerMapper.updateByPrimaryKeySelective(register);
 
@@ -203,8 +226,13 @@ public class RegisterService {
      * @throws Exception
      */
     public PageInfo queryRegisterPageInfo(Long registerId,Long accountId ,Integer status,Integer enable,Paging paging) throws Exception {
-        if(!Helpers.isNullOrEmpty(paging))
+        if(!Helpers.isNullOrEmpty(paging)){
+            if(paging.getPageSize() == 0){
+                paging.setPageSize(queryRegister(registerId,accountId,status,enable).size());
+            }
             PageHelper.startPage(paging.getPageNum(),paging.getPageSize(),paging.getOrderBy());
+
+        }
         return new PageInfo(queryRegister(registerId,accountId,status,enable));
     }
 
@@ -262,13 +290,35 @@ public class RegisterService {
      * @param registerId
      * @throws Exception
      */
-    public void failureRegister(Long registerId) throws Exception {
+
+    @Transactional
+    public Integer failureRegister(Long registerId) throws Exception {
         if(Helpers.isNullOrEmpty(registerId) || queryRegister(registerId,null,null,null) == null)
             throw new Exception("预约信息为空.");
-        Register newRegister = new Register();
-        newRegister.setId(registerId);
-        newRegister.setEnable(EnableEnum.INVALID.getCode());
-        registerMapper.updateByPrimaryKeySelective(newRegister);
+
+        //todo 對接his
+
+        Register register = registerMapper.queryById(registerId);
+        register.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
+        OrderInfo orderInfo = orderInfoMapper.queryById(register.getOrderId());
+        orderInfo.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
+
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String rq = sdf.format(register.getAgreedTime());
+        String s = hisOutpatient.unlockRegister(register.getHm(), rq, register.getHx());
+        if(s != null && !"".equals(s)){
+            log.info("预约取消成功..");
+            registerMapper.updateByPrimaryKeySelective(register);
+            orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+            return 0;
+
+        }else {
+            log.info("预约请求失败");
+            return 1;
+        }
+
+
     }
 
     public Register queryByOrderId(Long orderId) {

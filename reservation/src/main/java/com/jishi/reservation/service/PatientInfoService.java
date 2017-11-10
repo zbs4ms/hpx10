@@ -67,11 +67,13 @@ public class PatientInfoService {
             throw new Exception("该账号最大病号数已达最大5个");
         }
 
+
+        Preconditions.checkState(isExistPatient(accountId, name, idCard),"该账号已有此病人信息，不能添加");
+
         //添加到his系统
         Credentials credentials = hisUserManager.addUserInfo(idCard, idCardType, name, phone);
         log.info("his系统返回的病人信息：\n"+ JSONObject.toJSONString(credentials));
 
-        Preconditions.checkState(isExistPatient(accountId,name,idCard,credentials.getBRID()),"该账号已有此病人信息，不能添加");
 
         PatientInfo newPatientInfo = new PatientInfo();
         newPatientInfo.setAccountId(accountId);
@@ -96,10 +98,10 @@ public class PatientInfoService {
 
     }
 
-    private boolean isExistPatient(Long accountId, String name, String idCard, String brid) {
+    private boolean isExistPatient(Long accountId, String name, String idCard) {
 
-        PatientInfo patientInfo =  patientInfoMapper.queryForExist(accountId,name,idCard,brid);
-        return patientInfo != null;
+        PatientInfo patientInfo =  patientInfoMapper.queryForExist(accountId,name,idCard);
+        return patientInfo == null;
     }
 
     /**
@@ -217,6 +219,9 @@ public class PatientInfoService {
     public PageInfo<HospitalizationInfoVO> wrapListToPage(List<HospitalizationInfoVO> list, Integer startPage, Integer pageSize) {
 
 
+        if(pageSize == 0){
+            pageSize = list.size();
+        }
         PageInfo<HospitalizationInfoVO>  page = new PageInfo<>();
         List<HospitalizationInfoVO> result = new ArrayList<>();
         int startRow = (startPage - 1)*pageSize;

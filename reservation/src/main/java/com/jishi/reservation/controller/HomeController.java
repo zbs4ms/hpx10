@@ -8,7 +8,9 @@ import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.models.Banner;
 import com.jishi.reservation.service.HomeService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.enumPackage.ReturnMessageEnum;
 import com.jishi.reservation.service.support.AliOssSupport;
+import com.jishi.reservation.service.support.FileSupport;
 import com.jishi.reservation.util.Constant;
 import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
@@ -49,10 +51,14 @@ public class HomeController extends MyBaseController {
         Preconditions.checkNotNull(name,"请传入必须的参数：name");
         Preconditions.checkNotNull(jumpUrl,"请传入必须的参数：jumpUrl");
         Preconditions.checkNotNull(orderNumber,"请传入必须的参数：orderNumber");
+        if(FileSupport.checkImageFile(file.getOriginalFilename(), file)) {
+            String fileUrl = ossSupport.uploadImage(file, Constant.BANNER_PATH);
+            homeService.addBanner(name,fileUrl, jumpUrl,orderNumber);
+            return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        }else {
+            return ResponseWrapper().addMessage(ReturnMessageEnum.FILE_NOT_FIX.getMessage()).ExeFaild(ReturnCodeEnum.FAILED.getCode());
+        }
 
-        String fileUrl = ossSupport.uploadImage(file, Constant.BANNER_PATH);
-        homeService.addBanner(name,fileUrl, jumpUrl,orderNumber);
-        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     @ApiOperation(value = "修改banner")
@@ -71,8 +77,14 @@ public class HomeController extends MyBaseController {
 
 
         if(file != null) {
-            String fileUrl = ossSupport.uploadImage(file, Constant.BANNER_PATH);
-            homeService.modifyBanner(bannerId, name,fileUrl, jumpUrl,orderNumber);
+            if(FileSupport.checkImageFile(file.getOriginalFilename(), file)) {
+                String fileUrl = ossSupport.uploadImage(file, Constant.BANNER_PATH);
+                homeService.modifyBanner(bannerId, name,fileUrl, jumpUrl,orderNumber);
+            }else {
+                return ResponseWrapper().addMessage(ReturnMessageEnum.FILE_NOT_FIX.getMessage()).ExeFaild(ReturnCodeEnum.FAILED.getCode());
+
+            }
+
         }else {
             homeService.modifyBanner(bannerId, name,null, jumpUrl,orderNumber);
 

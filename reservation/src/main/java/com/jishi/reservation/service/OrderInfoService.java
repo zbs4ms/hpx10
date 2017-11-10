@@ -1,11 +1,14 @@
 package com.jishi.reservation.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
+import com.jishi.reservation.controller.protocol.HospitalizationInfoVO;
 import com.jishi.reservation.controller.protocol.OrderVO;
+import com.jishi.reservation.controller.protocol.PrePaymentRecordVO;
 import com.jishi.reservation.dao.mapper.DoctorMapper;
 import com.jishi.reservation.dao.mapper.OrderInfoMapper;
 import com.jishi.reservation.dao.mapper.PrePaymentMapper;
@@ -15,10 +18,7 @@ import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.PrePayment;
 import com.jishi.reservation.dao.models.Register;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
-import com.jishi.reservation.service.enumPackage.EnableEnum;
-import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
-import com.jishi.reservation.service.enumPackage.OrderTypeEnum;
-import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.enumPackage.*;
 import com.jishi.reservation.service.his.bean.ConfirmOrder;
 import com.jishi.reservation.service.his.bean.ConfirmRegister;
 import com.jishi.reservation.util.Helpers;
@@ -72,6 +72,8 @@ public class OrderInfoService {
             orderVO.setPatientName(register.getPatientName());
             orderVO.setTimeInterval(sdf.format(register.getAgreedTime()).contains("14:00")?"下午":"上午");
             orderVO.setRegisterTime(register.getAgreedTime());
+        }else {
+            log.info("非预约订单，没有预约信息。");
         }
 
         orderVO.setPayType(orderInfo.getPayType());
@@ -117,18 +119,20 @@ public class OrderInfoService {
         return confirmRegister;
     }
 
-    public PageInfo queryOrderList(Integer status, Integer enable, Paging paging) {
-
+    public PageInfo queryOrderList(Long accountId,Integer status, Integer enable, Paging paging) {
+        if(paging.getPageSize() == 0){
+            paging.setPageSize( queryOrderList(accountId,status,enable).size());
+        }
         if(!Helpers.isNullOrEmpty(paging))
             PageHelper.startPage(paging.getPageNum(),paging.getPageSize(),paging.getOrderBy());
-        return new PageInfo(queryOrderList(status,enable));
+        return new PageInfo(queryOrderList(accountId,status,enable));
 
 
     }
 
-    private List queryOrderList(Integer status, Integer enable) {
+    private List queryOrderList(Long accountId,Integer status, Integer enable) {
 
-        return orderInfoMapper.queryOrderList(status,enable);
+        return orderInfoMapper.queryOrderList( accountId,status,enable);
 
     }
 
@@ -141,9 +145,15 @@ public class OrderInfoService {
         orderInfo.setGhdh(confirmOrder.getGhdh());
         orderInfo.setCzsj(confirmOrder.getCzsj());
         orderInfo.setJsid(confirmOrder.getJzid());
+        orderInfo.setStatus(OrderStatusEnum.PAYED.getCode());
+
         orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
 
-        log.info("his订单信息已同步到系统中.."+orderId);
+        Register register = registerMapper.queryByOrderId(orderInfo.getId());
+        register.setStatus(StatusEnum.REGISTER_STATUS_PAYMENT.getCode());
+        registerMapper.updateByPrimaryKeySelective(register);
+
+        log.info("his订单信息已同步到系统中..预约信息已更新");
         return ReturnCodeEnum.SUCCESS.getCode();
     }
 
@@ -221,5 +231,40 @@ public class OrderInfoService {
 
     public OrderInfo queryOrderByOrderNumber(String orderNumber) {
         return orderInfoMapper.queryByNumber(orderNumber);
+    }
+
+    public PageInfo<PrePaymentRecordVO> queryPrePayment(String brId,Integer startPage,Integer pageSize) throws ParseException {
+
+        if(pageSize == 0){
+            pageSize = orderInfoMapper.queryPrePayment(brId).size();
+        }
+        PageHelper.startPage(startPage,pageSize).setOrderBy(" create_time desc ");
+        List<OrderInfo> list =  orderInfoMapper.queryPrePayment(brId);
+        PageInfo<OrderInfo> page = new PageInfo<>(list);
+
+
+        List<PrePaymentRecordVO> voList = new ArrayList<>();
+        PageInfo<PrePaymentRecordVO> resultPage = new PageInfo<>();
+        for (OrderInfo orderInfo : list) {
+            PrePayment prePayment = prePaymentMapper.queryByOrderId(orderInfo.getId());
+            PrePaymentRecordVO vo = new PrePaymentRecordVO();
+            vo.setZffs(orderInfo.getPayType());
+            vo.setOrderNumber(orderInfo.getOrderNumber());
+            vo.setJe(String.valueOf(orderInfo.getPrice()));
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            vo.setJksh(sdf.parse(orderInfo.getPayTime()));
+            vo.setLx("预交");
+
+            voList.add(vo);
+        }
+
+        resultPage.setList(voList);
+        resultPage.setHasNextPage(page.isHasNextPage());
+        resultPage.setSize(page.getSize());
+        resultPage.setPageNum(page.getPageNum());
+        resultPage.setTotal(page.getTotal());
+        resultPage.setPages(page.getPages());
+
+        return resultPage;
     }
 }

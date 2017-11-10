@@ -135,7 +135,7 @@ public class OrderController extends MyBaseController {
 
 
         List<OrderListVO> voList = new ArrayList<>();
-        PageInfo pageInfo = orderInfoService.queryOrderList(status, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum, pageSize, orderBy, desc));
+        PageInfo pageInfo = orderInfoService.queryOrderList(accountId,status, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum, pageSize, orderBy, desc));
         List<OrderInfo> orderList = pageInfo.getList();
         for (OrderInfo orderInfo : orderList) {
             Register register = registerService.queryByOrderId(orderInfo.getId());

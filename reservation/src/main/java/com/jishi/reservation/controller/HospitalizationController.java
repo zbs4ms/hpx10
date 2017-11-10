@@ -102,40 +102,45 @@ public class HospitalizationController extends MyBaseController {
             pageSize = 100;
         }
         //供测试数据使用。。。
-        if(accountId == 3987){
-            List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo("3987");
-            if (depositBalanceDetails == null)
-                return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-            for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
-                list.add(getHospitalizationInfoVO(depositBalanceDetail,"3987"));
+//        if(accountId == 3987){
+//            List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo("3987");
+//            if (depositBalanceDetails == null)
+//                return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+//            for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
+//                list.add(getHospitalizationInfoVO(depositBalanceDetail,"3987"));
+//            }
+//
+//
+//        }else {
+        if(accountId == null){
+            accountId = accountService.returnIdByToken(request);
+
+            if(accountId.equals(-1L)){
+                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
+
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
+        }
 
 
-        }else {
-            if (accountId == null) {
-                accountId = accountService.returnIdByToken(request);
-                if(accountId.equals(-1L)){
-                    response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
-
-                    return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-                }
-            }
 
             List<String> brIdList = patientInfoService.queryBrIdByAccountId(accountId);
             log.info("该账号拥有的病人id:"+JSONObject.toJSONString(brIdList));
             for (String brId : brIdList) {
                 List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo(brId);
-                if (depositBalanceDetails == null)
-                    return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-                for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
+                if (depositBalanceDetails != null){
+                    for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
 //
 //                    if(status == 1){
 //                        if(depositBalanceDetail.getZyzt())
 //                    }
-                    list.add(getHospitalizationInfoVO(depositBalanceDetail,brId));
+                        list.add(getHospitalizationInfoVO(depositBalanceDetail,brId));
+                }
+                    //return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+
                 }
             }
-        }
+//        }
 
 
 
@@ -176,29 +181,33 @@ public class HospitalizationController extends MyBaseController {
     @RequestMapping(value = "queryPaymentRecord", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryPaymentRecord(
-            @ApiParam(value = "brId", required = true) @RequestParam(value = "brId", required = true) String brId
+            @ApiParam(value = "brId", required = true) @RequestParam(value = "brId", required = true) String brId,
+            @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
+            @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize
+
     ) throws Exception {
-        DepositBalanceLog balanceLog = hospitalizationService.queryPaymentRecord(brId);
-        List<PrePaymentRecordVO> list = new ArrayList<>();
-        List<DepositBalanceLog.DB3> paramList = balanceLog.getGroup().getItem();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        if(paramList!=null && paramList.size() != 0){
-            for (DepositBalanceLog.DB3 db3 : paramList) {
-                PrePaymentRecordVO vo = new PrePaymentRecordVO();
-                vo.setJe(db3.getJe());
-                if(db3.getJksh() != null && !"".equals(db3.getJksh())){
-                    vo.setJksh(sdf.parse(db3.getJksh()));
-                }
-                vo.setLx(db3.getLx());
-                vo.setZffs(db3.getZffs());
+//        DepositBalanceLog balanceLog = hospitalizationService.queryPaymentRecord(brId);
+
+        PageInfo<PrePaymentRecordVO> page = orderInfoService.queryPrePayment(brId,startPage,pageSize);
+//        List<DepositBalanceLog.DB3> paramList = balanceLog.getGroup().getItem();
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+//        if(paramList!=null && paramList.size() != 0){
+//            for (DepositBalanceLog.DB3 db3 : paramList) {
+//                PrePaymentRecordVO vo = new PrePaymentRecordVO();
+//                vo.setJe(db3.getJe());
+//                if(db3.getJksh() != null && !"".equals(db3.getJksh())){
+//                    vo.setJksh(sdf.parse(db3.getJksh()));
+//                }
+//                vo.setLx(db3.getLx());
+//                vo.setZffs(db3.getZffs());
+//
+//
+//                list.add(vo);
+//            }
+//        }
 
 
-                list.add(vo);
-            }
-        }
-
-
-        return ResponseWrapper().addData(list).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        return ResponseWrapper().addData(page).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 

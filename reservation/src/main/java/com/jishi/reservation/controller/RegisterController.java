@@ -14,6 +14,7 @@ import com.jishi.reservation.service.*;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.PayEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.support.JpushSupport;
 import com.jishi.reservation.util.Constant;
 import com.us.base.common.controller.BaseController;
@@ -58,13 +59,28 @@ public class RegisterController extends MyBaseController {
     @Autowired
     OrderInfoService orderInfoService;
 
+    @Autowired
+    HisOutpatient hisOutpatient;
+
+
+    @ApiOperation(value = "根据项目id和病人id brid查询挂号的真实价格")
+    @RequestMapping(value = "queryTruePrice", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject addRegister(
+                                  @ApiParam(value = "病人id", required = true) @RequestParam(value = "brid", required = true) String brid,
+                                  @ApiParam(value = "项目id", required = true) @RequestParam(value = "xmid", required = true) String xmid
+    ) throws Exception {
+
+
+        //String price = hisOutpatient.queryLastPrice(xmid, brid);
+
+        return ResponseWrapper().addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        }
 
 
 
 
-
-
-    @ApiOperation(value = "增加预约信息")
+    @ApiOperation(value = "增加预约信息",response = RegisterCompleteVO.class)
     @RequestMapping(value = "addRegister", method = RequestMethod.PUT)
     @ResponseBody
     public JSONObject addRegister(HttpServletRequest request,
@@ -80,6 +96,8 @@ public class RegisterController extends MyBaseController {
                                   @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
                                   @ApiParam(value = "科室名称", required = true) @RequestParam(value = "department", required = true) String department,
                                   @ApiParam(value = "his的号码 HM", required = true) @RequestParam(value = "hm", required = true) String hm,
+                                  @ApiParam(value = "项目id", required = true) @RequestParam(value = "xmid", required = true) String xmid,
+
 
             @ApiParam(value = "预约的医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId,
             @ApiParam(value = "预约的时间段", required = true) @RequestParam(value = "timeInterval", required = true) String timeInterval,
@@ -91,6 +109,11 @@ public class RegisterController extends MyBaseController {
         Preconditions.checkNotNull(doctorId,"请传入必须的参数：doctorId");
         Preconditions.checkNotNull(timeInterval,"请传入必须的参数：timeInterval");
         Preconditions.checkNotNull(agreedTime,"请传入必须的参数：agreedTime");
+
+        //验证br_id 是否存在..
+        if(patientInfoService.queryByBrId(brid) == null)
+            return ResponseWrapper().addMessage("该病人id不存在，请检查").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1L)){
@@ -103,7 +126,7 @@ public class RegisterController extends MyBaseController {
 
 
         // 10.17  在此处加入订单。。
-        RegisterCompleteVO completeVO = registerService.addRegister(accountId, brid, departmentId, doctorId, new Date(agreedTime),timeInterval,doctorName,price,subject,brName,department,hm);
+        RegisterCompleteVO completeVO = registerService.addRegister(accountId, brid, departmentId, doctorId,xmid, new Date(agreedTime),timeInterval,doctorName,price,subject,brName,department,hm);
         if(completeVO == null){
             return ResponseWrapper().addMessage("该医生挂号号源已满，请选择其他医生。").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
         }
@@ -118,7 +141,7 @@ public class RegisterController extends MyBaseController {
                                     HttpServletResponse response,
                                     @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
                                     @ApiParam(value = "预约ID", required = false) @RequestParam(value = "registerId", required = false) Long registerId,
-                                    @ApiParam(value = "状态", required = false) @RequestParam(value = "status", required = false) Integer status,
+                                    @ApiParam(value = "状态 0：已完成(已付款)； 1：待付款 ；2：已取消", required = false) @RequestParam(value = "status", required = false) Integer status,
                                     @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                     @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
                                     @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
@@ -136,13 +159,10 @@ public class RegisterController extends MyBaseController {
         PageInfo pageInfo = registerService.queryRegisterPageInfo(registerId, accountId, status, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum, pageSize, orderBy, desc));
         List<Register> registerList = pageInfo.getList();
 
-
+        List<Account> accountList = accountService.queryAccount(accountId, null, null);
         for (Register register : registerList) {
             RegisterVO registerVO = new RegisterVO();
             //List<Doctor> doctors = doctorService.queryDoctor(null, String.valueOf(register.getDoctorId()),null, null,null, null);
-
-
-            List<Account> accounts = accountService.queryAccount(register.getAccountId(), null, null);
 
             //OrderVO orderVO = orderInfoService.queryOrderInfoById(register.getOrderId());
             OrderInfo orderInfo = orderInfoService.findOrderById(register.getOrderId());
@@ -156,12 +176,12 @@ public class RegisterController extends MyBaseController {
             register.setPrice(orderInfo.getPrice());
             //register.setCountDownTime(register.getCreateTime().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
             register.setOrderCode(orderInfo.getOrderNumber());
-
+            register.setDiscount(orderInfo.getDiscount());
             Doctor doctor = doctorService.queryDoctorByHid(register.getDoctorId());
             registerVO.setRegister(register);
             registerVO.setDoctor(doctor);
-            accounts.get(0).setPasswd(null);
-            registerVO.setAccount(accounts.size() > 0 ? accounts.get(0) : null);
+            accountList.get(0).setPasswd(null);
+            registerVO.setAccount(accountList.size() > 0 ? accountList.get(0) : null);
             Department department = new Department();
             department.setName(register.getDepartment());
             department.setId(register.getDepartmentId());
@@ -203,7 +223,7 @@ public class RegisterController extends MyBaseController {
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
-    @ApiOperation(value = "预约信息置为无效")
+    @ApiOperation(value = "预约信息置为无效 取消预约")
     @RequestMapping(value = "failureRegister", method = RequestMethod.DELETE)
     @ResponseBody
     public JSONObject failureRegister(
@@ -211,8 +231,15 @@ public class RegisterController extends MyBaseController {
     ) throws Exception {
         Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
 
-        registerService.failureRegister(registerId);
-        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        Integer status = registerService.failureRegister(registerId);
+        switch (status){
+            case 0:
+                return ResponseWrapper().addData("取消预约成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+            case 1:
+                return ResponseWrapper().addData("取消预约失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+        }
+        return ResponseWrapper().addData("取消预约失败.").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+
     }
 
 
@@ -246,7 +273,6 @@ public class RegisterController extends MyBaseController {
 
         PageInfo<RegisterAdminVO> page  = registerService.queryRegisterAdmin(key,startTime,endTime,doctorId,departmentId,status,startPage,pageSize);
         return ResponseWrapper().addMessage("查询成功").addData(page).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-
 
     }
 }

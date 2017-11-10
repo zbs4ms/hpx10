@@ -65,6 +65,10 @@ public class Doctor {
     @ApiModelProperty("号源名称")
     private String hymc;
 
+    @Transient
+    @ApiModelProperty("项目id")
+    private String xmid;
+
 
 
 

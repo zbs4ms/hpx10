@@ -2,6 +2,8 @@ package com.jishi.reservation.otherService.im.neteasy;
 
 import com.jishi.reservation.otherService.im.HttpParam;
 import com.jishi.reservation.otherService.im.IMException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -16,15 +18,17 @@ import java.util.Date;
  * Created by liangxiong on 2017/10/24.
  */
 public class IMHttpNeteasy {
-    public static final String IM_NETEASY_URL = "https://api.netease.im/nimserver";
-    public static final int IM_NETEASY_CONNET_TIMEOUT = 30000;
-    public static final int IM_NETEASY_READ_TIMEOUT = 30000;
-    public static final String IM_NETEASY_CONTENT_TYPE = "application/x-www-form-urlencoded;charset=utf-8";
-    public static final String IM_NETEASY_HTTP_METHOD = "POST";
+    private static final String IM_NETEASY_URL = "https://api.netease.im/nimserver";
+    private static final int IM_NETEASY_CONNET_TIMEOUT = 30000;
+    private static final int IM_NETEASY_READ_TIMEOUT = 30000;
+    private static final String IM_NETEASY_CONTENT_TYPE = "application/x-www-form-urlencoded;charset=utf-8";
+    private static final String IM_NETEASY_HTTP_METHOD = "POST";
 
 
     private String appKey;//App-Key
     private String appSecret;//App-Secret
+
+    private Logger logger = LoggerFactory.getLogger(IMHttpNeteasy.class);
 
     public IMHttpNeteasy(String appKey, String appSecret) {
         this.appKey = appKey;
@@ -34,7 +38,9 @@ public class IMHttpNeteasy {
     public String doPost(String serviceName, HttpParam httpParam) throws Exception {
         URL url = new URL(IM_NETEASY_URL + serviceName);
         HttpURLConnection conn = initConnection((HttpURLConnection) url.openConnection());
-        if (httpParam.hasParam()) {
+        logger.debug(conn.toString() + "  参数：" + httpParam);
+
+        if (httpParam != null && httpParam.hasParam()) {
             DataOutputStream out = new DataOutputStream(conn.getOutputStream());
             try {
                 out.write(httpParam.toString().getBytes("utf-8"));
@@ -51,7 +57,7 @@ public class IMHttpNeteasy {
         return returnResult(conn, url);
     }
 
-    public HttpURLConnection initConnection(HttpURLConnection conn) throws Exception {
+    private HttpURLConnection initConnection(HttpURLConnection conn) throws Exception {
         String nonce = String.valueOf(Math.random() * 1000000);
         String curTime = String.valueOf((new Date()).getTime() / 1000L);
         conn.setRequestProperty("AppKey", appKey);
@@ -69,9 +75,9 @@ public class IMHttpNeteasy {
         return conn;
     }
 
-    public static byte[] readInputStream(InputStream inStream, URL url) throws Exception {
+    private byte[] readInputStream(InputStream inStream, URL url) throws Exception {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        byte[] data = null;
+        byte[] data;
         try {
             byte[] buffer = new byte[1024];
             int len = 0;
@@ -89,15 +95,17 @@ public class IMHttpNeteasy {
         return data;
     }
 
-    public static String returnResult(HttpURLConnection conn, URL url) throws Exception {
+    private String returnResult(HttpURLConnection conn, URL url) throws Exception {
         InputStream input = null;
         int code = conn.getResponseCode();
         if (code == 200) {
             input = conn.getInputStream();
         } else {
+            logger.error(url.toString() + " code: " + code);
             throw new IMException(code, url.toString(), null);
         }
         String result = new String(readInputStream(input, url), "UTF-8");
+        logger.debug(result);
         return result;
     }
 

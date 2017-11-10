@@ -58,16 +58,16 @@ public class HisOutpatient {
      * @return
      * @throws Exception
      */
-    public RegisteredNumberInfo queryLastPrice(String xmid,String brid) throws Exception {
+    public LastPrice  queryLastPrice(String xmid,String brid) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<XMID>").append(xmid).append("</XMID>");
         sb.append("<BRID>").append(brid).append("</BRID>");
-
+        log.info("获取挂号项目最后得金额请求参数:\n"+sb.toString());
         String reData = HisTool.toXMLString("Register.Preferential.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             String xml = HisTool.getHisDataparam(me,"Register.Preferential.Query");
-            return (RegisteredNumberInfo) HisTool.toBean(RegisteredNumberInfo.class, xml);
+            return (LastPrice)HisTool.toBean(LastPrice.class,xml);
         }
         return null;
     }
@@ -272,6 +272,34 @@ public class HisOutpatient {
         return null;
     }
 
+
+    /**
+     * 对取消挂号或超过付款限的号源进行解锁
+
+     */
+    public String unlockRegister(String hm,String rq,String hx) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<HM>").append(hm).append("</HM>");
+        sb.append("<RQ>").append(rq).append("</RQ>");
+        sb.append("<CZ>").append("0").append("</CZ>");
+        sb.append("<HX>").append(hx).append("</HX>");
+        sb.append("<HZDW>").append("").append("</HZDW>");
+        sb.append("<JQM>").append("JQM"+hm).append("</JQM>");
+        log.info("取消挂号请求数据：\n"+sb.toString());
+        String reData = HisTool.toXMLString("Register.UnLock.Modify", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            log.info(me.getAsString());
+            String xml = HisTool.getHisDataparam(me,"Register.UnLock.Modify");
+            if(xml != null && !"".equals(xml)){
+                return HisTool.getXmlAttribute(xml,"GHDH");
+
+            }else {
+                return null;
+            }
+        }
+        return null;
+    }
 
 
 

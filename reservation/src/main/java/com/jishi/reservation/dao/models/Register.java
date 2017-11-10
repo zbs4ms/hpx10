@@ -62,5 +62,8 @@ public class Register {
     private String orderCode;     //订单编号
     @Transient
     private Long countDownTime;     //支付倒计时
+    @Transient
+    @ApiModelProperty("优惠金额")
+    private BigDecimal discount;     //优惠金额
 
 }
