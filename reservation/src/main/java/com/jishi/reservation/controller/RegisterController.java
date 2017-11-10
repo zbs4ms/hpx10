@@ -164,9 +164,6 @@ public class RegisterController extends MyBaseController {
             RegisterVO registerVO = new RegisterVO();
             //List<Doctor> doctors = doctorService.queryDoctor(null, String.valueOf(register.getDoctorId()),null, null,null, null);
 
-
-
-
             //OrderVO orderVO = orderInfoService.queryOrderInfoById(register.getOrderId());
             OrderInfo orderInfo = orderInfoService.findOrderById(register.getOrderId());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -226,7 +223,7 @@ public class RegisterController extends MyBaseController {
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
-    @ApiOperation(value = "预约信息置为无效")
+    @ApiOperation(value = "预约信息置为无效 取消预约")
     @RequestMapping(value = "failureRegister", method = RequestMethod.DELETE)
     @ResponseBody
     public JSONObject failureRegister(
@@ -234,8 +231,15 @@ public class RegisterController extends MyBaseController {
     ) throws Exception {
         Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
 
-        registerService.failureRegister(registerId);
-        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        Integer status = registerService.failureRegister(registerId);
+        switch (status){
+            case 0:
+                return ResponseWrapper().addData("取消预约成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+            case 1:
+                return ResponseWrapper().addData("取消预约失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+        }
+        return ResponseWrapper().addData("取消预约失败.").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+
     }
 
 

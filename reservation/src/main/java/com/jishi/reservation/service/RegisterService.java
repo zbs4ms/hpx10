@@ -290,13 +290,35 @@ public class RegisterService {
      * @param registerId
      * @throws Exception
      */
-    public void failureRegister(Long registerId) throws Exception {
+
+    @Transactional
+    public Integer failureRegister(Long registerId) throws Exception {
         if(Helpers.isNullOrEmpty(registerId) || queryRegister(registerId,null,null,null) == null)
             throw new Exception("预约信息为空.");
-        Register newRegister = new Register();
-        newRegister.setId(registerId);
-        newRegister.setEnable(EnableEnum.INVALID.getCode());
-        registerMapper.updateByPrimaryKeySelective(newRegister);
+
+        //todo 對接his
+
+        Register register = registerMapper.queryById(registerId);
+        register.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
+        OrderInfo orderInfo = orderInfoMapper.queryById(register.getOrderId());
+        orderInfo.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
+
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String rq = sdf.format(register.getAgreedTime());
+        String s = hisOutpatient.unlockRegister(register.getHm(), rq, register.getHx());
+        if(s != null && !"".equals(s)){
+            log.info("预约取消成功..");
+            registerMapper.updateByPrimaryKeySelective(register);
+            orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+            return 0;
+
+        }else {
+            log.info("预约请求失败");
+            return 1;
+        }
+
+
     }
 
     public Register queryByOrderId(Long orderId) {
