@@ -8,25 +8,34 @@ import com.google.gson.reflect.TypeToken;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.AdminLogInfoData;
+import com.jishi.reservation.controller.protocol.SystemInfo;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.ManagerService;
-import com.jishi.reservation.util.Constant;
+import com.jishi.reservation.util.*;
 import com.jishi.reservation.service.PermissionService;
 
-import com.jishi.reservation.util.CookieUtil;
-import com.jishi.reservation.util.SessionUtil;
 import com.us.base.common.controller.BaseController;
 import com.us.base.util.MD5Encryption;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.*;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -194,5 +203,15 @@ public class AdminController extends MyBaseController {
 
 
 
+    @ApiOperation(value = "服务器信息")
+    @RequestMapping(value = "serverInfo", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject serverInfo(HttpServletRequest request,HttpServletResponse response) throws Exception {
+        SystemInfo info = new SystemInfo();
+        info.setDate(new Date());
+        info.setServerLocalIp(NetUtil.getLocalIP());//获得本机IP
+        info.setServerWanIp(NetUtil.getV4IP());//获得外网IP
+        return ResponseWrapper().addData(info).addMessage("退出成功").ExeSuccess(200);
+    }
 
 }
