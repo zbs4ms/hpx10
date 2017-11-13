@@ -57,7 +57,7 @@ export default {
       }
     }, {
       attrs: {
-        'prop': 'goodDescribe',
+        'prop': 'describe',
         'label': '描述',
         'min-width': '160',
         'show-overflow-tooltip': true

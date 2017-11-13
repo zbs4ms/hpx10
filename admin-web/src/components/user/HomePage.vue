@@ -24,11 +24,7 @@
     },
     created () {
       userInfoApi(this.accountId).then(res => {
-        console.log(res, '----')
-        const content = res.content || {}
-        this.data.info = content.account || {}
-        this.data.log = content.diaryList || []
-        this.data.relation = content.patientInfoList || []
+        this.data.info = res.content || {}
       })
     },
     data () {

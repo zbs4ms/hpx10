@@ -43,8 +43,9 @@ export default {
 
 <style lang="scss">
   .img-zoom {
-    display: inline-block;
     position: relative;
+    display: block;
+    margin: auto;
 
     .img-zoom-wrap {
       width: 100%;

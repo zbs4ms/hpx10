@@ -67,9 +67,9 @@ export default {
       let isImg = true
       let valid = true
       let message = []
-      if (file.size / 1024 > 1024) {
+      if (file.size / 1024 > 1024 * 5) {
         valid = false
-        message.push('尺寸不应大于1M')
+        message.push('尺寸不应大于5M')
       }
       if (!(file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'image/png')) {
         isImg = false
