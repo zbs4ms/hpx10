@@ -81,7 +81,7 @@ public class RegisterService {
      * @throws Exception
      */
     @Transactional
-    public RegisterCompleteVO addRegister(Long accountId,String brid,Long departmentId,Long doctorId,String xmid,
+    public RegisterCompleteVO addRegister(String orderNmuber,Long accountId,String brid,Long departmentId,Long doctorId,String xmid,
                                           Date agreedTime,String timeInterval,String doctorName,
                                           String price,String subject,String brName,String department,String hm) throws Exception {
         if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
@@ -120,69 +120,114 @@ public class RegisterService {
             }
 
         }
-        order.setAccountId(accountId);
-        order.setBrId(brid);
-        order.setCreateTime(new Date());
-        order.setSubject(subject);
-        order.setDes(subject);
-        order.setPrice(truePriceFormat);
-        order.setEnable(EnableEnum.EFFECTIVE.getCode());
-        String orderNumber = AlibabaPay.generateUniqueOrderNumber();
-        order.setOrderNumber(orderNumber);
-        //order.setRegisterId(register.getId());
-        order.setStatus(OrderStatusEnum.WAIT_PAYED.getCode());
-        order.setPayType(PayEnum.ALI.getCode());
-        order.setType(OrderTypeEnum.REGISTER.getCode());
 
-        Register register = new Register();
-        register.setAccountId(accountId);
-        register.setDepartmentId(departmentId);
-        register.setDoctorId(doctorId);
-        register.setBrId(brid);
-        register.setDepartment(department);
-        register.setPatientName(brName);
-        register.setDoctorName(doctorName);
-        register.setOrderId(order.getId());
-        register.setAgreedTime(agreedTime);
-        register.setStatus(StatusEnum.REGISTER_STATUS_NO_PAYMENT.getCode());
-        register.setEnable(EnableEnum.EFFECTIVE.getCode());
-        register.setCreateTime(new Date());
-        register.setHm(hm);
-        String serialCode = NewRandomUtil.getRandomNum(4);
-        register.setSerialNumber(serialCode);
+        if(orderNmuber == null || "".equals(orderNmuber)){
+            log.info("没有传入订单号，生成新的订单");
 
-        registerMapper.insertReturnId(register);
-        order.setRegisterId(register.getId());
-        orderInfoMapper.insertReturnId(order);
-        register.setOrderId(order.getId());
-        RegisterCompleteVO completeVO = new RegisterCompleteVO();
-        completeVO.setRegisterId(register.getId());
-        completeVO.setDoctor(doctorName);
-        //Department department = departmentMapper.queryById(departmentId);
-        completeVO.setDepartment(department);
-        completeVO.setAgreeTime(agreedTime);
-        //todo 真实的地址
-        completeVO.setPosition("交子路");
-        completeVO.setTimeInterval(timeInterval);
-        completeVO.setPatient(brName);
+            order.setAccountId(accountId);
+            order.setBrId(brid);
+            order.setCreateTime(new Date());
+            order.setSubject(subject);
+            order.setDes(subject);
+            order.setPrice(truePriceFormat);
+            order.setEnable(EnableEnum.EFFECTIVE.getCode());
+            String orderNumber = AlibabaPay.generateUniqueOrderNumber();
+            order.setOrderNumber(orderNumber);
+            //order.setRegisterId(register.getId());
+            order.setStatus(OrderStatusEnum.WAIT_PAYED.getCode());
+            order.setPayType(PayEnum.ALI.getCode());
+            order.setType(OrderTypeEnum.REGISTER.getCode());
+
+            Register register = new Register();
+            register.setAccountId(accountId);
+            register.setDepartmentId(departmentId);
+            register.setDoctorId(doctorId);
+            register.setBrId(brid);
+            register.setDepartment(department);
+            register.setPatientName(brName);
+            register.setDoctorName(doctorName);
+            register.setOrderId(order.getId());
+            register.setAgreedTime(agreedTime);
+            register.setStatus(StatusEnum.REGISTER_STATUS_NO_PAYMENT.getCode());
+            register.setEnable(EnableEnum.EFFECTIVE.getCode());
+            register.setCreateTime(new Date());
+            register.setHm(hm);
+            String serialCode = NewRandomUtil.getRandomNum(4);
+            register.setSerialNumber(serialCode);
+
+            registerMapper.insertReturnId(register);
+            order.setRegisterId(register.getId());
+            orderInfoMapper.insertReturnId(order);
+            register.setOrderId(order.getId());
+            RegisterCompleteVO completeVO = new RegisterCompleteVO();
+            completeVO.setRegisterId(register.getId());
+            completeVO.setDoctor(doctorName);
+            //Department department = departmentMapper.queryById(departmentId);
+            completeVO.setDepartment(department);
+            completeVO.setAgreeTime(agreedTime);
+            //todo 真实的地址
+            completeVO.setPosition("四川泸州锦欣医院");
+            completeVO.setTimeInterval(timeInterval);
+            completeVO.setPatient(brName);
 
 
-        completeVO.setPayType(PayEnum.ALI.getCode());
-        completeVO.setPayTime(new Date());
-        completeVO.setCompleteTime(new Date());
-        completeVO.setPrice(truePriceFormat);
-        //completeVO.setPrice(BigDecimal.valueOf(0.01));
-        completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
-        completeVO.setOrderCode(orderNumber);
-        completeVO.setSerialNumber(serialCode);
-        completeVO.setSubject(subject);
-        completeVO.setDes(subject);
-        completeVO.setOrderId(order.getId());
-        completeVO.setYhje(yhjeFormat);
-        register.setHx(hx);
-        registerMapper.updateByPrimaryKeySelective(register);
+            completeVO.setPayType(PayEnum.ALI.getCode());
+            completeVO.setPayTime(new Date());
+            completeVO.setCompleteTime(new Date());
+            completeVO.setPrice(truePriceFormat);
+            //completeVO.setPrice(BigDecimal.valueOf(0.01));
+            completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
+            completeVO.setOrderCode(orderNumber);
+            completeVO.setSerialNumber(serialCode);
+            completeVO.setSubject(subject);
+            completeVO.setDes(subject);
+            completeVO.setOrderId(order.getId());
+            completeVO.setYhje(yhjeFormat);
+            register.setHx(hx);
+            registerMapper.updateByPrimaryKeySelective(register);
 
-        return completeVO;
+            return completeVO;
+        }else {
+
+            log.info("传入了订单号，更新新的订单号，带到支付宝");
+            String newOrderNumber = AlibabaPay.generateUniqueOrderNumber();
+            OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(null, orderNmuber);
+            orderInfo.setOrderNumber(newOrderNumber);
+
+            orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+
+            Register register = registerMapper.queryByOrderId(orderInfo.getId());
+
+
+            RegisterCompleteVO completeVO = new RegisterCompleteVO();
+            completeVO.setRegisterId(register.getId());
+            completeVO.setDoctor(doctorName);
+            //Department department = departmentMapper.queryById(departmentId);
+            completeVO.setDepartment(department);
+            completeVO.setAgreeTime(agreedTime);
+            //todo 真实的地址
+            completeVO.setPosition("四川泸州锦欣医院");
+            completeVO.setTimeInterval(timeInterval);
+            completeVO.setPatient(brName);
+
+
+            completeVO.setPayType(PayEnum.ALI.getCode());
+            completeVO.setPayTime(new Date());
+            completeVO.setCompleteTime(new Date());
+            completeVO.setPrice(truePriceFormat);
+            //completeVO.setPrice(BigDecimal.valueOf(0.01));
+            completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
+            completeVO.setOrderCode(newOrderNumber);
+            completeVO.setSerialNumber(register.getSerialNumber());
+            completeVO.setSubject(subject);
+            completeVO.setDes(subject);
+            completeVO.setOrderId(order.getId());
+            completeVO.setYhje(yhjeFormat);
+
+            return completeVO;
+
+        }
+
 
     }
 

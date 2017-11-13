@@ -87,6 +87,7 @@ public class RegisterController extends MyBaseController {
                                   HttpServletResponse response,
 
 
+                                  @ApiParam(value = "订单号", required = false) @RequestParam(value = "orderNumber", required = false) String orderNmuer,
                                   @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
                                   @ApiParam(value = "价格", required = true) @RequestParam(value = "price", required = true) String price,
                                   @ApiParam(value = "支付名称", required = true) @RequestParam(value = "subject", required = true) String subject,
@@ -126,7 +127,7 @@ public class RegisterController extends MyBaseController {
 
 
         // 10.17  在此处加入订单。。
-        RegisterCompleteVO completeVO = registerService.addRegister(accountId, brid, departmentId, doctorId,xmid, new Date(agreedTime),timeInterval,doctorName,price,subject,brName,department,hm);
+        RegisterCompleteVO completeVO = registerService.addRegister(orderNmuer,accountId, brid, departmentId, doctorId,xmid, new Date(agreedTime),timeInterval,doctorName,price,subject,brName,department,hm);
         if(completeVO == null){
             return ResponseWrapper().addMessage("该医生挂号号源已满，请选择其他医生。").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
         }
