@@ -77,6 +77,7 @@
               tel: item.phone
             }
           })
+          this.total = content.total || 0
         }
       }
       return {
