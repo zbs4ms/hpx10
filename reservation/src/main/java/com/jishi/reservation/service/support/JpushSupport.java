@@ -32,6 +32,7 @@ public class JpushSupport {
                         .addExtra("from", "JPush")
                         .build())
                 .build();
+
     }
 
 

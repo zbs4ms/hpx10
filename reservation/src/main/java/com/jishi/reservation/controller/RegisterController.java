@@ -87,32 +87,32 @@ public class RegisterController extends MyBaseController {
                                   HttpServletResponse response,
 
 
+                                  @ApiParam(value = "订单号", required = false) @RequestParam(value = "orderNumber", required = false) String orderNmuer,
                                   @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-                                  @ApiParam(value = "价格", required = true) @RequestParam(value = "price", required = true) String price,
-                                  @ApiParam(value = "支付名称", required = true) @RequestParam(value = "subject", required = true) String subject,
-                                  @ApiParam(value = "病人名称", required = true) @RequestParam(value = "brName", required = true) String brName,
-                                  @ApiParam(value = "医生名称", required = true) @RequestParam(value = "doctorName", required = true) String doctorName,
-                                  @ApiParam(value = "病人ID", required = true) @RequestParam(value = "brid", required = true) String brid,
-                                  @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
-                                  @ApiParam(value = "科室名称", required = true) @RequestParam(value = "department", required = true) String department,
-                                  @ApiParam(value = "his的号码 HM", required = true) @RequestParam(value = "hm", required = true) String hm,
-                                  @ApiParam(value = "项目id", required = true) @RequestParam(value = "xmid", required = true) String xmid,
+                                  @ApiParam(value = "价格", required = false) @RequestParam(value = "price", required = false) String price,
+                                  @ApiParam(value = "支付名称", required = false) @RequestParam(value = "subject", required = false) String subject,
+                                  @ApiParam(value = "病人名称", required = false) @RequestParam(value = "brName", required = false) String brName,
+                                  @ApiParam(value = "医生名称", required = false) @RequestParam(value = "doctorName", required = false) String doctorName,
+                                  @ApiParam(value = "病人ID", required = false) @RequestParam(value = "brid", required = false) String brid,
+                                  @ApiParam(value = "科室ID", required = false) @RequestParam(value = "departmentId", required = false) Long departmentId,
+                                  @ApiParam(value = "科室名称", required = false) @RequestParam(value = "department", required = false) String department,
+                                  @ApiParam(value = "his的号码 HM", required = false) @RequestParam(value = "hm", required = false) String hm,
+                                  @ApiParam(value = "项目id", required = false) @RequestParam(value = "xmid", required = false) String xmid,
 
 
-            @ApiParam(value = "预约的医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId,
-            @ApiParam(value = "预约的时间段", required = true) @RequestParam(value = "timeInterval", required = true) String timeInterval,
-            @ApiParam(value = "预约时间", required = true) @RequestParam(value = "agreedTime", required = true) Long agreedTime
+            @ApiParam(value = "预约的医生ID", required = false) @RequestParam(value = "doctorId", required = false) Long doctorId,
+            @ApiParam(value = "预约的时间段", required = false) @RequestParam(value = "timeInterval", required = false) String timeInterval,
+            @ApiParam(value = "预约时间", required = false) @RequestParam(value = "agreedTime", required = false) Long agreedTime
             ) throws Exception {
 
-        Preconditions.checkNotNull(brid,"请传入必须的参数：brid");
-        Preconditions.checkNotNull(departmentId,"请传入必须的参数：departmentId");
-        Preconditions.checkNotNull(doctorId,"请传入必须的参数：doctorId");
-        Preconditions.checkNotNull(timeInterval,"请传入必须的参数：timeInterval");
-        Preconditions.checkNotNull(agreedTime,"请传入必须的参数：agreedTime");
 
         //验证br_id 是否存在..
-        if(patientInfoService.queryByBrId(brid) == null)
-            return ResponseWrapper().addMessage("该病人id不存在，请检查").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+        if(brid!=null && !"".equals(brid)){
+            if(patientInfoService.queryByBrId(brid) == null)
+                return ResponseWrapper().addMessage("该病人id不存在，请检查").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+        }
+
+
 
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
@@ -126,9 +126,13 @@ public class RegisterController extends MyBaseController {
 
 
         // 10.17  在此处加入订单。。
-        RegisterCompleteVO completeVO = registerService.addRegister(accountId, brid, departmentId, doctorId,xmid, new Date(agreedTime),timeInterval,doctorName,price,subject,brName,department,hm);
+        RegisterCompleteVO completeVO = registerService.addRegister(orderNmuer,accountId, brid, departmentId, doctorId,xmid, agreedTime,timeInterval,doctorName,price,subject,brName,department,hm);
         if(completeVO == null){
             return ResponseWrapper().addMessage("该医生挂号号源已满，请选择其他医生。").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+        }
+        if(completeVO.getOrderId().equals(-1L)){
+            return ResponseWrapper().addMessage("该订单不是待支付状态或不是挂号订单，请检查。").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+
         }
         jpushSupport.sendPush(accountService.queryAccountById(accountId).getPushId(), Constant.REGISTER_SUCCESS_MGS);
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
