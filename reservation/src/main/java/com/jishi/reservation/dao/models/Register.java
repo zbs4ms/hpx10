@@ -35,7 +35,7 @@ public class Register {
     private Long doctorId;
     @ApiModelProperty("预约时间")
     private Date agreedTime;
-    @ApiModelProperty("状态（0  待支付 1 取消 2 预约成功")
+    @ApiModelProperty("状态（0  预约成功 1 待支付 2 取消预约")
     private Integer status;
     @ApiModelProperty("状态标示:0:正常 1:禁用  99:删除")
     private Integer enable;
