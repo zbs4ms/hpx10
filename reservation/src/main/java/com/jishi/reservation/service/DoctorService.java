@@ -197,6 +197,10 @@ public class DoctorService {
 
 
 
+    public Doctor queryDoctorById(Long id) {
+        return doctorMapper.queryById(id);
+    }
+
     public Doctor queryDoctorByHid(Long hDoctorId) {
         return doctorMapper.queryByHdoctorId(hDoctorId);
     }
