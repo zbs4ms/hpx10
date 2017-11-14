@@ -1,0 +1,9 @@
+#!/usr/bin/expect -f
+spawn ssh root@39.108.117.23
+expect "*password:"
+send "Jskj1010\r"
+expect "\n"
+send "cd /code/hpx10/admin-web\r"
+expect "\n"
+send "./run.sh\r"
+interact
