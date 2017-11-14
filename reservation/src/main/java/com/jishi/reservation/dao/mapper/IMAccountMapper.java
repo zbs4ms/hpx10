@@ -19,7 +19,7 @@ public interface IMAccountMapper extends MyMapper<IMAccount> {
     IMAccount selectByDoctorId(@Param("doctorId") long doctorId);
 
     @Select({"SELECT * FROM im_account where doctor_his_id = ${doctorHisd}"})
-    IMAccount selectByDoctorhisId(@Param("doctorHisd") long doctorHisd);
+    IMAccount selectByDoctorhisId(@Param("doctorHisd") String doctorHisd);
 
     @Select({"SELECT * FROM im_account where im_acc_id = ${imAccId}"})
     IMAccount selectByIMAccountId(@Param("imAccId") String imAccId);

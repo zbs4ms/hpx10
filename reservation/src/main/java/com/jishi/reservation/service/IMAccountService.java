@@ -176,8 +176,7 @@ public class IMAccountService {
             Doctor doctor = doctorList.iterator().next();
             imUser = generateIMUser(doctor);
             imAccount.setDoctorId(doctor.getId());
-            // TODO 医生hisID格式，待解决
-            //imAccount.setDoctorHisId(doctor.getHId());
+            imAccount.setDoctorHisId(doctor.getHId());
             imAccount.setType(1); //医生
         }
         IMUser resUser = imClientNeteasy.getUserOperation().createUser(imUser);
@@ -296,7 +295,7 @@ public class IMAccountService {
     public boolean updateDoctor(Long doctorId) throws Exception {
         log.info("更新IM账号信息: doctorId: " + doctorId);
         IMAccount imAccount = imAccountMapper.selectByDoctorId(doctorId);
-        Doctor doctor = doctorService.queryDoctorByHid(imAccount.getDoctorHisId());
+        Doctor doctor = doctorService.queryDoctorById(imAccount.getDoctorId());
         if (imAccount == null || doctor == null) {
             log.info("账号不存在: imAccount: " + imAccount + "  doctor: " + doctor);
             return false;
