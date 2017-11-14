@@ -31,3 +31,13 @@ export const userLogApi = (params) => {
     params
   })
 }
+
+// 获取关联人列表
+export const RELATION_URL = '/patientInfo/queryForAdmin'
+export const relationApi = (params) => {
+  return fetchApi({
+    url: RELATION_URL,
+    type: 'get',
+    params
+  })
+}
