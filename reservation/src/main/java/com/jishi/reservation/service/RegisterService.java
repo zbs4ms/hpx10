@@ -174,6 +174,7 @@ public class RegisterService {
             completeVO.setPatient(brName);
 
 
+
             completeVO.setPayType(PayEnum.ALI.getCode());
             completeVO.setPayTime(new Date());
             completeVO.setCompleteTime(new Date());
@@ -233,7 +234,10 @@ public class RegisterService {
             completeVO.setDes(subject);
             completeVO.setOrderId(orderInfo.getId());
             completeVO.setYhje(orderInfo.getDiscount());
-
+            completeVO.setSubject(orderInfo.getSubject());
+            completeVO.setDes(orderInfo.getSubject());
+            completeVO.setPatient(register.getPatientName());
+            completeVO.setDoctor(register.getDoctorName());
             return completeVO;
 
         }
