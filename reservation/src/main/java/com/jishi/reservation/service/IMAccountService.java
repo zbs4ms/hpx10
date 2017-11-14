@@ -327,10 +327,9 @@ public class IMAccountService {
     }
 
     private IMUser generateIMUser(String imAccId, String imToken, Doctor doctor) {
-        String identify = UUID.randomUUID().toString().replace("-", "");
         IMUser imUser = new IMUser();
-        imUser.setAccid(identify);
-        imUser.setToken(identify);
+        imUser.setAccid(imAccId);
+        imUser.setToken(imToken);
         imUser.setName(doctor.getName());
         imUser.setIcon(doctor.getHeadPortrait());
         imUser.setSign(doctor.getAbout());

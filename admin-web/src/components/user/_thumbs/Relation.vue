@@ -4,6 +4,9 @@
    * Date: 2017/10/21
    */
   import SearchTable from '@/components/_common/searchTable/SearchTable'
+  import {
+    relationApi
+  } from '../api'
 
   export default {
     name: 'Relation',
@@ -32,7 +35,7 @@
         }
       }, {
         attrs: {
-          'prop': 'visitNo',
+          'prop': 'mzh',
           'label': '就诊号',
           'min-width': '140'
         }
@@ -44,27 +47,23 @@
         }
       }]
       this.listApi = {
-        requestFn: () => {
-          return Promise.resolve({
-            content: {
-              list: [{}]
-            }
-          })
-        },
+        requestFn: relationApi,
         responseFn (data) {
           let content = data.content || {}
-          this.tableData = (content.list || []).map((item) => ({
-            name: item.orderNumber,
-            tel: item.id,
-            visitNo: item.name,
-            'ID_no': item.name
+          this.tableData = content.map((item) => ({
+            name: item.name,
+            phone: item.phone,
+            mzh: item.mzh,
+            idCard: item.idCard
           }))
           this.total = content.total || 0
         }
       }
       return {
         apiKeysMap: {
-          currentPage: 'pageNum'
+          accountId: {
+            value: this.$route.params.accountId
+          }
         }
       }
     }
