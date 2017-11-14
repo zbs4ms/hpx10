@@ -49,6 +49,6 @@ public class RegisterCompleteVO {
     @ApiModelProperty("商品描述")
     private String des;     //商品描述
     @ApiModelProperty("优惠金额")
-    private BigDecimal discount;  //优惠金额
+    private BigDecimal yhje;  //优惠金额
 
 }

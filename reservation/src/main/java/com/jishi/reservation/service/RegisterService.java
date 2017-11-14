@@ -186,7 +186,7 @@ public class RegisterService {
             completeVO.setSubject(subject);
             completeVO.setDes(subject);
             completeVO.setOrderId(order.getId());
-            completeVO.setDiscount(yhjeFormat);
+            completeVO.setYhje(yhjeFormat);
             register.setHx(hx);
             registerMapper.updateByPrimaryKeySelective(register);
 
@@ -233,7 +233,7 @@ public class RegisterService {
             completeVO.setSubject(subject);
             completeVO.setDes(subject);
             completeVO.setOrderId(orderInfo.getId());
-            completeVO.setDiscount(orderInfo.getDiscount());
+            completeVO.setYhje(orderInfo.getDiscount());
             completeVO.setSubject(orderInfo.getSubject());
             completeVO.setDes(orderInfo.getSubject());
             completeVO.setPatient(register.getPatientName());
