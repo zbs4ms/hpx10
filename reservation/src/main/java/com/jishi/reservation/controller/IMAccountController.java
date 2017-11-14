@@ -2,6 +2,7 @@ package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jishi.reservation.controller.base.MyBaseController;
+import com.jishi.reservation.controller.protocol.IMAccountVO;
 import com.jishi.reservation.controller.protocol.IMChatInfo;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.dao.models.IMAccessRecord;
@@ -36,10 +37,10 @@ public class IMAccountController extends MyBaseController {
     @Autowired
     private IMAccountService imAccountService;
 
-    @ApiOperation(value = "获取普通用户im token，该token可用于im客户端登录，没有则创建", response = String.class)
-    @RequestMapping(value = "/getUserToken", method = RequestMethod.GET)
+    @ApiOperation(value = "获取普通用户im账号，token可用于im客户端登录，没有则创建", response = IMAccountVO.class)
+    @RequestMapping(value = "/getUserAccount", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject getUserToken(HttpServletRequest request, HttpServletResponse response,
+    public JSONObject getUserAccount(HttpServletRequest request, HttpServletResponse response,
                        @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId", required = false) Long accountId) throws Exception {
 
         if (accountId == null) {
@@ -49,16 +50,39 @@ public class IMAccountController extends MyBaseController {
             }
         }
 
-        String imToken = imAccountService.getUserIMAccount(accountId).getImToken();
-        return ResponseWrapper().addData(imToken).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        IMAccount imAccount = imAccountService.getUserIMAccount(accountId);
+        IMAccountVO imAccountVO =new IMAccountVO();
+        imAccountVO.setImAccId(imAccount.getImAccId());
+        imAccountVO.setImToken(imAccountVO.getImToken());
+        return ResponseWrapper().addData(imAccountVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
-    @ApiOperation(value = "获取医生im token，该token可用于im客户端登录，没有则创建", response = String.class)
-    @RequestMapping(value = "/getDoctorToken", method = RequestMethod.GET)
+    @ApiOperation(value = "获取医生im账号，token可用于im客户端登录，没有则创建", response = IMAccountVO.class)
+    @RequestMapping(value = "/getDoctorAccount", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject getDoctorToken(HttpServletRequest request, HttpServletResponse response,
-                               @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
-        String imToken = imAccountService.getDoctorIMAccount(doctorId).getImToken();
+    public JSONObject getDoctorAccount(HttpServletRequest request, HttpServletResponse response,
+                                     @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
+        IMAccount imAccount = imAccountService.getDoctorIMAccount(doctorId);
+        IMAccountVO imAccountVO =new IMAccountVO();
+        imAccountVO.setImAccId(imAccount.getImAccId());
+        imAccountVO.setImToken(imAccountVO.getImToken());
+        return ResponseWrapper().addData(imAccountVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+    @ApiOperation(value = "不建议使用的接口，获取普通用户im token", response = String.class)
+    @RequestMapping(value = "/getUserToken", method = RequestMethod.GET)
+    @ResponseBody
+    @Deprecated
+    public JSONObject getUserToken(HttpServletRequest request, HttpServletResponse response,
+                                   @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId", required = false) Long accountId) throws Exception {
+        if (accountId == null) {
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1L)){
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+            }
+        }
+
+        String imToken = imAccountService.getUserIMAccount(accountId).getImToken();
         return ResponseWrapper().addData(imToken).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 

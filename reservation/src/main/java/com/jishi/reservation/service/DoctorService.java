@@ -36,6 +36,9 @@ public class DoctorService {
     @Autowired
     DepartmentMapper departmentMapper;
 
+    @Autowired
+    private IMAccountService imAccountService;
+
     /**
      * 增加科室
      * @param doctorName
@@ -132,6 +135,7 @@ public class DoctorService {
         modifyDoctor.setGoodDescribe(goodDescribe!=null?goodDescribe:oldDoctor.getGoodDescribe());
         modifyDoctor.setEnable(enable!=null?enable:oldDoctor.getEnable());
         Preconditions.checkState(doctorMapper.updateByPrimaryKeySelective(modifyDoctor) == 1,"更新失败!");
+        imAccountService.updateDoctor(doctorId);
     }
 
     public List<Doctor> queryDoctorByDepartment(Long departmentId, Integer enable) {
