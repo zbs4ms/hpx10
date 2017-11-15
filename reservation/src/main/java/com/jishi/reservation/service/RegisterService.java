@@ -84,12 +84,12 @@ public class RegisterService {
     public RegisterCompleteVO addRegister(String orderNumber,Long accountId,String brid,Long departmentId,String doctorId,String xmid,
                                           Long agreedTime,String timeInterval,String doctorName,
                                           String price,String subject,String brName,String department,String hm) throws Exception {
-        if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
-            throw new Exception("账户信息为空.");
-        if(Helpers.isNullOrEmpty(departmentId)  || departmentService.queryDepartment(departmentId,null) == null)
-            throw new Exception("科室信息为空.");
-        if(Helpers.isNullOrEmpty(doctorId)  || doctorService.queryDoctor(null,doctorId,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
-            throw new Exception("医生信息为空.");
+//        if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
+//            throw new Exception("账户信息为空.");
+//        if(Helpers.isNullOrEmpty(departmentId)  || departmentService.queryDepartment(departmentId,null) == null)
+//            throw new Exception("科室信息为空.");
+//        if(Helpers.isNullOrEmpty(doctorId)  || doctorService.queryDoctor(null,doctorId,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
+//            throw new Exception("医生信息为空.");
 
 
         if(orderNumber == null || "".equals(orderNumber)){
