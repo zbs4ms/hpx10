@@ -160,7 +160,7 @@ public class RegisterController extends MyBaseController {
             }
         }
         List<RegisterVO> registerVOList = new ArrayList<>();
-        PageInfo pageInfo = registerService.queryRegisterPageInfo(registerId, accountId, status, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum, pageSize, orderBy, desc));
+        PageInfo pageInfo = registerService.queryRegisterPageInfo(registerId, accountId, status, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum, pageSize, "id", true));
         List<Register> registerList = pageInfo.getList();
 
         List<Account> accountList = accountService.queryAccount(accountId, null, null);
