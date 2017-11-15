@@ -181,7 +181,7 @@ public class RegisterService {
             completeVO.setPrice(truePriceFormat);
             //completeVO.setPrice(BigDecimal.valueOf(0.01));
             completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
-            completeVO.setOrderCode(orderNumber);
+            completeVO.setOrderCode(orderNumberGenerate);
             completeVO.setSerialNumber(serialCode);
             completeVO.setSubject(subject);
             completeVO.setDes(subject);
