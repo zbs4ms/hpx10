@@ -1,7 +1,10 @@
 #!/usr/bin/expect -f
-spawn ssh root@39.108.117.23
+set host root@39.108.117.235
+set psd Jskj1010
+
+spawn ssh $host
 expect "*password:"
-send "Jskj1010\r"
+send "$psd\r"
 expect "\n"
 send "cd /code/hpx10/admin-web\r"
 expect "\n"

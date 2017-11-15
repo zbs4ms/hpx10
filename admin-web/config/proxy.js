@@ -1,6 +1,6 @@
 module.exports =  {
   '/reservation': {
-    target: 'http://doc.hpx10.com:50002/',
+    target: 'http://doc.hpx10.com/',
     changeOrigin: true,
     // pathRewrite: {
     //   '^/admin': '/admin'
