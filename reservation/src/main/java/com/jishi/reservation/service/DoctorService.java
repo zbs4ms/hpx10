@@ -205,7 +205,7 @@ public class DoctorService {
         return doctorMapper.queryById(id);
     }
 
-    public Doctor queryDoctorByHid(Long hDoctorId) {
+    public Doctor queryDoctorByHid(String hDoctorId) {
         return doctorMapper.queryByHdoctorId(hDoctorId);
     }
 

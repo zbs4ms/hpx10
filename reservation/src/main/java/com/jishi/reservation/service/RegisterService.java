@@ -81,18 +81,18 @@ public class RegisterService {
      * @throws Exception
      */
     @Transactional
-    public RegisterCompleteVO addRegister(String orderNmuber,Long accountId,String brid,Long departmentId,Long doctorId,String xmid,
+    public RegisterCompleteVO addRegister(String orderNumber,Long accountId,String brid,Long departmentId,String doctorId,String xmid,
                                           Long agreedTime,String timeInterval,String doctorName,
                                           String price,String subject,String brName,String department,String hm) throws Exception {
         if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
             throw new Exception("账户信息为空.");
         if(Helpers.isNullOrEmpty(departmentId)  || departmentService.queryDepartment(departmentId,null) == null)
             throw new Exception("科室信息为空.");
-        if(Helpers.isNullOrEmpty(doctorId)  || doctorService.queryDoctor(doctorId,null,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
+        if(Helpers.isNullOrEmpty(doctorId)  || doctorService.queryDoctor(null,doctorId,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
             throw new Exception("医生信息为空.");
 
 
-        if(orderNmuber == null || "".equals(orderNmuber)){
+        if(orderNumber == null || "".equals(orderNumber)){
             Date agreeDate = new Date(agreedTime);
 
             //his 锁定号源,返回hx 号序
@@ -134,8 +134,8 @@ public class RegisterService {
             order.setDes(subject);
             order.setPrice(truePriceFormat);
             order.setEnable(EnableEnum.EFFECTIVE.getCode());
-            String orderNumber = AlibabaPay.generateUniqueOrderNumber();
-            order.setOrderNumber(orderNumber);
+            String orderNumberGenerate = AlibabaPay.generateUniqueOrderNumber();
+            order.setOrderNumber(orderNumberGenerate);
             //order.setRegisterId(register.getId());
             order.setStatus(OrderStatusEnum.WAIT_PAYED.getCode());
             order.setPayType(PayEnum.ALI.getCode());
@@ -196,7 +196,7 @@ public class RegisterService {
             log.info("传入了订单号，更新新的订单号，带到支付宝");
             log.info("检查订单状态,,");
             String newOrderNumber = AlibabaPay.generateUniqueOrderNumber();
-            OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(null, orderNmuber);
+            OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(null, orderNumber);
             RegisterCompleteVO completeVO = new RegisterCompleteVO();
 
             if(!orderInfo.getStatus().equals(OrderStatusEnum.WAIT_PAYED.getCode()) || !orderInfo.getType().equals(OrderTypeEnum.REGISTER.getCode())){
@@ -320,7 +320,7 @@ public class RegisterService {
      * @param enable
      * @throws Exception
      */
-    public void modifyRegister(Long registerId,Long accountId,Long patientinfoId,Long departmentId,Long doctorId,Integer status,Date agreedTime,Integer enable) throws Exception {
+    public void modifyRegister(Long registerId,Long accountId,Long patientinfoId,Long departmentId,String doctorId,Integer status,Date agreedTime,Integer enable) throws Exception {
         if(Helpers.isNullOrEmpty(registerId) || queryRegister(registerId,null,null,null) == null)
             throw new Exception("预约信息为空.");
         if(!Helpers.isNullOrEmpty(accountId) && accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
@@ -329,7 +329,7 @@ public class RegisterService {
             throw new Exception("就诊人信息为空.");
         if(!Helpers.isNullOrEmpty(departmentId) && departmentService.queryDepartment(departmentId,null) == null)
             throw new Exception("科室信息为空.");
-        if(!Helpers.isNullOrEmpty(doctorId) && doctorService.queryDoctor(doctorId,null,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
+        if(!Helpers.isNullOrEmpty(doctorId) && doctorService.queryDoctor(null,doctorId,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
             throw new Exception("医生信息为空.");
         Register newRegister = new Register();
         newRegister.setId(registerId);

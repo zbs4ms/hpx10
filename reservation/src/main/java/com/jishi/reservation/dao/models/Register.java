@@ -31,8 +31,8 @@ public class Register {
     private Long departmentId;
     @ApiModelProperty("科室名称")
     private String  department;
-    @ApiModelProperty("预约的医生ID")
-    private Long doctorId;
+    @ApiModelProperty("预约的医生ID his存的医生id")
+    private String doctorId;
     @ApiModelProperty("预约时间")
     private Date agreedTime;
     @ApiModelProperty("状态（0  预约成功 1 待支付 2 取消预约")

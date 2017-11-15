@@ -29,7 +29,7 @@ public class RegisterAdminVO {
     @ApiModelProperty("医生姓名")
     private String doctorName;
     @ApiModelProperty("doctorId")
-    private Long doctorId;
+    private String doctorId;
     @ApiModelProperty("科室名称")
     private String department;
     @ApiModelProperty("科室id")

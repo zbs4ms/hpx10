@@ -100,7 +100,7 @@ public class RegisterController extends MyBaseController {
                                   @ApiParam(value = "项目id", required = false) @RequestParam(value = "xmid", required = false) String xmid,
 
 
-            @ApiParam(value = "预约的医生ID", required = false) @RequestParam(value = "doctorId", required = false) Long doctorId,
+            @ApiParam(value = "预约的医生ID 是his系统存的医生id,即h_id", required = false) @RequestParam(value = "doctorId", required = false) String doctorId,
             @ApiParam(value = "预约的时间段", required = false) @RequestParam(value = "timeInterval", required = false) String timeInterval,
             @ApiParam(value = "预约时间", required = false) @RequestParam(value = "agreedTime", required = false) Long agreedTime
             ) throws Exception {
@@ -211,7 +211,7 @@ public class RegisterController extends MyBaseController {
             @ApiParam(value = "病人ID", required = false) @RequestParam(value = "patientinfoId", required = false) Long patientinfoId,
             @ApiParam(value = "状态", required = false) @RequestParam(value = "status", required = false) Integer status,
             @ApiParam(value = "科室ID", required = false) @RequestParam(value = "departmentId", required = false) Long departmentId,
-            @ApiParam(value = "预约的医生ID", required = false) @RequestParam(value = "doctorId", required = false) Long doctorId,
+            @ApiParam(value = "预约的医生ID", required = false) @RequestParam(value = "doctorId", required = false) String doctorId,
             @ApiParam(value = "预约时间", required = false) @RequestParam(value = "agreedTime", required = false) String agreedTime) throws Exception {
         Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
 
