@@ -117,7 +117,7 @@ public class OutpatientQueueWorker {
         for (Register register : registerList) {
             OutpatientQueueDetailVO vo = new OutpatientQueueDetailVO();
             vo.setBrId(register.getBrId());
-            vo.setDepartId(register.getDepartmentId());
+            vo.setDepartId(Long.valueOf(register.getDepartmentId()));
             vo.setDepartName(register.getDepartment());
             //vo.setDoctorId(register.getDoctorId());
             vo.setDoctorHisId(register.getDoctorId());
