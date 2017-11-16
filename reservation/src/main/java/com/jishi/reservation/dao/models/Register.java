@@ -28,7 +28,7 @@ public class Register {
     @ApiModelProperty("医生名称")
     private String doctorName;
     @ApiModelProperty("科室ID")
-    private Long departmentId;
+    private String departmentId;
     @ApiModelProperty("科室名称")
     private String  department;
     @ApiModelProperty("预约的医生ID his存的医生id")

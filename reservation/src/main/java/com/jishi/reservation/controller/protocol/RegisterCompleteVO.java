@@ -50,5 +50,9 @@ public class RegisterCompleteVO {
     private String des;     //商品描述
     @ApiModelProperty("优惠金额")
     private BigDecimal yhje;  //优惠金额
+    @ApiModelProperty("状态")
+    private Integer state;  //优惠金额
+
+
 
 }

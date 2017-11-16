@@ -13,6 +13,7 @@ import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.*;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.PayEnum;
+import com.jishi.reservation.service.enumPackage.RegisterErrCodeEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.support.JpushSupport;
@@ -94,7 +95,7 @@ public class RegisterController extends MyBaseController {
                                   @ApiParam(value = "病人名称", required = false) @RequestParam(value = "brName", required = false) String brName,
                                   @ApiParam(value = "医生名称", required = false) @RequestParam(value = "doctorName", required = false) String doctorName,
                                   @ApiParam(value = "病人ID", required = false) @RequestParam(value = "brid", required = false) String brid,
-                                  @ApiParam(value = "科室ID", required = false) @RequestParam(value = "departmentId", required = false) Long departmentId,
+                                  @ApiParam(value = "科室ID", required = false) @RequestParam(value = "departmentId", required = false) String departmentId,
                                   @ApiParam(value = "科室名称", required = false) @RequestParam(value = "department", required = false) String department,
                                   @ApiParam(value = "his的号码 HM", required = false) @RequestParam(value = "hm", required = false) String hm,
                                   @ApiParam(value = "项目id", required = false) @RequestParam(value = "xmid", required = false) String xmid,
@@ -127,13 +128,32 @@ public class RegisterController extends MyBaseController {
 
         // 10.17  在此处加入订单。。
         RegisterCompleteVO completeVO = registerService.addRegister(orderNmuer,accountId, brid, departmentId, doctorId,xmid, agreedTime,timeInterval,doctorName,price,subject,brName,department,hm);
-        if(completeVO == null){
-            return ResponseWrapper().addMessage("该医生挂号号源已满，请选择其他医生。").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+
+
+
+
+        //医生挂号源已满
+        if(completeVO.getState() == RegisterErrCodeEnum.DOCTOR_FULL.getCode()){
+            return ResponseWrapper().addMessage(RegisterErrCodeEnum.DOCTOR_FULL.getDesc()).ExeSuccess(ReturnCodeEnum.FAILED.getCode());
         }
-        if(completeVO.getOrderId().equals(-1L)){
-            return ResponseWrapper().addMessage("该订单不是待支付状态或不是挂号订单，请检查。").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+        //订单状态不正确，不是待支付，或者不是挂号订单  （只传订单号时）
+        if(completeVO.getState() == RegisterErrCodeEnum.ORDER_STATE_NOT_MATCH.getCode()){
+            return ResponseWrapper().addMessage(RegisterErrCodeEnum.ORDER_STATE_NOT_MATCH.getDesc()).ExeSuccess(ReturnCodeEnum.FAILED.getCode());
 
         }
+
+        //病人信息和挂号类别不符
+        if(completeVO.getState() == RegisterErrCodeEnum.PATIENT_NOT_MATCH.getCode()){
+            return ResponseWrapper().addMessage(RegisterErrCodeEnum.PATIENT_NOT_MATCH.getDesc()).ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+
+        }
+
+        //病人信息和挂号号源相冲突 例如同一病人同一天同一科室同一医生不能挂多次
+        if(completeVO.getState() == RegisterErrCodeEnum.LIMIT_FOR_PATIENT.getCode()){
+            return ResponseWrapper().addMessage(RegisterErrCodeEnum.LIMIT_FOR_PATIENT.getDesc()).ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+
+        }
+
         jpushSupport.sendPush(accountService.queryAccountById(accountId).getPushId(), Constant.REGISTER_SUCCESS_MGS);
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -188,7 +208,7 @@ public class RegisterController extends MyBaseController {
             registerVO.setAccount(accountList.size() > 0 ? accountList.get(0) : null);
             Department department = new Department();
             department.setName(register.getDepartment());
-            department.setId(register.getDepartmentId());
+            department.setId(Long.valueOf(register.getDepartmentId()));
             registerVO.setDepartment(department);
             PatientInfo patientInfo = patientInfoService.queryByBrId(register.getBrId());
 
@@ -200,32 +220,32 @@ public class RegisterController extends MyBaseController {
         return ResponseWrapper().addData(pageInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
-    @ApiOperation(value = "修改预约信息")
-    @RequestMapping(value = "modifyRegister", method = RequestMethod.POST)
-    @ResponseBody
-    public JSONObject modifyRegister(HttpServletRequest request,
-                                     HttpServletResponse response,
-
-                                     @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId,
-            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-            @ApiParam(value = "病人ID", required = false) @RequestParam(value = "patientinfoId", required = false) Long patientinfoId,
-            @ApiParam(value = "状态", required = false) @RequestParam(value = "status", required = false) Integer status,
-            @ApiParam(value = "科室ID", required = false) @RequestParam(value = "departmentId", required = false) Long departmentId,
-            @ApiParam(value = "预约的医生ID", required = false) @RequestParam(value = "doctorId", required = false) String doctorId,
-            @ApiParam(value = "预约时间", required = false) @RequestParam(value = "agreedTime", required = false) String agreedTime) throws Exception {
-        Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
-
-        if (accountId == null) {
-            //从登陆信息中获取登陆者ID
-            accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1L)){
-                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-            }
-        }
-        registerService.modifyRegister(registerId, accountId, patientinfoId, departmentId, doctorId, status, new Date(agreedTime), null);
-        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-    }
+//    @ApiOperation(value = "修改预约信息")
+//    @RequestMapping(value = "modifyRegister", method = RequestMethod.POST)
+//    @ResponseBody
+//    public JSONObject modifyRegister(HttpServletRequest request,
+//                                     HttpServletResponse response,
+//
+//                                     @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId,
+//            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+//            @ApiParam(value = "病人ID", required = false) @RequestParam(value = "patientinfoId", required = false) Long patientinfoId,
+//            @ApiParam(value = "状态", required = false) @RequestParam(value = "status", required = false) Integer status,
+//            @ApiParam(value = "科室ID", required = false) @RequestParam(value = "departmentId", required = false) Long departmentId,
+//            @ApiParam(value = "预约的医生ID", required = false) @RequestParam(value = "doctorId", required = false) String doctorId,
+//            @ApiParam(value = "预约时间", required = false) @RequestParam(value = "agreedTime", required = false) String agreedTime) throws Exception {
+//        Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
+//
+//        if (accountId == null) {
+//            //从登陆信息中获取登陆者ID
+//            accountId = accountService.returnIdByToken(request);
+//            if(accountId.equals(-1L)){
+//                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
+//                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+//            }
+//        }
+//        registerService.modifyRegister(registerId, accountId, patientinfoId, departmentId, doctorId, status, new Date(agreedTime), null);
+//        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+//    }
 
     @ApiOperation(value = "预约信息置为无效 取消预约")
     @RequestMapping(value = "failureRegister", method = RequestMethod.DELETE)

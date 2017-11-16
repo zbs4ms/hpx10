@@ -33,7 +33,7 @@ public class RegisterAdminVO {
     @ApiModelProperty("科室名称")
     private String department;
     @ApiModelProperty("科室id")
-    private Long departmentId;
+    private String departmentId;
     @ApiModelProperty("预约状态 过期未到诊 1，正常就诊 2 ，预约就诊 3")
     private String status;
 

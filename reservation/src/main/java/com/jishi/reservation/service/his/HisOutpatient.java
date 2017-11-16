@@ -18,6 +18,9 @@ import java.rmi.RemoteException;
 @Service
 public class HisOutpatient {
 
+
+
+
     /**
      * 	获取挂号号源
      * @param brid 病人ID
@@ -83,7 +86,7 @@ public class HisOutpatient {
      * @return
      * @throws Exception
      */
-    public Boolean checkIsValid(String brid,String ghhm) throws Exception {
+    public Boolean checkIsPatientMatchRegister(String brid,String ghhm) throws Exception {
 
 
         StringBuffer sb = new StringBuffer();
@@ -97,6 +100,26 @@ public class HisOutpatient {
             return true;
         }
         return false;
+    }
+
+    public Boolean checkIsRegisterLimit(String brid, String hm, String registerTime, String departmentId) throws Exception {
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("<BRID>").append(brid).append("</BRID>");
+        sb.append("<HM>").append(hm).append("</HM>");
+
+        sb.append("<GHSJ>").append(registerTime).append("</GHSJ>");
+        sb.append("<KSID>").append(departmentId).append("</KSID>");
+
+
+        String reData = HisTool.toXMLString("Register.RegisterCheck.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            HisTool.getHisDataparam(me,"Register.RegisterCheck.Query");
+            return true;
+        }
+        return false;
+
     }
 
 
@@ -300,11 +323,6 @@ public class HisOutpatient {
         }
         return null;
     }
-
-
-
-
-
 
 
 
@@ -516,5 +534,7 @@ public class HisOutpatient {
         ZL_InformationServiceSoap_PortType service = locator.getZL_InformationServiceSoap();
         return service.outPatient(reData);
     }
+
+
 
 }
