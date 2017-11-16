@@ -221,7 +221,7 @@ public class RegisterService {
             OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(null, orderNumber);
 
             if(!orderInfo.getStatus().equals(OrderStatusEnum.WAIT_PAYED.getCode()) || !orderInfo.getType().equals(OrderTypeEnum.REGISTER.getCode())){
-                completeVO.setOrderId(-1L);
+                completeVO.setState(RegisterErrCodeEnum.ORDER_STATE_NOT_MATCH.getCode());
                 return completeVO;
             }
             orderInfo.setOrderNumber(newOrderNumber);
