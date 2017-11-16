@@ -68,7 +68,8 @@ public class RegisterService {
     @Autowired
     AccountMapper accountMapper;
 
-
+    @Autowired
+    AlibabaPay alibabaPay;
 
 
     /**
@@ -217,13 +218,21 @@ public class RegisterService {
 
             log.info("传入了订单号，更新新的订单号，带到支付宝");
             log.info("检查订单状态,,");
+            //生成新的订单号，带去支付宝，不然支付宝会找到重复订单，支付失败
             String newOrderNumber = AlibabaPay.generateUniqueOrderNumber();
             OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(null, orderNumber);
+
 
             if(!orderInfo.getStatus().equals(OrderStatusEnum.WAIT_PAYED.getCode()) || !orderInfo.getType().equals(OrderTypeEnum.REGISTER.getCode())){
                 completeVO.setState(RegisterErrCodeEnum.ORDER_STATE_NOT_MATCH.getCode());
                 return completeVO;
             }
+            //订单的用户id要和当前操作者的用户id相匹配
+            if(!orderInfo.getAccountId().equals(accountId)){
+                completeVO.setState(RegisterErrCodeEnum.ORDER_NUMBER_NOT_MATCH_ACCOUNT.getCode());
+                return completeVO;
+            }
+
             orderInfo.setOrderNumber(newOrderNumber);
 
 
@@ -391,12 +400,18 @@ public class RegisterService {
         String s = hisOutpatient.unlockRegister(register.getHm(), rq, register.getHx());
         if(s != null && !"".equals(s)){
             log.info("预约取消成功..");
-            registerMapper.updateByPrimaryKeySelective(register);
-            orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
-            return 0;
+            if(alibabaPay.refund(orderInfo.getOrderNumber())){
+                registerMapper.updateByPrimaryKeySelective(register);
+                orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+                return 0;
+            }else {
+                log.info("退款失败..订单号："+orderInfo.getOrderNumber());
+                return 1;
+            }
+
 
         }else {
-            log.info("预约请求失败");
+            log.info("预约取消失败");
             return 1;
         }
 

@@ -45,6 +45,7 @@ public class PayConstant {
     public final static String SERVER_URL = "http://openapi.alipay.com/gateway.do";
     public final static String DATA_FORMAT = "json";
     public final static String CHARSET = "utf-8";
+    public final static String CHARSET_GBK = "GBK";
     public final static String ENCRYPT = "RSA2";
     //销售产品码，商家和支付宝签约的产品码，为固定值QUICK_MSECURITY_PAY
     public final static String QUICK_MSECURITY_PAY = "QUICK_MSECURITY_PAY";

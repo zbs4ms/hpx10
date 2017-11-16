@@ -7,7 +7,9 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
+import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
+import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.doraemon.base.util.RandomUtil;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.protocol.OrderGenerateVO;
@@ -39,6 +41,44 @@ public class AlibabaPay {
 
     @Autowired
     OrderInfoMapper orderInfoMapper;
+
+
+    /**
+     * 退款
+     * @param orderNumber 支付宝的订单号
+     * @return
+     * @throws Exception
+     */
+    public Boolean refund(String orderNumber) throws Exception {
+
+
+         OrderInfo orderInfo =  orderInfoMapper.queryByNumber(orderNumber);
+         log.info("订单号为"+orderNumber+"的订单申请退款，退款金额："+orderInfo.getPrice());
+         Preconditions.checkState(orderInfo.getStatus()==OrderStatusEnum.PAYED.getCode(),"该笔订单未支付，不能退款");
+        AlipayClient alipayClient = new DefaultAlipayClient(PayConstant.SERVER_URL,PayConstant.APP_ID,PayConstant.APP_PRIVATE_KEY,PayConstant.DATA_FORMAT,PayConstant.CHARSET_GBK,PayConstant.ALI_PAY_PUBLIC_KEY,PayConstant.ENCRYPT);
+        AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
+        request.setBizContent("{" +
+
+                "\"trade_no\":"+orderInfo.getThirdOrderNumber()+","+
+
+
+                "\"refund_amount\":"+orderInfo.getPrice()+"," +
+                "\"refund_reason\":\"正常退款\"" +
+                "  }");
+        AlipayTradeRefundResponse response = alipayClient.execute(request);
+        log.info("退款详情：\n"+JSONObject.toJSONString(response));
+        if(response.isSuccess()){
+            System.out.println("退款成功");
+            return true;
+        } else {
+            System.out.println("退款失败");
+
+            return false;
+        }
+
+    }
+
+
 
     public OrderGenerateVO generateOrder(String orderNumber,String subject, BigDecimal price) throws Exception {
         AlipayClient client = new DefaultAlipayClient(
@@ -125,9 +165,10 @@ public class AlibabaPay {
                     log.info("订单号："+outTradeNo);
                     OrderInfo orderInfo =  orderInfoMapper.queryByOutTradeNo(outTradeNo);
                     Preconditions.checkNotNull(orderInfo,"找不到该订单信息");
+
                     log.info("订单信息：\n"+JSONObject.toJSONString(orderInfo));
-                    // TODO 暂时注释，用于调试
-                    //Preconditions.checkState(String.valueOf(orderInfo.getPrice()).equals(amount),"支付宝传递的订单金额与系统的订单金额不符合，回调失败");
+
+                    Preconditions.checkState(String.valueOf(orderInfo.getPrice()).equals(amount),"支付宝传递的订单金额与系统的订单金额不符合，回调失败");
                     //todo  调取his的门诊号缴费单
 
                     //改变订单状态和支付时间

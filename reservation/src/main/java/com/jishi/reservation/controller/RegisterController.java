@@ -154,6 +154,12 @@ public class RegisterController extends MyBaseController {
 
         }
 
+        //该笔订单与操作用户不符，不能继续
+        if(completeVO.getState() == RegisterErrCodeEnum.ORDER_NUMBER_NOT_MATCH_ACCOUNT.getCode()){
+            return ResponseWrapper().addMessage(RegisterErrCodeEnum.ORDER_NUMBER_NOT_MATCH_ACCOUNT.getDesc()).ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+
+        }
+
         jpushSupport.sendPush(accountService.queryAccountById(accountId).getPushId(), Constant.REGISTER_SUCCESS_MGS);
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
