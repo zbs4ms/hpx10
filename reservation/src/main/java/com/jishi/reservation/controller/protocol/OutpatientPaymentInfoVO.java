@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -34,9 +35,9 @@ public class OutpatientPaymentInfoVO implements Comparable<OutpatientPaymentInfo
     @ApiModelProperty("是否预约，0-挂号并缴费，1-预约不缴费")
     private int hasRegister;
     @ApiModelProperty("金额")
-    private double paymentAmount;
+    private BigDecimal paymentAmount;
     @ApiModelProperty("未支付金额")
-    private double unpaidAmount;
+    private BigDecimal unpaidAmount;
     @ApiModelProperty("未支付单据列表，以','分隔")
     private String unpaidDocIds;
     @ApiModelProperty("医生ID")

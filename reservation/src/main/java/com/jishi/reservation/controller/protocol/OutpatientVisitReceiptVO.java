@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class OutpatientVisitReceiptVO {
     @ApiModelProperty("医生姓名")
     private String doctor;
     @ApiModelProperty("单据费用")
-    private double docAmount;
+    private BigDecimal docAmount;
     @ApiModelProperty("费目列表")
     private List<ReceiptItem> itemLIst;
 

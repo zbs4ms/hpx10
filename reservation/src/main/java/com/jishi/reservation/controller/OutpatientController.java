@@ -4,8 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.protocol.*;
 import com.jishi.reservation.dao.models.OrderInfo;
+import com.jishi.reservation.dao.models.QueueLength;
 import com.jishi.reservation.service.AccountService;
-import com.jishi.reservation.service.OrderInfoService;
+import com.jishi.reservation.service.OutpatientQueueService;
 import com.jishi.reservation.service.OutpatientService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import io.swagger.annotations.Api;
@@ -36,7 +37,7 @@ public class OutpatientController extends MyBaseController {
     private OutpatientService outpatientService;
 
     @Autowired
-    OrderInfoService orderInfoService;
+    private OutpatientQueueService outpatientQueueService;
 
 
     @ApiOperation(value = "门诊缴费列表，默认处理收费单，挂号单不处理", response = OutpatientPaymentInfoVO.class)
@@ -50,7 +51,8 @@ public class OutpatientController extends MyBaseController {
         if (accountId == null) {
           accountId = accountService.returnIdByToken(request);
           if(accountId.equals(-1L)){
-            return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+              response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
+              return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
           }
         }
         List<OutpatientPaymentInfoVO> outpatientPamentInfo = outpatientService.queryOutpatientPamentInfo(accountId, status, startPage, pageSize);
@@ -60,7 +62,7 @@ public class OutpatientController extends MyBaseController {
     @ApiOperation(value = "生成订单", response = OrderInfo.class)
     @RequestMapping(value = "generateOrder", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject generateOrder(HttpServletRequest request,HttpServletResponse response,
+    public JSONObject generateOrder(HttpServletRequest request, HttpServletResponse response,
             @ApiParam(value = "accountId 通过token找到", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "预交的名称 eg:...门诊缴费", required = true) @RequestParam(value = "subject", required = true) String subject,
             @ApiParam(value = "交易的金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
@@ -82,22 +84,6 @@ public class OutpatientController extends MyBaseController {
         return ResponseWrapper().addData(orderInfo).addMessage("订单生成成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
-    /*
-    @ApiOperation(value = "某个医嘱的单据缴费详情")
-    @RequestMapping(name="/adviceReceipt", method = RequestMethod.GET)
-    @ResponseBody
-    public JSONObject singleAdviceReceipt(HttpServletRequest request, HttpServletResponse response,
-            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId) throws Exception {
-        if (accountId == null) {
-            accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1L)){
-              return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-            }
-        }
-        return ResponseWrapper().addData().addMessage("添加成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-    }
-    */
-
     @ApiOperation(value = "门诊缴费确认(单个)", response = OrderVO.class)
     @RequestMapping(value="/payConfirm", method = RequestMethod.POST)
     @ResponseBody
@@ -107,6 +93,7 @@ public class OutpatientController extends MyBaseController {
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1L)){
+                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
                 return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
@@ -124,7 +111,8 @@ public class OutpatientController extends MyBaseController {
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1L)){
-              return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
         OrderVO orderVO = outpatientService.batchpayConfirm(orderNumber);
@@ -142,6 +130,7 @@ public class OutpatientController extends MyBaseController {
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1L)){
+                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
                 return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
@@ -154,10 +143,11 @@ public class OutpatientController extends MyBaseController {
     @ResponseBody
     public JSONObject visitReceipt(HttpServletRequest request, HttpServletResponse response,
                                        @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-                                       @ApiParam(value = "挂号单号", required = false) @RequestParam(value = "registerNum", required = false) String registerNum) throws Exception {
+                                       @ApiParam(value = "挂号单号", required = true) @RequestParam(value = "registerNum") String registerNum) throws Exception {
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1L)){
+                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
                 return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
@@ -170,14 +160,85 @@ public class OutpatientController extends MyBaseController {
     @ResponseBody
     public JSONObject queryVisitPrescription(HttpServletRequest request, HttpServletResponse response,
                                            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-                                           @ApiParam(value = "挂号单号", required = false) @RequestParam(value = "registerNum", required = false) String registerNum) throws Exception {
+                                           @ApiParam(value = "挂号单号", required = true) @RequestParam(value = "registerNum") String registerNum) throws Exception {
         if (accountId == null) {
             accountId = accountService.returnIdByToken(request);
             if(accountId.equals(-1L)){
+                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
                 return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
         List<OutpatientVisitPrescriptionVO> prescriptionVOList = outpatientService.queryVisitPrescription(registerNum);
         return ResponseWrapper().addData(prescriptionVOList).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
+
+    @ApiOperation(value = "就诊排队信息(根据token或brid获取)", response = OutpatientQueueDetailVO.class)
+    @RequestMapping(value="/visitQueueInfo", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject visitQueueInfo(HttpServletRequest request, HttpServletResponse response,
+                                 @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+                                 @ApiParam(value = "brId(his病人ID)", required = false) @RequestParam(value = "brId", required = false) String brId) throws Exception {
+        if (accountId == null) {
+            accountId = accountService.returnIdByToken(request);
+            if(accountId.equals(-1L)){
+                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
+                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
+            }
+        }
+        List<OutpatientQueueDetailVO> visitQueueInfoList = outpatientQueueService.queryVisitQueueInfo(accountId, brId);
+        return ResponseWrapper().addData(visitQueueInfoList).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+    @ApiOperation(value = "添加就诊排队通知队列长度", response = String.class)
+    @RequestMapping(value="/queue/addDoctorNotifyLength", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject addDoctorNotifyLength(
+                     @ApiParam(value = "his医生id", required = true) @RequestParam(value = "doctorHisId") String doctorHisId,
+                     @ApiParam(value = "通知队列长度", required = true) @RequestParam(value = "length") Integer length) throws Exception {
+        boolean rslt = outpatientQueueService.addQueueLength(doctorHisId, length, false);
+        return rslt ? ResponseWrapper().addMessage("success").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
+                      ResponseWrapper().addMessage("failed").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+    }
+
+    @ApiOperation(value = "添加就诊排队通知队列长度", response = String.class)
+    @RequestMapping(value="/queue/addDepartNotifyLength", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject addDepartNotifyLength(
+                                           @ApiParam(value = "his部门id", required = true) @RequestParam(value = "departHisId") String departHisId,
+                                           @ApiParam(value = "通知队列长度", required = true) @RequestParam(value = "length") Integer length) throws Exception {
+        boolean rslt = outpatientQueueService.addQueueLength(departHisId, length, true);
+        return rslt ? ResponseWrapper().addMessage("success").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
+                      ResponseWrapper().addMessage("failed").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+    }
+
+    @ApiOperation(value = "修改就诊排队通知队列长度", response = String.class)
+    @RequestMapping(value="/queue/updateDoctorNotifyLength", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject updateDoctorNotifyLength(
+                                            @ApiParam(value = "his医生id", required = true) @RequestParam(value = "doctorHisId") String doctorHisId,
+                                            @ApiParam(value = "通知队列长度", required = true) @RequestParam(value = "length") Integer length) throws Exception {
+        boolean rslt = outpatientQueueService.updateQueueLength(doctorHisId, length, false);
+        return rslt ? ResponseWrapper().addMessage("success").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
+                      ResponseWrapper().addMessage("failed").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+    }
+
+    @ApiOperation(value = "修改就诊排队通知队列长度", response = String.class)
+    @RequestMapping(value="/queue/updateDepartNotifyLength", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject updateDepartNotifyLength(
+                                            @ApiParam(value = "his部门id", required = true) @RequestParam(value = "departHisId") String departHisId,
+                                            @ApiParam(value = "通知队列长度", required = true) @RequestParam(value = "length") Integer length) throws Exception {
+        boolean rslt = outpatientQueueService.updateQueueLength(departHisId, length, true);
+        return rslt ? ResponseWrapper().addMessage("success").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode()) :
+                      ResponseWrapper().addMessage("failed").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+    }
+
+    @ApiOperation(value = "查询所有就诊排队通知队列长度", response = QueueLength.class)
+    @RequestMapping(value="/queryQueueNotifyLength", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject sd() throws Exception {
+        List<QueueLength> visitQueueInfoList = outpatientQueueService.queryQueueLengthAll();
+        return ResponseWrapper().addData(visitQueueInfoList).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
 }

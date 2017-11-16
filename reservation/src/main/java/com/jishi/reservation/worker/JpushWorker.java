@@ -33,6 +33,7 @@ public class JpushWorker {
 
 
     @Scheduled(cron = "0 0 11 * * ? ")
+    //@Scheduled(cron = "0 0/5 * * * ? ")
     public void SendCommandPush(){
 
         //查找所有还没有预约的挂号信息，预约时间，与当前时间比较，

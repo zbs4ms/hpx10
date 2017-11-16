@@ -61,6 +61,18 @@ public class DepartmentService {
     }
 
     /**
+     * 查询科室
+     * @param departmentHisId
+     */
+    public List<Department> queryByHisId(String departmentHisId){
+        log.info("查询科室 departmentHisId: "+departmentHisId);
+        Department queryDepartment = new Department();
+        queryDepartment.setHId(departmentHisId);
+
+        return departmentMapper.select(queryDepartment);
+    }
+
+    /**
      * 通过ID号批量查询科室
      * @param departmentIds
      * @return

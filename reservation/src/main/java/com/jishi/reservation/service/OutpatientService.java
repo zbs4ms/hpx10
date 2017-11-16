@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by liangxiong on 2017/10/25.
@@ -74,7 +71,7 @@ public class OutpatientService {
                 if (gh == null) {
                     continue;
                 }
-                double unpaidAmount = 0.0;
+                BigDecimal unpaidAmount = new BigDecimal("0");
                 String unpaidDocIds = "";
                 OutpatientPaymentInfoVO paymentInfo = new OutpatientPaymentInfoVO();
                 paymentInfo.setBrid(info.getBrId());
@@ -87,7 +84,7 @@ public class OutpatientService {
                 //paymentInfo.setDocumentType(Integer.parseInt(gh.getDjlx()));
                 paymentInfo.setPaymentStatus(Integer.parseInt(gh.getZfzt()));
                 paymentInfo.setHasRegister(Integer.parseInt(gh.getSfyy()));
-                paymentInfo.setPaymentAmount(Double.parseDouble(gh.getJe()));
+                paymentInfo.setPaymentAmount(new BigDecimal(gh.getJe()));
                 paymentInfo.setDoctorId(gh.getYsid());
                 paymentInfo.setDoctorName(gh.getYsxm());
                 paymentInfo.setHasPayCard(Integer.parseInt(gh.getSfjsk()));
@@ -111,7 +108,7 @@ public class OutpatientService {
                         for (OutpatientPaymentInfo.Fm fm : fmlists) {
                             OutpatientFeeVO fee = new OutpatientFeeVO();
                             fee.setFeeName(fm.getMc());
-                            fee.setFeeAmount(Double.parseDouble(fm.getJe()));
+                            fee.setFeeAmount(new BigDecimal(fm.getJe()));
                             fee.setFeeStatus(Integer.parseInt(fm.getZfzt()));
 
                             /** 暂时不提供明细
@@ -122,7 +119,7 @@ public class OutpatientService {
                                 for (OutpatientPaymentInfo.Mx mx : mxlists) {
                                     OutpatientFeeVO.OutpatientFeeItemVO item = new OutpatientFeeVO.OutpatientFeeItemVO();
                                     item.setItemName(mx.getMc());
-                                    item.setItemAdvance(Double.parseDouble(mx.getDj()));
+                                    item.setItemAdvance(new BigDecimal(mx.getDj()));
                                     item.setItemFormat(mx.getGg());
                                     item.setItemNumber(Integer.parseInt(mx.getSl()));
                                     item.setItemUnit(mx.getDw());
@@ -145,18 +142,18 @@ public class OutpatientService {
                         for (OutpatientPaymentInfo.Dj dj : djLists) {
                             OutpatientFeeDocVO doc = new OutpatientFeeDocVO();
                             doc.setDocumentNum(dj.getDjh());
-                            doc.setDocumentAmount(Double.parseDouble(dj.getJe()));
+                            doc.setDocumentAmount(new BigDecimal(dj.getJe()));
                             doc.setDocumentDate(formatDate(dj.getKdsj()));
                             doc.setDocumentType(Integer.parseInt(dj.getDjlx()));
                             doc.setHasPayCard(Integer.parseInt(dj.getSfjsk()));
                             doc.setPayStatus(Integer.parseInt(dj.getZfzt()));
                             String ytje = dj.getYtje();
-                            double returnNum = (ytje == null || ytje.isEmpty()) ? 0.0 : Double.parseDouble(ytje);
+                            BigDecimal returnNum = (ytje == null || ytje.isEmpty()) ? new BigDecimal("0") : new BigDecimal(ytje);
                             doc.setReturnNumber(returnNum);
 
                             //默认处理收费单(单据类型，1-收费单，4-挂号单)，挂号单不处理
                             if (doc.getPayStatus() == 0 && doc.getDocumentType() == 1 && !unpaidDocIds.contains(doc.getDocumentNum())) {
-                                unpaidAmount += doc.getDocumentAmount();
+                                unpaidAmount = unpaidAmount.add(doc.getDocumentAmount());
                                 unpaidDocIds += doc.getDocumentNum() + ",";
                             }
 
@@ -319,7 +316,7 @@ public class OutpatientService {
                 OutpatientVisitRecordVO recordVO = new OutpatientVisitRecordVO();
                 recordVO.setBrid(patientInfo.getBrId());
                 recordVO.setRgisterNum(record.getGhdh());
-                recordVO.setAmount(Double.parseDouble(record.getJe()));
+                recordVO.setAmount(new BigDecimal(record.getJe()));
                 recordVO.setDate(formatDate(record.getRq()));
                 recordVO.setDepartment(record.getJzks());
                 recordVO.setDepartmentId(record.getJzksid());
@@ -364,7 +361,7 @@ public class OutpatientService {
         for (OutpatientVisitPrescription.Prescription prescription : queryData.getPrescriptionList()) {
             OutpatientVisitPrescriptionVO prescriptionVO = new OutpatientVisitPrescriptionVO();
             prescriptionVO.setDate(formatDate(prescription.getRq()));
-            prescriptionVO.setDocAmount(Double.parseDouble(prescription.getZfy()));
+            prescriptionVO.setDocAmount(new BigDecimal(prescription.getZfy()));
             prescriptionVO.setDocNumber(prescription.getDjh());
             prescriptionVO.setDoctor(prescription.getYs());
             prescriptionVO.setInfo(prescription.getZd());
@@ -393,7 +390,7 @@ public class OutpatientService {
                                     mxOV.setReportSourceNote(mx.getBglysm());
                                     mxOV.setUnit(mx.getDw());
                                     mxOV.setSingleValue(mx.getDl());
-                                    mxOV.setUsageValue(parseDouble(mx.getYl()));
+                                    mxOV.setUsageValue(new BigDecimal(mx.getYl()));
                                     mxList.add(mxOV);
                                 }
                             }
@@ -429,7 +426,7 @@ public class OutpatientService {
             OutpatientVisitReceiptVO receiptVO = new OutpatientVisitReceiptVO();
             receiptVO.setDocNumber(receipt.getDjh());
             receiptVO.setDate(formatDate(receipt.getSj()));
-            receiptVO.setDocAmount(Double.parseDouble(receipt.getFy()));
+            receiptVO.setDocAmount(new BigDecimal(receipt.getFy()));
             receiptVO.setDoctor(receipt.getYS());
             receiptVO.setPaymentType(receipt.getZffs());
 
@@ -476,14 +473,6 @@ public class OutpatientService {
         int rslt = 0;
         if (str != null && !str.isEmpty()){
             rslt = Integer.parseInt(str);
-        }
-        return rslt;
-    }
-
-    private double parseDouble(String str) throws ParseException {
-        double rslt = 0.0;
-        if (str != null && !str.isEmpty()){
-            rslt = Double.parseDouble(str);
         }
         return rslt;
     }
