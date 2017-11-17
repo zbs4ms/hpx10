@@ -80,7 +80,7 @@ public class OrderInfoService {
         orderVO.setPrice(orderInfo.getPrice());
         orderVO.setPosition("泸州锦欣医院");
         if(orderInfo.getPayTime()!=null){
-            orderVO.setCompletedTime(sdf.parse(orderInfo.getPayTime()));
+            orderVO.setCompletedTime(orderInfo.getPayTime());
         }
 
 
@@ -252,7 +252,7 @@ public class OrderInfoService {
             vo.setOrderNumber(orderInfo.getOrderNumber());
             vo.setJe(String.valueOf(orderInfo.getPrice()));
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            vo.setJksh(sdf.parse(orderInfo.getPayTime()));
+            vo.setJksh(orderInfo.getPayTime());
             vo.setLx("预交");
 
             voList.add(vo);

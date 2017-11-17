@@ -175,22 +175,7 @@ public class HospitalizationController extends MyBaseController {
 //        DepositBalanceLog balanceLog = hospitalizationService.queryPaymentRecord(brId);
 
         PageInfo<PrePaymentRecordVO> page = orderInfoService.queryPrePayment(brId,startPage,pageSize);
-//        List<DepositBalanceLog.DB3> paramList = balanceLog.getGroup().getItem();
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-//        if(paramList!=null && paramList.size() != 0){
-//            for (DepositBalanceLog.DB3 db3 : paramList) {
-//                PrePaymentRecordVO vo = new PrePaymentRecordVO();
-//                vo.setJe(db3.getJe());
-//                if(db3.getJksh() != null && !"".equals(db3.getJksh())){
-//                    vo.setJksh(sdf.parse(db3.getJksh()));
-//                }
-//                vo.setLx(db3.getLx());
-//                vo.setZffs(db3.getZffs());
-//
-//
-//                list.add(vo);
-//            }
-//        }
+
 
 
         return ResponseWrapper().addData(page).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());

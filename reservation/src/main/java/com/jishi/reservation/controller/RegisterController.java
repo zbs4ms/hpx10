@@ -200,8 +200,8 @@ public class RegisterController extends MyBaseController {
             register.setPayType(orderInfo.getPayType());
 
             if(orderInfo.getPayTime()!=null) {
-                register.setCompleteTime(sdf.parse(orderInfo.getPayTime()));
-                register.setPayTime(sdf.parse(orderInfo.getPayTime()));
+                register.setCompleteTime(orderInfo.getPayTime());
+                register.setPayTime(orderInfo.getPayTime());
                 }
             register.setPrice(orderInfo.getPrice());
             //register.setCountDownTime(register.getCreateTime().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);

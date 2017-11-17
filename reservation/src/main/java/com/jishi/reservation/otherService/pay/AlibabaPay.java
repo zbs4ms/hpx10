@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.net.URLDecoder;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -124,7 +125,7 @@ public class AlibabaPay {
     }
 
 
-    public String aliPay_notify(AliPayCallbackModel model){
+    public String aliPay_notify(AliPayCallbackModel model) throws ParseException {
         System.out.println("支付宝支付结果通知:\n"+JSONObject.toJSONString(model));
         Map<String, String> params = model.toMap();
         log.info("转换后的map\n"+JSONObject.toJSONString(params));
@@ -174,7 +175,8 @@ public class AlibabaPay {
                     //改变订单状态和支付时间
                     //Preconditions.checkState(orderInfo.getStatus() == OrderStatusEnum.WAIT_PAYED.getCode(),"该订单不是待支付状态.");
                     orderInfo.setStatus(OrderStatusEnum.PAYED.getCode());
-                    orderInfo.setPayTime(payTime);
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    orderInfo.setPayTime(sdf.parse(payTime));
                     orderInfo.setBuyerEmail(buyerEmail);
                     orderInfo.setSellerEmail(sellerEmail);
                     orderInfo.setBuyerId(buyerId);
