@@ -51,6 +51,7 @@ public class RegisterOverdueWorker {
         log.info("==============开始执行预约订单过期扫描=====================");
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //todo 因为之前有脏数据，所以就只找id>800的之后的数据
         List<OrderInfo> orderInfoList =  orderInfoMapper.queryAllWaitPayRegister();
         for (OrderInfo orderInfo : orderInfoList) {
             log.info("被检测的订单id:"+orderInfo.getId());
