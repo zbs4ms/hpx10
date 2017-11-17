@@ -101,17 +101,7 @@ public class HospitalizationController extends MyBaseController {
         if(pageSize ==0 ){
             pageSize = 100;
         }
-        //供测试数据使用。。。
-//        if(accountId == 3987){
-//            List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo("3987");
-//            if (depositBalanceDetails == null)
-//                return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-//            for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
-//                list.add(getHospitalizationInfoVO(depositBalanceDetail,"3987"));
-//            }
-//
-//
-//        }else {
+
         if(accountId == null){
             accountId = accountService.returnIdByToken(request);
 
@@ -130,17 +120,13 @@ public class HospitalizationController extends MyBaseController {
                 List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo(brId);
                 if (depositBalanceDetails != null){
                     for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
-//
-//                    if(status == 1){
-//                        if(depositBalanceDetail.getZyzt())
-//                    }
+
                         list.add(getHospitalizationInfoVO(depositBalanceDetail,brId));
                 }
-                    //return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
                 }
             }
-//        }
+
 
 
 
@@ -288,6 +274,8 @@ public class HospitalizationController extends MyBaseController {
         hospitalizationInfoVO.setRycs(depositBalanceDetail.getZycs());
         hospitalizationInfoVO.setYujiaojine(depositBalanceDetail.getYujiaojine());
         hospitalizationInfoVO.setBrid(brId);
+        hospitalizationInfoVO.setPayTime(new Date());
+        hospitalizationInfoVO.setCreateTime(new Date());
         return hospitalizationInfoVO;
     }
 
