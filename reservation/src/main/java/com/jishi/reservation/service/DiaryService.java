@@ -177,15 +177,17 @@ public class DiaryService {
         return diary;
     }
 
-    public PageInfo<Diary> queryPage(Long accountId,Integer startPage, Integer pageSize) {
+    public PageInfo<Diary> queryPage(Long accountId,Integer isMy,Integer startPage, Integer pageSize) {
 
         Gson gson = new Gson();
         if(pageSize == 0){
-            pageSize = diaryMapper.queryEnableAndVerified(accountId).size();
+
+                pageSize = diaryMapper.queryEnableAndVerified(accountId,isMy).size();
+
         }
 
         PageHelper.startPage(startPage,pageSize).setOrderBy("create_time desc");
-        List<Diary> list =  diaryMapper.queryEnableAndVerified(accountId);
+        List<Diary> list =  diaryMapper.queryEnableAndVerified(accountId,isMy);
         PageInfo<Diary> pageInfo = new PageInfo<>(list);
         log.info("返回日记长度："+list.size());
         for (Diary diary : list) {
@@ -277,6 +279,11 @@ public class DiaryService {
         diaryMapper.updateByPrimaryKeySelective(diary);
         return 0;
 
+    }
+
+    public Integer queryLikedNumber(Long diaryId) {
+
+        return diaryLikedMapper.queryCountByDiaryId(diaryId);
     }
 
 
