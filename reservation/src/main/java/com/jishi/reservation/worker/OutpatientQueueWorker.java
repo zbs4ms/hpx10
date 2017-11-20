@@ -63,7 +63,7 @@ public class OutpatientQueueWorker {
                 continue;
             }
             for (OutpatientQueueDetailVO detail : queueDetailList) {
-                PatientInfo patientInfo = patientInfoService.queryByBrId(detail.getBrId());
+                PatientInfo patientInfo = patientInfoService.queryByBrIdAndAccountId(detail.getBrId(),detail.getAccountId());
                 if (patientInfo == null) {
                     log.info("当前病人未添加, brid: " + detail.getBrId());
                     continue;
@@ -90,7 +90,8 @@ public class OutpatientQueueWorker {
           return;
         }
         for (OutpatientQueueDetailVO detail : queueDetailList) {
-            PatientInfo patientInfo = patientInfoService.queryByBrId(detail.getBrId());
+
+            PatientInfo patientInfo = patientInfoService.queryByBrIdAndAccountId(detail.getBrId(),detail.getAccountId());
             Account account = accountMapper.queryById(patientInfo.getAccountId());
             String pushMessage = PushData.create().msgType(PushData.PushDataMsgTypeDef.PUSH_DATA_OUTPATIENT_QUEUE).content(detail).toJSON();
             log.info("accountId: " + account.getId() + " msg: " + pushMessage);
@@ -130,6 +131,7 @@ public class OutpatientQueueWorker {
             vo.setRegisterType("普通");
             vo.setCurrentNum(0);
             vo.setQueueNum(Integer.parseInt(register.getHm()));
+            vo.setAccountId(register.getAccountId());
             detailList.add(vo);
         }
         return detailList;

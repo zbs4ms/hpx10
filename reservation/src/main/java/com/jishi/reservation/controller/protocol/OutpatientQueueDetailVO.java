@@ -9,6 +9,7 @@ import java.util.Date;
  */
 @Data
 public class OutpatientQueueDetailVO {
+    private Long accountId;   //add by csr，账号id ，用它和brid来唯一确定病人
     private Long doctorId;        //医生ID
     private String doctorHisId;   //医生His ID
     private String doctorName;    //医生姓名

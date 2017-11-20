@@ -72,6 +72,8 @@ public class RegisterOverdueWorker {
                     registerMapper.updateByPrimaryKeySelective(register);
                     log.info("过期成功！");
 
+                }else {
+                    log.info("his 过期失败..请查询原因");
                 }
             }
 

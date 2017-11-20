@@ -107,11 +107,7 @@ public class RegisterController extends MyBaseController {
             ) throws Exception {
 
 
-        //验证br_id 是否存在..
-        if(brid!=null && !"".equals(brid)){
-            if(patientInfoService.queryByBrId(brid) == null)
-                return ResponseWrapper().addMessage("该病人id不存在，请检查").ExeFaild(ReturnCodeEnum.FAILED.getCode());
-        }
+
 
 
 
@@ -122,6 +118,12 @@ public class RegisterController extends MyBaseController {
 
                 return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
+        }
+
+        //验证br_id 是否存在..
+        if(brid!=null && !"".equals(brid)){
+            if(patientInfoService.queryByBrIdAndAccountId(brid,accountId) == null)
+                return ResponseWrapper().addMessage("该病人id不存在，请检查").ExeFaild(ReturnCodeEnum.FAILED.getCode());
         }
 
 
@@ -216,7 +218,7 @@ public class RegisterController extends MyBaseController {
             department.setName(register.getDepartment());
             department.setId(Long.valueOf(register.getDepartmentId()));
             registerVO.setDepartment(department);
-            PatientInfo patientInfo = patientInfoService.queryByBrId(register.getBrId());
+            PatientInfo patientInfo = patientInfoService.queryByBrIdAndAccountId(register.getBrId(),accountId);
 
 
             registerVO.setPatientInfo(patientInfo);

@@ -248,9 +248,9 @@ public class PatientInfoService {
         return page;
     }
 
-    public PatientInfo queryByBrId(String brId) {
+    public PatientInfo queryByBrIdAndAccountId(String brId,Long accountId) {
 
-        return patientInfoMapper.queryByById(brId);
+        return patientInfoMapper.queryByById(brId,accountId);
     }
 
     public boolean isAccountIdMatchBrid(Long accountId, String brId) {

@@ -442,7 +442,7 @@ public class RegisterService {
             vo.setRegisterTime(register.getAgreedTime());
             vo.setId(register.getId());
             Account account = accountMapper.queryById(register.getAccountId());
-            PatientInfo patientInfo = patientInfoMapper.queryByById(register.getBrId());
+            PatientInfo patientInfo = patientInfoMapper.queryByById(register.getBrId(),orderInfo.getAccountId());
             vo.setPhone(account.getPhone());
             //todo  状态..
             vo.setStatus("2");
