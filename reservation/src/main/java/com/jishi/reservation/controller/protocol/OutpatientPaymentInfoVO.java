@@ -18,7 +18,7 @@ public class OutpatientPaymentInfoVO implements Comparable<OutpatientPaymentInfo
     private String brid;
     @ApiModelProperty("病人姓名")
     private String patientName;
-    @ApiModelProperty("单据号")
+    @ApiModelProperty("单据号，挂号单号")
     private String documentNum;
     @ApiModelProperty("挂号类型")
     private String registerType;
@@ -40,6 +40,10 @@ public class OutpatientPaymentInfoVO implements Comparable<OutpatientPaymentInfo
     private BigDecimal unpaidAmount;
     @ApiModelProperty("未支付单据列表，以','分隔")
     private String unpaidDocIds;
+    @ApiModelProperty("最新一次开单时间")
+    private Date lastDocDate;
+    @ApiModelProperty("上一次支付时间，可能为空")
+    private Date lastPaidDate;
     @ApiModelProperty("医生ID")
     private String doctorId;
     @ApiModelProperty("医生姓名")

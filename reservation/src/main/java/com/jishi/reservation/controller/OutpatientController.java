@@ -67,6 +67,7 @@ public class OutpatientController extends MyBaseController {
             @ApiParam(value = "预交的名称 eg:...门诊缴费", required = true) @RequestParam(value = "subject", required = true) String subject,
             @ApiParam(value = "交易的金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
             @ApiParam(value = "brId(his病人ID)", required = true) @RequestParam(value = "brId", required = true) String brId,
+            @ApiParam(value = "挂号单号", required = true) @RequestParam(value = "registerNumber", required = true) String registerNumber,
             @ApiParam(value = "单据ID，可以多个单据，以','分隔", required = true) @RequestParam(value = "docIds", required = true) String docIds,
             @ApiParam(value = "单据类型，1-收费单，4-挂号单", required = true) @RequestParam(value = "documentType", required = true) Integer documentType) throws Exception {
 
@@ -79,7 +80,7 @@ public class OutpatientController extends MyBaseController {
             }
         }
 
-        OrderInfo orderInfo = outpatientService.generatePaymentOrder(accountId, brId, subject, price, docIds, documentType);
+        OrderInfo orderInfo = outpatientService.generatePaymentOrder(accountId, brId, registerNumber, subject, price, docIds, documentType);
 
         return ResponseWrapper().addData(orderInfo).addMessage("订单生成成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
