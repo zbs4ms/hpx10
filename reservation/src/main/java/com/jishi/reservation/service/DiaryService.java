@@ -111,6 +111,11 @@ public class DiaryService {
             }
             break;
         }
+
+        for(int i =0;i<contentList.size();i++){
+            contentList.get(i).setId((long)i);
+        }
+
         diary.setContent(JSONObject.toJSONString(contentList));
         diary.setIsLock(lock);
         diary.setBrief(brief);
@@ -128,6 +133,9 @@ public class DiaryService {
         List<DiaryContentVO> contentList = gson.fromJson(content,
                 new TypeToken<List<DiaryContentVO>>() {
                 }.getType());
+        for(int i = 0;i<contentList.size();i++){
+            contentList.get(i).setId((long) i);
+        }
 
         Diary diary = new Diary();
 
@@ -168,9 +176,7 @@ public class DiaryService {
         List<DiaryContentVO> contentList = gson.fromJson(content,
                 new TypeToken<List<DiaryContentVO>>() {
                 }.getType());
-        for (DiaryContentVO diaryContentVO : contentList) {
-            diaryContentVO.setId(id);
-        }
+
         diary.setContentVOList(contentList);
         diary.setContent(null);
         diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));
