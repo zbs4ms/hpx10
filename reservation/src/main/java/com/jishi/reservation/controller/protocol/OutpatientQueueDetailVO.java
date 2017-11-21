@@ -20,8 +20,10 @@ public class OutpatientQueueDetailVO {
     private Date registerDate;    //挂号日期
     private String brId;            //病人ID
     private String name;          //病人姓名
-    private String queueIndfo;    //病人排队信息
+    private String queueInfo;    //病人排队信息
     private String queueeMinder;  //病人排队提醒
-    private int currentNum;       //当前就诊人号码
-    private int queueNum;         //本病人就诊号码
+    private Integer currentNum;     //当前就诊人号码
+    private Integer queueNum;       //本病人就诊号码
+    private Integer needWaitNum;    //需等待的人数
+    private Integer status;         //当前状态（0-已预约，1-等待中，2-正在就诊，3-已过号）
 }

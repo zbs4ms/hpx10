@@ -182,12 +182,14 @@ public class OutpatientQueueService {
         vo.setDoctorTitle(detail.getZC());
         vo.setName(detail.getBR());
         vo.setQueueeMinder(detail.getBRPDTX());
-        vo.setQueueIndfo(detail.getBRPD());
+        vo.setQueueInfo(detail.getBRPD());
         vo.setRegisterDate(detail.getRQ());
         vo.setRegisterType(detail.getHL());
         // TODO 解析当前号码，病人的号码
-        //vo.setCurrentNum();
-        //vo.setQueueNum();
+        vo.setCurrentNum(0);
+        vo.setQueueNum(12);
+        vo.setNeedWaitNum(6);
+        vo.setStatus(1);
         return vo;
     }
 

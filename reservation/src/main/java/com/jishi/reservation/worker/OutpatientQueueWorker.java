@@ -89,6 +89,8 @@ public class OutpatientQueueWorker {
         if (queueDetailList == null || queueDetailList.isEmpty()) {
           return;
         }
+        log.info("=================OutpatientQueueWorker begin=====================");
+        log.info("BeginTime: " + new Date());
         for (OutpatientQueueDetailVO detail : queueDetailList) {
 
             PatientInfo patientInfo = patientInfoService.queryByBrIdAndAccountId(detail.getBrId(),detail.getAccountId());
@@ -97,6 +99,8 @@ public class OutpatientQueueWorker {
             log.info("accountId: " + account.getId() + " msg: " + pushMessage);
             jpushSupport.sendPush(account.getPushId(), pushMessage);
         }
+        log.info("EndTime: " + new Date());
+        log.info("=================OutpatientQueueWorker End=====================");
     }
 
     // 生成测试数据
@@ -126,12 +130,18 @@ public class OutpatientQueueWorker {
             vo.setDoctorTitle("主任医师");
             vo.setName(register.getPatientName());
             vo.setQueueeMinder("您预约的门诊正在排队，请注意！");
-            vo.setQueueIndfo("您预约的门诊正在排队，请注意！");
+            vo.setQueueInfo("您预约的门诊正在排队，请注意！");
             vo.setRegisterDate(register.getCreateTime());
             vo.setRegisterType("普通");
             vo.setCurrentNum(0);
             vo.setQueueNum(Integer.parseInt(register.getHm()));
             vo.setAccountId(register.getAccountId());
+
+            vo.setCurrentNum(0);
+            vo.setQueueNum(12);
+            vo.setNeedWaitNum(6);
+            vo.setStatus(1);
+
             detailList.add(vo);
         }
         return detailList;
