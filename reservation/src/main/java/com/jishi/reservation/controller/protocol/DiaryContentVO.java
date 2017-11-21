@@ -32,5 +32,9 @@ public class DiaryContentVO {
     @ApiModelProperty("字体行间距")
     private Integer lineSpace;
 
+    @ApiModelProperty("主键id")
+    private Long id;
+
+
 
 }

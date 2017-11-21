@@ -168,6 +168,9 @@ public class DiaryService {
         List<DiaryContentVO> contentList = gson.fromJson(content,
                 new TypeToken<List<DiaryContentVO>>() {
                 }.getType());
+        for (DiaryContentVO diaryContentVO : contentList) {
+            diaryContentVO.setId(id);
+        }
         diary.setContentVOList(contentList);
         diary.setContent(null);
         diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));
