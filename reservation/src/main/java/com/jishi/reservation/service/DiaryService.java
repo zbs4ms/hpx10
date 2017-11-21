@@ -141,7 +141,7 @@ public class DiaryService {
                 new TypeToken<List<DiaryContentVO>>() {
                 }.getType());
         for(int i = 0;i<contentList.size();i++){
-            contentList.get(i).setId(generateRandomId());
+            contentList.get(i).setContentId(generateRandomId());
         }
 
 

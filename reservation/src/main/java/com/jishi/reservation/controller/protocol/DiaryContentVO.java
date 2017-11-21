@@ -33,7 +33,7 @@ public class DiaryContentVO {
     private Integer lineSpace;
 
     @ApiModelProperty("每个内容对象的唯一识别id")
-    private String id;
+    private String contentId;
 
 
 
