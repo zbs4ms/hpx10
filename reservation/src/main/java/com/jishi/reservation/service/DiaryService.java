@@ -1,6 +1,7 @@
 package com.jishi.reservation.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.doraemon.base.util.RandomUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -112,9 +114,6 @@ public class DiaryService {
             break;
         }
 
-        for(int i =0;i<contentList.size();i++){
-            contentList.get(i).setId((long)i);
-        }
 
         diary.setContent(JSONObject.toJSONString(contentList));
         diary.setIsLock(lock);
@@ -123,8 +122,16 @@ public class DiaryService {
         diaryMapper.updateByPrimaryKeySelective(diary);
     }
 
+    public static String generateRandomId() throws Exception {
 
-    public void publish(Long accountId,String title,String content,Integer lock) {
+        String prefix = "diary";
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("MMddHHmmss");
+        String format = sdf.format(date);
+        return prefix+format+ RandomUtil.getRandomLetterAndNum(6);
+    }
+
+    public void publish(Long accountId,String title,String content,Integer lock) throws Exception {
 
         Gson gson = new Gson();
 
@@ -134,8 +141,9 @@ public class DiaryService {
                 new TypeToken<List<DiaryContentVO>>() {
                 }.getType());
         for(int i = 0;i<contentList.size();i++){
-            contentList.get(i).setId((long) i);
+            contentList.get(i).setId(generateRandomId());
         }
+
 
         Diary diary = new Diary();
 
