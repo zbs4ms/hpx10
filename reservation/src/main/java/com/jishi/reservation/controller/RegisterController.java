@@ -18,7 +18,6 @@ import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.support.JpushSupport;
 import com.jishi.reservation.util.Constant;
-import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -26,8 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -84,12 +81,8 @@ public class RegisterController extends MyBaseController {
     @ApiOperation(value = "增加预约信息",response = RegisterCompleteVO.class)
     @RequestMapping(value = "addRegister", method = RequestMethod.PUT)
     @ResponseBody
-    public JSONObject addRegister(HttpServletRequest request,
-                                  HttpServletResponse response,
-
-
+    public JSONObject addRegister(Long accountId,
                                   @ApiParam(value = "订单号", required = false) @RequestParam(value = "orderNumber", required = false) String orderNmuer,
-                                  @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
                                   @ApiParam(value = "价格", required = false) @RequestParam(value = "price", required = false) String price,
                                   @ApiParam(value = "支付名称", required = false) @RequestParam(value = "subject", required = false) String subject,
                                   @ApiParam(value = "病人名称", required = false) @RequestParam(value = "brName", required = false) String brName,
@@ -105,20 +98,6 @@ public class RegisterController extends MyBaseController {
             @ApiParam(value = "预约的时间段", required = false) @RequestParam(value = "timeInterval", required = false) String timeInterval,
             @ApiParam(value = "预约时间", required = false) @RequestParam(value = "agreedTime", required = false) Long agreedTime
             ) throws Exception {
-
-
-
-
-
-
-        if (accountId == null) {
-            accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1L)){
-                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
-
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-            }
-        }
 
         //验证br_id 是否存在..
         if(brid!=null && !"".equals(brid)){
@@ -169,24 +148,14 @@ public class RegisterController extends MyBaseController {
     @ApiOperation(value = "查询预约信息 ", response = RegisterVO.class)
     @RequestMapping(value = "queryRegister", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryRegister(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+    public JSONObject queryRegister(Long accountId,
                                     @ApiParam(value = "预约ID", required = false) @RequestParam(value = "registerId", required = false) Long registerId,
                                     @ApiParam(value = "状态 0：已完成(已付款)； 1：待付款 ；2：已取消", required = false) @RequestParam(value = "status", required = false) Integer status,
                                     @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
                                     @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
                                     @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
                                     @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
-        if (accountId == null) {
-            //从登陆信息中获取登陆者ID
-            accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1L)){
-                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
 
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-            }
-        }
         List<RegisterVO> registerVOList = new ArrayList<>();
         PageInfo pageInfo = registerService.queryRegisterPageInfo(registerId, accountId, status, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum, pageSize, "id", true));
         List<Register> registerList = pageInfo.getList();
@@ -292,8 +261,7 @@ public class RegisterController extends MyBaseController {
     @ApiOperation(value = "admin 查询预约信息 ", response = RegisterVO.class)
     @RequestMapping(value = "queryRegisterAdmin", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryRegisterAdmin(HttpServletRequest request,
-                                    HttpServletResponse response,
+    public JSONObject queryRegisterAdmin(
                                          @ApiParam(value = "开始时间", required = false) @RequestParam(value = "startTime", required = false) Long startTime,
                                          @ApiParam(value = "结束时间", required = false) @RequestParam(value = "endTime", required = false) Long endTime,
                                          @ApiParam(value = "查询关键字", required = false) @RequestParam(value = "key", required = false) String key,

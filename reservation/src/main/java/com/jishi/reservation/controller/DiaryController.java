@@ -21,8 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -141,9 +139,7 @@ public class DiaryController extends MyBaseController {
     @ApiOperation(value = "app 用户发布日记/支持修改 传diaryId就是修改")
     @RequestMapping(value = "publish", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject top(
-            HttpServletRequest request,HttpServletResponse response,
-            @ApiParam(value = "accountId  token") @RequestParam(value = "accountId",required = false) Long accountId,
+    public JSONObject top(Long accountId,
             @ApiParam(value = "日记的标题") @RequestParam(value = "title",required = false) String title,
             @ApiParam(value = "日记的内容 json格式保存   eg:[{\"fontName\":\"宋体\",\"lineSpace\":10,\"fontSize\":10,\"text\":\"我是文字\",\"type\":1,\"textColor\":\"red\"},{\"width\":200,\"type\":0,\"url\":\"http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/doctor/WechatIMG198.jpg\",\"height\":200}]",required = true)
             @RequestParam(value = "content") String content,
@@ -151,15 +147,6 @@ public class DiaryController extends MyBaseController {
             @ApiParam(value = "日记是否锁定  0锁定，只有自己能看  1不锁定 大家都能看") @RequestParam(value = "isLock") Integer isLock
             ) throws Exception {
 
-
-        if (accountId == null) {
-            accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1L)){
-                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
-
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-            }
-        }
         if(diaryId ==null ){
             diaryService.publish(accountId,title,content,isLock);
 
@@ -181,11 +168,8 @@ public class DiaryController extends MyBaseController {
     @ApiOperation(value = "app app的日记列表  日记圈/我的日记",response = Diary.class)
     @RequestMapping(value = "queryPage", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryPage(
-            HttpServletRequest request,HttpServletResponse response,
-
+    public JSONObject queryPage(Long accountId,
             @ApiParam(value = "是否查\"我的日记\" 0 查，1 不查", required = false) @RequestParam(value = "isMy", defaultValue = "1") Integer isMy,
-            @ApiParam(value = "accountId", required = false) @RequestParam(value = "accountId",required = false) Long accountId,
 
             @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
 
@@ -193,16 +177,6 @@ public class DiaryController extends MyBaseController {
 
 
     ) throws Exception {
-
-
-       // Long accountId = null;
-        if(isMy != 1 && accountId == null){
-            accountId = isMy == 0?accountService.returnIdByToken(request):null;
-            if(accountId == -1L) {
-                return ResponseWrapper().addMessage("请登录").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-            }
-        }
-
 
 
         PageInfo<Diary> page = diaryService.queryPage(accountId,isMy,startPage,pageSize);
@@ -217,24 +191,12 @@ public class DiaryController extends MyBaseController {
     @ApiOperation(value = "app 给日记点赞/取消点赞")
     @RequestMapping(value = "likeDiary", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject likeDiary(
-            HttpServletRequest request,HttpServletResponse response,
+    public JSONObject likeDiary(Long accountId,
 
-            @ApiParam(value = "日记的id", required = true) @RequestParam(value = "diaryId") Long diaryId,
-            @ApiParam(value = "账号的id", required = false) @RequestParam(value = "accountId",required = false) Long accountId
-
+            @ApiParam(value = "日记的id", required = true) @RequestParam(value = "diaryId") Long diaryId
 
 
     ) throws Exception {
-                if(accountId == null){
-                    accountId = accountService.returnIdByToken(request);
-                    if(accountId.equals(-1L)){
-                        response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
-
-                        return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-                    }
-
-                }
 
 
              diaryService.likeDiary(diaryId, accountId);
@@ -251,9 +213,7 @@ public class DiaryController extends MyBaseController {
     @ApiOperation(value = "app 给日记增加浏览次数")
     @RequestMapping(value = "addScanNum", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject addScanNum(
-            HttpServletRequest request,HttpServletResponse response,
-            //@ApiParam(value = "accountId  token") @RequestParam(value = "accountId") Long accountId,
+    public JSONObject addScanNum(Long accountId,
 
             @ApiParam(value = "日记的id", required = true) @RequestParam(value = "diaryId") Long diaryId
 
@@ -275,16 +235,9 @@ public class DiaryController extends MyBaseController {
     @ApiOperation(value = "app 删除 日记 token传递，如果不是发布者删除，会提示错误信息")
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject delete(
-            HttpServletRequest request,HttpServletResponse response,
+    public JSONObject delete(Long accountId,
             @ApiParam(value = "日记的id ",required = true) @RequestParam(value = "diaryId") Long diaryId
     ) throws Exception {
-        Long accountId = accountService.returnIdByToken(request);
-        if(accountId.equals(-1L)){
-            response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
-
-            return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-        }
         Integer state = diaryService.delete(diaryId,accountId);
         switch (state){
             case 0:
@@ -303,16 +256,9 @@ public class DiaryController extends MyBaseController {
     @ApiOperation(value = "app 上锁/解锁 日记 token传递，如果不是发布者上锁，会提示错误信息")
     @RequestMapping(value = "lock", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject lock(
-            HttpServletRequest request,HttpServletResponse response,
+    public JSONObject lock(Long accountId,
             @ApiParam(value = "日记的id") @RequestParam(value = "diaryId") Long diaryId
     ) throws Exception {
-        Long accountId = accountService.returnIdByToken(request);
-        if(accountId.equals(-1L)){
-            response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
-
-            return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-        }
         Integer state = diaryService.lock(diaryId,accountId);
         switch (state){
             case 0:

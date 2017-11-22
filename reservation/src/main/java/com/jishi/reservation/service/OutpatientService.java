@@ -47,7 +47,10 @@ public class OutpatientService {
        * @param accountId
        * @throws Exception
        */
-    public List<OutpatientPaymentInfoVO> queryOutpatientPamentInfo(long accountId, Integer paymentStatus, Integer pageNo, Integer pageSize) throws Exception {
+    public List<OutpatientPaymentInfoVO> queryOutpatientPamentInfo(Long accountId, Integer paymentStatus, Integer pageNo, Integer pageSize) throws Exception {
+        if (accountId == null) {
+            return Collections.emptyList();
+        }
 
         List<PatientInfo> patientInfoList = patientInfoService.queryPatientInfo(null,accountId, 0);
         if (patientInfoList == null || patientInfoList.isEmpty()) {

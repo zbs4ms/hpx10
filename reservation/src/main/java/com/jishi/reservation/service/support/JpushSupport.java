@@ -1,6 +1,9 @@
 package com.jishi.reservation.service.support;
 
 import cn.jiguang.common.ClientConfig;
+import cn.jiguang.common.ServiceHelper;
+import cn.jiguang.common.connection.IHttpClient;
+import cn.jiguang.common.connection.NettyHttpClient;
 import cn.jiguang.common.resp.APIConnectionException;
 import cn.jiguang.common.resp.APIRequestException;
 import cn.jpush.api.JPushClient;
@@ -66,10 +69,28 @@ public class JpushSupport {
 
 
     public void sendPushAsyn(String pushId, String message){
-        sendPushAsyn(pushId, message, null);
-    }
+        JPushClient jpushClient = new JPushClient(Constant.JPush_MASTER_SECRET, Constant.JPush_Appkey, null, ClientConfig.getInstance());
+        String authCode = ServiceHelper.getBasicAuthorization(Constant.JPush_MASTER_SECRET, Constant.JPush_Appkey);
+        NettyHttpClient iHttpClient = new NettyHttpClient(authCode, null, ClientConfig.getInstance());
+        jpushClient.getPushClient().setHttpClient(iHttpClient);
 
-    public void sendPushAsyn(String pushId, String message, Date dueDate){
+        PushPayload payload = buildPushObj(pushId,message);
+
+        try {
+            PushResult result = jpushClient.sendPush(payload);
+            log.info("Got result - " + result);
+
+        } catch (APIConnectionException e) {
+            // Connection error, should retry later
+            log.error("Connection error, should retry later", e);
+
+        } catch (APIRequestException e) {
+            // Should review the error, and fix the request
+            log.error("Should review the error, and fix the request", e);
+            log.info("HTTP Status: " + e.getStatus());
+            log.info("Error Code: " + e.getErrorCode());
+            log.info("Error Message: " + e.getErrorMessage());
+        }
     }
 
 

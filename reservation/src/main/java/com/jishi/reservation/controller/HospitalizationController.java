@@ -26,8 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -85,10 +83,8 @@ public class HospitalizationController extends MyBaseController {
     @ApiOperation(value = "查询住院人历史的住院信息 分页  by token", response = HospitalizationInfoVO.class)
     @RequestMapping(value = "queryAllInfo", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryAllInfo(
-            HttpServletRequest request,HttpServletResponse response,
+    public JSONObject queryAllInfo(Long accountId,
             @ApiParam(value = "状态 1 查询未支付订单 0 查询所有订单", required = false) @RequestParam(value = "status",required = false) Integer status,
-            @ApiParam(value = "accountId 通过token找到", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) throws Exception {
         List<HospitalizationInfoVO> list = new ArrayList<>();
@@ -102,30 +98,18 @@ public class HospitalizationController extends MyBaseController {
             pageSize = 100;
         }
 
-        if(accountId == null){
-            accountId = accountService.returnIdByToken(request);
+        List<String> brIdList = patientInfoService.queryBrIdByAccountId(accountId);
+        log.info("该账号拥有的病人id:"+JSONObject.toJSONString(brIdList));
+        for (String brId : brIdList) {
+            List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo(brId);
+            if (depositBalanceDetails != null){
+                for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
 
-            if(accountId.equals(-1L)){
-                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
+                    list.add(getHospitalizationInfoVO(depositBalanceDetail,brId));
+            }
 
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
             }
         }
-
-
-
-            List<String> brIdList = patientInfoService.queryBrIdByAccountId(accountId);
-            log.info("该账号拥有的病人id:"+JSONObject.toJSONString(brIdList));
-            for (String brId : brIdList) {
-                List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo(brId);
-                if (depositBalanceDetails != null){
-                    for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
-
-                        list.add(getHospitalizationInfoVO(depositBalanceDetail,brId));
-                }
-
-                }
-            }
 
 
 
@@ -185,23 +169,12 @@ public class HospitalizationController extends MyBaseController {
     @ApiOperation(value = "生成 预交款订单", response = HospitalizationInfoVO.class)
     @RequestMapping(value = "generatePrepaymentOrder", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject generatePrepaymentOrder(
-            HttpServletRequest request,HttpServletResponse response,
+    public JSONObject generatePrepaymentOrder(Long accountId,
             @ApiParam(value = "预交的名称 eg:住院预交款", required = true) @RequestParam(value = "subject", required = true) String subject,
             @ApiParam(value = "交易的金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
-            @ApiParam(value = "accountId 通过token找到", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
             @ApiParam(value = "brId", required = true) @RequestParam(value = "brId", required = true) String brId,
             @ApiParam(value = "入院的次数", required = true) @RequestParam(value = "rycs", required = true) Integer rycs
     ) throws Exception {
-
-        if (accountId == null) {
-            accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1L)){
-                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
-
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-            }
-        }
 
         OrderInfo orderInfo = orderInfoService.generatePrepayment(subject, price, accountId, brId, rycs);
 
@@ -213,20 +186,10 @@ public class HospitalizationController extends MyBaseController {
     @ApiOperation(value = "预交款订单  确认订单，同步到his", response = OrderVO.class)
     @RequestMapping(value = "confirmPrePayment", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject confirmPrePayment(
-            HttpServletRequest request,HttpServletResponse response,
-            @ApiParam(value = "订单号", required = true) @RequestParam(value = "orderNumber", required = true) String orderNumber,
-            @ApiParam(value = "账号id", required = false) @RequestParam(value = "accountId", required = false) Long accountId
-    ) throws Exception {
-    //PrePayment.Pay.Modify
-        if (accountId == null) {
-            accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1L)){
-                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
-
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-            }
-        }
+    public JSONObject confirmPrePayment(Long accountId,
+            @ApiParam(value = "订单号", required = true) @RequestParam(value = "orderNumber", required = true) String orderNumber
+            ) throws Exception {
+            //PrePayment.Pay.Modify
 
         OrderVO vo = hospitalizationService.confirmPrePayment(orderNumber, accountId);
         if(vo.getStatus().equals(SuccessEnum.FAILED.getCode())){

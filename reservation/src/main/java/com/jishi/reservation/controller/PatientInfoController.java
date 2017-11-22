@@ -20,8 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -44,9 +42,7 @@ public class PatientInfoController extends MyBaseController
     @ApiOperation(value = "增加就诊人信息  8月30号提出 一个账号最多有5个")
     @RequestMapping(value = "addPatientInfo", method = RequestMethod.PUT)
     @ResponseBody
-    public JSONObject addPatientInfo(HttpServletRequest request,
-                                     HttpServletResponse response,
-                                     @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+    public JSONObject addPatientInfo(Long accountId,
                                     @ApiParam(value = "就诊人名称", required = true) @RequestParam(value = "name", required = true) String name,
                                       @ApiParam(value = "病人电话", required = true) @RequestParam(value = "phone", required = true) String phone,
                                     @ApiParam(value = "病人身份证", required = true) @RequestParam(value = "idCard", required = true) String idCard,
@@ -57,12 +53,6 @@ public class PatientInfoController extends MyBaseController
         Preconditions.checkNotNull(phone,"请传入必须的参数：phone");
         Preconditions.checkNotNull(idCard,"请传入必须的参数：idCard");
 
-        if (accountId == null) {
-            accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1L)){
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-            }
-        }
        Long id =  patientInfoService.addPatientInfo(accountId, name, phone, idCard,idCardTpye);
         return ResponseWrapper().addData(id).addMessage("添加成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -70,19 +60,9 @@ public class PatientInfoController extends MyBaseController
     @ApiOperation(value = "查询就诊人信息", response = PatientInfo.class)
     @RequestMapping(value = "queryPatientInfo", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryPatientInfo(HttpServletRequest request,
-                                       HttpServletResponse response,
-
-                                       @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+    public JSONObject queryPatientInfo(Long accountId,
                                        @ApiParam(value = "就诊人ID", required = false) @RequestParam(value = "patientInfoId", required = false) Long patientInfoId) throws Exception {
-        if (accountId == null) {
-            accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1L)){
-                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
 
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-            }
-        }
         if (Helpers.isNullOrEmpty(patientInfoId) && Helpers.isNullOrEmpty(accountId))
             throw new Exception("查询条件不能都为空");
         List<PatientInfo> patientInfos = patientInfoService.queryPatientInfo( patientInfoId,accountId, EnableEnum.EFFECTIVE.getCode());
@@ -106,22 +86,11 @@ public class PatientInfoController extends MyBaseController
     @ApiOperation(value = "app 通过token查询该用户所有就诊人信息", response = PatientInfo.class)
     @RequestMapping(value = "queryPatientInfoByToken", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryPatientInfoByToken(HttpServletRequest request,
-                                              HttpServletResponse response,
-                                              @ApiParam(value = "用户id", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+    public JSONObject queryPatientInfoByToken(Long accountId,
                                               @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
             @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
             @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
-
-        if(accountId == null){
-            accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1L)){
-
-                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-            }
-        }
 
         PageInfo<PatientInfo> patientInfo = patientInfoService.queryPatientInfoPagaInfo(null, accountId, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum,pageSize,orderBy,desc));
         patientInfoService.wrapPregnant(patientInfo.getList());
@@ -132,22 +101,12 @@ public class PatientInfoController extends MyBaseController
     @ApiOperation(value = "修改就诊人信息")
     @RequestMapping(value = "modifyPatientInfo", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject modifyPatientInfo(HttpServletRequest request,
-                                        HttpServletResponse response,
-                                        @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+    public JSONObject modifyPatientInfo(Long accountId,
             @ApiParam(value = "就诊人ID") @RequestParam(value = "patientInfoId", required = true) Long patientInfoId,
             @ApiParam(value = "就诊人名称",required = false) @RequestParam(value = "name", required = false) String name,
             @ApiParam(value = "病人电话",required = false) @RequestParam(value = "phone", required = false) String phone,
             @ApiParam(value = "病人身份证",required = false) @RequestParam(value = "idCard", required = false) String idCard) throws Exception {
 
-
-        if (accountId == null) {
-            accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1L)){
-                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
-                return ResponseWrapper().addMessage("登陆信息 已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-            }
-        }
         patientInfoService.modifyPatientInfo(accountId,patientInfoId, name, phone, idCard, null);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }

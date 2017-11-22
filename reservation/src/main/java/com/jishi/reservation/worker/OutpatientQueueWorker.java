@@ -97,7 +97,7 @@ public class OutpatientQueueWorker {
             Account account = accountMapper.queryById(patientInfo.getAccountId());
             String pushMessage = PushData.create().msgType(PushData.PushDataMsgTypeDef.PUSH_DATA_OUTPATIENT_QUEUE).content(detail).toJSON();
             log.info("accountId: " + account.getId() + " msg: " + pushMessage);
-            jpushSupport.sendPush(account.getPushId(), pushMessage);
+            jpushSupport.sendPushAsyn(account.getPushId(), pushMessage);
         }
         log.info("EndTime: " + new Date());
         log.info("=================OutpatientQueueWorker End=====================");

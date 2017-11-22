@@ -23,8 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 
@@ -168,20 +166,11 @@ public class AccountController extends MyBaseController {
     @ApiOperation(value = "修改账号信息")
     @RequestMapping(value = "modifyAccountInfo", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject modifyAccountInfo(HttpServletRequest request,
-                                        HttpServletResponse response,
-            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+    public JSONObject modifyAccountInfo(Long accountId,
             @ApiParam(value = "昵称", required = false) @RequestParam(value = "nick", required = false) String nick,
             @ApiParam(value = "头像", required = false) @RequestParam(value = "headPortrait", required = false) String headPortrait,
             @ApiParam(value = "邮箱", required = false) @RequestParam(value = "email", required = false) String email) throws Exception {
 
-        if (accountId == null) {
-            accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1L)){
-                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-            }
-        }
         accountService.modifyAccountInfo(accountId,null,nick,headPortrait,email,null,null);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
@@ -189,25 +178,13 @@ public class AccountController extends MyBaseController {
     @ApiOperation(value = "修改账号的密码")
     @RequestMapping(value = "modifyAccountPasswd", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject modifyAccountPasswd(
-            HttpServletRequest request,
-            HttpServletResponse response,
-
-            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
+    public JSONObject modifyAccountPasswd(Long accountId,
             @ApiParam(value = "电话", required = false) @RequestParam(value = "phone", required = false) String phone,
             @ApiParam(value = "老密码", required = true) @RequestParam(value = "oldPasswd", required = true) String oldPasswd,
             @ApiParam(value = "新密码", required = true) @RequestParam(value = "newPasswd", required = true) String newPasswd) throws Exception {
         Preconditions.checkNotNull(oldPasswd,"请传入所需要的参数：oldPasswd");
         Preconditions.checkNotNull(newPasswd,"请传入所需要的参数：newPasswd");
 
-
-        if (accountId == null) {
-            accountId = accountService.returnIdByToken(request);
-            if(accountId.equals(-1L)){
-                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
-                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-            }
-        }
         accountService.modifyAccountPasswd(accountId,phone,oldPasswd,newPasswd);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }

@@ -58,7 +58,7 @@ public class IMAccountController extends MyBaseController {
     }
 
     @ApiOperation(value = "获取医生im账号，token可用于im客户端登录，没有则创建", response = IMAccountVO.class)
-    @RequestMapping(value = "/getDoctorAccount", method = RequestMethod.GET)
+    @RequestMapping(value = "/doctor/getDoctorAccount", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject getDoctorAccount(HttpServletRequest request, HttpServletResponse response,
                                      @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
@@ -103,7 +103,7 @@ public class IMAccountController extends MyBaseController {
     }
 
     @ApiOperation(value = "更新医生im token，token失效时调用", response = String.class)
-    @RequestMapping(value = "/refreshDoctorToken", method = RequestMethod.POST)
+    @RequestMapping(value = "/doctor/refreshDoctorToken", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject refreshDoctorToken(HttpServletRequest request, HttpServletResponse response,
                                  @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
@@ -179,7 +179,7 @@ public class IMAccountController extends MyBaseController {
     }
 
     @ApiOperation(value = "获取医生IM账号信息", response = IMUser.class)
-    @RequestMapping(value = "/getDoctorIMDetail", method = RequestMethod.GET)
+    @RequestMapping(value = "/doctor/getDoctorIMDetail", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject getDoctorDetail(HttpServletRequest request, HttpServletResponse response,
                           @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
