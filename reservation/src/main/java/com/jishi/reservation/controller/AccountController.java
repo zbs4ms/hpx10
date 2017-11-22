@@ -166,7 +166,7 @@ public class AccountController extends MyBaseController {
     @ApiOperation(value = "修改账号信息")
     @RequestMapping(value = "modifyAccountInfo", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject modifyAccountInfo(Long accountId,
+    public JSONObject modifyAccountInfo(@RequestAttribute(value="accountId") Long accountId,
             @ApiParam(value = "昵称", required = false) @RequestParam(value = "nick", required = false) String nick,
             @ApiParam(value = "头像", required = false) @RequestParam(value = "headPortrait", required = false) String headPortrait,
             @ApiParam(value = "邮箱", required = false) @RequestParam(value = "email", required = false) String email) throws Exception {
@@ -178,7 +178,7 @@ public class AccountController extends MyBaseController {
     @ApiOperation(value = "修改账号的密码")
     @RequestMapping(value = "modifyAccountPasswd", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject modifyAccountPasswd(Long accountId,
+    public JSONObject modifyAccountPasswd(@RequestAttribute(value="accountId") Long accountId,
             @ApiParam(value = "电话", required = false) @RequestParam(value = "phone", required = false) String phone,
             @ApiParam(value = "老密码", required = true) @RequestParam(value = "oldPasswd", required = true) String oldPasswd,
             @ApiParam(value = "新密码", required = true) @RequestParam(value = "newPasswd", required = true) String newPasswd) throws Exception {
@@ -192,8 +192,7 @@ public class AccountController extends MyBaseController {
     @ApiOperation(value = "修改账号绑定手机")
     @RequestMapping(value = "modifyAccountPhone", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject modifyAccountPhone(
-            @ApiParam(value = "账号ID", required = true) @RequestParam(value = "accountId", required = true) Long accountId,
+    public JSONObject modifyAccountPhone(@RequestAttribute(value="accountId") Long accountId,
             @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone) throws Exception {
 
         Preconditions.checkNotNull(accountId,"请传入所需要的参数：accountId");

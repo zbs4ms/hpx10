@@ -131,6 +131,24 @@ public class OutpatientQueueService {
         return queueLengthMapper.queryAll();
     }
 
+
+    /**
+     * @description 获取医生的通知队列长度信息
+     * @param doctorHisId his医生id
+     **/
+    public QueueLength queryDoctorQueueLength(String doctorHisId) {
+      return queueLengthMapper.queryByDoctorHisId(doctorHisId);
+    }
+
+
+    /**
+     * @description 获取部门的通知队列长度信息
+     * @param departHisId his部门id
+     **/
+    public QueueLength queryDepartQueueLength(String departHisId) {
+      return queueLengthMapper.queryByDepartHisId(departHisId);
+    }
+
     /**
      * @description 添加通知队列长度信息
      **/

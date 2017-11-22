@@ -81,7 +81,7 @@ public class RegisterController extends MyBaseController {
     @ApiOperation(value = "增加预约信息",response = RegisterCompleteVO.class)
     @RequestMapping(value = "addRegister", method = RequestMethod.PUT)
     @ResponseBody
-    public JSONObject addRegister(Long accountId,
+    public JSONObject addRegister(@RequestAttribute(value="accountId") Long accountId,
                                   @ApiParam(value = "订单号", required = false) @RequestParam(value = "orderNumber", required = false) String orderNmuer,
                                   @ApiParam(value = "价格", required = false) @RequestParam(value = "price", required = false) String price,
                                   @ApiParam(value = "支付名称", required = false) @RequestParam(value = "subject", required = false) String subject,
@@ -148,7 +148,7 @@ public class RegisterController extends MyBaseController {
     @ApiOperation(value = "查询预约信息 ", response = RegisterVO.class)
     @RequestMapping(value = "queryRegister", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryRegister(Long accountId,
+    public JSONObject queryRegister(@RequestAttribute(value="accountId") Long accountId,
                                     @ApiParam(value = "预约ID", required = false) @RequestParam(value = "registerId", required = false) Long registerId,
                                     @ApiParam(value = "状态 0：已完成(已付款)； 1：待付款 ；2：已取消", required = false) @RequestParam(value = "status", required = false) Integer status,
                                     @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,

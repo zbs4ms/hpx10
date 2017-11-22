@@ -38,7 +38,7 @@ public class PregnantController extends MyBaseController {
 //    @RequestMapping(value = "addPregnant", method ={RequestMethod.PUT,RequestMethod.POST} )
 //    @ResponseBody
 //    public JSONObject addPregnant(
-//            @ApiParam(value = "账号ID", required = true) @RequestParam(value = "accountId", required = true) Long accountId,
+//            @RequestAttribute(value="accountId") Long accountId,
 //            @ApiParam(value = "病人ID", required = true) @RequestParam(value = "patientinfoId", required = true) Long patientinfoId,
 //            @ApiParam(value = "孕妇姓名", required = true) @RequestParam(value = "name", required = true) String  name,
 //            @ApiParam(value = "出生年月", required = true) @RequestParam(value = "birth", required = true) Long birth,

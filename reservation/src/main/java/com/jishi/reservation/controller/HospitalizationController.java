@@ -83,7 +83,7 @@ public class HospitalizationController extends MyBaseController {
     @ApiOperation(value = "查询住院人历史的住院信息 分页  by token", response = HospitalizationInfoVO.class)
     @RequestMapping(value = "queryAllInfo", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryAllInfo(Long accountId,
+    public JSONObject queryAllInfo(@RequestAttribute(value="accountId") Long accountId,
             @ApiParam(value = "状态 1 查询未支付订单 0 查询所有订单", required = false) @RequestParam(value = "status",required = false) Integer status,
             @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) throws Exception {
@@ -169,7 +169,7 @@ public class HospitalizationController extends MyBaseController {
     @ApiOperation(value = "生成 预交款订单", response = HospitalizationInfoVO.class)
     @RequestMapping(value = "generatePrepaymentOrder", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject generatePrepaymentOrder(Long accountId,
+    public JSONObject generatePrepaymentOrder(@RequestAttribute(value="accountId") Long accountId,
             @ApiParam(value = "预交的名称 eg:住院预交款", required = true) @RequestParam(value = "subject", required = true) String subject,
             @ApiParam(value = "交易的金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
             @ApiParam(value = "brId", required = true) @RequestParam(value = "brId", required = true) String brId,
@@ -186,7 +186,7 @@ public class HospitalizationController extends MyBaseController {
     @ApiOperation(value = "预交款订单  确认订单，同步到his", response = OrderVO.class)
     @RequestMapping(value = "confirmPrePayment", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject confirmPrePayment(Long accountId,
+    public JSONObject confirmPrePayment(@RequestAttribute(value="accountId") Long accountId,
             @ApiParam(value = "订单号", required = true) @RequestParam(value = "orderNumber", required = true) String orderNumber
             ) throws Exception {
             //PrePayment.Pay.Modify

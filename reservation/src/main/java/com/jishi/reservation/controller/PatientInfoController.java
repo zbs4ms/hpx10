@@ -42,7 +42,7 @@ public class PatientInfoController extends MyBaseController
     @ApiOperation(value = "增加就诊人信息  8月30号提出 一个账号最多有5个")
     @RequestMapping(value = "addPatientInfo", method = RequestMethod.PUT)
     @ResponseBody
-    public JSONObject addPatientInfo(Long accountId,
+    public JSONObject addPatientInfo(@RequestAttribute(value="accountId") Long accountId,
                                     @ApiParam(value = "就诊人名称", required = true) @RequestParam(value = "name", required = true) String name,
                                       @ApiParam(value = "病人电话", required = true) @RequestParam(value = "phone", required = true) String phone,
                                     @ApiParam(value = "病人身份证", required = true) @RequestParam(value = "idCard", required = true) String idCard,
@@ -60,7 +60,7 @@ public class PatientInfoController extends MyBaseController
     @ApiOperation(value = "查询就诊人信息", response = PatientInfo.class)
     @RequestMapping(value = "queryPatientInfo", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryPatientInfo(Long accountId,
+    public JSONObject queryPatientInfo(@RequestAttribute(value="accountId") Long accountId,
                                        @ApiParam(value = "就诊人ID", required = false) @RequestParam(value = "patientInfoId", required = false) Long patientInfoId) throws Exception {
 
         if (Helpers.isNullOrEmpty(patientInfoId) && Helpers.isNullOrEmpty(accountId))
@@ -86,7 +86,7 @@ public class PatientInfoController extends MyBaseController
     @ApiOperation(value = "app 通过token查询该用户所有就诊人信息", response = PatientInfo.class)
     @RequestMapping(value = "queryPatientInfoByToken", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryPatientInfoByToken(Long accountId,
+    public JSONObject queryPatientInfoByToken(@RequestAttribute(value="accountId") Long accountId,
                                               @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
             @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
@@ -101,7 +101,7 @@ public class PatientInfoController extends MyBaseController
     @ApiOperation(value = "修改就诊人信息")
     @RequestMapping(value = "modifyPatientInfo", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject modifyPatientInfo(Long accountId,
+    public JSONObject modifyPatientInfo(@RequestAttribute(value="accountId") Long accountId,
             @ApiParam(value = "就诊人ID") @RequestParam(value = "patientInfoId", required = true) Long patientInfoId,
             @ApiParam(value = "就诊人名称",required = false) @RequestParam(value = "name", required = false) String name,
             @ApiParam(value = "病人电话",required = false) @RequestParam(value = "phone", required = false) String phone,
