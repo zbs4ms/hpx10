@@ -21,7 +21,7 @@ import java.util.List;
 @RequestMapping("/admin/queue")
 @Slf4j
 @Api(description = "门诊排队叫号推送队列长度相关接口")
-public class OutpatientQueueController extends MyBaseController {
+public class AdminQueueController extends MyBaseController {
 
     @Autowired
     private OutpatientQueueService outpatientQueueService;
