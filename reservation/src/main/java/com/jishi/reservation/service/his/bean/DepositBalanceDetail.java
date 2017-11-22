@@ -38,6 +38,8 @@ public class DepositBalanceDetail {
     @XStreamOmitField
     String yujiaojine;
 
+    String zyh;
+
     @Data
     public class Jbxx{
         //姓名

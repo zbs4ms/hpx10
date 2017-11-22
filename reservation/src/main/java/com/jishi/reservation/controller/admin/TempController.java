@@ -27,10 +27,10 @@ import java.util.List;
  * Created by zbs on 2017/8/10.
  */
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/adminAccount")
 @Slf4j
 @Api(description = "账号相关接口")
-public class AdminController extends MyBaseController {
+public class TempController extends MyBaseController {
 
     @Autowired
     AccountService accountService;

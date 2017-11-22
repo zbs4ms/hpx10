@@ -43,6 +43,11 @@ public class HospitalizationInfoVO {
     @ApiModelProperty("支付时间")
     Date payTime;
 
+    @ApiModelProperty("住院号")
+    String zyh;
+
+
+
 
 
 

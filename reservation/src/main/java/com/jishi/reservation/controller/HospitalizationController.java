@@ -124,7 +124,7 @@ public class HospitalizationController extends MyBaseController {
     public JSONObject queryInfo(
             @ApiParam(value = "brId", required = false) @RequestParam(value = "brId", required = false) String brId,
             @ApiParam(value = "入院的次数", required = false) @RequestParam(value = "rycs", required = false) Integer rycs) throws Exception {
-        DepositBalanceDetail depositBalanceDetail = hospitalizationService.queryInfo(brId, rycs, null);
+        DepositBalanceDetail depositBalanceDetail = hospitalizationService.queryInfo(brId, rycs,null, null);
         if (depositBalanceDetail == null)
             return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
         HospitalizationInfoVO vo = getHospitalizationInfoVO(depositBalanceDetail,brId);
@@ -222,6 +222,9 @@ public class HospitalizationController extends MyBaseController {
         hospitalizationInfoVO.setRycs(depositBalanceDetail.getZycs());
         hospitalizationInfoVO.setYujiaojine(depositBalanceDetail.getYujiaojine());
         hospitalizationInfoVO.setBrid(brId);
+        hospitalizationInfoVO.setZyh(depositBalanceDetail.getZyh());
+
+        //todo
         hospitalizationInfoVO.setPayTime(new Date());
         hospitalizationInfoVO.setCreateTime(new Date());
         return hospitalizationInfoVO;
