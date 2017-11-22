@@ -35,7 +35,7 @@
     data () {
       return {
         loading: false,
-        currentPage: 1,
+        currentPage: 1, // 默认映射到后台api的参数为：pageNum
         pageSize: 10,
         total: 0,
         tableData: []
@@ -45,7 +45,7 @@
       currentPage (newPageNum) {
         console.log('newPageNum', newPageNum)
         this.getList({
-          [this.apiKeysMap.currentPage]: newPageNum
+          [this.apiKeys.currentPage]: newPageNum
         })
       },
       listQueryParams (newVal, oldVal) {
@@ -87,11 +87,19 @@
         })
       },
       getList (params) {
+        // 记录当前请求的id
+        this.getListId = this.this.getListId || 0
+        const currGetListId = ++this.getListId
         this.loading = true
         return this.listApi.requestFn(Object.assign({}, this.listQueryParams, params)).then((data) => {
-          this.listApi.responseFn.call(this, data)
+          // 验证是否是最后一个请求
+          if (currGetListId === this.getListId) {
+            this.listApi.responseFn.call(this, data)
+          }
         }).finally(() => {
-          this.loading = false
+          if (currGetListId === this.getListId) {
+            this.loading = false
+          }
         })
       },
       handlePageChange (page) {
