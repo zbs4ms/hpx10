@@ -39,5 +39,8 @@ public class OrderVO {
     @ApiModelProperty("确认状态  1失败  0成功")
     private Integer status;
 
+    @ApiModelProperty("支付时间")
+    private Date payTime;
+
 
 }

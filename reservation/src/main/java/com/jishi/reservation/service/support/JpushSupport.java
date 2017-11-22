@@ -13,6 +13,8 @@ import com.jishi.reservation.util.Constant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 /**
  * Created by sloan on 2017/9/23.
  */
@@ -63,6 +65,12 @@ public class JpushSupport {
     }
 
 
+    public void sendPushAsyn(String pushId, String message){
+        sendPushAsyn(pushId, message, null);
+    }
+
+    public void sendPushAsyn(String pushId, String message, Date dueDate){
+    }
 
 
 

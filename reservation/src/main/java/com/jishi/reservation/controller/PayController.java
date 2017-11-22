@@ -92,4 +92,23 @@ public class PayController extends MyBaseController {
         return ResponseWrapper().addData(vo).addMessage("请求成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
+
+
+    /**
+     * @param
+     * @return
+     * @throws Exception
+     */
+    @ApiOperation(value = "阿里退款", notes = "")
+    @RequestMapping(value = "aliRefund", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject aliPay(
+            @ApiParam(value = "订单号") @RequestParam(value = "orderNumber") String orderNumber
+    ) throws Exception {
+
+        alibabaPay.refund(orderNumber);
+
+        return ResponseWrapper().addMessage("请求成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
 }

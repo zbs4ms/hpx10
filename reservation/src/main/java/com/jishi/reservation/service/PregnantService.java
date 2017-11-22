@@ -68,7 +68,7 @@ public class PregnantService {
                 ",lastMenses:"+lastMenses+ ",telephone:"+telephone+",husbandName:"+husbandName+",husbandTelephone:"+husbandTelephone);
 
         List<Pregnant> pregnantList = queryPregnant(null, patientId, null, EnableEnum.EFFECTIVE.getCode());
-        if(Helpers.isNullOrEmpty(patientId) || pregnantList.get(0) == null)
+        if(Helpers.isNullOrEmpty(patientId) || pregnantList.size() == 0)
             throw new Exception("孕妇信息为空.");
         Pregnant pregnant = new Pregnant();
         pregnant.setId(pregnantList.get(0).getId());

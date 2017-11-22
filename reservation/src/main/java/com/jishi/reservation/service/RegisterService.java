@@ -68,7 +68,8 @@ public class RegisterService {
     @Autowired
     AccountMapper accountMapper;
 
-
+    @Autowired
+    AlibabaPay alibabaPay;
 
 
     /**
@@ -81,24 +82,45 @@ public class RegisterService {
      * @throws Exception
      */
     @Transactional
-    public RegisterCompleteVO addRegister(String orderNmuber,Long accountId,String brid,Long departmentId,Long doctorId,String xmid,
+    public RegisterCompleteVO addRegister(String orderNumber,Long accountId,String brid,String departmentId,String doctorId,String xmid,
                                           Long agreedTime,String timeInterval,String doctorName,
                                           String price,String subject,String brName,String department,String hm) throws Exception {
-        if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
-            throw new Exception("账户信息为空.");
-        if(Helpers.isNullOrEmpty(departmentId)  || departmentService.queryDepartment(departmentId,null) == null)
-            throw new Exception("科室信息为空.");
-        if(Helpers.isNullOrEmpty(doctorId)  || doctorService.queryDoctor(doctorId,null,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
-            throw new Exception("医生信息为空.");
+//        if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
+//            throw new Exception("账户信息为空.");
+//        if(Helpers.isNullOrEmpty(departmentId)  || departmentService.queryDepartment(departmentId,null) == null)
+//            throw new Exception("科室信息为空.");
+//        if(Helpers.isNullOrEmpty(doctorId)  || doctorService.queryDoctor(null,doctorId,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
+//            throw new Exception("医生信息为空.");
 
 
-        if(orderNmuber == null || "".equals(orderNmuber)){
+        RegisterCompleteVO completeVO = new RegisterCompleteVO();
+        if(orderNumber == null || "".equals(orderNumber)){
+
+
+            //检查病人信息和挂号信息是否匹配
+            if(!hisOutpatient.checkIsPatientMatchRegister(brid, hm)){
+                completeVO.setState(RegisterErrCodeEnum.PATIENT_NOT_MATCH.getCode());
+                return completeVO;
+            }
+
+
             Date agreeDate = new Date(agreedTime);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            //挂号检查
+            if(!hisOutpatient.checkIsRegisterLimit(brid,hm,sdf.format(agreeDate),departmentId)){
+
+                completeVO.setState(RegisterErrCodeEnum.LIMIT_FOR_PATIENT.getCode());
+                return completeVO;
+            }
 
             //his 锁定号源,返回hx 号序
         String hx = this.lockRegister(hm, agreeDate);
-        if(hx.equals("invalid hx"))
-            return null;
+        if(hx.equals("invalid hx")){
+            completeVO.setState(RegisterErrCodeEnum.DOCTOR_FULL.getCode());
+            return completeVO;
+        }
+
 
         LastPrice lastPrice = hisOutpatient.queryLastPrice(xmid, brid);
 
@@ -134,8 +156,8 @@ public class RegisterService {
             order.setDes(subject);
             order.setPrice(truePriceFormat);
             order.setEnable(EnableEnum.EFFECTIVE.getCode());
-            String orderNumber = AlibabaPay.generateUniqueOrderNumber();
-            order.setOrderNumber(orderNumber);
+            String orderNumberGenerate = AlibabaPay.generateUniqueOrderNumber();
+            order.setOrderNumber(orderNumberGenerate);
             //order.setRegisterId(register.getId());
             order.setStatus(OrderStatusEnum.WAIT_PAYED.getCode());
             order.setPayType(PayEnum.ALI.getCode());
@@ -162,7 +184,7 @@ public class RegisterService {
             order.setRegisterId(register.getId());
             orderInfoMapper.insertReturnId(order);
             register.setOrderId(order.getId());
-            RegisterCompleteVO completeVO = new RegisterCompleteVO();
+
             completeVO.setRegisterId(register.getId());
             completeVO.setDoctor(doctorName);
             //Department department = departmentMapper.queryById(departmentId);
@@ -181,12 +203,13 @@ public class RegisterService {
             completeVO.setPrice(truePriceFormat);
             //completeVO.setPrice(BigDecimal.valueOf(0.01));
             completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
-            completeVO.setOrderCode(orderNumber);
+            completeVO.setOrderCode(orderNumberGenerate);
             completeVO.setSerialNumber(serialCode);
             completeVO.setSubject(subject);
             completeVO.setDes(subject);
             completeVO.setOrderId(order.getId());
             completeVO.setYhje(yhjeFormat);
+            completeVO.setState(RegisterErrCodeEnum.RIGHT.getCode());
             register.setHx(hx);
             registerMapper.updateByPrimaryKeySelective(register);
 
@@ -195,14 +218,21 @@ public class RegisterService {
 
             log.info("传入了订单号，更新新的订单号，带到支付宝");
             log.info("检查订单状态,,");
+            //生成新的订单号，带去支付宝，不然支付宝会找到重复订单，支付失败
             String newOrderNumber = AlibabaPay.generateUniqueOrderNumber();
-            OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(null, orderNmuber);
-            RegisterCompleteVO completeVO = new RegisterCompleteVO();
+            OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(null, orderNumber);
+
 
             if(!orderInfo.getStatus().equals(OrderStatusEnum.WAIT_PAYED.getCode()) || !orderInfo.getType().equals(OrderTypeEnum.REGISTER.getCode())){
-                completeVO.setOrderId(-1L);
+                completeVO.setState(RegisterErrCodeEnum.ORDER_STATE_NOT_MATCH.getCode());
                 return completeVO;
             }
+            //订单的用户id要和当前操作者的用户id相匹配
+            if(!orderInfo.getAccountId().equals(accountId)){
+                completeVO.setState(RegisterErrCodeEnum.ORDER_NUMBER_NOT_MATCH_ACCOUNT.getCode());
+                return completeVO;
+            }
+
             orderInfo.setOrderNumber(newOrderNumber);
 
 
@@ -238,12 +268,14 @@ public class RegisterService {
             completeVO.setDes(orderInfo.getSubject());
             completeVO.setPatient(register.getPatientName());
             completeVO.setDoctor(register.getDoctorName());
+            completeVO.setState(RegisterErrCodeEnum.RIGHT.getCode());
             return completeVO;
 
         }
 
 
     }
+
 
     private String lockRegister(String hm, Date agreedTime) throws Exception {
         log.info("开始锁定号源");
@@ -308,41 +340,41 @@ public class RegisterService {
         return registerMapper.select(queryRegister);
     }
 
-    /**
-     * 修改预约信心
-     * @param registerId
-     * @param accountId
-     * @param patientinfoId
-     * @param departmentId
-     * @param doctorId
-     * @param status
-     * @param agreedTime
-     * @param enable
-     * @throws Exception
-     */
-    public void modifyRegister(Long registerId,Long accountId,Long patientinfoId,Long departmentId,Long doctorId,Integer status,Date agreedTime,Integer enable) throws Exception {
-        if(Helpers.isNullOrEmpty(registerId) || queryRegister(registerId,null,null,null) == null)
-            throw new Exception("预约信息为空.");
-        if(!Helpers.isNullOrEmpty(accountId) && accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
-            throw new Exception("账户信息为空.");
-        if(!Helpers.isNullOrEmpty(patientinfoId) && patientInfoService.queryPatientInfo(patientinfoId,null, EnableEnum.EFFECTIVE.getCode()) == null)
-            throw new Exception("就诊人信息为空.");
-        if(!Helpers.isNullOrEmpty(departmentId) && departmentService.queryDepartment(departmentId,null) == null)
-            throw new Exception("科室信息为空.");
-        if(!Helpers.isNullOrEmpty(doctorId) && doctorService.queryDoctor(doctorId,null,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
-            throw new Exception("医生信息为空.");
-        Register newRegister = new Register();
-        newRegister.setId(registerId);
-        newRegister.setAccountId(accountId);
-        newRegister.setDepartmentId(departmentId);
-        newRegister.setDoctorId(doctorId);
-        newRegister.setBrId(String.valueOf(patientinfoId));
-        newRegister.setStatus(status);
-        newRegister.setAgreedTime(agreedTime);
-        newRegister.setStatus(StatusEnum.REGISTER_STATUS_NO_PAYMENT.getCode());
-        newRegister.setEnable(enable);
-        Preconditions.checkState(registerMapper.updateByPrimaryKeySelective(newRegister) == 1,"更新失败!");
-    }
+//    /**
+//     * 修改预约信心
+//     * @param registerId
+//     * @param accountId
+//     * @param patientinfoId
+//     * @param departmentId
+//     * @param doctorId
+//     * @param status
+//     * @param agreedTime
+//     * @param enable
+//     * @throws Exception
+//     */
+//    public void modifyRegister(Long registerId,Long accountId,Long patientinfoId,String departmentId,String doctorId,Integer status,Date agreedTime,Integer enable) throws Exception {
+//        if(Helpers.isNullOrEmpty(registerId) || queryRegister(registerId,null,null,null) == null)
+//            throw new Exception("预约信息为空.");
+//        if(!Helpers.isNullOrEmpty(accountId) && accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
+//            throw new Exception("账户信息为空.");
+//        if(!Helpers.isNullOrEmpty(patientinfoId) && patientInfoService.queryPatientInfo(patientinfoId,null, EnableEnum.EFFECTIVE.getCode()) == null)
+//            throw new Exception("就诊人信息为空.");
+//        if(!Helpers.isNullOrEmpty(departmentId) && departmentService.queryDepartment(departmentId,null) == null)
+//            throw new Exception("科室信息为空.");
+//        if(!Helpers.isNullOrEmpty(doctorId) && doctorService.queryDoctor(null,doctorId,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
+//            throw new Exception("医生信息为空.");
+//        Register newRegister = new Register();
+//        newRegister.setId(registerId);
+//        newRegister.setAccountId(accountId);
+//        newRegister.setDepartmentId(departmentId);
+//        newRegister.setDoctorId(doctorId);
+//        newRegister.setBrId(String.valueOf(patientinfoId));
+//        newRegister.setStatus(status);
+//        newRegister.setAgreedTime(agreedTime);
+//        newRegister.setStatus(StatusEnum.REGISTER_STATUS_NO_PAYMENT.getCode());
+//        newRegister.setEnable(enable);
+//        Preconditions.checkState(registerMapper.updateByPrimaryKeySelective(newRegister) == 1,"更新失败!");
+//    }
 
     /**
      * 把就诊信息置为无效
@@ -368,12 +400,18 @@ public class RegisterService {
         String s = hisOutpatient.unlockRegister(register.getHm(), rq, register.getHx());
         if(s != null && !"".equals(s)){
             log.info("预约取消成功..");
-            registerMapper.updateByPrimaryKeySelective(register);
-            orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
-            return 0;
+            if(alibabaPay.refund(orderInfo.getOrderNumber())){
+                registerMapper.updateByPrimaryKeySelective(register);
+                orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+                return 0;
+            }else {
+                log.info("退款失败..订单号："+orderInfo.getOrderNumber());
+                return 1;
+            }
+
 
         }else {
-            log.info("预约请求失败");
+            log.info("预约取消失败");
             return 1;
         }
 
@@ -404,7 +442,7 @@ public class RegisterService {
             vo.setRegisterTime(register.getAgreedTime());
             vo.setId(register.getId());
             Account account = accountMapper.queryById(register.getAccountId());
-            PatientInfo patientInfo = patientInfoMapper.queryByById(register.getBrId());
+            PatientInfo patientInfo = patientInfoMapper.queryByById(register.getBrId(),orderInfo.getAccountId());
             vo.setPhone(account.getPhone());
             //todo  状态..
             vo.setStatus("2");

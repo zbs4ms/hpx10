@@ -101,17 +101,7 @@ public class HospitalizationController extends MyBaseController {
         if(pageSize ==0 ){
             pageSize = 100;
         }
-        //供测试数据使用。。。
-//        if(accountId == 3987){
-//            List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo("3987");
-//            if (depositBalanceDetails == null)
-//                return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-//            for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
-//                list.add(getHospitalizationInfoVO(depositBalanceDetail,"3987"));
-//            }
-//
-//
-//        }else {
+
         if(accountId == null){
             accountId = accountService.returnIdByToken(request);
 
@@ -130,17 +120,13 @@ public class HospitalizationController extends MyBaseController {
                 List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo(brId);
                 if (depositBalanceDetails != null){
                     for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
-//
-//                    if(status == 1){
-//                        if(depositBalanceDetail.getZyzt())
-//                    }
+
                         list.add(getHospitalizationInfoVO(depositBalanceDetail,brId));
                 }
-                    //return ResponseWrapper().addData(null).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
                 }
             }
-//        }
+
 
 
 
@@ -189,22 +175,7 @@ public class HospitalizationController extends MyBaseController {
 //        DepositBalanceLog balanceLog = hospitalizationService.queryPaymentRecord(brId);
 
         PageInfo<PrePaymentRecordVO> page = orderInfoService.queryPrePayment(brId,startPage,pageSize);
-//        List<DepositBalanceLog.DB3> paramList = balanceLog.getGroup().getItem();
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-//        if(paramList!=null && paramList.size() != 0){
-//            for (DepositBalanceLog.DB3 db3 : paramList) {
-//                PrePaymentRecordVO vo = new PrePaymentRecordVO();
-//                vo.setJe(db3.getJe());
-//                if(db3.getJksh() != null && !"".equals(db3.getJksh())){
-//                    vo.setJksh(sdf.parse(db3.getJksh()));
-//                }
-//                vo.setLx(db3.getLx());
-//                vo.setZffs(db3.getZffs());
-//
-//
-//                list.add(vo);
-//            }
-//        }
+
 
 
         return ResponseWrapper().addData(page).addMessage("查询成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
@@ -288,6 +259,8 @@ public class HospitalizationController extends MyBaseController {
         hospitalizationInfoVO.setRycs(depositBalanceDetail.getZycs());
         hospitalizationInfoVO.setYujiaojine(depositBalanceDetail.getYujiaojine());
         hospitalizationInfoVO.setBrid(brId);
+        hospitalizationInfoVO.setPayTime(new Date());
+        hospitalizationInfoVO.setCreateTime(new Date());
         return hospitalizationInfoVO;
     }
 

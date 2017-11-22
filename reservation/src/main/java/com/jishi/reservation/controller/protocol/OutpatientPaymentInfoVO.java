@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class OutpatientPaymentInfoVO implements Comparable<OutpatientPaymentInfo
     private String brid;
     @ApiModelProperty("病人姓名")
     private String patientName;
-    @ApiModelProperty("单据号")
+    @ApiModelProperty("单据号，挂号单号")
     private String documentNum;
     @ApiModelProperty("挂号类型")
     private String registerType;
@@ -34,11 +35,15 @@ public class OutpatientPaymentInfoVO implements Comparable<OutpatientPaymentInfo
     @ApiModelProperty("是否预约，0-挂号并缴费，1-预约不缴费")
     private int hasRegister;
     @ApiModelProperty("金额")
-    private double paymentAmount;
+    private BigDecimal paymentAmount;
     @ApiModelProperty("未支付金额")
-    private double unpaidAmount;
+    private BigDecimal unpaidAmount;
     @ApiModelProperty("未支付单据列表，以','分隔")
     private String unpaidDocIds;
+    @ApiModelProperty("最新一次开单时间")
+    private Date lastDocDate;
+    @ApiModelProperty("上一次支付时间，可能为空")
+    private Date lastPaidDate;
     @ApiModelProperty("医生ID")
     private String doctorId;
     @ApiModelProperty("医生姓名")

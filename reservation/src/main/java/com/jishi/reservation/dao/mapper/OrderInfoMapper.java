@@ -57,4 +57,16 @@ public interface OrderInfoMapper extends MyMapper<OrderInfo>{
             "select * from order_info where type = 2 and status = 0 and br_id = #{brId}"
     })
     List<OrderInfo> queryPrePayment(@Param("brId") String brId);
+
+
+    @Select({
+            "select * from order_info where third_order_number = #{thirdOrderNumber}"
+    })
+    OrderInfo queryByThirdOrderNumber(@Param("thirdOrderNumber") String thirdOrderNumber);
+
+
+    @Select({
+            "select * from order_info where type = 1 and status = 1 and enable = 0 and id > 800"
+    })
+    List<OrderInfo> queryAllWaitPayRegister();
 }

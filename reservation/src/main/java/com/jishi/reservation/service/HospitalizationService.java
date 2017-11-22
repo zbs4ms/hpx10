@@ -196,12 +196,13 @@ public class HospitalizationService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
             if(orderInfo.getPayTime() !=null){
-                vo.setCompletedTime(sdf.parse(orderInfo.getPayTime()));
+                vo.setCompletedTime(orderInfo.getPayTime());
             }
             prePaymentMapper.updateByPrimaryKeySelective(prePayment);
             log.info("更新预交单号...");
 
             vo.setOrderNumber(orderNumber);
+            vo.setPayTime(orderInfo.getPayTime());
             vo.setStatus(SuccessEnum.SUCCESS.getCode());
             return vo;
         }else {
@@ -212,7 +213,7 @@ public class HospitalizationService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
             if(orderInfo.getPayTime() !=null){
-                vo.setCompletedTime(sdf.parse(orderInfo.getPayTime()));
+                vo.setCompletedTime(orderInfo.getPayTime());
             }
             vo.setStatus(SuccessEnum.FAILED.getCode());
             vo.setOrderNumber(orderNumber);

@@ -34,4 +34,14 @@ public interface OutpatientPaymentMapper extends MyMapper<OutpatientPayment> {
     })
     OutpatientPayment queryByOrderNumber(@Param("orderNumber") String orderNumber);
 
+    @Select({
+      "select * from outpatient_payment where register_number = #{registerNumber}"
+    })
+    List<OutpatientPayment> queryByRegisterNumber(@Param("registerNumber") String registerNumber);
+
+    @Select({
+      "select * from outpatient_payment where register_number = #{registerNumber} order by pay_time desc limit 1"
+    })
+    OutpatientPayment queryLastPayTme(@Param("registerNumber") String registerNumber);
+
 }

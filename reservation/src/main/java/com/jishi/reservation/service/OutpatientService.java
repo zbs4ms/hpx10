@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by liangxiong on 2017/10/25.
@@ -43,9 +40,9 @@ public class OutpatientService {
     @Autowired
     private OutpatientPaymentMapper outpatientPaymentMapper;
 
-    private static final int OUTPATIENT_PAMENT_INFO_QUERY_DAY = 30;
+    private static final int OUTPATIENT_PAYMENT_INFO_QUERY_DAY = 30;
 
-      /**
+      /**Y
        * 获取用户门诊缴费列表
        * @param accountId
        * @throws Exception
@@ -60,7 +57,7 @@ public class OutpatientService {
         List<OutpatientPaymentInfoVO> paymentInfoList = new ArrayList<OutpatientPaymentInfoVO>();
         for (PatientInfo info : patientInfoList) {
             // TODO 结算卡类别和站点暂时传null
-            OutpatientPaymentInfo data = hisOutpatient.queryPayReceipt(info.getBrId(), "", String.valueOf(OUTPATIENT_PAMENT_INFO_QUERY_DAY), "");
+            OutpatientPaymentInfo data = hisOutpatient.queryPayReceipt(info.getBrId(), "", String.valueOf(OUTPATIENT_PAYMENT_INFO_QUERY_DAY), "");
             if (data == null) {
                 continue;
             }
@@ -74,8 +71,9 @@ public class OutpatientService {
                 if (gh == null) {
                     continue;
                 }
-                double unpaidAmount = 0.0;
+                BigDecimal unpaidAmount = new BigDecimal("0");
                 String unpaidDocIds = "";
+                Date lastDocDate = null;
                 OutpatientPaymentInfoVO paymentInfo = new OutpatientPaymentInfoVO();
                 paymentInfo.setBrid(info.getBrId());
                 paymentInfo.setPatientName(info.getName());
@@ -87,7 +85,7 @@ public class OutpatientService {
                 //paymentInfo.setDocumentType(Integer.parseInt(gh.getDjlx()));
                 paymentInfo.setPaymentStatus(Integer.parseInt(gh.getZfzt()));
                 paymentInfo.setHasRegister(Integer.parseInt(gh.getSfyy()));
-                paymentInfo.setPaymentAmount(Double.parseDouble(gh.getJe()));
+                paymentInfo.setPaymentAmount(new BigDecimal(gh.getJe()));
                 paymentInfo.setDoctorId(gh.getYsid());
                 paymentInfo.setDoctorName(gh.getYsxm());
                 paymentInfo.setHasPayCard(Integer.parseInt(gh.getSfjsk()));
@@ -111,7 +109,7 @@ public class OutpatientService {
                         for (OutpatientPaymentInfo.Fm fm : fmlists) {
                             OutpatientFeeVO fee = new OutpatientFeeVO();
                             fee.setFeeName(fm.getMc());
-                            fee.setFeeAmount(Double.parseDouble(fm.getJe()));
+                            fee.setFeeAmount(new BigDecimal(fm.getJe()));
                             fee.setFeeStatus(Integer.parseInt(fm.getZfzt()));
 
                             /** 暂时不提供明细
@@ -122,7 +120,7 @@ public class OutpatientService {
                                 for (OutpatientPaymentInfo.Mx mx : mxlists) {
                                     OutpatientFeeVO.OutpatientFeeItemVO item = new OutpatientFeeVO.OutpatientFeeItemVO();
                                     item.setItemName(mx.getMc());
-                                    item.setItemAdvance(Double.parseDouble(mx.getDj()));
+                                    item.setItemAdvance(new BigDecimal(mx.getDj()));
                                     item.setItemFormat(mx.getGg());
                                     item.setItemNumber(Integer.parseInt(mx.getSl()));
                                     item.setItemUnit(mx.getDw());
@@ -145,19 +143,24 @@ public class OutpatientService {
                         for (OutpatientPaymentInfo.Dj dj : djLists) {
                             OutpatientFeeDocVO doc = new OutpatientFeeDocVO();
                             doc.setDocumentNum(dj.getDjh());
-                            doc.setDocumentAmount(Double.parseDouble(dj.getJe()));
+                            doc.setDocumentAmount(new BigDecimal(dj.getJe()));
                             doc.setDocumentDate(formatDate(dj.getKdsj()));
                             doc.setDocumentType(Integer.parseInt(dj.getDjlx()));
                             doc.setHasPayCard(Integer.parseInt(dj.getSfjsk()));
                             doc.setPayStatus(Integer.parseInt(dj.getZfzt()));
                             String ytje = dj.getYtje();
-                            double returnNum = (ytje == null || ytje.isEmpty()) ? 0.0 : Double.parseDouble(ytje);
+                            BigDecimal returnNum = (ytje == null || ytje.isEmpty()) ? new BigDecimal("0") : new BigDecimal(ytje);
                             doc.setReturnNumber(returnNum);
 
                             //默认处理收费单(单据类型，1-收费单，4-挂号单)，挂号单不处理
                             if (doc.getPayStatus() == 0 && doc.getDocumentType() == 1 && !unpaidDocIds.contains(doc.getDocumentNum())) {
-                                unpaidAmount += doc.getDocumentAmount();
+                                unpaidAmount = unpaidAmount.add(doc.getDocumentAmount());
                                 unpaidDocIds += doc.getDocumentNum() + ",";
+                            }
+
+                            // 获取最新的开单时间作为本次门诊的开单时间
+                            if (lastDocDate == null || lastDocDate.before(doc.getDocumentDate())) {
+                                lastDocDate = doc.getDocumentDate();
                             }
 
                             feeDocList.add(doc);
@@ -169,6 +172,7 @@ public class OutpatientService {
                 }
                 paymentInfo.setAdviceList(adviceList);
                 paymentInfo.setUnpaidAmount(unpaidAmount);
+                paymentInfo.setLastDocDate(lastDocDate);
                 if (unpaidDocIds != null && !unpaidDocIds.isEmpty()) {
                     unpaidDocIds = unpaidDocIds.substring(0, unpaidDocIds.length() - 1);
                 }
@@ -178,6 +182,9 @@ public class OutpatientService {
                 int PaymentStatus = unpaidDocIds == null || unpaidDocIds.isEmpty() ? 1 : 0;
                 paymentInfo.setPaymentStatus(PaymentStatus);
                 paymentInfo.setDocumentType(1);   //默认处理收费单(单据类型，1-收费单，4-挂号单)，挂号单不处理
+
+                OutpatientPayment payment = outpatientPaymentMapper.queryLastPayTme(paymentInfo.getDocumentNum());
+                paymentInfo.setLastPaidDate(payment != null ? payment.getPayTime() : null);
 
                 if (PaymentStatus == paymentStatus || paymentStatus == 1) {
                     paymentInfoList.add(paymentInfo);
@@ -210,12 +217,13 @@ public class OutpatientService {
      * @param docmentType 单据类型，1-收费单，4-挂号单
      * @throws Exception
     **/
-    public OrderInfo generatePaymentOrder(Long accountId, String brId, String subject, BigDecimal price, String docIds, Integer docmentType) throws Exception {
+    public OrderInfo generatePaymentOrder(Long accountId, String brId, String registerNumber, String subject, BigDecimal price, String docIds, Integer docmentType) throws Exception {
         OrderInfo orderInfo = orderInfoService.generateOutpatient(accountId, brId, subject, price);
         log.info(" generatePaymentOrder =>  订单号: " + orderInfo.getOrderNumber());
         OutpatientPayment payment = new OutpatientPayment();
         payment.setAccountId(accountId);
         payment.setBrId(brId);
+        payment.setRegisterNumber(registerNumber);
         payment.setDocmentId(docIds);
         payment.setDocmentType(docmentType);
         payment.setStatus(0); //创建订单，初始化为未支付
@@ -224,7 +232,7 @@ public class OutpatientService {
         payment.setCreateTime(new Date());
 
         outpatientPaymentMapper.insert(payment);
-        log.info(" generatePaymentOrder => 门诊订单信息，病人id: " + payment.getBrId() + " 单据号：" + payment.getDocmentId());
+        log.info(" generatePaymentOrder => 门诊订单信息，病人id: " + payment.getBrId() + " 挂号单号: " + registerNumber + " 单据号：" + payment.getDocmentId());
         return orderInfo;
     }
 
@@ -254,6 +262,7 @@ public class OutpatientService {
         boolean rslt = jzid != null && !jzid.isEmpty();
         if (rslt) {
             payment.setStatus(3);
+            payment.setPayTime(order.getPayTime());
             outpatientPaymentMapper.updateByPrimaryKeySelective(payment);
         }
         return rslt ? toOrderVO(order) : null;
@@ -284,6 +293,7 @@ public class OutpatientService {
         boolean rslt = czsj != null && !czsj.isEmpty();
         if (rslt) {
             payment.setStatus(3);
+            payment.setPayTime(order.getPayTime());
             outpatientPaymentMapper.updateByPrimaryKeySelective(payment);
         }
         return rslt ? toOrderVO(order) : null;
@@ -319,7 +329,7 @@ public class OutpatientService {
                 OutpatientVisitRecordVO recordVO = new OutpatientVisitRecordVO();
                 recordVO.setBrid(patientInfo.getBrId());
                 recordVO.setRgisterNum(record.getGhdh());
-                recordVO.setAmount(Double.parseDouble(record.getJe()));
+                recordVO.setAmount(new BigDecimal(record.getJe()));
                 recordVO.setDate(formatDate(record.getRq()));
                 recordVO.setDepartment(record.getJzks());
                 recordVO.setDepartmentId(record.getJzksid());
@@ -364,7 +374,7 @@ public class OutpatientService {
         for (OutpatientVisitPrescription.Prescription prescription : queryData.getPrescriptionList()) {
             OutpatientVisitPrescriptionVO prescriptionVO = new OutpatientVisitPrescriptionVO();
             prescriptionVO.setDate(formatDate(prescription.getRq()));
-            prescriptionVO.setDocAmount(Double.parseDouble(prescription.getZfy()));
+            prescriptionVO.setDocAmount(new BigDecimal(prescription.getZfy()));
             prescriptionVO.setDocNumber(prescription.getDjh());
             prescriptionVO.setDoctor(prescription.getYs());
             prescriptionVO.setInfo(prescription.getZd());
@@ -393,7 +403,7 @@ public class OutpatientService {
                                     mxOV.setReportSourceNote(mx.getBglysm());
                                     mxOV.setUnit(mx.getDw());
                                     mxOV.setSingleValue(mx.getDl());
-                                    mxOV.setUsageValue(parseDouble(mx.getYl()));
+                                    mxOV.setUsageValue(new BigDecimal(mx.getYl()));
                                     mxList.add(mxOV);
                                 }
                             }
@@ -429,7 +439,7 @@ public class OutpatientService {
             OutpatientVisitReceiptVO receiptVO = new OutpatientVisitReceiptVO();
             receiptVO.setDocNumber(receipt.getDjh());
             receiptVO.setDate(formatDate(receipt.getSj()));
-            receiptVO.setDocAmount(Double.parseDouble(receipt.getFy()));
+            receiptVO.setDocAmount(new BigDecimal(receipt.getFy()));
             receiptVO.setDoctor(receipt.getYS());
             receiptVO.setPaymentType(receipt.getZffs());
 
@@ -476,14 +486,6 @@ public class OutpatientService {
         int rslt = 0;
         if (str != null && !str.isEmpty()){
             rslt = Integer.parseInt(str);
-        }
-        return rslt;
-    }
-
-    private double parseDouble(String str) throws ParseException {
-        double rslt = 0.0;
-        if (str != null && !str.isEmpty()){
-            rslt = Double.parseDouble(str);
         }
         return rslt;
     }

@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class OutpatientVisitPrescriptionVO {
     @ApiModelProperty("医生姓名")
     private String doctor;
     @ApiModelProperty("单据费用")
-    private double docAmount;
+    private BigDecimal docAmount;
     @ApiModelProperty("诊断信息")
     private String info;
     @ApiModelProperty("docList")
@@ -47,7 +48,7 @@ public class OutpatientVisitPrescriptionVO {
         @ApiModelProperty("单量(LB为处方时返回)")
         private String singleValue;
         @ApiModelProperty("用量(LB为处方时返回)")
-        private double usageValue;
+        private BigDecimal usageValue;
         @ApiModelProperty("单位(LB为处方时返回)")
         private String unit;
         @ApiModelProperty("病历ID(LB为检验、检查时返回)，HIS中报告的唯一标识")

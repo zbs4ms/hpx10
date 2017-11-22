@@ -38,6 +38,14 @@ public class HospitalizationInfoVO {
     String brid;
 
 
+    @ApiModelProperty("开单时间")
+    Date createTime;
+    @ApiModelProperty("支付时间")
+    Date payTime;
+
+
+
+
 
 
 

@@ -53,7 +53,7 @@ public class IMAccountController extends MyBaseController {
         IMAccount imAccount = imAccountService.getUserIMAccount(accountId);
         IMAccountVO imAccountVO =new IMAccountVO();
         imAccountVO.setImAccId(imAccount.getImAccId());
-        imAccountVO.setImToken(imAccountVO.getImToken());
+        imAccountVO.setImToken(imAccount.getImToken());
         return ResponseWrapper().addData(imAccountVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
@@ -65,7 +65,7 @@ public class IMAccountController extends MyBaseController {
         IMAccount imAccount = imAccountService.getDoctorIMAccount(doctorId);
         IMAccountVO imAccountVO =new IMAccountVO();
         imAccountVO.setImAccId(imAccount.getImAccId());
-        imAccountVO.setImToken(imAccountVO.getImToken());
+        imAccountVO.setImToken(imAccount.getImToken());
         return ResponseWrapper().addData(imAccountVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 

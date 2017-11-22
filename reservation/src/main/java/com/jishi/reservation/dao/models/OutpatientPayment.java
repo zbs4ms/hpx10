@@ -23,6 +23,8 @@ public class OutpatientPayment {
     private Long accountId;
     @ApiModelProperty("his病人id")
     private String brId;
+    @ApiModelProperty("his挂号单号")
+    private String registerNumber;
     @ApiModelProperty("本系统账单id")
     private Long orderId;
     @ApiModelProperty("本系统账单号")
@@ -35,5 +37,7 @@ public class OutpatientPayment {
     private Integer status;
     @ApiModelProperty("创建时间")
     private Date createTime;
+    @ApiModelProperty("支付时间")
+    private Date payTime;
 
 }

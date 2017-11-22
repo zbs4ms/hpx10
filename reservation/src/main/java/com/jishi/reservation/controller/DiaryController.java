@@ -70,7 +70,7 @@ public class DiaryController extends MyBaseController {
             @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize
     ){
-        PageInfo<Diary> diaryPageInfo = diaryService.queryPage(accountId,startPage,pageSize);
+        PageInfo<Diary> diaryPageInfo = diaryService.queryPage(accountId,1,startPage,pageSize);
         return ResponseWrapper().addMessage("查询成功").addData(diaryPageInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
     }
@@ -196,7 +196,7 @@ public class DiaryController extends MyBaseController {
 
 
        // Long accountId = null;
-        if(isMy != 1){
+        if(isMy != 1 && accountId == null){
             accountId = isMy == 0?accountService.returnIdByToken(request):null;
             if(accountId == -1L) {
                 return ResponseWrapper().addMessage("请登录").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
@@ -205,7 +205,7 @@ public class DiaryController extends MyBaseController {
 
 
 
-        PageInfo<Diary> page = diaryService.queryPage(accountId,startPage,pageSize);
+        PageInfo<Diary> page = diaryService.queryPage(accountId,isMy,startPage,pageSize);
 
 
         return ResponseWrapper().addMessage("查询成功").addData(page).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
@@ -237,10 +237,12 @@ public class DiaryController extends MyBaseController {
                 }
 
 
-        Integer integer = diaryService.likeDiary(diaryId, accountId);
+             diaryService.likeDiary(diaryId, accountId);
+
+                Integer likedNumber = diaryService.queryLikedNumber(diaryId);
 
 
-        return ResponseWrapper().addMessage("操作成功").addData(integer).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        return ResponseWrapper().addMessage("操作成功").addData(likedNumber).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
     }
 
