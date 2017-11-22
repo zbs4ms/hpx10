@@ -197,32 +197,7 @@ public class RegisterController extends MyBaseController {
         return ResponseWrapper().addData(pageInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
-//    @ApiOperation(value = "修改预约信息")
-//    @RequestMapping(value = "modifyRegister", method = RequestMethod.POST)
-//    @ResponseBody
-//    public JSONObject modifyRegister(HttpServletRequest request,
-//                                     HttpServletResponse response,
-//
-//                                     @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId,
-//            @ApiParam(value = "账号ID", required = false) @RequestParam(value = "accountId", required = false) Long accountId,
-//            @ApiParam(value = "病人ID", required = false) @RequestParam(value = "patientinfoId", required = false) Long patientinfoId,
-//            @ApiParam(value = "状态", required = false) @RequestParam(value = "status", required = false) Integer status,
-//            @ApiParam(value = "科室ID", required = false) @RequestParam(value = "departmentId", required = false) Long departmentId,
-//            @ApiParam(value = "预约的医生ID", required = false) @RequestParam(value = "doctorId", required = false) String doctorId,
-//            @ApiParam(value = "预约时间", required = false) @RequestParam(value = "agreedTime", required = false) String agreedTime) throws Exception {
-//        Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
-//
-//        if (accountId == null) {
-//            //从登陆信息中获取登陆者ID
-//            accountId = accountService.returnIdByToken(request);
-//            if(accountId.equals(-1L)){
-//                response.setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
-//                return ResponseWrapper().addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode());
-//            }
-//        }
-//        registerService.modifyRegister(registerId, accountId, patientinfoId, departmentId, doctorId, status, new Date(agreedTime), null);
-//        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-//    }
+
 
     @ApiOperation(value = "预约信息置为无效 取消预约")
     @RequestMapping(value = "failureRegister", method = RequestMethod.DELETE)
