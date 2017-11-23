@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -43,6 +44,11 @@ public class VerifyLoginFilter extends BaseFilter {
             if (testAccount == null || testAccount.equals(BaseFilter.NOT_LOGIN_ACCOUNT_ID)) {
                 Result result = new Result();
                 logger.info("*******验证失败，未登录");
+                response.setContentType("application/json;charset=utf-8");
+
+                // TODO 返回状态置为401，未登录，待修改
+                ((HttpServletResponse)response).setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
+
                 response.getWriter().print(result.addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode()));
                 return;
             } else {

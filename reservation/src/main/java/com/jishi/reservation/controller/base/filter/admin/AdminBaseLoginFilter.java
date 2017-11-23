@@ -37,6 +37,7 @@ public class AdminBaseLoginFilter extends BaseFilter {
         if (adminAccountId == null || adminAccountId.equals(BaseFilter.NOT_LOGIN_ACCOUNT_ID)) {
             Result result = new Result();
             logger.info("*******验证失败，未登录");
+            response.setContentType("application/json;charset=utf-8");
             response.getWriter().print(result.addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode()));
             return;
         }
