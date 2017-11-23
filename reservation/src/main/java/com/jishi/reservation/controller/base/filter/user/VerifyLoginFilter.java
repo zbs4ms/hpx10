@@ -45,10 +45,6 @@ public class VerifyLoginFilter extends BaseFilter {
                 Result result = new Result();
                 logger.info("*******验证失败，未登录");
                 response.setContentType("application/json;charset=utf-8");
-
-                // TODO 返回状态置为401，未登录，待修改
-                ((HttpServletResponse)response).setStatus(ReturnCodeEnum.NOT_LOGIN.getCode());
-
                 response.getWriter().print(result.addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode()));
                 return;
             } else {
