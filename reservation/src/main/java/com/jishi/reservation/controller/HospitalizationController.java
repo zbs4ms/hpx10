@@ -105,7 +105,7 @@ public class HospitalizationController extends MyBaseController {
             if (depositBalanceDetails != null){
                 for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
 
-                  if(status == 1){
+                  if(status == 0){
                       log.info("查询在院记录");
                       if(depositBalanceDetail.getZyzt().equals("1")){
                           list.add(getHospitalizationInfoVO(depositBalanceDetail,brId));
