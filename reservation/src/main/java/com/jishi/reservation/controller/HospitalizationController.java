@@ -33,7 +33,8 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/hospitalization")
+@RequestMapping("/" +
+        "")
 @Slf4j
 @Api(description = "住院相关接口")
 public class HospitalizationController extends MyBaseController {
@@ -104,8 +105,9 @@ public class HospitalizationController extends MyBaseController {
             List<DepositBalanceDetail> depositBalanceDetails = hospitalizationService.queryAllInfo(brId);
             if (depositBalanceDetails != null){
                 for (DepositBalanceDetail depositBalanceDetail : depositBalanceDetails) {
-
-                    list.add(getHospitalizationInfoVO(depositBalanceDetail,brId));
+                    if(depositBalanceDetail.getZyzt().equals("1")){
+                        list.add(getHospitalizationInfoVO(depositBalanceDetail,brId));
+                    }
             }
 
             }
