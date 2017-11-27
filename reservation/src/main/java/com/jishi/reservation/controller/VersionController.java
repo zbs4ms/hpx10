@@ -43,7 +43,8 @@ public class VersionController extends MyBaseController {
     @RequestMapping(value = "checkUpdateForAn", method = RequestMethod.POST)
     @ResponseBody
     public JSONObject checkUpdateForAndroid(
-            @ApiParam(value = "版本 暂时随便填") @RequestParam(value = "version") String version
+            @ApiParam(value = "版本 暂时随便填") @RequestParam(value = "version") String version,
+            @ApiParam(value = "类型 默认来自安卓,0是安卓，1是IOS") @RequestParam(value = "type",defaultValue = "0") Integer type
 
     ) throws Exception {
 
