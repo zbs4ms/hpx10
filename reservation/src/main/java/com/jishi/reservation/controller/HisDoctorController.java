@@ -83,7 +83,8 @@ public class HisDoctorController extends MyBaseController {
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize
     ) throws Exception {
         PageInfo<Doctor> pageInfo = new PageInfo<>();
-
+        List<Doctor> list = new ArrayList<>();
+        pageInfo.setList(list);
         if(startPage <0)
             startPage = 1;
         //要与我们自己系统的医生信息结合。
