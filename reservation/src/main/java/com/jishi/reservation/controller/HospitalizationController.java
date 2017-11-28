@@ -84,7 +84,7 @@ public class HospitalizationController extends MyBaseController {
     @RequestMapping(value = "queryAllInfo", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryAllInfo(@RequestAttribute(value="accountId") Long accountId,
-            @ApiParam(value = "状态 1 查询在院记录  0 查询所有记录") @RequestParam(value = "status",required = false) Integer status,
+            @ApiParam(value = "状态 0：查询在院记录  1：查询所有记录") @RequestParam(value = "status",required = false) Integer status,
             @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) throws Exception {
         List<HospitalizationInfoVO> list = new ArrayList<>();

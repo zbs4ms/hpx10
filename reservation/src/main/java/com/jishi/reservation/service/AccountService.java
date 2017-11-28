@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 /**
  * Created by zbs on 2017/8/10.
@@ -72,6 +73,11 @@ public class AccountService {
     @Autowired
     private IMAccountService imAccountService;
 
+
+    /**
+     * 正则表达式：验证手机号
+     */
+    public static final String REGEX_MOBILE = "^((17[0-9])|(14[0-9])|(13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$";
 
 
 
@@ -553,4 +559,10 @@ public class AccountService {
         return account;
 
     }
+
+    public boolean isValidTelephone(String phone) {
+
+        return Pattern.matches(REGEX_MOBILE, phone);
+    }
+
 }

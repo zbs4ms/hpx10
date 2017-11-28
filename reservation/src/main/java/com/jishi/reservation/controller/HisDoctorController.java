@@ -86,68 +86,74 @@ public class HisDoctorController extends MyBaseController {
 
         if(startPage <0)
             startPage = 1;
-        //todo  还要与我们自己系统的医生信息结合。
+        //要与我们自己系统的医生信息结合。
         List<Doctor> selfDoctorList = doctorService.queryDoctor(null, ysid.equals("")?null:ysid, name.equals("")?null:name,
                 ksid.equals("")?null:ksid, String.valueOf(0), 0);
-        RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", ksid, ysid, name, "", "");
-        if(info.getGroup().getHblist().get(0)!=null){
-            List<RegisteredNumberInfo.Hb> hbList = info.getGroup().getHblist().get(0).getHbList();
-            List<Doctor> doctorList = new ArrayList<>();
-            Integer startRow = (startPage - 1)*pageSize;
-            if(hbList != null ){
-                int endRow = hbList.size()<startPage*pageSize-1?hbList.size():startPage*pageSize-1;
-                log.info(hbList.size()+"~~"+(startPage*pageSize-1));
-                if(startPage == endRow)
-                    endRow+=pageSize;
-                if(endRow == 0)
-                    endRow+=pageSize;
-                log.info("start:"+startRow);
-                log.info("end:"+endRow);
-                log.info("list:"+hbList.size());
-                if(hbList.size()<endRow){
-                    endRow = hbList.size();
-                }
-                //遍历从his取过来的医生信息，并与我们自己系统的医生信息做整合
-                for(int i = startRow;i<endRow;i++){
-                    Doctor doctor = new Doctor();
-                    RegisteredNumberInfo.Hb hb = hbList.get(i);
-                    if(selfDoctorList!=null && selfDoctorList.size() != 0){
-                        for (Doctor self : selfDoctorList) {
-                            if(hb.getYsid().equals(self.getHId())){
-                                doctor.setGoodDescribe(self.getGoodDescribe());
-                                doctor.setAbout(self.getAbout());
-                                doctor.setHeadPortrait(self.getHeadPortrait());
 
+        //如果我们库里面无信息，就直接返回空。
+        if(selfDoctorList != null && selfDoctorList.size() != 0) {
+            RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", ksid, ysid, name, "", "");
+            if (info.getGroup().getHblist().get(0) != null) {
+                List<RegisteredNumberInfo.Hb> hbList = info.getGroup().getHblist().get(0).getHbList();
+                List<Doctor> doctorList = new ArrayList<>();
+                Integer startRow = (startPage - 1) * pageSize;
+                if (hbList != null) {
+                    int endRow = hbList.size() < startPage * pageSize - 1 ? hbList.size() : startPage * pageSize - 1;
+                    log.info(hbList.size() + "~~" + (startPage * pageSize - 1));
+                    if (startPage == endRow)
+                        endRow += pageSize;
+                    if (endRow == 0)
+                        endRow += pageSize;
+                    log.info("start:" + startRow);
+                    log.info("end:" + endRow);
+                    log.info("list:" + hbList.size());
+                    if (hbList.size() < endRow) {
+                        endRow = hbList.size();
+                    }
+                    //遍历从his取过来的医生信息，并与我们自己系统的医生信息做整合
+                    for (int i = startRow; i < endRow; i++) {
+                        Doctor doctor = new Doctor();
+                        RegisteredNumberInfo.Hb hb = hbList.get(i);
+                        if (selfDoctorList != null && selfDoctorList.size() != 0) {
+                            for (Doctor self : selfDoctorList) {
+                                if (hb.getYsid().equals(self.getHId())) {
+                                    doctor.setGoodDescribe(self.getGoodDescribe());
+                                    doctor.setAbout(self.getAbout());
+                                    doctor.setHeadPortrait(self.getHeadPortrait());
+
+                                }
                             }
                         }
+
+                        doctor.setName(hb.getYs());
+                        doctor.setXmid(hb.getXmid());
+                        doctor.setHymc(hb.getHymc());
+                        doctor.setDj(hb.getDj());
+                        doctor.setYsid(hb.getYsid());
+                        doctor.setKsmc(hb.getKsmc());
+                        doctor.setHm(hb.getHm());
+                        doctor.setDepartmentId(hb.getKsid());
+                        doctor.setHId(hb.getYsid());
+                        doctor.setTitle(hb.getZc());
+                        doctorList.add(doctor);
                     }
 
-                    doctor.setName(hb.getYs());
-                    doctor.setXmid(hb.getXmid());
-                    doctor.setHymc(hb.getHymc());
-                    doctor.setDj(hb.getDj());
-                    doctor.setYsid(hb.getYsid());
-                    doctor.setKsmc(hb.getKsmc());
-                    doctor.setHm(hb.getHm());
-                    doctor.setDepartmentId(hb.getKsid());
-                    doctor.setHId(hb.getYsid());
-                    doctor.setTitle(hb.getZc());
-                    doctorList.add(doctor);
+
+                }
+                pageInfo.setList(doctorList);
+                pageInfo.setTotal(hbList != null ? hbList.size() : 0);
+                pageInfo.setPages(hbList != null ? hbList.size() / pageSize + 1 : 0);
+                pageInfo.setPageNum(startPage);
+                pageInfo.setPageSize(pageSize);
+                pageInfo.setHasNextPage(hbList != null && hbList.size() / pageSize + 1 > startPage);
+
+                log.info(JSONObject.toJSONString(info));
             }
-
-
-            }
-            pageInfo.setList(doctorList);
-            pageInfo.setTotal(hbList != null?hbList.size():0);
-            pageInfo.setPages(hbList != null?hbList.size()/pageSize +1:0);
-            pageInfo.setPageNum(startPage);
-            pageInfo.setPageSize(pageSize);
-            pageInfo.setHasNextPage(hbList != null && hbList.size()/pageSize +1>startPage);
-
-            log.info(JSONObject.toJSONString(info));
         }
 
-        return ResponseWrapper().addData(pageInfo).addMessage("查询成功").ExeSuccess(200);
+            return ResponseWrapper().addData(pageInfo).addMessage("查询成功").ExeSuccess(200);
+
+
     }
 
 

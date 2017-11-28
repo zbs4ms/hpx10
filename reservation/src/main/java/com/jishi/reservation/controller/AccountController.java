@@ -58,6 +58,10 @@ public class AccountController extends MyBaseController {
         Preconditions.checkNotNull(phone,"请传入所需要的参数：phone");
         Preconditions.checkNotNull(dynamicCode,"请传入所需要的参数：dynamicCode");
 
+        //todo 检测是否是合格手机号
+        if(!accountService.isValidTelephone(phone)){
+            return ResponseWrapper().addMessage("请输入正确的手机号").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+        }
 
         LoginData loginData = accountService.loginOrRegisterThroughPhone(phone,loginOrRegister ,dynamicCode);
         if(loginData==null)
