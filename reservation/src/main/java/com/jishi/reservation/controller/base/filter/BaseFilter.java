@@ -12,8 +12,6 @@ import java.util.regex.Pattern;
  */
 public abstract class BaseFilter implements Filter {
 
-    public static final Long NOT_LOGIN_ACCOUNT_ID = -1L;
-
     public static final String EXCLUDED_PAGES = "excludedPages";
     private String excludedPages;
     private String[] excludedPageArray = null;

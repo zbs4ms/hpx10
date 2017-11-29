@@ -3,6 +3,7 @@ package com.jishi.reservation.controller.base.filter.user;
 import com.jishi.reservation.controller.base.filter.BaseFilter;
 import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.util.Constant;
 import com.us.base.util.datawapper.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +27,6 @@ public class VerifyLoginFilter extends BaseFilter {
     @Autowired
     private AccountService accountService;
 
-    public static final String ATTR_LOGIN_ACCOUNT_ID = "accountId";
-    private static final List<Long> TEST_ACCOUNT_ID_LIST = Arrays.asList(30L, 24L, 27L);
-
 
     @Override
     public void executeFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
@@ -39,9 +37,9 @@ public class VerifyLoginFilter extends BaseFilter {
             e.printStackTrace();
         }
 
-        if (accountId == null || accountId.equals(BaseFilter.NOT_LOGIN_ACCOUNT_ID)) {
+        if (accountId == null || accountId.equals(Constant.NOT_LOGIN_ACCOUNT_ID)) {
             Long testAccount = getTestAccountId(request);
-            if (testAccount == null || testAccount.equals(BaseFilter.NOT_LOGIN_ACCOUNT_ID)) {
+            if (testAccount == null || testAccount.equals(Constant.NOT_LOGIN_ACCOUNT_ID)) {
                 Result result = new Result();
                 logger.info("*******验证失败，未登录");
                 response.setContentType("application/json;charset=utf-8");
@@ -54,13 +52,13 @@ public class VerifyLoginFilter extends BaseFilter {
         }
 
         logger.info("*******进行登录验证，登录用户: " + accountId + "  uri：" + ((HttpServletRequest) request).getRequestURI());
-        request.setAttribute(ATTR_LOGIN_ACCOUNT_ID, accountId);
+        request.setAttribute(Constant.ATTR_LOGIN_ACCOUNT_ID, accountId);
         filterChain.doFilter(request, response);
     }
 
     //获取测试账号
     private Long getTestAccountId(ServletRequest request) {
-        Object testAccountObj = request.getParameter(ATTR_LOGIN_ACCOUNT_ID);
+        Object testAccountObj = ((HttpServletRequest)request).getHeader(Constant.HEADER_TEST_ACCOUNT_ID);
         Long testAccount = -1L;
         if (testAccountObj != null) {
             if (testAccountObj instanceof Long) {
@@ -73,10 +71,10 @@ public class VerifyLoginFilter extends BaseFilter {
                 }
             }
         }
-        if (TEST_ACCOUNT_ID_LIST.indexOf(testAccount) > -1) {
+        if (Constant.TEST_ACCOUNT_ID_LIST.indexOf(testAccount) > -1) {
             return testAccount;
         }
-        return BaseFilter.NOT_LOGIN_ACCOUNT_ID;
+        return Constant.NOT_LOGIN_ACCOUNT_ID;
     }
 
 }

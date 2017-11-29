@@ -1,11 +1,13 @@
 package com.jishi.reservation.controller.base;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.filter.BaseFilter;
 import com.jishi.reservation.controller.base.filter.user.VerifyLoginFilter;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.exception.BussinessException;
+import com.jishi.reservation.util.Constant;
 import com.us.base.common.controller.BaseController;
 import com.us.base.util.datawapper.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +47,8 @@ public class MyBaseController extends BaseController {
 
     private void doExceptionLog(Exception e) {
         Long accountId = getCurrentUserId();
-        log.info("登录用户: " + accountId + "  uri：" + getCurrentRequest().getRequestURI() + "  params: " + getCurrentRequest().getParameterMap());
+        JSONObject json = (JSONObject) JSON.toJSON(getCurrentRequest().getParameterMap());
+        log.info("登录用户: " + accountId + "  uri：" + getCurrentRequest().getRequestURI() + "  params: " + json.toString());
         log.info("Exception: " + e);
         e.printStackTrace();
     }
@@ -71,11 +74,10 @@ public class MyBaseController extends BaseController {
 
     @Override
     protected Long getCurrentUserId() {
-        // TODO 需要重新检查当前登录账号存在于request里面的accountId参数名
-        Object accountObj = this.getCurrentRequest().getParameter(VerifyLoginFilter.ATTR_LOGIN_ACCOUNT_ID);
+        Object accountObj = this.getCurrentRequest().getAttribute(Constant.ATTR_LOGIN_ACCOUNT_ID);
         if (accountObj != null && accountObj instanceof Long) {
-            return Long.parseLong((String) accountObj);
+            return (Long) accountObj;
         }
-        return BaseFilter.NOT_LOGIN_ACCOUNT_ID;
+        return Constant.NOT_LOGIN_ACCOUNT_ID;
     }
 }

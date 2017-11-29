@@ -4,6 +4,7 @@ import com.jishi.reservation.controller.base.filter.BaseFilter;
 import com.jishi.reservation.controller.base.filter.user.VerifyLoginFilter;
 import com.jishi.reservation.service.ManagerService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.util.Constant;
 import com.us.base.util.datawapper.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +25,6 @@ public class AdminBaseLoginFilter extends BaseFilter {
     @Autowired
     private ManagerService managerService;
 
-    private static final String ATTR_ADMIN_LOGIN_ACCOUNT_ID = "adminAccountId";
-
     @Override
     public void executeFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         Long adminAccountId = null;
@@ -34,7 +33,7 @@ public class AdminBaseLoginFilter extends BaseFilter {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (adminAccountId == null || adminAccountId.equals(BaseFilter.NOT_LOGIN_ACCOUNT_ID)) {
+        if (adminAccountId == null || adminAccountId.equals(Constant.NOT_LOGIN_ACCOUNT_ID)) {
             Result result = new Result();
             logger.info("*******验证失败，未登录");
             response.setContentType("application/json;charset=utf-8");
@@ -42,7 +41,7 @@ public class AdminBaseLoginFilter extends BaseFilter {
             return;
         }
         logger.info("*******进行Admin登录验证，登录用户: " + adminAccountId + "  uri：" + ((HttpServletRequest) request).getRequestURI());
-        request.setAttribute(ATTR_ADMIN_LOGIN_ACCOUNT_ID, adminAccountId);
+        request.setAttribute(Constant.ATTR_ADMIN_LOGIN_ACCOUNT_ID, adminAccountId);
         filterChain.doFilter(request, response);
     }
 

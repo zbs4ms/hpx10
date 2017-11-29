@@ -6,6 +6,8 @@ import com.jishi.reservation.dao.mapper.OutpatientPaymentMapper;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.OutpatientPayment;
 import com.jishi.reservation.dao.models.PatientInfo;
+import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.exception.BussinessException;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.bean.OutpatientPaymentInfo;
 import com.jishi.reservation.service.his.bean.OutpatientVisitPrescription;
@@ -221,6 +223,9 @@ public class OutpatientService {
      * @throws Exception
     **/
     public OrderInfo generatePaymentOrder(Long accountId, String brId, String registerNumber, String subject, BigDecimal price, String docIds, Integer docmentType) throws Exception {
+
+        Helpers.assertNotNullOrEmpty(ReturnCodeEnum.OUTPATIENT_ERR_GENERATE_ORDER_ATTR_NULL, brId, registerNumber, price, docIds);
+
         OrderInfo orderInfo = orderInfoService.generateOutpatient(accountId, brId, subject, price);
         log.info(" generatePaymentOrder =>  订单号: " + orderInfo.getOrderNumber());
         OutpatientPayment payment = new OutpatientPayment();
@@ -245,30 +250,7 @@ public class OutpatientService {
      * @throws Exception
     **/
     public OrderVO payConfirm(String orderNumber) throws Exception {
-        OrderInfo order = orderInfoService.queryOrderByOrderNumber(orderNumber);
-        OutpatientPayment payment = outpatientPaymentMapper.queryByOrderNumber(orderNumber);
-        log.info("payConfirm => OrderNumber: " + order.getOrderNumber() + " 病人Id: " + payment.getBrId() + " 单据号：" + payment.getDocmentId() + " 金额：" + order.getPrice());
-        if (order == null || !order.getBrId().equals(payment.getBrId())) {
-            return null;
-        }
-        // 订单状态0：已支付，是否有效的标志0：有效，订单类型3：门诊订单
-        if (order.getStatus() != 0 || order.getEnable() != 0 || order.getType() != 3) {
-            return null;
-        }
-        // TODO 第三方名称（结算卡类别）暂时传空
-        String paymentContent = order.getBuyerId() + "|" + order.getSubject();
-        //documentType: 单据类型，1-收费单，4-挂号单    isRegisterDoc: 是否挂号单，0-收费单，1-挂号单
-        int isRegisterDoc = payment.getDocmentType() == 4 ? 1 : 0;
-        String jzid = hisOutpatient.payModify(payment.getBrId(), payment.getDocmentId(), order.getPrice(), order.getPrice(),
-                  isRegisterDoc, order.getThirdOrderNumber(), paymentContent, null);
-        log.info(" payConfirm => 就诊ID: " + jzid);
-        boolean rslt = jzid != null && !jzid.isEmpty();
-        if (rslt) {
-            payment.setStatus(3);
-            payment.setPayTime(order.getPayTime());
-            outpatientPaymentMapper.updateByPrimaryKeySelective(payment);
-        }
-        return rslt ? toOrderVO(order) : null;
+        return payConfirm(orderNumber, false);
     }
 
     /**
@@ -276,30 +258,52 @@ public class OutpatientService {
      * @param orderNumber 订单号
      * @throws Exception
      **/
+
     public OrderVO batchpayConfirm(String orderNumber) throws Exception {
+        return payConfirm(orderNumber, true);
+    }
+
+    //缴费 isBatchpay 是否批量缴费
+    private OrderVO payConfirm(String orderNumber, boolean isBatchpay) throws Exception {
         OrderInfo order = orderInfoService.queryOrderByOrderNumber(orderNumber);
+        Helpers.assertNotNull(order, ReturnCodeEnum.OUTPATIENT_ERR_CONFIRM_ORDER_NULL);
         OutpatientPayment payment = outpatientPaymentMapper.queryByOrderNumber(orderNumber);
+        Helpers.assertNotNull(payment, ReturnCodeEnum.OUTPATIENT_ERR_CONFIRM_PAYMENT_NULL);
         log.info("batchpayConfirm => OrderNumber: " + order.getOrderNumber() + " 病人Id: " + payment.getBrId() + " 单据号: " + payment.getDocmentId() + " 金额：" + order.getPrice());
-        if (order == null || !order.getBrId().equals(payment.getBrId())) {
-            return null;
+
+        if (!order.getBrId().equals(payment.getBrId())) {
+            throw new BussinessException(ReturnCodeEnum.OUTPATIENT_ERR_CONFIRM_ORDER_NOT_MATCH);
         }
         // 订单状态0：已支付，是否有效的标志0：有效，订单类型3：门诊订单
-        if (order.getStatus() != 0 || order.getEnable() != 0 || order.getType() != 3) {
-            return null;
+        Helpers.assertTrue(order.getStatus() != 0, ReturnCodeEnum.OUTPATIENT_ERR_CONFIRM_NO_PAY);
+        if (order.getEnable() != 0 || order.getType() != 3) {
+            throw new BussinessException(ReturnCodeEnum.OUTPATIENT_ERR_CONFIRM_ORDER_TYPE_NOT_MATCH);
         }
+
         String paymentContent = order.getBuyerId() + "|" + order.getSubject();
         //documentType: 单据类型，1-收费单，4-挂号单    isRegisterDoc: 是否挂号单，0-收费单，1-挂号单
         int isRegisterDoc = payment.getDocmentType() == 4 ? 1 : 0;
-        String czsj = hisOutpatient.batchPayModify(payment.getBrId(), payment.getDocmentId(), order.getPrice(), order.getPrice(),
-                  isRegisterDoc, order.getThirdOrderNumber(), paymentContent, null);
-        log.info(" batchpayConfirm => 操作时间: " + czsj);
-        boolean rslt = czsj != null && !czsj.isEmpty();
-        if (rslt) {
-            payment.setStatus(3);
-            payment.setPayTime(order.getPayTime());
-            outpatientPaymentMapper.updateByPrimaryKeySelective(payment);
+
+        boolean rslt = false;
+        try {
+            String czsj = null;
+            if (isBatchpay) {
+                czsj = hisOutpatient.batchPayModify(payment.getBrId(), payment.getDocmentId(), order.getPrice(), order.getPrice(),
+                          isRegisterDoc, order.getThirdOrderNumber(), paymentContent, null);
+            } else {
+                czsj = hisOutpatient.payModify(payment.getBrId(), payment.getDocmentId(), order.getPrice(), order.getPrice(),
+                          isRegisterDoc, order.getThirdOrderNumber(), paymentContent, null);
+            }
+            log.info(" payConfirm => 操作时间: " + czsj);
+            rslt = czsj != null && !czsj.isEmpty();
+        } catch (Exception e) {
+            throw new BussinessException(ReturnCodeEnum.OUTPATIENT_ERR_CONFIRM_FAILED, e);
         }
-        return rslt ? toOrderVO(order) : null;
+        Helpers.assertTrue(rslt, ReturnCodeEnum.OUTPATIENT_ERR_CONFIRM_FAILED);
+        payment.setStatus(3);
+        payment.setPayTime(order.getPayTime());
+        outpatientPaymentMapper.updateByPrimaryKeySelective(payment);
+        return toOrderVO(order);
     }
 
     /**

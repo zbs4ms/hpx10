@@ -1,5 +1,8 @@
 package com.jishi.reservation.util;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by zbs on 2017/7/25.
  */
@@ -102,4 +105,13 @@ public class Constant {
 
     public static final Integer MAX_FILE_SIZE = 1000 * 1000 * 1;
     public static String HOSPITAL_LOCATION = "泸州市江阳区丹阳路1号";
+
+
+    /** 账号ID参数名定义 **/
+    public static final Long NOT_LOGIN_ACCOUNT_ID = -1L;
+    public final static String ATTR_LOGIN_ACCOUNT_ID = "accountId";
+    public static final String ATTR_ADMIN_LOGIN_ACCOUNT_ID = "adminAccountId";
+    public final static String HEADER_TEST_ACCOUNT_ID = "x-access-accountId";
+    public static final List<Long> TEST_ACCOUNT_ID_LIST = Arrays.asList(30L, 24L, 27L);
+
 }

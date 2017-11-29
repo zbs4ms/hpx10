@@ -18,7 +18,7 @@ import java.util.List;
  * Created by liangxiong on 2017/11/22.
  */
 @RestController
-@RequestMapping("/admin/queue")
+@RequestMapping("/ad/queue")
 @Slf4j
 @Api(description = "门诊排队叫号推送队列长度相关接口")
 public class AdminQueueController extends MyBaseController {
