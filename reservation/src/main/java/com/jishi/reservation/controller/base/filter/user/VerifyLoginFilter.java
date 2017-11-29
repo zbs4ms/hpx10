@@ -26,7 +26,7 @@ public class VerifyLoginFilter extends BaseFilter {
     @Autowired
     private AccountService accountService;
 
-    private static final String ATTR_LOGIN_ACCOUNT_ID = "accountId";
+    public static final String ATTR_LOGIN_ACCOUNT_ID = "accountId";
     private static final List<Long> TEST_ACCOUNT_ID_LIST = Arrays.asList(30L, 24L, 27L);
 
 
@@ -45,7 +45,7 @@ public class VerifyLoginFilter extends BaseFilter {
                 Result result = new Result();
                 logger.info("*******验证失败，未登录");
                 response.setContentType("application/json;charset=utf-8");
-                response.getWriter().print(result.addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode()));
+                response.getWriter().print(result.addMessage(ReturnCodeEnum.NOT_LOGIN.getDesc()).ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode()));
                 return;
             } else {
                 accountId = testAccount;
