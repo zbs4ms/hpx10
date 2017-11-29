@@ -18,6 +18,7 @@ import com.jishi.reservation.service.enumPackage.SuccessEnum;
 import com.jishi.reservation.service.his.bean.DepositBalanceDetail;
 import com.jishi.reservation.service.his.bean.DepositBalanceLog;
 import com.jishi.reservation.service.his.bean.TotalDepositBalancePayDetail;
+import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.DateTool;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,6 +26,7 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -83,7 +85,7 @@ public class HospitalizationController extends MyBaseController {
     @ApiOperation(value = "查询住院人历史的住院信息 分页  by token", response = HospitalizationInfoVO.class)
     @RequestMapping(value = "queryAllInfo", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryAllInfo(@RequestAttribute(value="accountId") Long accountId,
+    public JSONObject queryAllInfo(@ApiIgnore() @RequestAttribute(value= Constant.ATTR_LOGIN_ACCOUNT_ID) Long accountId,
             @ApiParam(value = "状态 0：查询在院记录  1：查询所有记录") @RequestParam(value = "status",required = false) Integer status,
             @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) throws Exception {
@@ -178,7 +180,7 @@ public class HospitalizationController extends MyBaseController {
     @ApiOperation(value = "生成 预交款订单", response = HospitalizationInfoVO.class)
     @RequestMapping(value = "generatePrepaymentOrder", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject generatePrepaymentOrder(@RequestAttribute(value="accountId") Long accountId,
+    public JSONObject generatePrepaymentOrder(@ApiIgnore() @RequestAttribute(value= Constant.ATTR_LOGIN_ACCOUNT_ID) Long accountId,
             @ApiParam(value = "预交的名称 eg:住院预交款", required = true) @RequestParam(value = "subject", required = true) String subject,
             @ApiParam(value = "交易的金额", required = true) @RequestParam(value = "price", required = true) BigDecimal price,
             @ApiParam(value = "brId", required = true) @RequestParam(value = "brId", required = true) String brId,
@@ -195,7 +197,7 @@ public class HospitalizationController extends MyBaseController {
     @ApiOperation(value = "预交款订单  确认订单，同步到his", response = OrderVO.class)
     @RequestMapping(value = "confirmPrePayment", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject confirmPrePayment(@RequestAttribute(value="accountId") Long accountId,
+    public JSONObject confirmPrePayment(@ApiIgnore() @RequestAttribute(value= Constant.ATTR_LOGIN_ACCOUNT_ID) Long accountId,
             @ApiParam(value = "订单号", required = true) @RequestParam(value = "orderNumber", required = true) String orderNumber
             ) throws Exception {
             //PrePayment.Pay.Modify

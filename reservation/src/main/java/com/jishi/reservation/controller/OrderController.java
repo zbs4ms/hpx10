@@ -14,6 +14,7 @@ import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.bean.ConfirmOrder;
 import com.jishi.reservation.service.his.bean.ConfirmRegister;
+import com.jishi.reservation.util.Constant;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -104,7 +106,7 @@ public class OrderController extends MyBaseController {
     @ApiOperation(value = "查询订单列表页  全部，1 待支付，2 已取消，0 预约成功 ",response = OrderListVO.class)
     @RequestMapping(value = "queryList", method = RequestMethod.GET)
     @ResponseBody
-    public JSONObject queryOrderList(@RequestAttribute(value="accountId") Long accountId,
+    public JSONObject queryOrderList(@ApiIgnore() @RequestAttribute(value= Constant.ATTR_LOGIN_ACCOUNT_ID) Long accountId,
             @ApiParam(value = "状态 全部 不传，1 待支付，2 已取消，0 预约成功 ", required = false)
             @RequestParam(value = "status", required = false) Integer status,
             @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,

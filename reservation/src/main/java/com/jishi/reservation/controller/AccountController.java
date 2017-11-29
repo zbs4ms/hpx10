@@ -14,6 +14,7 @@ import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.enumPackage.SmsEnum;
+import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
@@ -170,7 +172,7 @@ public class AccountController extends MyBaseController {
     @ApiOperation(value = "修改账号信息")
     @RequestMapping(value = "modifyAccountInfo", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject modifyAccountInfo(@RequestAttribute(value="accountId") Long accountId,
+    public JSONObject modifyAccountInfo(@ApiIgnore() @RequestAttribute(value= Constant.ATTR_LOGIN_ACCOUNT_ID) Long accountId,
             @ApiParam(value = "昵称", required = false) @RequestParam(value = "nick", required = false) String nick,
             @ApiParam(value = "头像", required = false) @RequestParam(value = "headPortrait", required = false) String headPortrait,
             @ApiParam(value = "邮箱", required = false) @RequestParam(value = "email", required = false) String email) throws Exception {
@@ -182,7 +184,7 @@ public class AccountController extends MyBaseController {
     @ApiOperation(value = "修改账号的密码")
     @RequestMapping(value = "modifyAccountPasswd", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject modifyAccountPasswd(@RequestAttribute(value="accountId") Long accountId,
+    public JSONObject modifyAccountPasswd(@ApiIgnore() @RequestAttribute(value= Constant.ATTR_LOGIN_ACCOUNT_ID) Long accountId,
             @ApiParam(value = "电话", required = false) @RequestParam(value = "phone", required = false) String phone,
             @ApiParam(value = "老密码", required = true) @RequestParam(value = "oldPasswd", required = true) String oldPasswd,
             @ApiParam(value = "新密码", required = true) @RequestParam(value = "newPasswd", required = true) String newPasswd) throws Exception {
@@ -196,7 +198,7 @@ public class AccountController extends MyBaseController {
     @ApiOperation(value = "修改账号绑定手机")
     @RequestMapping(value = "modifyAccountPhone", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject modifyAccountPhone(@RequestAttribute(value="accountId") Long accountId,
+    public JSONObject modifyAccountPhone(@ApiIgnore() @RequestAttribute(value= Constant.ATTR_LOGIN_ACCOUNT_ID) Long accountId,
             @ApiParam(value = "电话", required = true) @RequestParam(value = "phone", required = true) String phone) throws Exception {
 
         Preconditions.checkNotNull(accountId,"请传入所需要的参数：accountId");
