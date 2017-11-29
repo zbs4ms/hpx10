@@ -65,6 +65,8 @@ public class Register {
     @Transient
     @ApiModelProperty("优惠金额")
     private BigDecimal discount;     //优惠金额
+
+    @Transient
     @ApiModelProperty("预约地点")
     private String location;
 

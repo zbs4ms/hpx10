@@ -62,13 +62,12 @@ public class PatientInfoService {
             throw new Exception("无效的身份证信息");
         }
         //判断一个账号最大病号数是否超过5个
-        //todo 判断身份证不能重复
         if(!this.checkMaxPatientNum(accountId)){
             throw new Exception("该账号最大病号数已达最大5个");
         }
 
-
-        Preconditions.checkState(isExistPatient(accountId, name, idCard),"该账号已有此病人信息，不能添加");
+        // 判断身份证不能重复 11-29 单独根据身份证来判断
+        Preconditions.checkState(isExistPatientByIdcard(idCard),"此身份证已存在,添加失败");
 
         //添加到his系统
         Credentials credentials = hisUserManager.addUserInfo(idCard, idCardType, name, phone);
@@ -96,6 +95,13 @@ public class PatientInfoService {
 
         return newPatientInfo.getId();
 
+    }
+
+
+    //单独根据身份证判断是不是有这个病人  11/29
+    private boolean isExistPatientByIdcard(String idCard) {
+        PatientInfo patientInfo =  patientInfoMapper.queryForExistByIdcard(idCard);
+        return patientInfo == null;
     }
 
     private boolean isExistPatient(Long accountId, String name, String idCard) {
