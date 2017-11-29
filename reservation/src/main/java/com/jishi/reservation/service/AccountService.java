@@ -77,7 +77,7 @@ public class AccountService {
     /**
      * 正则表达式：验证手机号
      */
-    public static final String REGEX_MOBILE = "^((17[0-9])|(14[0-9])|(13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$";
+    public static final String REGEX_MOBILE = "^((17[0-9])|(14[0-9])|(13[0-9])|(15[0-9])|(18[0-9]))\\d{8}$";
 
 
 
@@ -564,5 +564,9 @@ public class AccountService {
 
         return Pattern.matches(REGEX_MOBILE, phone);
     }
+
+//    public static void main(String[] args) {
+//        System.out.println(        Pattern.matches(REGEX_MOBILE, "18349226649"));
+//    }
 
 }
