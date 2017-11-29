@@ -101,4 +101,5 @@ public class Constant {
 
 
     public static final Integer MAX_FILE_SIZE = 1000 * 1000 * 1;
+    public static String HOSPITAL_LOCATION = "泸州市江阳区丹阳路1号";
 }

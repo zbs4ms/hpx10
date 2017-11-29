@@ -10,7 +10,10 @@ public enum RegisterErrCodeEnum {
     ORDER_STATE_NOT_MATCH(2, "该订单不是待支付状态或不是挂号订单，请检查。"),
     PATIENT_NOT_MATCH(3, "病人信息和挂号类别不符，不能挂号。"),
     LIMIT_FOR_PATIENT(4,"该病人与该号源相冲突，不能挂号。"),
-    ORDER_NUMBER_NOT_MATCH_ACCOUNT(5,"该笔订单与操作用户不符，不能继续");
+    ORDER_NUMBER_NOT_MATCH_ACCOUNT(5,"该笔订单与操作用户不符，不能继续"),
+    ORDER_NOT_EXIST(6,"订单信息不存在。");
+
+
     private int code;
     private String desc;
 

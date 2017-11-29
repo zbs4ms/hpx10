@@ -221,6 +221,10 @@ public class RegisterService {
             //生成新的订单号，带去支付宝，不然支付宝会找到重复订单，支付失败
             String newOrderNumber = AlibabaPay.generateUniqueOrderNumber();
             OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(null, orderNumber);
+            if(orderInfo == null){
+                completeVO.setState(RegisterErrCodeEnum.ORDER_NOT_EXIST.getCode());
+                return completeVO;
+            }
 
 
             if(!orderInfo.getStatus().equals(OrderStatusEnum.WAIT_PAYED.getCode()) || !orderInfo.getType().equals(OrderTypeEnum.REGISTER.getCode())){
@@ -397,6 +401,7 @@ public class RegisterService {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String rq = sdf.format(register.getAgreedTime());
+        // todo 这不是解锁号源，应该是直接退号
         String s = hisOutpatient.unlockRegister(register.getHm(), rq, register.getHx());
         if(s != null && !"".equals(s)){
             log.info("预约取消成功..");

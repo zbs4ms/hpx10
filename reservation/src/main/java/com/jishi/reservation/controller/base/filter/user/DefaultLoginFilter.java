@@ -6,8 +6,9 @@ import javax.servlet.annotation.WebFilter;
  * Created by liangxiong on 2017/11/21.
  */
 @WebFilter(filterName = "DefaultLoginFilter", urlPatterns = {
+        //"/doctor_i/*",
   "/department/*", "/reservation/department/*",         //科室相关接口
-  "/doctor_i/*", "/reservation/doctor_i/*",             //医生相关接口
+   "/reservation/doctor_i/*",             //医生相关接口
   "/his_account/*", "/reservation/his_account/*",       //对接了his系统的账号相关接口
   "/his_doctor/*", "/reservation/his_doctor/*",         //对接了his系统的醫生相关接口
   "/hospitalization/*", "/reservation/hospitalization/*",//住院相关接口

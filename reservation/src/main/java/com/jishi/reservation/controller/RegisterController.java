@@ -18,6 +18,7 @@ import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.support.JpushSupport;
 import com.jishi.reservation.util.Constant;
+import com.us.base.util.Common;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -140,6 +141,11 @@ public class RegisterController extends MyBaseController {
             return ResponseWrapper().addMessage(RegisterErrCodeEnum.ORDER_NUMBER_NOT_MATCH_ACCOUNT.getDesc()).ExeSuccess(ReturnCodeEnum.FAILED.getCode());
 
         }
+        //订单不存在
+        if(completeVO.getState() == RegisterErrCodeEnum.ORDER_NOT_EXIST.getCode()){
+            return ResponseWrapper().addMessage(RegisterErrCodeEnum.ORDER_NOT_EXIST.getDesc()).ExeSuccess(ReturnCodeEnum.FAILED.getCode());
+
+        }
 
         jpushSupport.sendPush(accountService.queryAccountById(accountId).getPushId(), Constant.REGISTER_SUCCESS_MGS);
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
@@ -178,6 +184,7 @@ public class RegisterController extends MyBaseController {
             //register.setCountDownTime(register.getCreateTime().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
             register.setOrderCode(orderInfo.getOrderNumber());
             register.setDiscount(orderInfo.getDiscount());
+            register.setLocation(Constant.HOSPITAL_LOCATION);
             Doctor doctor = doctorService.queryDoctorByHid(register.getDoctorId());
             registerVO.setRegister(register);
             registerVO.setDoctor(doctor);
