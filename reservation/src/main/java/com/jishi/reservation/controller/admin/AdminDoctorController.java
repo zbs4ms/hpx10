@@ -5,7 +5,9 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
+import com.jishi.reservation.controller.protocol.DoctorVO;
 import com.jishi.reservation.dao.models.Diary;
+import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.service.DiaryService;
 import com.jishi.reservation.service.DoctorService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
@@ -24,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -156,5 +159,29 @@ public class AdminDoctorController extends MyBaseController {
 
         return ResponseWrapper().addMessage("操作成功！").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
+    }
+
+    @ApiOperation(value = "查询全部医生",response=DoctorVO.class)
+    @RequestMapping(value = "queryAllDoctor", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject queryAllDoctor(
+            @ApiParam(value = "科室ID", required = false) @RequestParam(value = "departmentId", required = false) Long departmentId,
+            @ApiParam(value = "查询的名字", required = false) @RequestParam(value = "name", required = false) String name,
+            @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
+            @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
+            @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
+            @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
+        List<DoctorVO> doctorVOList = new ArrayList<>();
+        PageInfo doctors = doctorService.queryDoctorPageInfo(null,name,departmentId != null?String.valueOf(departmentId):null,null,EnableEnum.EFFECTIVE.getCode(),Paging.create(pageNum,pageSize,orderBy,desc));
+        List<Doctor> doctorList = doctors.getList();
+        for(Doctor doctor : doctorList){
+            doctor.setIsTop(doctor.getOrderNumber().equals(0)?0:1);
+            DoctorVO doctorVO = new DoctorVO();
+            doctorVO.setDoctor(doctor);
+
+            doctorVOList.add(doctorVO);
+        }
+        doctors.setList(doctorVOList);
+        return ResponseWrapper().addData(doctors).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 }
