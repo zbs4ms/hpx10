@@ -7,6 +7,7 @@ import com.jishi.reservation.controller.base.filter.BaseFilter;
 import com.jishi.reservation.controller.base.filter.user.VerifyLoginFilter;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.exception.BussinessException;
+import com.jishi.reservation.service.exception.ShowException;
 import com.jishi.reservation.util.Constant;
 import com.us.base.common.controller.BaseController;
 import com.us.base.util.datawapper.Result;
@@ -20,6 +21,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Slf4j
 public class MyBaseController extends BaseController {
+
+
+
 
     @Override
     @ExceptionHandler
