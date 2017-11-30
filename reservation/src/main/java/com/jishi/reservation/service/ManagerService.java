@@ -16,12 +16,14 @@ import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.dao.models.Manager;
 import com.jishi.reservation.dao.models.Permission;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
 import com.us.base.util.MD5Encryption;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -83,6 +85,19 @@ public class ManagerService {
         return token;
     }
 
+    public Long returnIdByToken(HttpServletRequest request) throws Exception {
+        String token = request.getHeader(Constant.ADMIN_TOKEN);
+        log.info("admin_token：" + token);
+        if(token == null || "".equals(token) || "null".equals(token)){
+            log.info("token為空...");
+            return -1L;
+
+        }
+        String strId = redisOperation.usePool().get(token);
+        return (strId == null || strId.isEmpty() ? Long.valueOf(-1) : Long.valueOf(strId));
+
+
+    }
 
     /**
      * 创建token值

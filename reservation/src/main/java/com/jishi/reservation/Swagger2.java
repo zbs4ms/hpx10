@@ -1,13 +1,13 @@
 package com.jishi.reservation;
 
+import com.jishi.reservation.util.Constant;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMethod;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.builders.ResponseMessageBuilder;
+import springfox.documentation.builders.*;
+import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Parameter;
 import springfox.documentation.service.ResponseMessage;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -40,6 +40,7 @@ public class Swagger2 {
                 .globalResponseMessage(RequestMethod.POST,responseMessageList)
                 .globalResponseMessage(RequestMethod.PUT,responseMessageList)
                 .globalResponseMessage(RequestMethod.DELETE,responseMessageList)
+                .globalOperationParameters(globalParameters())
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.jishi.reservation"))
@@ -52,5 +53,13 @@ public class Swagger2 {
                 .description("预约挂号系统")
                 .version("1.0")
                 .build();
+    }
+
+    private List<Parameter> globalParameters() {
+        ParameterBuilder tokenPar = new ParameterBuilder();
+        List<Parameter> pars = new ArrayList<>();
+        tokenPar.name(Constant.HEADER_TEST_ACCOUNT_ID).description("测试账号id").modelRef(new ModelRef("Long")).parameterType("header").required(false);
+        pars.add(tokenPar.build());
+        return pars;
     }
 }

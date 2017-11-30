@@ -1,4 +1,4 @@
-package com.jishi.reservation.controller;
+package com.jishi.reservation.controller.admin;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
@@ -42,9 +42,9 @@ import java.util.regex.Pattern;
  * Created by zbs on 2017/8/10.
  */
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/ad/admin")
 @Slf4j
-@Api(description = "后台管理接口")
+@Api(description = "后台管理的账号相关接口")
 public class AdminController extends MyBaseController {
 
     @Autowired

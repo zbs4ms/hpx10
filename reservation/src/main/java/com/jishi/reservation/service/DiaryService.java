@@ -175,6 +175,7 @@ public class DiaryService {
     public Diary queryById(Long id) {
 
         Diary diary = diaryMapper.queryById(id);
+        Preconditions.checkNotNull(diary,"该id没有对应的日记。");
 
         String content = diary.getContent();
 

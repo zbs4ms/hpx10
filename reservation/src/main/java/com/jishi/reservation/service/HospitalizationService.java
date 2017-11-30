@@ -52,7 +52,7 @@ public class HospitalizationService {
         List<DepositBalanceDetail> depositBalanceDetails = new ArrayList<>();
         if(depositBalanceHistoryDetail.getGroup().getItemList()!=null && depositBalanceHistoryDetail.getGroup().getItemList().size() !=0){
             for(DepositBalanceHistoryDetail.Item item : depositBalanceHistoryDetail.getGroup().getItemList()){
-                depositBalanceDetails.add(queryInfo(brId,Integer.valueOf(item.getZycs()),item.getZyzt()));
+                depositBalanceDetails.add(queryInfo(brId,Integer.valueOf(item.getZycs()),item.getZyzt(),item.getZyh()));
             }
         }
         return depositBalanceDetails;
@@ -64,16 +64,18 @@ public class HospitalizationService {
      * @param brId 患者ID
      * @param zycs 住院次数
      * @param zyzt 住院状态 可为空
+     * @param zyh  住院號
      * @return
      * @throws Exception
      */
-    public DepositBalanceDetail queryInfo(String brId,Integer zycs,String zyzt) throws Exception {
+    public DepositBalanceDetail queryInfo(String brId,Integer zycs,String zyzt,String zyh) throws Exception {
         DepositBalanceDetail depositBalanceDetail = hisHospitalization.selectDetail(brId,String.valueOf(zycs));
         String depositBalance = hisHospitalization.selectDepositBalance(brId, String.valueOf(zycs));
         //写入住院状态参数
         depositBalanceDetail.setYujiaojine(depositBalance);
         depositBalanceDetail.setZyzt(zyzt);
         depositBalanceDetail.setZycs(String.valueOf(zycs));
+        depositBalanceDetail.setZyh(zyh);
         return depositBalanceDetail;
     }
 

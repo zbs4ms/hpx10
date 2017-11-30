@@ -1,5 +1,8 @@
 package com.jishi.reservation.util;
 
+import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.exception.BussinessException;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -8,18 +11,33 @@ import java.util.Map;
  */
 public class Helpers {
 
+
     /**
-     * 断言指定的对象不为空
+     * 断言指定的对象不为空，抛出业务异常，在baseController中进行处理，给客户端返回统一业务码
      *
      * @param o   待检测对象
      * @param <T> 待检测对象类型
      * @return 如果对象不为空则返回
      */
-    public static <T> T assertNotNull(T o) {
+    public static <T> void assertNotNull(T o, ReturnCodeEnum r) throws BussinessException {
         if (o == null) {
-            throw new MyException(MyEnum.EMPTY_OBJECT);
+            throw new BussinessException(r);
         }
-        return o;
+    }
+
+    public static <T> void assertTrue(boolean o, ReturnCodeEnum r) throws BussinessException {
+        if (!o) {
+            throw new BussinessException(r);
+        }
+    }
+
+    public static <T> void assertNotNullOrEmpty(ReturnCodeEnum r, T ... args) throws BussinessException {
+        for(T o : args) {
+            if (o == null) throw new BussinessException(r);
+            if (o instanceof String && ((String) o).isEmpty()) throw new BussinessException(r);
+            if (o instanceof Collection && ((Collection) o).isEmpty()) throw new BussinessException(r);
+            if (o instanceof Map && ((Map) o).isEmpty()) throw new BussinessException(r);
+        }
     }
 
     /**
@@ -29,11 +47,10 @@ public class Helpers {
      * @param <T>
      * @return
      */
-    public static <T extends Collection<?>> T assertNotNullOrEmpty(T o) {
+    public static <T extends Collection<?>> void assertNotNullOrEmpty(T o, ReturnCodeEnum r) throws BussinessException {
         if (o == null || o.isEmpty()) {
-            throw new MyException(MyEnum.EMPTY_OBJECT);
+            throw new BussinessException(r);
         }
-        return o;
     }
 
     /**
@@ -43,11 +60,10 @@ public class Helpers {
      * @param <T>
      * @return
      */
-    public static <T extends Map<?, ?>> T assertNotNullOrEmpty(T o) {
+    public static <T extends Map<?, ?>> void assertNotNullOrEmpty(T o, ReturnCodeEnum r) throws BussinessException {
         if (o == null || o.isEmpty()) {
-            throw new MyException(MyEnum.EMPTY_OBJECT);
+            throw new BussinessException(r);
         }
-        return o;
     }
 
     /**
@@ -56,11 +72,10 @@ public class Helpers {
      * @param o
      * @return
      */
-    public static String assertNotNullOrEmpty(String o) {
+    public static void assertNotNullOrEmpty(String o, ReturnCodeEnum r) throws BussinessException {
         if (o == null || o.length() == 0) {
-            throw new MyException(MyEnum.EMPTY_OBJECT);
+            throw new BussinessException(r);
         }
-        return o;
     }
 
     /**
@@ -72,7 +87,6 @@ public class Helpers {
      * @return 目标值 或者 默认值
      */
     public static <T> T getDefaultValueIfNull(T value, T defaultValue) {
-        assertNotNull(defaultValue);
         return value == null ? defaultValue : value;
     }
 

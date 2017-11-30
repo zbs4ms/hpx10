@@ -44,8 +44,7 @@ public class DoctorController extends MyBaseController {
 
     @Autowired
     DoctorService doctorService;
-    @Autowired
-    DepartmentService departmentService;
+
 
     @Autowired
     AliOssSupport ossSupport;

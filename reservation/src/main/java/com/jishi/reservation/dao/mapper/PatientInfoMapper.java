@@ -53,4 +53,9 @@ public interface PatientInfoMapper extends MyMapper<PatientInfo> {
             "select * from patientInfo where account_id = #{accountId}"
     })
     List<PatientInfo> queryByAccountId(Long accountId);
+
+    @Select({
+            "select * from patientInfo where id_card = #{idCard}"
+    })
+    PatientInfo queryForExistByIdcard(@Param("idCard") String idCard);
 }

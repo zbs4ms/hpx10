@@ -26,7 +26,7 @@ public class ControllerResult extends Result {
         }
         this.logger = LoggerFactory.getLogger(clazz);
 
-        this.userId = request.getHeader(Common.USER_ID);
+        this.userId = request.getAttribute(Constant.ATTR_LOGIN_ACCOUNT_ID).toString();
         this.userIp = IpTool.getIp(request);
         this.logger.info("User Id:" + userId + " IP:" + userIp + " params: " + getRequestParams(request));
     }

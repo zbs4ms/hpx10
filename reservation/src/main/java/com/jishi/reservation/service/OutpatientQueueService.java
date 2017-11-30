@@ -2,10 +2,7 @@ package com.jishi.reservation.service;
 
 import com.jishi.reservation.controller.protocol.OutpatientQueueDetailVO;
 import com.jishi.reservation.dao.mapper.QueueLengthMapper;
-import com.jishi.reservation.dao.models.Department;
-import com.jishi.reservation.dao.models.Doctor;
-import com.jishi.reservation.dao.models.PatientInfo;
-import com.jishi.reservation.dao.models.QueueLength;
+import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.jinxin.JinxinQueue;
 import com.jishi.reservation.service.jinxin.bean.QueueCurrentNumber;
 import com.jishi.reservation.service.jinxin.bean.QueueDetail;
@@ -35,6 +32,8 @@ public class OutpatientQueueService {
     private DoctorService doctorService;
     @Autowired
     private DepartmentService departmentService;
+    @Autowired
+    public RegisterService registerService;
 
     // 默认门诊队列通知长度
     public static final int DEFAULT_NOTIFY_LENGTH = 10;
@@ -131,6 +130,24 @@ public class OutpatientQueueService {
         return queueLengthMapper.queryAll();
     }
 
+
+    /**
+     * @description 获取医生的通知队列长度信息
+     * @param doctorHisId his医生id
+     **/
+    public QueueLength queryDoctorQueueLength(String doctorHisId) {
+      return queueLengthMapper.queryByDoctorHisId(doctorHisId);
+    }
+
+
+    /**
+     * @description 获取部门的通知队列长度信息
+     * @param departHisId his部门id
+     **/
+    public QueueLength queryDepartQueueLength(String departHisId) {
+      return queueLengthMapper.queryByDepartHisId(departHisId);
+    }
+
     /**
      * @description 添加通知队列长度信息
      **/
@@ -193,4 +210,90 @@ public class OutpatientQueueService {
         return vo;
     }
 
+
+    public List<OutpatientQueueDetailVO> generateTestData() throws Exception {
+        return generateTestData(Integer.MAX_VALUE);
+    }
+
+    // 生成测试数据
+    public List<OutpatientQueueDetailVO> generateTestData(int length) throws Exception {
+        //测试的账号
+        List<Long> accIds = Arrays.asList(24L, 21L, 30L);
+        List<Register> registerList = new ArrayList<>();
+        for (Long accId : accIds) {
+            List<Register> data = registerService.queryRegister(null, accId, 2, 0);
+            if (data != null && !data.isEmpty()) {
+                registerList.addAll(data);
+            }
+        }
+        length = length < 0 ? 1 : length;
+        if (registerList.size() > length) {
+            registerList = registerList.subList(0, length);
+        }
+        List<OutpatientQueueDetailVO> detailList = new ArrayList<OutpatientQueueDetailVO>();
+        for (int i = 0; i < registerList.size(); i++) {
+            Register register = registerList.get(i);
+            OutpatientQueueDetailVO vo = null;
+            int status = i % 4;
+            if (status == 0) vo = newQueueRegistered();
+            else if (status == 1) vo = newQueueWait();
+            else if(status == 2) vo = newQueueSeeing();
+            else vo = newQueuePassed();
+
+            vo.setBrId(register.getBrId());
+            vo.setDepartId(Long.valueOf(register.getDepartmentId()));
+            vo.setDepartName(register.getDepartment());
+            //vo.setDoctorId(register.getDoctorId());
+            vo.setDoctorHisId(register.getDoctorId());
+            vo.setDoctorName(register.getDoctorName());
+            vo.setDoctorTitle("主任医师");
+            vo.setName(register.getPatientName());
+            vo.setQueueeMinder("您预约的门诊正在排队，请注意！");
+            vo.setQueueInfo("您预约的门诊正在排队，请注意！");
+            vo.setRegisterDate(register.getCreateTime());
+            vo.setRegisterType("普通");
+            vo.setCurrentNum(0);
+            vo.setQueueNum(Integer.parseInt(register.getHm()));
+            vo.setAccountId(register.getAccountId());
+
+            detailList.add(vo);
+        }
+        return detailList;
+    }
+
+    private OutpatientQueueDetailVO newQueueRegistered() {
+        OutpatientQueueDetailVO vo = new OutpatientQueueDetailVO();
+        vo.setCurrentNum(0);
+        vo.setQueueNum(12);
+        vo.setNeedWaitNum(6);
+        vo.setStatus(0);
+        return vo;
+    }
+
+    private OutpatientQueueDetailVO newQueueWait() {
+        OutpatientQueueDetailVO vo = new OutpatientQueueDetailVO();
+        vo.setCurrentNum(5);
+        vo.setQueueNum(12);
+        vo.setNeedWaitNum(6);
+        vo.setStatus(1);
+        return vo;
+    }
+
+    private OutpatientQueueDetailVO newQueueSeeing() {
+        OutpatientQueueDetailVO vo = new OutpatientQueueDetailVO();
+        vo.setCurrentNum(12);
+        vo.setQueueNum(12);
+        vo.setNeedWaitNum(0);
+        vo.setStatus(2);
+        return vo;
+    }
+
+    private OutpatientQueueDetailVO newQueuePassed() {
+        OutpatientQueueDetailVO vo = new OutpatientQueueDetailVO();
+        vo.setCurrentNum(15);
+        vo.setQueueNum(12);
+        vo.setNeedWaitNum(1);
+        vo.setStatus(3);
+        return vo;
+    }
 }

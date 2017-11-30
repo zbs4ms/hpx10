@@ -221,6 +221,10 @@ public class RegisterService {
             //生成新的订单号，带去支付宝，不然支付宝会找到重复订单，支付失败
             String newOrderNumber = AlibabaPay.generateUniqueOrderNumber();
             OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(null, orderNumber);
+            if(orderInfo == null){
+                completeVO.setState(RegisterErrCodeEnum.ORDER_NOT_EXIST.getCode());
+                return completeVO;
+            }
 
 
             if(!orderInfo.getStatus().equals(OrderStatusEnum.WAIT_PAYED.getCode()) || !orderInfo.getType().equals(OrderTypeEnum.REGISTER.getCode())){
@@ -387,7 +391,6 @@ public class RegisterService {
         if(Helpers.isNullOrEmpty(registerId) || queryRegister(registerId,null,null,null) == null)
             throw new Exception("预约信息为空.");
 
-        //todo 對接his
 
         Register register = registerMapper.queryById(registerId);
         register.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
@@ -395,14 +398,22 @@ public class RegisterService {
         orderInfo.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
 
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String rq = sdf.format(register.getAgreedTime());
-        String s = hisOutpatient.unlockRegister(register.getHm(), rq, register.getHx());
-        if(s != null && !"".equals(s)){
+        // 检查是否有资格退号
+        if(!hisOutpatient.checkCancelRegister(orderInfo.getGhdh())){
+            log.info("订单id:"+orderInfo.getId()+",该订单没有退号资格。");
+            return 1;
+        }
+        //开始退号
+        if(hisOutpatient.cancelRegister(orderInfo.getGhdh())){
+
             log.info("预约取消成功..");
-            if(alibabaPay.refund(orderInfo.getOrderNumber())){
+            log.info("向支付宝发起退款请求");
+            //todo 现在只有支付宝 11.30
+
+            if(alibabaPay.refund(orderInfo.getOrderNumber()) == 0){
                 registerMapper.updateByPrimaryKeySelective(register);
                 orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+
                 return 0;
             }else {
                 log.info("退款失败..订单号："+orderInfo.getOrderNumber());
@@ -411,7 +422,8 @@ public class RegisterService {
 
 
         }else {
-            log.info("预约取消失败");
+            log.info("订单id:"+orderInfo.getId()+",该订单退号同步到his的时候失败。");
+
             return 1;
         }
 
@@ -459,5 +471,17 @@ public class RegisterService {
         page.setPages(registerPageInfo.getPages());
 
         return page;
+    }
+
+    /**
+     * 检查订单是否是已付款的预约订单，这样的订单才是可以申请预约退号的订单
+     * @param registerId
+     * @return
+     */
+    public boolean checkIsPayedRegister(Long registerId) {
+
+        OrderInfo orderInfo = orderInfoMapper.queryById(registerMapper.queryById(registerId).getOrderId());
+
+        return orderInfo.getType()==OrderTypeEnum.REGISTER.getCode() && orderInfo.getStatus() == OrderStatusEnum.PAYED.getCode();
     }
 }

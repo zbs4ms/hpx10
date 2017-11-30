@@ -213,7 +213,7 @@ public class IMAccountService {
      * @param doctorId 医生id
      * @throws Exception
     **/
-    public boolean updateVisitRecord(Long accountId, Long doctorId) {
+    public void updateVisitRecord(Long accountId, Long doctorId) {
         IMAccessRecord record = imAccessRecordMapper.selectAppointRecord(accountId, doctorId);
         if (record == null) {
             record = new IMAccessRecord();
@@ -227,7 +227,6 @@ public class IMAccountService {
             record.setLastAccessDate(new Date());
             imAccessRecordMapper.updateByPrimaryKey(record);
         }
-        return true;
     }
 
     /**
