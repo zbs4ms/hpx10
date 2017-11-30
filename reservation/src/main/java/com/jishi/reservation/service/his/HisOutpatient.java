@@ -102,6 +102,56 @@ public class HisOutpatient {
         return false;
     }
 
+
+
+    /**
+     * 检查要退的号是否允许退号
+     * @param ghhm 挂号号码
+     * @return
+     * @throws Exception
+     */
+    public Boolean checkCancelRegister(String ghhm) throws Exception {
+
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("<GHHM>").append(ghhm).append("</GHHM>"); //挂号单号
+        sb.append("<SFYY>").append("0").append("</SFYY>");  //是否预约
+        sb.append("<YYFS>").append("").append("</YYFS>");  //预约方式
+
+        String reData = HisTool.toXMLString("Register.CancelCheck.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            HisTool.getHisDataparam(me,"Register.CancelCheck.Query");
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 对预约的单号进行退号
+     * @param ghhm 挂号号码
+     * @return
+     * @throws Exception
+     */
+    public Boolean cancelRegister(String ghhm) throws Exception {
+
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("<GHHM>").append(ghhm).append("</GHHM>"); //挂号单号
+        sb.append("<SFYY>").append("0").append("</SFYY>");  //是否预约
+        sb.append("<YYFS>").append("").append("</YYFS>");  //预约方式
+
+        String reData = HisTool.toXMLString("Register.Cancel.Modify", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            HisTool.getHisDataparam(me,"Register.Cancel.Modify");
+            return true;
+        }
+        return false;
+    }
+
+
+
     public Boolean checkIsRegisterLimit(String brid, String hm, String registerTime, String departmentId) throws Exception {
 
         StringBuffer sb = new StringBuffer();

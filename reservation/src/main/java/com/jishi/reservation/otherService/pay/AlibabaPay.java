@@ -45,12 +45,12 @@ public class AlibabaPay {
 
 
     /**
-     * 退款
+     * 退款  返回0成功   1失败
      * @param orderNumber 支付宝的订单号
      * @return
      * @throws Exception
      */
-    public Boolean refund(String orderNumber) throws Exception {
+    public Integer refund(String orderNumber) throws Exception {
 
 
          OrderInfo orderInfo =  orderInfoMapper.queryByNumber(orderNumber);
@@ -69,12 +69,12 @@ public class AlibabaPay {
         AlipayTradeRefundResponse response = alipayClient.execute(request);
         log.info("退款详情：\n"+JSONObject.toJSONString(response));
         if(response.isSuccess()){
-            System.out.println("退款成功");
-            return true;
+           log.info("退款成功");
+            return 0;
         } else {
-            System.out.println("退款失败");
+            log.info("退款失败");
 
-            return false;
+            return 1;
         }
 
     }

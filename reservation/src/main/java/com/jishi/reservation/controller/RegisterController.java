@@ -207,13 +207,15 @@ public class RegisterController extends MyBaseController {
 
 
 
-    @ApiOperation(value = "预约信息置为无效 取消预约")
+    @ApiOperation(value = "取消预约  针对已付款的预约挂号订单，退款并同步到his退号")
     @RequestMapping(value = "failureRegister", method = RequestMethod.DELETE)
     @ResponseBody
     public JSONObject failureRegister(
             @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId
     ) throws Exception {
         Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
+
+        Preconditions.checkState(!registerService.checkIsPayedRegister(registerId),"该订单不是已付款的预约订单，请检查");
 
         Integer status = registerService.failureRegister(registerId);
         switch (status){

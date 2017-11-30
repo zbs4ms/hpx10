@@ -111,7 +111,7 @@ public class AccountService {
         String code = NewRandomUtil.getRandomNum(6);
         log.info("redis key:"+prefix + "_" + phone+",value:"+code);
         redisOperation.set(prefix + "_" + phone, code);
-        redisOperation.expire(prefix + "_" + phone,5 * 60);
+        redisOperation.expire(prefix + "_" + phone,15 * 60);
         dayuSupport.sendynamicCode(phone, code,templateCode);
         return code;
     }
