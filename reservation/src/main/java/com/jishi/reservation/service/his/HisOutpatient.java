@@ -529,6 +529,8 @@ public class HisOutpatient {
     }
 
 
+
+
     private OutPatientResponseOutPatientResult execute(String reData) throws RemoteException, ServiceException {
         ZL_InformationServiceLocator locator = new ZL_InformationServiceLocator();
         ZL_InformationServiceSoap_PortType service = locator.getZL_InformationServiceSoap();
