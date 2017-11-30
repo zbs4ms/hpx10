@@ -32,8 +32,8 @@
               password: this.loginForm.psd
             }).then((res) => {
               const accountInfo = res.content
-              const accountInfoStr = encodeURIComponent(JSON.stringify(accountInfo))
-              localStorage.setItem('accountInfo', accountInfoStr)
+              const accountInfoJson = encodeURIComponent(JSON.stringify(accountInfo))
+              localStorage.setItem('accountInfo', accountInfoJson)
               this.updateAccountInfo(accountInfo)
               this.$router.push('/')
             }).finally(() => {

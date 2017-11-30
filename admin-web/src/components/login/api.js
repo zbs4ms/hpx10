@@ -12,8 +12,6 @@ export default (data) => {
       if (data.code === 200) {
         // 标识已登陆
         document.cookie = 'login=yes'
-        // 把登陆的数据保存到cookie里面
-        document.cookie = 'accountInfo=' + encodeURIComponent(JSON.stringify(data.content))
         Message({
           type: 'success',
           message: '登录成功'

@@ -88,7 +88,7 @@
       },
       getList (params) {
         // 记录当前请求的id
-        this.getListId = this.this.getListId || 0
+        this.getListId = this.getListId || 0
         const currGetListId = ++this.getListId
         this.loading = true
         return this.listApi.requestFn(Object.assign({}, this.listQueryParams, params)).then((data) => {

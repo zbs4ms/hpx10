@@ -1,5 +1,8 @@
 import axios from 'axios'
-import { fetchApi } from '@/utils/index'
+import {
+  fetchApi,
+  Cookie
+} from '@/utils/index'
 import { Message } from 'element-ui'
 // 添加promise的finally方法
 import promiseFinally from 'promise.prototype.finally'
@@ -36,7 +39,7 @@ axios.interceptors.request.use(function (config) {
     }
     config.url += delimiter + new Date().getTime()
   }
-  config.url = '/reservation' + config.url
+  config.url = '/reservation/ad' + config.url
   return config
 }, function (error) {
   return Promise.reject(error)
@@ -61,7 +64,8 @@ axios.interceptors.response.use((response) => {
       break
     case 401:
       errMsg = '未登陆'
-      router.push('/Login')
+      Cookie.remove('login')
+      router.push('/login')
       break
     case 500:
       errMsg = '发生未知错误'
