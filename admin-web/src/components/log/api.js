@@ -1,7 +1,7 @@
 import { fetchApi } from '@/utils/index'
 
 // 获取banner列表
-export const GET_LIST_URL = '/diray/query'
+export const GET_LIST_URL = '/diary/query'
 export const getListApi = (params) => {
   return fetchApi({
     url: GET_LIST_URL,
@@ -11,7 +11,7 @@ export const getListApi = (params) => {
 }
 
 // 上下架
-export const SHELVE_URL = '/diray/show'
+export const SHELVE_URL = '/diary/show'
 export const shelveApi = (id) => {
   return fetchApi({
     url: SHELVE_URL,
@@ -23,7 +23,7 @@ export const shelveApi = (id) => {
 }
 
 // 置顶
-export const TOP_URL = '/diray/top'
+export const TOP_URL = '/diary/top'
 export const topApi = (id) => {
   return fetchApi({
     url: TOP_URL,
@@ -35,7 +35,7 @@ export const topApi = (id) => {
 }
 
 // 审核
-export const CHECK_URL = '/diray/verify'
+export const CHECK_URL = '/diary/verify'
 export const checkApi = (id, status) => {
   return fetchApi({
     url: CHECK_URL,

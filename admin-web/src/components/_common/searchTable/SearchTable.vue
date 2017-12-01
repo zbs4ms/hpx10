@@ -50,6 +50,7 @@
       },
       listQueryParams (newVal, oldVal) {
         let currentPageKey = this.apiKeys.currentPage
+        console.log('currentPageKey', currentPageKey)
         if (newVal[currentPageKey] === oldVal[currentPageKey]) {
           this.init()
         }
@@ -57,10 +58,19 @@
     },
     computed: {
       apiKeys () {
-        return Object.assign({}, {
+        let innerKeys = {
           currentPage: 'pageNum',
           pageSize: 'pageSize'
-        }, this.apiKeysMap)
+        }
+        Object.keys(this.apiKeysMap).forEach(key => {
+          let value = this.apiKeysMap[key]
+          if (typeof value === 'object') {
+            if (value.innerKey) {
+              innerKeys[value.innerKey] = key
+            }
+          }
+        })
+        return Object.assign({}, innerKeys, this.apiKeysMap)
       },
       listQueryParams () {
         let apiKeys = this.apiKeys || {}
@@ -76,6 +86,7 @@
             listQueryParams[value] = this[key]
           }
         })
+        console.log('listQueryParams', JSON.stringify(listQueryParams))
         return listQueryParams
       }
     },

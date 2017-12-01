@@ -84,9 +84,12 @@
         searchKeyword: '',
         apiKeysMap: {
           key: {
-            value: undefined
+            value: this.$route.query.keyword
           },
-          currentPage: 'startPage'
+          startPage: {
+            value: this.$route.query.startPage,
+            innerKey: 'currentPage'
+          }
         }
       }
     },
