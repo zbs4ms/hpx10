@@ -210,6 +210,7 @@ public class DiaryService {
         log.info("返回日记长度："+list.size());
         if(list!=null && list.size() != 0){
             for (Diary diary : list) {
+                log.info("日记id:"+diary.getId());
                 //获取浏览数和点赞数
                 diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));
                 diary.setLikedNum(diaryLikedMapper.queryCountByDiaryId(diary.getId()));
@@ -305,6 +306,14 @@ public class DiaryService {
     public Integer queryLikedNumber(Long diaryId) {
 
         return diaryLikedMapper.queryCountByDiaryId(diaryId);
+    }
+
+    public PageInfo<Diary> queryByAccountId(Long accountId, Integer startPage, Integer pageSize) {
+
+        PageHelper.startPage(startPage,pageSize).setOrderBy("id desc");
+        List<Diary> diaryList = diaryMapper.queryByAccountId(accountId);
+        PageInfo<Diary> pageInfo = new PageInfo<>(diaryList);
+        return pageInfo;
     }
 
 

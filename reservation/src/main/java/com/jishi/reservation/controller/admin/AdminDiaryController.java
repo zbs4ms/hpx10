@@ -79,7 +79,7 @@ public class AdminDiaryController extends MyBaseController {
             @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize
     ){
-        PageInfo<Diary> diaryPageInfo = diaryService.queryPage(accountId,1,startPage,pageSize);
+        PageInfo<Diary> diaryPageInfo = diaryService.queryByAccountId(accountId,startPage,pageSize);
         return ResponseWrapper().addMessage("查询成功").addData(diaryPageInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
     }
