@@ -99,8 +99,7 @@ public class DoctorController extends MyBaseController {
             doctor.setIsTop(doctor.getOrderNumber().equals(0)?0:1);
             DoctorVO doctorVO = new DoctorVO();
             doctorVO.setDoctor(doctor);
-            //doctorVO.setDepartmentList(departmentService.batchQueryDepartment(JSONObject.parseArray(doctor.getDepartmentIds(),String.class)));
-                    //doctor.getDepartmentIds().split(",")));
+
             doctorVOList.add(doctorVO);
         }
         doctors.setList(doctorVOList);

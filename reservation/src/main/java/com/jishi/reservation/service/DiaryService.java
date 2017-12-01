@@ -208,36 +208,40 @@ public class DiaryService {
         List<Diary> list =  diaryMapper.queryEnableAndVerified(accountId,isMy);
         PageInfo<Diary> pageInfo = new PageInfo<>(list);
         log.info("返回日记长度："+list.size());
-        for (Diary diary : list) {
-            //获取浏览数和点赞数
-            diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));
-            diary.setLikedNum(diaryLikedMapper.queryCountByDiaryId(diary.getId()));
-            //查询用户头像
-            diary.setAvatar(accountMapper.queryById(diary.getAccountId()).getHeadPortrait());
-            List<ImageVO> paramList = new ArrayList<>();
-            List<DiaryContentVO> contentList = gson.fromJson(diary.getContent(),
-                    new TypeToken<List<DiaryContentVO>>() {
-                    }.getType());
-            int i = 0;
-            for (DiaryContentVO diaryContentVO : contentList) {
+        if(list!=null && list.size() != 0){
+            for (Diary diary : list) {
+                log.info("日记id:"+diary.getId());
+                //获取浏览数和点赞数
+                diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));
+                diary.setLikedNum(diaryLikedMapper.queryCountByDiaryId(diary.getId()));
+                //查询用户头像
+                diary.setAvatar(accountMapper.queryById(diary.getAccountId()).getHeadPortrait());
+                List<ImageVO> paramList = new ArrayList<>();
+                List<DiaryContentVO> contentList = gson.fromJson(diary.getContent(),
+                        new TypeToken<List<DiaryContentVO>>() {
+                        }.getType());
+                int i = 0;
+                for (DiaryContentVO diaryContentVO : contentList) {
 
-                if(i == 4)
-                    break;
-                if(diaryContentVO.getType() == 0){
-                    ImageVO vo = new ImageVO();
-                    vo.setUrl(diaryContentVO.getUrl());
-                    vo.setHeight(diaryContentVO.getHeight());
-                    vo.setWidth(diaryContentVO.getWidth());
+                    if(i == 4)
+                        break;
+                    if(diaryContentVO.getType() == 0){
+                        ImageVO vo = new ImageVO();
+                        vo.setUrl(diaryContentVO.getUrl());
+                        vo.setHeight(diaryContentVO.getHeight());
+                        vo.setWidth(diaryContentVO.getWidth());
 
-                    paramList.add(vo);
-                    i++;
+                        paramList.add(vo);
+                        i++;
+                    }
+
                 }
+                diary.setImgList(paramList);
+                diary.setContent(null);
 
             }
-            diary.setImgList(paramList);
-            diary.setContent(null);
-
         }
+
 
         return  pageInfo;
     }
@@ -302,6 +306,14 @@ public class DiaryService {
     public Integer queryLikedNumber(Long diaryId) {
 
         return diaryLikedMapper.queryCountByDiaryId(diaryId);
+    }
+
+    public PageInfo<Diary> queryByAccountId(Long accountId, Integer startPage, Integer pageSize) {
+
+        PageHelper.startPage(startPage,pageSize).setOrderBy("id desc");
+        List<Diary> diaryList = diaryMapper.queryByAccountId(accountId);
+        PageInfo<Diary> pageInfo = new PageInfo<>(diaryList);
+        return pageInfo;
     }
 
 
