@@ -15,6 +15,6 @@ Object.keys(proxyTable).forEach(function (context) {
 })
 app.use(express.static(path.join(__dirname, '../')))
 app.listen(9999, function () {
-  console.log('server start, listening port:9998')
+  console.log('server start, listening port:9999')
   opn('http://localhost:9999/dist')
 })

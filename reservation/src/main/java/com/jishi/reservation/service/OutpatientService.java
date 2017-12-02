@@ -275,7 +275,7 @@ public class OutpatientService {
             throw new BussinessException(ReturnCodeEnum.OUTPATIENT_ERR_CONFIRM_ORDER_NOT_MATCH);
         }
         // 订单状态0：已支付，是否有效的标志0：有效，订单类型3：门诊订单
-        Helpers.assertTrue(order.getStatus() != 0, ReturnCodeEnum.OUTPATIENT_ERR_CONFIRM_NO_PAY);
+        Helpers.assertTrue(order.getStatus() == 0, ReturnCodeEnum.OUTPATIENT_ERR_CONFIRM_NO_PAY);
         if (order.getEnable() != 0 || order.getType() != 3) {
             throw new BussinessException(ReturnCodeEnum.OUTPATIENT_ERR_CONFIRM_ORDER_TYPE_NOT_MATCH);
         }

@@ -23,7 +23,7 @@ export const userInfoApi = (accountId) => {
 }
 
 // 获取用户日记
-export const USER_LOG_URL = '/diray/queryByAccountId'
+export const USER_LOG_URL = '/diary/queryByAccountId'
 export const userLogApi = (params) => {
   return fetchApi({
     url: USER_LOG_URL,
