@@ -89,11 +89,14 @@ public class ManagerService {
 
         log.info(JSONObject.toJSON(headerNames));
 
+        String token = null;
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
-            log.info(cookie.getName()+"~~");
+            if(cookie.getName().equals(Constant.ADMIN_TOKEN)){
+                token = cookie.getValue();
+            }
         }
-        String token = request.getHeader(Constant.ADMIN_TOKEN);
+
         log.info("admin_token：" + token);
         if(token == null || "".equals(token) || "null".equals(token)){
             log.info("token為空...");
