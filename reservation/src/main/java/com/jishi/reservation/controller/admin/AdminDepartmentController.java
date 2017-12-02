@@ -26,7 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/ad/department")
 @Slf4j
-@Api(description = "后台管理平台的日记接口")
+@Api(description = "后台管理平台的科室接口")
 public class AdminDepartmentController extends MyBaseController {
 
     @Autowired
