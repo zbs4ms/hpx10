@@ -23,12 +23,10 @@ import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by zbs on 2017/8/10.
@@ -86,6 +84,15 @@ public class ManagerService {
     }
 
     public Long returnIdByToken(HttpServletRequest request) throws Exception {
+        Enumeration<String> headerNames = request.getHeaderNames();
+
+
+        log.info(JSONObject.toJSON(headerNames));
+
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            log.info(cookie.getName()+"~~");
+        }
         String token = request.getHeader(Constant.ADMIN_TOKEN);
         log.info("admin_token：" + token);
         if(token == null || "".equals(token) || "null".equals(token)){

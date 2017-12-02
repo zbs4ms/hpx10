@@ -6,7 +6,9 @@ import lombok.Data;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by sloan on 2017/11/9.
@@ -30,4 +32,7 @@ public class AndroidVersion {
     private String apkUrl;
     @ApiModelProperty("更新时间")
     private Date updateTime;
+
+    @Transient
+    private List<String> contentList;
 }

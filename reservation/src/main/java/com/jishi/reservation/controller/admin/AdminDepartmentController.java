@@ -85,4 +85,18 @@ public class AdminDepartmentController extends MyBaseController {
         departmentService.failureDepartment(departmentId);
         return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
+
+
+
+//    @ApiOperation(value = "拉去his的科室信息到我们自己的系统")
+//    @RequestMapping(value = "pullFromHis", method = RequestMethod.POST)
+//    @ResponseBody
+//    public JSONObject pullFromHis(
+//    ) throws Exception {
+//
+//
+//
+//        departmentService.pullFromHis();
+//        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+//    }
 }
