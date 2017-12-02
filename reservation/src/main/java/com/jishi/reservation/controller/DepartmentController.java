@@ -28,19 +28,6 @@ public class DepartmentController extends MyBaseController {
     @Autowired
     DepartmentService departmentService;
 
-    @ApiOperation(value = "增加科室")
-    @RequestMapping(value = "addDepartment", method = RequestMethod.PUT)
-    @ResponseBody
-    public JSONObject addDepartment(
-            @ApiParam(value = "科室名称", required = true) @RequestParam(value = "departmentName", required = true) String departmentName,
-            @ApiParam(value = "科室位置", required = true) @RequestParam(value = "position", required = true) String position
-            ) throws Exception {
-        Preconditions.checkNotNull(departmentName,"请传入必须的参数：departmentName");
-        Preconditions.checkNotNull(departmentName,"请传入必须的参数：position");
-        departmentService.addDepartment(departmentName,position);
-        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-    }
-
     @ApiOperation(value = "查询全部科室",response=Department.class)
     @RequestMapping(value = "queryAllDepartment", method = RequestMethod.GET)
     @ResponseBody
@@ -51,35 +38,6 @@ public class DepartmentController extends MyBaseController {
             @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
         List<Department> departmentList = departmentService.queryAllDepartment();
         return ResponseWrapper().addData(departmentList).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-    }
-
-    @ApiOperation(value = "修改科室")
-    @RequestMapping(value = "modifyDepartment", method = RequestMethod.POST)
-    @ResponseBody
-    public JSONObject modifyDepartment(
-            @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId,
-            @ApiParam(value = "科室名称", required = true) @RequestParam(value = "departmentName", required = true) String departmentName,
-            @ApiParam(value = "科室位置", required = true) @RequestParam(value = "position", required = true) String position
-            ) throws Exception {
-        Preconditions.checkNotNull(departmentId,"请传入必须的参数：departmentId");
-        Preconditions.checkNotNull(departmentName,"请传入必须的参数：departmentName");
-        Preconditions.checkNotNull(position,"请传入必须的参数：position");
-
-        departmentService.modifyDepartment(departmentId,departmentName,position,null);
-        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-    }
-
-    @ApiOperation(value = "失效科室")
-    @RequestMapping(value = "failureDepartment", method = RequestMethod.DELETE)
-    @ResponseBody
-    public JSONObject failureDepartment(
-            @ApiParam(value = "科室ID", required = true) @RequestParam(value = "departmentId", required = true) Long departmentId
-    ) throws Exception {
-
-        Preconditions.checkNotNull(departmentId,"请传入必须的参数：departmentId");
-
-        departmentService.failureDepartment(departmentId);
-        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
 

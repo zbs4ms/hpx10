@@ -141,6 +141,7 @@ public class HisOutpatient {
         sb.append("<SFYY>").append("0").append("</SFYY>");  //是否预约
         sb.append("<YYFS>").append("").append("</YYFS>");  //预约方式
 
+        log.info("请求参数：\n"+sb.toString());
         String reData = HisTool.toXMLString("Register.Cancel.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
