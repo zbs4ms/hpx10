@@ -14,6 +14,6 @@ import javax.servlet.annotation.WebInitParam;
 //@WebFilter(filterName = "AdminBaseLoginFilter", urlPatterns = {
 //        ""},
       //添加不进行登录验证的url，可以为实际路径或正则表达式，以','分隔
-      initParams = {@WebInitParam(name = VerifyLoginFilter.EXCLUDED_PAGES, value=".*/ad/login")})
+      initParams = {@WebInitParam(name = VerifyLoginFilter.EXCLUDED_PAGES, value=".*/ad/admin/login")})
 public class AdminLoginFilter extends AdminBaseLoginFilter {
 }
