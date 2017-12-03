@@ -86,9 +86,6 @@ public class ManagerService {
     public Long returnIdByToken(HttpServletRequest request) throws Exception {
         Enumeration<String> headerNames = request.getHeaderNames();
 
-
-        log.info(JSONObject.toJSON(headerNames));
-
         String token = null;
         Cookie[] cookies = request.getCookies();
         for (Cookie cookie : cookies) {
