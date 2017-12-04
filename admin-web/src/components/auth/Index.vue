@@ -4,30 +4,66 @@
  * Date: 2017/9/11
  */
 import EditDialog from './_thumbs/EditDialog.vue'
+import SearchTable from '@/components/_common/searchTable/SearchTable'
+import { Loading } from 'element-ui'
 import {
-  createApi
+  getListApi,
+  createApi,
+  updateApi,
+  deleteApi
 } from './api'
 let adding = false
+
 export default {
   name: 'Auth',
   components: {
-    EditDialog
+    EditDialog,
+    SearchTable
   },
   data () {
+    this.tableAttrs = {
+      'props': {
+        'tooltip-effect': 'dark',
+        'style': 'width: 100%',
+        'align': 'center'
+      }
+    }
+    this.columnData = [{
+      attrs: {
+        'prop': 'userName',
+        'label': '用户名',
+        'width': '120'
+      }
+    }, {
+      attrs: {
+        'prop': 'auth',
+        'label': '权限',
+        'min-width': '200'
+      }
+    }, {
+      slotName: 'column-operate'
+    }]
+    this.listApi = {
+      requestFn: getListApi,
+      responseFn (data) {
+        let content = data.content || {}
+        this.tableData = (content.list || []).map((item) => ({
+          id: item.id,
+          userName: item.account,
+          auth: item.permissionList.map(item => item.name).join('/'),
+          permissionList: item.permissionList,
+          psd: item.password
+        }))
+        this.total = content.total || 0
+      }
+    }
+    this.apiKeysMap = {
+      currentPage: 'pageNum'
+    }
     return {
-      tableLoading: false,
-      currentPage: 1,
-      pageSize: 10,
-      total: 0,
-      tableData: [{
-        no: 1,
-        userName: 'paul1',
-        auth: ['预约管理', '运营管理']
-      }, {
-        no: 1,
-        userName: 'paul1',
-        auth: ['预约管理', '运营管理']
-      }],
+      apiKeysMap: {
+        currentPage: 'pageNum'
+      },
       editDialogVisible: false,
       editData: null
     }
@@ -49,6 +85,10 @@ export default {
     getList (params) {
       this.tableLoading = true
     },
+    // 刷新列表
+    refreshList () {
+      this.apiKeysMap = Object.assign({}, this.apiKeysMap)
+    },
     // 编辑或新增
     openEditDialog (rowData, isAdd) {
       this.editDialogVisible = true
@@ -57,18 +97,29 @@ export default {
     },
     // 提交编辑或新增
     handleEditSubmit (data, respondCb) {
-      console.log(createApi, data)
+      const successCb = (msg) => {
+        this.$message({
+          type: 'success',
+          message: msg
+        })
+        respondCb(true)
+        this.apiKeysMap = Object.assign({}, this.apiKeysMap)
+      }
       if (adding) {
         createApi({
           account: data.name,
           password: data.psd,
           permission: JSON.stringify(data.pickedAuth)
         }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '新建成功'
-          })
-          respondCb(true)
+          successCb('新建成功')
+        })
+      } else {
+        updateApi({
+          id: data.id,
+          permission: JSON.stringify(data.pickedAuth),
+          password: data.psd
+        }).then(() => {
+          successCb('修改成功')
         })
       }
       console.log(data, respondCb, 'respondCb')
@@ -77,6 +128,30 @@ export default {
       console.log('adding', adding)
     },
     delRow (rowData) {
+      this.$confirm(`是否删除该日志？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            const loading = Loading.service({ fullscreen: true })
+            deleteApi({
+              id: rowData.id
+            }).then(res => {
+              this.$message({
+                type: 'success',
+                message: `删除成功`
+              })
+              this.refreshList()
+            }).finally(() => {
+              loading.close()
+              done()
+            })
+          } else {
+            done()
+          }
+        }
+      })
     }
   }
 }
@@ -99,64 +174,39 @@ export default {
         </el-button>
       </div>
     </div>
-    <el-table
-      v-loading="tableLoading"
-      ref="multipleTable"
-      :data="tableData"
-      tooltip-effect="dark"
-      style="width: 100%">
-      <el-table-column
-        prop="no"
-        label="序号"
-        min-width="120">
-      </el-table-column>
-      <el-table-column
-        prop="userName"
-        label="用户名"
-        min-width="140"
-        show-overflow-tooltip>
-      </el-table-column>
-      <el-table-column
-        prop="auth"
-        label="权限"
-        min-width="140"
-        :formatter="(row, column, cellValue) => {
-          return row.auth.join(' / ')
-        }"
-        show-overflow-tooltip>
-      </el-table-column>
-      <el-table-column
-        min-width="140"
-        label="操作">
-        <template scope="scope">
-          <div class="flex--center operations">
-            <span
-              class="operate-item el-icon-edit"
-              @click="openEditDialog(scope.row)">
-            </span>
-            <span
-              class="operate-item el-icon-delete"
-              @click="delRow(scope.row)">
-            </span>
-          </div>
-        </template>
-      </el-table-column>
-    </el-table>
+    <search-table
+      ref="searchTable"
+      :table-attrs="tableAttrs"
+      :column-data="columnData"
+      :list-api="listApi"
+      :api-keys-map="apiKeysMap">
+      <template slot="column-operate">
+        <el-table-column
+          width="140"
+          label="操作">
+          <template scope="scope">
+            <div class="flex--center operations">
+              <span
+                :style="{visibility: $store.state.accountInfo.account === 'admin' || $store.state.accountInfo.account === scope.row.userName ? 'visible' : 'hidden'}"
+                class="operate-item el-icon-edit"
+                @click="openEditDialog(scope.row)">
+              </span>
+              <span
+                :style="{visibility: $store.state.accountInfo.account === 'admin' && $store.state.accountInfo.account !== scope.row.userName ? 'visible' : 'hidden'}"
+                class="operate-item el-icon-delete"
+                @click="delRow(scope.row)">
+              </span>
+            </div>
+          </template>
+        </el-table-column>
+      </template>
+    </search-table>
     <edit-dialog
       v-model="editDialogVisible"
       :data="editData"
       @cancel="handleEditCancel"
       @submit="handleEditSubmit">
     </edit-dialog>
-    <div class="pagination-wrap">
-      <el-pagination
-        v-if="total > pageSize"
-        :current-page.sync="currentPage"
-        :page-size="pageSize"
-        layout="prev, pager, next, jumper"
-        :total="total">
-      </el-pagination>
-    </div>
   </div>
 </template>
 

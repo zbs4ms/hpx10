@@ -35,8 +35,20 @@ export default {
         psd: '' // 密码
       },
       authOptions: [],
-      pickedAuth: [],
+      // pickedAuth: [],
       submitLoading: false
+    }
+  },
+  watch: {
+    data (val) {
+      if (val && typeof val === 'object') {
+        this.form = {
+          id: val.id,
+          name: val.userName,
+          pickedAuth: val.permissionList.map(item => item.permissionId),
+          psd: val.psd
+        }
+      }
     }
   },
   computed: {
@@ -92,6 +104,13 @@ export default {
         <el-row>
           <el-col :span="16">
             <el-form-item
+              v-if="data"
+              prop="name"
+              label="名称">
+              {{ form.name }}
+            </el-form-item>
+            <el-form-item
+              v-else
               label="名称"
               prop="name"
               class="banner-name"

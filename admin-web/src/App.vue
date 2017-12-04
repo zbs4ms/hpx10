@@ -60,8 +60,6 @@
           overflow-y: auto;
           padding: 30px;
           height: 100%;
-
-          background: $bg3;
         }
       }
     }
