@@ -85,12 +85,6 @@ public class RegisterService {
     public RegisterCompleteVO addRegister(String orderNumber,Long accountId,String brid,String departmentId,String doctorId,String xmid,
                                           Long agreedTime,String timeInterval,String doctorName,
                                           String price,String subject,String brName,String department,String hm) throws Exception {
-//        if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
-//            throw new Exception("账户信息为空.");
-//        if(Helpers.isNullOrEmpty(departmentId)  || departmentService.queryDepartment(departmentId,null) == null)
-//            throw new Exception("科室信息为空.");
-//        if(Helpers.isNullOrEmpty(doctorId)  || doctorService.queryDoctor(null,doctorId,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
-//            throw new Exception("医生信息为空.");
 
 
         RegisterCompleteVO completeVO = new RegisterCompleteVO();
@@ -111,6 +105,14 @@ public class RegisterService {
             if(!hisOutpatient.checkIsRegisterLimit(brid,hm,sdf.format(agreeDate),departmentId)){
 
                 log.info("挂号检查失败，不能挂号.");
+
+                completeVO.setState(RegisterErrCodeEnum.LIMIT_FOR_PATIENT.getCode());
+                return completeVO;
+            }
+
+
+            if(!this.canRegister(brid,agreeDate,doctorId)){
+                log.info("挂号检查失败,库里面已存在该记录,不能挂号.");
 
                 completeVO.setState(RegisterErrCodeEnum.LIMIT_FOR_PATIENT.getCode());
                 return completeVO;
@@ -280,6 +282,12 @@ public class RegisterService {
         }
 
 
+    }
+
+    private boolean canRegister(String brid, Date agreeDate, String doctorId) {
+
+
+        return registerMapper.queryByBrIdTimeDoctorId(brid,agreeDate,doctorId) == null;
     }
 
 
