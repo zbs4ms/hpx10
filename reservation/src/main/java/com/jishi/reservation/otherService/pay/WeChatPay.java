@@ -147,12 +147,12 @@ public class WeChatPay {
      */
     public Map generateWxSign(String prepay_id) throws NoSuchAlgorithmException {
         Map<String,Object> map = new HashMap<>();
-        map.put("appId", Constant.WECHAT_PAY_APPID);
+        map.put("appid", Constant.WECHAT_PAY_APPID);
         map.put("partnerid", Constant.WECHAT_PAY_MCHID);
         map.put("prepayid", prepay_id);
-        map.put("package", "Sign=WXPay");
         map.put("noncestr", RandomTool.getRandomStringByLength(32).toUpperCase());
         map.put("timestamp", String.valueOf(System.currentTimeMillis()).substring(0,10));
+        map.put("package", "Sign=WXPay");
 
         String sign = WXSignature.getSign(map);
         map.put("sign",sign);
