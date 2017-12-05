@@ -56,7 +56,9 @@ public class OutpatientPaymentInfoVO implements Comparable<OutpatientPaymentInfo
     // 按时间和单据号排序
     @Override
     public int compareTo(OutpatientPaymentInfoVO o) {
-        if (this.getRegisterDate() != null && o.getRegisterDate() != null) {
+        if (this.getLastDocDate() != null && o.getLastDocDate() != null) {
+            return this.getLastDocDate().compareTo(o.getLastDocDate());
+        } else if (this.getRegisterDate() != null && o.getRegisterDate() != null) {
             return this.getRegisterDate().compareTo(o.getRegisterDate());
         } else if (this.getDocumentNum() != null && o.getDocumentNum() != null) {
             return this.getDocumentNum().compareTo(o.getDocumentNum());

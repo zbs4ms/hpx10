@@ -8,6 +8,9 @@ import java.util.List;
  */
 public class Constant {
 
+    public final static String BASE_SERVER_URL = "http://doc.hpx10.com:50002";
+
+
     /****------------   支付类型   ---------------------------
     /** 订单支付类型 --> 1 : 阿里 **/
     public final static String ORDER_PAY_TYPE_AL = "alipay";
@@ -29,9 +32,10 @@ public class Constant {
     /****------------   微信支付   ---------------------------
      /**  微信网关 **/
 
-    public final static String APPID_WECHAT = "";
-    public final static String MCHID_WECHAT = "";
-    public final static String APP_NAME_WECHAT = "";
+    public final static String WECHAT_PAY_APPID = "wx6074aae8e4778c30";
+    public final static String WECHAT_PAY_MCHID = "1492421162";
+    public final static String WECHAT_PAY_APP_NAME = "锦欣通";
+    public final static String WECHAT_PAY_KEY = "luzhoujinxinfuchan732902jishikej";
 
     public final static String HIS_TOKEN="359894CB16E4B68531A11083F2046B0E";
     public final static String HIS_KEYS = "929A715701492111";

@@ -6,16 +6,24 @@ import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.protocol.OrderGenerateVO;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
+import com.jishi.reservation.otherService.pay.WeChatPay;
 import com.jishi.reservation.otherService.pay.protocol.AliPayCallbackModel;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 
-import com.us.base.common.controller.BaseController;
+import com.jishi.reservation.service.exception.BussinessException;
+import com.jishi.reservation.util.Constant;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 
 
@@ -32,6 +40,9 @@ public class PayController extends MyBaseController {
 
     @Autowired
     private AlibabaPay alibabaPay;
+
+    @Autowired
+    private WeChatPay weChatPay;
 
     /**
      * @param
@@ -60,12 +71,36 @@ public class PayController extends MyBaseController {
     @ApiOperation(value = "微信支付回调接口", notes = "")
     @RequestMapping(value = "wxPayCallBack", method = RequestMethod.POST)
     @ResponseBody
-    public JSONObject wxPayCallBack(
-            AliPayCallbackModel model
-    ) throws Exception {
+    public String wxPayCallBack(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
+        //读取参数
+        InputStream inputStream ;
+        StringBuffer sb = new StringBuffer();
+        inputStream = request.getInputStream();
+        String s ;
+        BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        while ((s = in.readLine()) != null){
+            sb.append(s);
+        }
+        in.close();
+        inputStream.close();
 
-        return null;
+        String returnCode = "SUCCESS";
+        String returnMsg = "ok";
+        try {
+            boolean rslt = weChatPay.notify(sb.toString());
+            if (!rslt) {
+                returnCode = "FAIL";
+                returnMsg = "FAIL";
+            }
+        } catch (BussinessException e) {
+            returnCode = "FAIL";
+            returnMsg = e.getMessage();
+        } catch (Exception e) {
+            returnCode = "FAIL";
+            returnMsg = e.getClass().getSimpleName();
+        }
+        return wxPayNotifyResponse(returnCode, returnMsg);
     }
 
 
@@ -111,4 +146,33 @@ public class PayController extends MyBaseController {
         return ResponseWrapper().addMessage("请求成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
+    /**
+     * @param
+     * @return
+     * @throws Exception
+     */
+    @ApiOperation(value = "微信支付", notes = "")
+    @RequestMapping(value = "wxPay", method = RequestMethod.POST)
+    @ResponseBody
+    public JSONObject wxPay(
+        @ApiParam(value = "用户端实际ip") @RequestParam(value = "spbillCreateIp") String spbillCreateIp,
+        @ApiParam(value = "商户生成的订单号") @RequestParam(value = "orderNumber") String orderNumber,
+        @ApiParam(value = "支付的商品名称") @RequestParam(value = "subject") String subject,
+        @ApiParam(value = "支付的商品价格 元为单位") @RequestParam(value = "price") BigDecimal price) throws Exception {
+
+        Preconditions.checkNotNull(subject,"缺少参数：subject");
+        Preconditions.checkNotNull(orderNumber,"缺少参数：orderNumber");
+        Preconditions.checkNotNull(price,"缺少参数：price");
+
+        String notifyUrl = Constant.BASE_SERVER_URL + "/reservation/pay/wxPayCallBack";
+        OrderGenerateVO vo = weChatPay.generateOrder(notifyUrl, orderNumber,subject, price, spbillCreateIp);
+
+        return ResponseWrapper().addData(vo).addMessage("请求成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+    }
+
+    private String wxPayNotifyResponse(String returnCode, String returnMsg) {
+        return "<xml><return_code><![CDATA[" + returnCode
+                  + "]]></return_code><return_msg><![CDATA[" + returnMsg
+                  + "]]></return_msg></xml>";
+    }
 }

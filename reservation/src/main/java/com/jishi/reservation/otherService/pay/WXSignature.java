@@ -1,5 +1,6 @@
 package com.jishi.reservation.otherService.pay;
 
+import com.jishi.reservation.util.Constant;
 import com.us.base.util.MD5Encryption;
 import com.us.base.util.xml.XMLParser;
 import lombok.extern.log4j.Log4j;
@@ -19,8 +20,6 @@ import java.util.Map;
  */
 @Log4j
 public class WXSignature {
-
-    final static String key = "WXHOTR1383916102WXHOTR1383916102";
 
     public WXSignature() {
     }
@@ -50,7 +49,7 @@ public class WXSignature {
         }
 
         String var12 = var10.toString();
-        var12 = var12 + "key=" + key;
+        var12 = var12 + "key=" + Constant.WECHAT_PAY_KEY;
         var12 = MD5Encryption.getMD5(var12).toUpperCase();
         return var12;
     }
@@ -76,7 +75,7 @@ public class WXSignature {
         }
 
         String var8 = sb.toString();
-        var8 = var8 + "key=WXHOTR1383916102WXHOTR1383916102";
+        var8 = var8 + "key=" + Constant.WECHAT_PAY_KEY;
         log.info("Sign Before MD5:" + var8);
         var8 = MD5Encryption.getMD5(var8).toUpperCase();
         log.info("Sign Result:" + var8);
@@ -90,8 +89,21 @@ public class WXSignature {
     }
 
     public static boolean checkIsSignValidFromResponseString(String responseString) throws ParserConfigurationException, IOException, SAXException, NoSuchAlgorithmException {
+        if (responseString == null || responseString.isEmpty()) {
+            return false;
+        }
         Map map = XMLParser.getMapFromXML(responseString);
+        return checkIsSignValidFromMap(map);
+    }
+
+    public static boolean checkIsSignValidFromMap(Map map) throws ParserConfigurationException, IOException, SAXException, NoSuchAlgorithmException {
+        if (map == null || map.isEmpty()) {
+            return false;
+        }
         log.info(map.toString());
+        if (map.get("sign") == null) {
+            return false;
+        }
         String signFromAPIResponse = map.get("sign").toString();
         if (signFromAPIResponse != "" && signFromAPIResponse != null) {
             log.info("服务器回包里面的签名是:" + signFromAPIResponse);
