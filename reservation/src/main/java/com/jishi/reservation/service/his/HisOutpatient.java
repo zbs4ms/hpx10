@@ -155,13 +155,15 @@ public class HisOutpatient {
 
     public Boolean checkIsRegisterLimit(String brid, String hm, String registerTime, String departmentId) throws Exception {
 
+
+        log.info("检查是否有资格挂号");
         StringBuffer sb = new StringBuffer();
         sb.append("<BRID>").append(brid).append("</BRID>");
         sb.append("<HM>").append(hm).append("</HM>");
 
         sb.append("<GHSJ>").append(registerTime).append("</GHSJ>");
         sb.append("<KSID>").append(departmentId).append("</KSID>");
-
+        log.info("请求数据:"+sb.toString());
 
         String reData = HisTool.toXMLString("Register.RegisterCheck.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);

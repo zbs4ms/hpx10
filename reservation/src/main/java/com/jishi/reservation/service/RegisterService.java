@@ -110,6 +110,8 @@ public class RegisterService {
             //挂号检查
             if(!hisOutpatient.checkIsRegisterLimit(brid,hm,sdf.format(agreeDate),departmentId)){
 
+                log.info("挂号检查失败，不能挂号.");
+
                 completeVO.setState(RegisterErrCodeEnum.LIMIT_FOR_PATIENT.getCode());
                 return completeVO;
             }
