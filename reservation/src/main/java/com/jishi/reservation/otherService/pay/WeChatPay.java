@@ -151,8 +151,8 @@ public class WeChatPay {
         map.put("partnerid", Constant.WECHAT_PAY_MCHID);
         map.put("prepayid", prepay_id);
         map.put("package", "Sign=WXPay");
-        map.put("nonceStr", RandomTool.getRandomStringByLength(32).toUpperCase());
-        map.put("timeStamp", String.valueOf(System.currentTimeMillis()).substring(0,10));
+        map.put("noncestr", RandomTool.getRandomStringByLength(32).toUpperCase());
+        map.put("timestamp", String.valueOf(System.currentTimeMillis()).substring(0,10));
 
         String sign = WXSignature.getSign(map);
         map.put("sign",sign);
