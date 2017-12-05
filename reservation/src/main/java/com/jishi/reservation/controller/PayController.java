@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.util.Map;
 
 
 /**
@@ -165,9 +166,9 @@ public class PayController extends MyBaseController {
         Preconditions.checkNotNull(price,"缺少参数：price");
 
         String notifyUrl = Constant.BASE_SERVER_URL + "/reservation/pay/wxPayCallBack";
-        OrderGenerateVO vo = weChatPay.generateOrder(notifyUrl, orderNumber,subject, price, spbillCreateIp);
+        Map map = weChatPay.generateOrder(notifyUrl, orderNumber,subject, price, spbillCreateIp);
 
-        return ResponseWrapper().addData(vo).addMessage("请求成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+        return ResponseWrapper().addData(map).addMessage("请求成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
     private String wxPayNotifyResponse(String returnCode, String returnMsg) {
