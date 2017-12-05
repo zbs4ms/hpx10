@@ -90,7 +90,7 @@ public class WeChatPay {
         return true;
     }
 
-    public OrderGenerateVO generateOrder(String notifyUrl, String orderNumber, String subject, BigDecimal price, String spbillCreateIp) throws Exception {
+    public Map generateOrder(String notifyUrl, String orderNumber, String subject, BigDecimal price, String spbillCreateIp) throws Exception {
         //拼接回调接口
         //String notifyUrl = notifyUrl;
         WXUnifiedOrderPayReqData wxUnifiedOrderPayReqData = generateProductWithOpenId(orderNumber, subject, notifyUrl, price, spbillCreateIp);
@@ -126,12 +126,9 @@ public class WeChatPay {
         String result_code = (String) resp.get("result_code");
         String return_code = (String) resp.get("return_code");
 
-        String data =  generateWxSign(prepay_id);
+        Map data =  generateWxSign(prepay_id);
         log.info("微信调起支付参数：" + data);
-        OrderGenerateVO vo = new OrderGenerateVO();
-        vo.setOrderNumber(orderNumber);
-        vo.setOrderString(data);
-        return vo;
+        return data;
 
     }
 
@@ -148,7 +145,7 @@ public class WeChatPay {
      * @return
      * @throws NoSuchAlgorithmException
      */
-    public String generateWxSign(String prepay_id) throws NoSuchAlgorithmException {
+    public Map generateWxSign(String prepay_id) throws NoSuchAlgorithmException {
         Map<String,Object> map = new HashMap<>();
         map.put("appId", Constant.WECHAT_PAY_APPID);
         map.put("partnerid", Constant.WECHAT_PAY_MCHID);
@@ -160,7 +157,7 @@ public class WeChatPay {
         String sign = WXSignature.getSign(map);
         map.put("sign",sign);
 
-        return getRequestXml(map);
+        return map;
     }
 
     public static String getRequestXml(Map<String,Object> parameters){
