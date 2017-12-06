@@ -114,6 +114,9 @@ public class HospitalizationController extends MyBaseController {
         vo.setZyh("2719");
         vo.setSyje("-188");
         vo.setState("1");
+        vo.setYjje("188.21");
+        vo.setRysj(new Date());
+        vo.setRycs("2");
 
         list.add(vo);
         List<String> brIdList = patientInfoService.queryBrIdByAccountId(accountId);
