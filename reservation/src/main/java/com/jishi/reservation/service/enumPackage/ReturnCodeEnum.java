@@ -30,6 +30,7 @@ public enum ReturnCodeEnum {
     /** 微信支付相关 1250-1299 **/
     WEICHART_PAY_ERR_SIGN_CHECK_FAILED(1250, "微信支付签名校验失败"),
     WEICHART_PAY_ERR_UNIFIEDORDER_FAILED(1251, "微信支付生成订单失败"),
+    WEICHART_PAY_ERR_NOTIFY_RETURN_ERR(1252, "微信支付向通知接口返回失败"),
 
     UNKNOWN_ERR(1000, "未知错误");
 
