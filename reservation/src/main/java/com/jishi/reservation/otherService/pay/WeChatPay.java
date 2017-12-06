@@ -40,11 +40,11 @@ public class WeChatPay {
     private OrderInfoMapper orderInfoMapper;
 
     public boolean notify(String notifyStr) throws ParserConfigurationException, NoSuchAlgorithmException, SAXException, IOException, BussinessException, ParseException {
+        log.info("微信支付回调数据：" + notifyStr);
         if (notifyStr == null || notifyStr.isEmpty()) {
             return false;
         }
         Map notifyMap = XMLParser.getMapFromXML(notifyStr);
-        log.info("微信支付回调数据：" + notifyStr);
         //校验签名
         if (!WXSignature.checkIsSignValidFromMap(notifyMap)) {
             throw new BussinessException(ReturnCodeEnum.WEICHART_PAY_ERR_SIGN_CHECK_FAILED);
@@ -52,42 +52,41 @@ public class WeChatPay {
         if(notifyMap.get("return_code") == null || notifyMap.get("result_code") == null
                       || !"SUCCESS".equals(notifyMap.get("return_code"))
                       || !"SUCCESS".equals(notifyMap.get("result_code"))) {
-
-            String outTradeNo = (String)notifyMap.get("out_trade_no"); //商户订单号
-            String totalFee = (String)notifyMap.get("total_fee");//总金额
-            String transactionId = (String)notifyMap.get("transaction_id"); //微信支付订单号
-            String time_end = (String)notifyMap.get("time_end");
-            String openid = (String)notifyMap.get("openid");  //用户标识
-
-            //判断支付金额和商户订单号和自己系统中的信息是否吻合，做判断
-            log.info("订单号：" + outTradeNo);
-            OrderInfo orderInfo =  orderInfoMapper.queryByOutTradeNo(outTradeNo);
-            Helpers.assertNotNull(orderInfo, ReturnCodeEnum.ORDER_ERR_NOT_FOUND);
-            log.info("订单信息：\n"+ JSONObject.toJSONString(orderInfo));
-            Helpers.assertTrue(!orderInfo.getStatus().equals(OrderStatusEnum.PAYED.getCode()), ReturnCodeEnum.ORDER_ERR_PAYED);
-            Helpers.assertTrue(!orderInfo.getStatus().equals(OrderStatusEnum.CANCELED.getCode()), ReturnCodeEnum.ORDER_ERR_CANCLED);
-
-            BigDecimal amount = new BigDecimal(totalFee);
-            amount = amount.divide(new BigDecimal(100)); // 微信支付返回的是分，这里转换成元
-            Helpers.assertTrue(orderInfo.getPrice().equals(amount), ReturnCodeEnum.ORDER_ERR_AMOUNT_NOT_MACH);
-            //todo  调取his的门诊号缴费单
-
-            //改变订单状态和支付时间
-            //Preconditions.checkState(orderInfo.getStatus() == OrderStatusEnum.WAIT_PAYED.getCode(),"该订单不是待支付状态.");
-            orderInfo.setStatus(OrderStatusEnum.PAYED.getCode());
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-            orderInfo.setPayTime(sdf.parse(time_end));
-            //orderInfo.setBuyerEmail(buyerEmail);
-            //orderInfo.setSellerEmail(sellerEmail);
-            orderInfo.setBuyerId(openid);
-            orderInfo.setPayType(PayEnum.WEIXIN.getCode());
-            orderInfo.setThirdOrderNumber(transactionId);
-            orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
-            log.info("订单状态修改为已支付。订单id:"+orderInfo.getId());
-        } else {
             log.info("微信支付通知给出失败信息：" + notifyMap.get("return_msg"));
-            return false;
+            throw new BussinessException(ReturnCodeEnum.WEICHART_PAY_ERR_NOTIFY_RETURN_ERR);
         }
+
+        String outTradeNo = (String)notifyMap.get("out_trade_no"); //商户订单号
+        String totalFee = (String)notifyMap.get("total_fee");//总金额
+        String transactionId = (String)notifyMap.get("transaction_id"); //微信支付订单号
+        String time_end = (String)notifyMap.get("time_end");
+        String openid = (String)notifyMap.get("openid");  //用户标识
+
+        //判断支付金额和商户订单号和自己系统中的信息是否吻合，做判断
+        log.info("订单号：" + outTradeNo);
+        OrderInfo orderInfo =  orderInfoMapper.queryByOutTradeNo(outTradeNo);
+        Helpers.assertNotNull(orderInfo, ReturnCodeEnum.ORDER_ERR_NOT_FOUND);
+        log.info("订单信息：\n"+ JSONObject.toJSONString(orderInfo));
+        Helpers.assertTrue(!orderInfo.getStatus().equals(OrderStatusEnum.WAIT_PAYED.getCode()), ReturnCodeEnum.ORDER_ERR_WAIT_PAYED);
+        Helpers.assertTrue(!orderInfo.getStatus().equals(OrderStatusEnum.CANCELED.getCode()), ReturnCodeEnum.ORDER_ERR_CANCLED);
+
+        BigDecimal amount = new BigDecimal(totalFee);
+        amount = amount.divide(new BigDecimal(100)); // 微信支付返回的是分，这里转换成元
+        Helpers.assertTrue(orderInfo.getPrice().equals(amount), ReturnCodeEnum.ORDER_ERR_AMOUNT_NOT_MACH);
+        //todo  调取his的门诊号缴费单
+
+        //改变订单状态和支付时间
+        //Preconditions.checkState(orderInfo.getStatus() == OrderStatusEnum.WAIT_PAYED.getCode(),"该订单不是待支付状态.");
+        orderInfo.setStatus(OrderStatusEnum.PAYED.getCode());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        orderInfo.setPayTime(sdf.parse(time_end));
+        //orderInfo.setBuyerEmail(buyerEmail);
+        //orderInfo.setSellerEmail(sellerEmail);
+        orderInfo.setBuyerId(openid);
+        orderInfo.setPayType(PayEnum.WEIXIN.getCode());
+        orderInfo.setThirdOrderNumber(transactionId);
+        orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+        log.info("订单状态修改为已支付。订单id:"+orderInfo.getId());
         return true;
     }
 
