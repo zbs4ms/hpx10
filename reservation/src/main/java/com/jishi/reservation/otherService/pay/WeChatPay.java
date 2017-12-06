@@ -68,7 +68,7 @@ public class WeChatPay {
             Helpers.assertTrue(!orderInfo.getStatus().equals(OrderStatusEnum.CANCELED.getCode()), ReturnCodeEnum.ORDER_ERR_CANCLED);
 
             BigDecimal amount = new BigDecimal(totalFee);
-            amount.divide(new BigDecimal(100)); // 微信支付返回的是分，这里转换成元
+            amount = amount.divide(new BigDecimal(100)); // 微信支付返回的是分，这里转换成元
             Helpers.assertTrue(orderInfo.getPrice().equals(amount), ReturnCodeEnum.ORDER_ERR_AMOUNT_NOT_MACH);
             //todo  调取his的门诊号缴费单
 
@@ -85,6 +85,7 @@ public class WeChatPay {
             orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
             log.info("订单状态修改为已支付。订单id:"+orderInfo.getId());
         } else {
+            log.info("微信支付通知给出失败信息：" + notifyMap.get("return_msg"));
             return false;
         }
         return true;

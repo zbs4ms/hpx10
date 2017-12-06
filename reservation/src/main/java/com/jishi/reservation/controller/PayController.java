@@ -95,12 +95,15 @@ public class PayController extends MyBaseController {
                 returnMsg = "FAIL";
             }
         } catch (BussinessException e) {
+            log.info(e.toString());
             returnCode = "FAIL";
             returnMsg = e.getMessage();
         } catch (Exception e) {
+            e.printStackTrace();
             returnCode = "FAIL";
             returnMsg = e.getClass().getSimpleName();
         }
+        log.info("微信支付回调接口返回数据：returnCode=" + returnCode + " returnMsg=" + returnMsg);
         return wxPayNotifyResponse(returnCode, returnMsg);
     }
 
