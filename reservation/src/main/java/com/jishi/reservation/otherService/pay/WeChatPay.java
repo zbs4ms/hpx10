@@ -67,8 +67,8 @@ public class WeChatPay {
         OrderInfo orderInfo =  orderInfoMapper.queryByOutTradeNo(outTradeNo);
         Helpers.assertNotNull(orderInfo, ReturnCodeEnum.ORDER_ERR_NOT_FOUND);
         log.info("订单信息：\n"+ JSONObject.toJSONString(orderInfo));
-        Helpers.assertTrue(!orderInfo.getStatus().equals(OrderStatusEnum.WAIT_PAYED.getCode()), ReturnCodeEnum.ORDER_ERR_WAIT_PAYED);
-        Helpers.assertTrue(!orderInfo.getStatus().equals(OrderStatusEnum.CANCELED.getCode()), ReturnCodeEnum.ORDER_ERR_CANCLED);
+        Helpers.assertFalse(orderInfo.getStatus().equals(OrderStatusEnum.PAYED.getCode()), ReturnCodeEnum.ORDER_ERR_PAYED);
+        Helpers.assertFalse(orderInfo.getStatus().equals(OrderStatusEnum.CANCELED.getCode()), ReturnCodeEnum.ORDER_ERR_CANCLED);
 
         BigDecimal amount = new BigDecimal(totalFee);
         amount = amount.divide(new BigDecimal(100)); // 微信支付返回的是分，这里转换成元
