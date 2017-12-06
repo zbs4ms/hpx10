@@ -56,13 +56,10 @@ public class AlibabaPay {
          OrderInfo orderInfo =  orderInfoMapper.queryByNumber(orderNumber);
          log.info("订单号为"+orderNumber+"的订单申请退款，退款金额："+orderInfo.getPrice());
          Preconditions.checkState(orderInfo.getStatus()==OrderStatusEnum.PAYED.getCode(),"该笔订单未支付，不能退款");
-        AlipayClient alipayClient = new DefaultAlipayClient(PayConstant.SERVER_URL,PayConstant.APP_ID,PayConstant.APP_PRIVATE_KEY,PayConstant.DATA_FORMAT,PayConstant.CHARSET_GBK,PayConstant.ALI_PAY_PUBLIC_KEY,PayConstant.ENCRYPT);
+        AlipayClient alipayClient = new DefaultAlipayClient(PayConstant.SERVER_URL_REFUND,PayConstant.APP_ID,PayConstant.APP_PRIVATE_KEY,PayConstant.DATA_FORMAT,PayConstant.CHARSET_GBK,PayConstant.ALI_PAY_PUBLIC_KEY,PayConstant.ENCRYPT);
         AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
         request.setBizContent("{" +
-
                 "\"trade_no\":"+orderInfo.getThirdOrderNumber()+","+
-
-
                 "\"refund_amount\":"+orderInfo.getPrice()+"," +
                 "\"refund_reason\":\"正常退款\"" +
                 "  }");

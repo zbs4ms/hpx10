@@ -66,7 +66,7 @@ public interface OrderInfoMapper extends MyMapper<OrderInfo>{
 
 
     @Select({
-            "select * from order_info where type = 1 and status = 1 and enable = 0 and id > 800"
+            "select * from order_info where type = 1 and status = 1 and enable = 0 and id > 800 and register_id is not null"
     })
     List<OrderInfo> queryAllWaitPayRegister();
 }

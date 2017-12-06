@@ -43,6 +43,7 @@ public class PayConstant {
            "EZl1+oroWCdZ2O9R33M5asqS8scrT/ubM1gtpI+JT3XevKqaw718GZLg1OAP0jSUQScmf8wIDAQAB";
 
     public final static String SERVER_URL = "http://openapi.alipay.com/gateway.do";
+    public final static String SERVER_URL_REFUND = "https://openapi.alipay.com/gateway.do";
     public final static String DATA_FORMAT = "json";
     public final static String CHARSET = "utf-8";
     public final static String CHARSET_GBK = "GBK";

@@ -100,6 +100,22 @@ public class HospitalizationController extends MyBaseController {
             pageSize = 100;
         }
 
+        HospitalizationInfoVO vo = new HospitalizationInfoVO();
+        vo.setZyh("假的住院号");
+        vo.setCreateTime(new Date());
+        vo.setPayTime(new Date());
+        vo.setBrid("1596");
+        vo.setYujiaojine("6.66");
+        vo.setCysj(new Date());
+        vo.setName("假的名称");
+        vo.setZzys("假的医生");
+        vo.setYyje("666");
+        vo.setKs("假的科室");
+        vo.setZyh("2719");
+        vo.setSyje("-188");
+        vo.setState("1");
+
+        list.add(vo);
         List<String> brIdList = patientInfoService.queryBrIdByAccountId(accountId);
         log.info("该账号拥有的病人id:"+JSONObject.toJSONString(brIdList));
         for (String brId : brIdList) {
