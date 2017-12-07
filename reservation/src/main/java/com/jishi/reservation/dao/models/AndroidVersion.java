@@ -32,6 +32,8 @@ public class AndroidVersion {
     private String apkUrl;
     @ApiModelProperty("更新时间")
     private Date updateTime;
+    @ApiModelProperty("文件大小")
+    private String apkSize;
 
     @Transient
     private List<String> contentList;
