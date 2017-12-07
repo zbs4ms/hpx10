@@ -81,8 +81,8 @@ public class Constant {
     public final static String TEST_SERVICE = "Basic.MCTest.Query";
 
     /** 极光相关 */
-    public final static String JPush_Appkey  = "0e3fcd7d467475b43a56f2a0";
-    public final static String JPush_MASTER_SECRET = "52977f5e4b85a5b2e0e257ae";
+    public final static String JPush_Appkey  = "96d474cb464f0d12aaaa8ba6";
+    public final static String JPush_MASTER_SECRET = "157a2bdc6710b16d3d2b8703";
 
 
     public final static String REGISTER_SUCCESS_MGS = "您已成功预约医生,记得按时就诊哦~";
