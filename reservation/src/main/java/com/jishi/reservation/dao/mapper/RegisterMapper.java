@@ -40,7 +40,7 @@ public interface RegisterMapper extends MyMapper<Register> {
     Register queryById(@Param("registerId") Long registerId);
 
     @Select({
-            "select * from register where br_id = #{brid} and agreed_time = #{agreeDate} and doctor_id = #{doctorId}"
+            "select * from register where br_id = #{brid} and agreed_time = #{agreeDate} and doctor_id = #{doctorId} and status = 1"
     })
-    Register queryByBrIdTimeDoctorId(@Param("brid") String brid,@Param("agreeDate") Date agreeDate,@Param("doctorId") String doctorId);
+    List<Register> queryByBrIdTimeDoctorId(@Param("brid") String brid,@Param("agreeDate") Date agreeDate,@Param("doctorId") String doctorId);
 }
