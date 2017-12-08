@@ -20,7 +20,8 @@ constant:
 
 #开发环境
 spring:
-    profiles: dev
+    profiles:
+        active: dev
     datasource:
         beanPath: com.jishi.reservation.dao.models
         mapperXmlPath: classpath:mapper/*.xml
