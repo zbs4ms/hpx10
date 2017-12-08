@@ -19,7 +19,6 @@ constant:
         change_phone_new: change_phone_new
 
 #开发环境
----
 spring:
     profiles:
         active: dev
@@ -40,9 +39,8 @@ spring:
 redis:
     host: 119.29.108.150
     port: 6379
-
-#测试环境
 ---
+#测试环境
 spring:
     profiles:
         active: test
