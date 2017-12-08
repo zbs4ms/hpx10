@@ -8,6 +8,9 @@ import java.util.List;
  */
 public class Constant {
 
+    public final static String BASE_SERVER_URL = "http://doc.hpx10.com:50002";
+
+
     /****------------   支付类型   ---------------------------
     /** 订单支付类型 --> 1 : 阿里 **/
     public final static String ORDER_PAY_TYPE_AL = "alipay";
@@ -29,9 +32,10 @@ public class Constant {
     /****------------   微信支付   ---------------------------
      /**  微信网关 **/
 
-    public final static String APPID_WECHAT = "";
-    public final static String MCHID_WECHAT = "";
-    public final static String APP_NAME_WECHAT = "";
+    public final static String WECHAT_PAY_APPID = "wx6074aae8e4778c30";
+    public final static String WECHAT_PAY_MCHID = "1492421162";
+    public final static String WECHAT_PAY_APP_NAME = "锦欣通";
+    public final static String WECHAT_PAY_KEY = "luzhoujinxinfuchan732902jishikej";
 
     public final static String HIS_TOKEN="359894CB16E4B68531A11083F2046B0E";
     public final static String HIS_KEYS = "929A715701492111";
@@ -77,8 +81,8 @@ public class Constant {
     public final static String TEST_SERVICE = "Basic.MCTest.Query";
 
     /** 极光相关 */
-    public final static String JPush_Appkey  = "0e3fcd7d467475b43a56f2a0";
-    public final static String JPush_MASTER_SECRET = "52977f5e4b85a5b2e0e257ae";
+    public final static String JPush_Appkey  = "96d474cb464f0d12aaaa8ba6";
+    public final static String JPush_MASTER_SECRET = "157a2bdc6710b16d3d2b8703";
 
 
     public final static String REGISTER_SUCCESS_MGS = "您已成功预约医生,记得按时就诊哦~";
@@ -94,7 +98,7 @@ public class Constant {
      * 每个账号最大的绑定个数 5
      */
     public final static int MAX_BINDING_NUM = 5;
-    public final static String TEST_PHONE = "13401154497,18349226649,18215603517";
+    public final static String TEST_PHONE = "13401154497,18349226649,18215603517,15928027337";
 
 
     /** =========================   网易云信相关    ==============================**/

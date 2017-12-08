@@ -1,11 +1,11 @@
 package com.jishi.reservation.controller.base.filter.admin;
 
+import com.doraemon.base.controller.Result;
 import com.jishi.reservation.controller.base.filter.BaseFilter;
 import com.jishi.reservation.controller.base.filter.user.VerifyLoginFilter;
 import com.jishi.reservation.service.ManagerService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.util.Constant;
-import com.us.base.util.datawapper.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class AdminBaseLoginFilter extends BaseFilter {
             Result result = new Result();
             logger.info("*******验证失败，未登录");
             response.setContentType("application/json;charset=utf-8");
-            response.getWriter().print(result.addMessage("登陆信息已过期，请重新登陆").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode()));
+            response.getWriter().print(result.addMessage("登陆信息已过期，请重新登陆 from admin").ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode()));
             return;
         }
         logger.info("*******进行Admin登录验证，登录用户: " + adminAccountId + "  uri：" + ((HttpServletRequest) request).getRequestURI());

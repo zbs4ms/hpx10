@@ -13,7 +13,6 @@ import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
-import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

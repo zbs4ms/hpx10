@@ -28,8 +28,8 @@ public class FileSupport {
 
         if (fileItType != null) {
             return FileCheckUtil.getFileSize(file) < Constant.MAX_FILE_SIZE && (fileItType.equals("jpg") ||
-                    fileItType.equals("bmp") || fileItType.equals("png") ) &&
-                    (suffix.equals("JPG") || suffix.equals("BMP")  ||
+                    fileItType.equals("bmp") || fileItType.equals("png") ||
+                    suffix.equals("JPG") || suffix.equals("BMP")  ||
                             suffix.equals("PNG") || suffix.equals("jpg") || suffix.equals("bmp"));
         } else {
             return false;

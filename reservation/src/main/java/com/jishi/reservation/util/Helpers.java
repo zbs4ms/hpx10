@@ -31,6 +31,12 @@ public class Helpers {
         }
     }
 
+    public static <T> void assertFalse(boolean o, ReturnCodeEnum r) throws BussinessException {
+        if (o) {
+            throw new BussinessException(r);
+        }
+    }
+
     public static <T> void assertNotNullOrEmpty(ReturnCodeEnum r, T ... args) throws BussinessException {
         for(T o : args) {
             if (o == null) throw new BussinessException(r);

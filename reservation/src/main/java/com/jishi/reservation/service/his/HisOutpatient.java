@@ -141,6 +141,7 @@ public class HisOutpatient {
         sb.append("<SFYY>").append("0").append("</SFYY>");  //是否预约
         sb.append("<YYFS>").append("").append("</YYFS>");  //预约方式
 
+        log.info("请求参数：\n"+sb.toString());
         String reData = HisTool.toXMLString("Register.Cancel.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
@@ -154,13 +155,15 @@ public class HisOutpatient {
 
     public Boolean checkIsRegisterLimit(String brid, String hm, String registerTime, String departmentId) throws Exception {
 
+
+        log.info("检查是否有资格挂号");
         StringBuffer sb = new StringBuffer();
         sb.append("<BRID>").append(brid).append("</BRID>");
         sb.append("<HM>").append(hm).append("</HM>");
 
         sb.append("<GHSJ>").append(registerTime).append("</GHSJ>");
         sb.append("<KSID>").append(departmentId).append("</KSID>");
-
+        log.info("请求数据:"+sb.toString());
 
         String reData = HisTool.toXMLString("Register.RegisterCheck.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);

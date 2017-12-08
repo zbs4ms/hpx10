@@ -1,6 +1,7 @@
 package com.jishi.reservation.controller.admin;
 
 import com.alibaba.fastjson.JSONObject;
+import com.doraemon.base.util.MD5Encryption;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
@@ -14,8 +15,6 @@ import com.jishi.reservation.service.ManagerService;
 import com.jishi.reservation.util.*;
 import com.jishi.reservation.service.PermissionService;
 
-import com.us.base.common.controller.BaseController;
-import com.us.base.util.MD5Encryption;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

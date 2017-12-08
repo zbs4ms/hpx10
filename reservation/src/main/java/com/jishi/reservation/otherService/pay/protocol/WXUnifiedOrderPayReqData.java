@@ -1,8 +1,8 @@
 package com.jishi.reservation.otherService.pay.protocol;
 
+import com.doraemon.base.util.RandomUtil;
 import com.jishi.reservation.otherService.pay.WXSignature;
 import com.jishi.reservation.util.Constant;
-import com.us.base.util.tool.RandomTool;
 import lombok.Data;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.reflect.Field;
@@ -21,19 +21,19 @@ import java.util.Map;
 @Data
 public class WXUnifiedOrderPayReqData {
     //应用API
-    private String appid = Constant.APPID_WECHAT;
+    private String appid = Constant.WECHAT_PAY_APPID;
     //商户号
-    private String mch_id = Constant.MCHID_WECHAT;
+    private String mch_id = Constant.WECHAT_PAY_MCHID;
     //设备号
     private String device_info = "WEB";
     //随机字符串
-    private String nonce_str = RandomTool.getRandomStringByLength(32);
+    private String nonce_str = RandomUtil.getRandomStringByLength(32).toUpperCase();
     //签名
     private String sign = "";
     //签名类型
     private String sign_type="MD5";
     //商品描述
-    private String body= Constant.APP_NAME_WECHAT;
+    private String body= Constant.WECHAT_PAY_APP_NAME;
     //商品详情
     private String detail="";
     //附加数据
@@ -59,7 +59,7 @@ public class WXUnifiedOrderPayReqData {
     //指定支付方式
     private String limit_pay = "";
     //openId
-    private String openid = "";
+    private String scene_info = "";
 
     private WXUnifiedOrderPayReqData(){}
     /**
@@ -70,11 +70,11 @@ public class WXUnifiedOrderPayReqData {
      * @param notifyUrl 回调地址
      * @throws NoSuchAlgorithmException
      */
-    public WXUnifiedOrderPayReqData(String outTradeNo,String detail, int totalFee, String spbillCreateIp, String notifyUrl,String openId) throws NoSuchAlgorithmException {
+    public WXUnifiedOrderPayReqData(String outTradeNo, String detail, int totalFee, String spbillCreateIp, String notifyUrl) throws NoSuchAlgorithmException {
 
 
         setDetail(detail);
-        setOut_trade_no(outTradeNo + Constant.APP_NAME_WECHAT+ RandomTool.getRandomStringByLength(6));
+        setOut_trade_no(outTradeNo);
 
         setTotal_fee(totalFee);
         setSpbill_create_ip(spbillCreateIp);
@@ -86,13 +86,11 @@ public class WXUnifiedOrderPayReqData {
         //半小时后过期
         setTime_expire(endTime);
         setNotify_url(notifyUrl);
-        //setTrade_type("NATIVE");
-        setTrade_type("JSAPI");
-        setOpenid(openId);
+        setTrade_type("APP");
         //根据API给的签名规则进行签名
         Map<String, Object> map = toMap();
         String sign = WXSignature.getSign(map);
-        setSign(sign);
+        setSign(sign);  //TODO 密匙设置
     }
 
     public Map<String,Object> toMap(){

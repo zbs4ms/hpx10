@@ -13,7 +13,6 @@ import com.jishi.reservation.service.enumPackage.SmsEnum;
 import com.jishi.reservation.service.his.HisUserManager;
 import com.jishi.reservation.service.his.bean.Credentials;
 import com.jishi.reservation.service.his.bean.PatientsList;
-import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

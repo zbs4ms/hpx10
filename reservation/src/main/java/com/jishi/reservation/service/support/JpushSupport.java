@@ -29,6 +29,8 @@ import java.util.List;
 @Service
 public class JpushSupport {
 
+    private CustomPushClient pushClient = null;
+
     public static PushPayload buildPushObj(String pushId,String message) {
 
         return PushPayload.newBuilder()
@@ -67,38 +69,12 @@ public class JpushSupport {
 
     }
 
-    public void sendPushAsyn(String pushId, String message){
-        CustomPushClient pushClient = CustomPushClient.newInstance(Constant.JPush_Appkey, Constant.JPush_MASTER_SECRET);
-
-        PushPayload payload = buildPushObj(pushId,message);
-
-        try {
-            pushClient.sendRequest(payload);
-            //PushResult result = pushClient.sendRequest(payload);
-            //log.info("Got result - " + result);
-
-        } catch (APIConnectionException e) {
-            // Connection error, should retry later
-            log.error("Connection error, should retry later", e);
-
-        } catch (APIRequestException e) {
-            // Should review the error, and fix the request
-            log.error("Should review the error, and fix the request", e);
-            log.info("HTTP Status: " + e.getStatus());
-            log.info("Error Code: " + e.getErrorCode());
-            log.info("Error Message: " + e.getErrorMessage());
-        } catch (URISyntaxException e) {
-          e.printStackTrace();
-        }
-        pushClient.close();
-    }
-
     public void sendPush(List<PushPayload> pushPayloadList) {
         if (pushPayloadList == null || pushPayloadList.isEmpty()) {
           return;
         }
 
-        CustomPushClient pushClient = CustomPushClient.newInstance(Constant.JPush_Appkey, Constant.JPush_MASTER_SECRET);
+        checkPushClient();
         for (PushPayload payload : pushPayloadList) {
             try {
                 pushClient.sendRequest(payload);
@@ -115,7 +91,16 @@ public class JpushSupport {
                 log.info("Send Message: " + payload.toString());
             }
         }
-        pushClient.close();
+    }
+
+    private void checkPushClient() {
+        if (pushClient == null) {
+            synchronized (this) {
+                if (pushClient == null) {
+                    pushClient = CustomPushClient.newInstance(Constant.JPush_Appkey, Constant.JPush_MASTER_SECRET);
+                }
+            }
+        }
     }
 
 }

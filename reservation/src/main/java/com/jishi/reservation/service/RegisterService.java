@@ -85,12 +85,6 @@ public class RegisterService {
     public RegisterCompleteVO addRegister(String orderNumber,Long accountId,String brid,String departmentId,String doctorId,String xmid,
                                           Long agreedTime,String timeInterval,String doctorName,
                                           String price,String subject,String brName,String department,String hm) throws Exception {
-//        if(Helpers.isNullOrEmpty(accountId) || accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
-//            throw new Exception("账户信息为空.");
-//        if(Helpers.isNullOrEmpty(departmentId)  || departmentService.queryDepartment(departmentId,null) == null)
-//            throw new Exception("科室信息为空.");
-//        if(Helpers.isNullOrEmpty(doctorId)  || doctorService.queryDoctor(null,doctorId,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
-//            throw new Exception("医生信息为空.");
 
 
         RegisterCompleteVO completeVO = new RegisterCompleteVO();
@@ -107,12 +101,25 @@ public class RegisterService {
             Date agreeDate = new Date(agreedTime);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            //挂号检查
-            if(!hisOutpatient.checkIsRegisterLimit(brid,hm,sdf.format(agreeDate),departmentId)){
+
+            if(!this.canRegister(brid,agreeDate,doctorId)){
+                log.info("挂号检查失败,库里面已存在该记录,不能挂号.");
 
                 completeVO.setState(RegisterErrCodeEnum.LIMIT_FOR_PATIENT.getCode());
                 return completeVO;
             }
+
+            //挂号检查
+            if(!hisOutpatient.checkIsRegisterLimit(brid,hm,sdf.format(agreeDate),departmentId)){
+
+                log.info("挂号检查失败，不能挂号.");
+
+                completeVO.setState(RegisterErrCodeEnum.LIMIT_FOR_PATIENT.getCode());
+                return completeVO;
+            }
+
+
+
 
             //his 锁定号源,返回hx 号序
         String hx = this.lockRegister(hm, agreeDate);
@@ -278,6 +285,18 @@ public class RegisterService {
         }
 
 
+    }
+
+    private boolean canRegister(String brid, Date agreeDate, String doctorId) {
+
+        log.info("开始检测本地的库.....");
+        List<Register> registerList = registerMapper.queryByBrIdTimeDoctorId(brid, agreeDate, doctorId);
+        if(registerList == null || registerList.size() == 0){
+            log.info("为空了。。。");
+        }else{
+            log.info("不为空");
+        }
+        return registerList == null || registerList.size() == 0;
     }
 
 

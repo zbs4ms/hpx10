@@ -2,6 +2,7 @@ package com.jishi.reservation.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.doraemon.base.redis.RedisOperation;
+import com.doraemon.base.util.MD5Encryption;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
@@ -18,17 +19,14 @@ import com.jishi.reservation.dao.models.Permission;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
-import com.us.base.util.MD5Encryption;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by zbs on 2017/8/10.
@@ -86,7 +84,16 @@ public class ManagerService {
     }
 
     public Long returnIdByToken(HttpServletRequest request) throws Exception {
-        String token = request.getHeader(Constant.ADMIN_TOKEN);
+        Enumeration<String> headerNames = request.getHeaderNames();
+
+        String token = null;
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equals(Constant.ADMIN_TOKEN)){
+                token = cookie.getValue();
+            }
+        }
+
         log.info("admin_token：" + token);
         if(token == null || "".equals(token) || "null".equals(token)){
             log.info("token為空...");

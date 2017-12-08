@@ -54,6 +54,7 @@ public class OutpatientQueueWorker {
             if (queueDetailList == null || queueDetailList.isEmpty()) {
                 continue;
             }
+            List<PushPayload> pushPayloadList = new ArrayList<PushPayload>();
             for (OutpatientQueueDetailVO detail : queueDetailList) {
                 PatientInfo patientInfo = patientInfoService.queryByBrIdAndAccountId(detail.getBrId(),detail.getAccountId());
                 if (patientInfo == null) {
@@ -67,15 +68,17 @@ public class OutpatientQueueWorker {
                 }
                 String pushMessage = PushData.create().msgType(PushData.PushDataMsgTypeDef.PUSH_DATA_OUTPATIENT_QUEUE).content(detail).toJSON();
                 log.info("accountId: " + account.getId() + " msg: " + pushMessage);
-                jpushSupport.sendPushAsyn(account.getPushId(), pushMessage);
+                pushPayloadList.add(JpushSupport.buildPushObj(account.getPushId(), pushMessage));
             }
+            // 批量异步推送
+            jpushSupport.sendPush(pushPayloadList);
         }
         log.info("EndTime: " + new Date());
         log.info("********************* OutpatientQueueWorker End *********************");
     }
 
     //  测试推送接口
-    //@Scheduled(cron = "0 0/5 8-22 * * ? ")
+    //@Scheduled(cron = "0 0/2 8-22 * * ? ")
     public void doWorkTest() throws Exception {
         List<OutpatientQueueDetailVO> queueDetailList = outpatientQueueService.generateTestData(4);
         if (queueDetailList == null || queueDetailList.isEmpty()) {
@@ -93,10 +96,9 @@ public class OutpatientQueueWorker {
             //Account account = accountMapper.queryById(patientInfo.getAccountId());
             String pushMessage = PushData.create().msgType(PushData.PushDataMsgTypeDef.PUSH_DATA_OUTPATIENT_QUEUE).content(detail).toJSON();
             log.info("accountId: " + account.getId() + " msg: " + pushMessage);
-            jpushSupport.sendPush(account.getPushId(), pushMessage);
-            //pushPayloadList.add(JpushSupport.buildPushObj(account.getPushId(), pushMessage));
+            pushPayloadList.add(JpushSupport.buildPushObj(account.getPushId(), pushMessage));
         }
-        //jpushSupport.sendPush(pushPayloadList);
+        jpushSupport.sendPush(pushPayloadList);
         log.info("EndTime: " + new Date());
         log.info("=================OutpatientQueueWorker End=====================");
     }

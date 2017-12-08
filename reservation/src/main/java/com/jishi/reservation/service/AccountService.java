@@ -2,6 +2,7 @@ package com.jishi.reservation.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.doraemon.base.redis.RedisOperation;
+import com.doraemon.base.util.MD5Encryption;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
@@ -22,7 +23,6 @@ import com.jishi.reservation.service.support.AliDayuSupport;
 import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
 import com.jishi.reservation.util.NewRandomUtil;
-import com.us.base.util.MD5Encryption;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

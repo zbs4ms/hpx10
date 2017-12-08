@@ -18,7 +18,6 @@ import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.support.JpushSupport;
 import com.jishi.reservation.util.Constant;
-import com.us.base.util.Common;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -215,7 +214,7 @@ public class RegisterController extends MyBaseController {
     ) throws Exception {
         Preconditions.checkNotNull(registerId,"请传入必须的参数：registerId");
 
-        Preconditions.checkState(!registerService.checkIsPayedRegister(registerId),"该订单不是已付款的预约订单，请检查");
+        Preconditions.checkState(registerService.checkIsPayedRegister(registerId),"该订单不是已付款的预约订单，请检查");
 
         Integer status = registerService.failureRegister(registerId);
         switch (status){

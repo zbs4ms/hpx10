@@ -77,6 +77,7 @@ public class OutpatientService {
                     continue;
                 }
                 BigDecimal unpaidAmount = new BigDecimal("0");
+                BigDecimal totalAmount = new BigDecimal("0");
                 String unpaidDocIds = "";
                 Date lastDocDate = null;
                 OutpatientPaymentInfoVO paymentInfo = new OutpatientPaymentInfoVO();
@@ -90,7 +91,7 @@ public class OutpatientService {
                 //paymentInfo.setDocumentType(Integer.parseInt(gh.getDjlx()));
                 paymentInfo.setPaymentStatus(Integer.parseInt(gh.getZfzt()));
                 paymentInfo.setHasRegister(Integer.parseInt(gh.getSfyy()));
-                paymentInfo.setPaymentAmount(new BigDecimal(gh.getJe()));
+                //paymentInfo.setPaymentAmount(new BigDecimal(gh.getJe()));
                 paymentInfo.setDoctorId(gh.getYsid());
                 paymentInfo.setDoctorName(gh.getYsxm());
                 paymentInfo.setHasPayCard(Integer.parseInt(gh.getSfjsk()));
@@ -157,6 +158,7 @@ public class OutpatientService {
                             BigDecimal returnNum = (ytje == null || ytje.isEmpty()) ? new BigDecimal("0") : new BigDecimal(ytje);
                             doc.setReturnNumber(returnNum);
 
+                            totalAmount = totalAmount.add(doc.getDocumentAmount());
                             //默认处理收费单(单据类型，1-收费单，4-挂号单)，挂号单不处理
                             if (doc.getPayStatus() == 0 && doc.getDocumentType() == 1 && !unpaidDocIds.contains(doc.getDocumentNum())) {
                                 unpaidAmount = unpaidAmount.add(doc.getDocumentAmount());
@@ -187,6 +189,7 @@ public class OutpatientService {
                 int PaymentStatus = unpaidDocIds == null || unpaidDocIds.isEmpty() ? 1 : 0;
                 paymentInfo.setPaymentStatus(PaymentStatus);
                 paymentInfo.setDocumentType(1);   //默认处理收费单(单据类型，1-收费单，4-挂号单)，挂号单不处理
+                paymentInfo.setPaymentAmount(totalAmount);  //原为挂号金额，现用作门诊总金额
 
                 OutpatientPayment payment = outpatientPaymentMapper.queryLastPayTme(paymentInfo.getDocumentNum());
                 paymentInfo.setLastPaidDate(payment != null ? payment.getPayTime() : null);
@@ -275,7 +278,7 @@ public class OutpatientService {
             throw new BussinessException(ReturnCodeEnum.OUTPATIENT_ERR_CONFIRM_ORDER_NOT_MATCH);
         }
         // 订单状态0：已支付，是否有效的标志0：有效，订单类型3：门诊订单
-        Helpers.assertTrue(order.getStatus() != 0, ReturnCodeEnum.OUTPATIENT_ERR_CONFIRM_NO_PAY);
+        Helpers.assertTrue(order.getStatus() == 0, ReturnCodeEnum.OUTPATIENT_ERR_CONFIRM_NO_PAY);
         if (order.getEnable() != 0 || order.getType() != 3) {
             throw new BussinessException(ReturnCodeEnum.OUTPATIENT_ERR_CONFIRM_ORDER_TYPE_NOT_MATCH);
         }

@@ -1,7 +1,7 @@
 package com.jishi.reservation.dao.mapper;
 
 import com.jishi.reservation.dao.models.Diary;
-import com.us.base.mybatis.base.MyMapper;
+import com.doraemon.base.dao.base.MyMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
@@ -40,8 +40,8 @@ public interface DiaryMapper extends MyMapper<Diary>{
 
 
     @Select({
-            "<script>select  * from diary where enable = 0 and account_id = #{accountId} " +
-                    " <if test = \" isMy == 0 \"> AND account_id = #{accountId}  </if>" +
+            "<script>select  * from diary where enable = 0 " +
+                    " <if test = \" isMy == 0 \"> AND account_id = #{accountId} </if>" +
                     "<if test = \"isMy == 1 \"> AND status  = 0 AND is_lock = 1 </if>" +
 
                     "</script>"
