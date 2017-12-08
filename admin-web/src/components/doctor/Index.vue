@@ -64,6 +64,13 @@ export default {
       }
     }, {
       attrs: {
+        'prop': 'ksmc',
+        'label': '科室',
+        'min-width': '160',
+        'show-overflow-tooltip': true
+      }
+    }, {
+      attrs: {
         'min-width': '180',
         'label': '操作'
       },
@@ -99,6 +106,7 @@ export default {
             no: doctor.orderNumber,
             name: doctor.name,
             avatar: doctor.headPortrait,
+            ksmc: doctor.ksmc,
             describe: doctor.goodDescribe,
             top: !!doctor.isTop,
             id: doctor.id
@@ -112,6 +120,7 @@ export default {
       project: '',
       department: '',
       departmentId: '',
+      doctorName: '',
       editDialogVisible: false,
       editData: {},
       apiKeysMap: {
@@ -121,6 +130,9 @@ export default {
         },
         departmentId: {
           value: undefined
+        },
+        doctorName: {
+          value: ''
         },
         currentPage: 'pageNum',
         orderBy: {
@@ -255,6 +267,10 @@ export default {
             placeholder="输入内容搜索"
             @select="handleDepartmentSelect"
           ></el-autocomplete>
+        </div>
+        <div class="tool-item">
+          医生姓名：
+          <el-input v-model="doctorName" style="width: auto;"></el-input>
         </div>
         <el-button
           class="tool-item"

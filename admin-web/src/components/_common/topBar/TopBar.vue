@@ -4,6 +4,8 @@
   import {
     UPDATE_ACCOUNTINFO
   } from '@/store/global'
+  
+  import ResetPsdDialog from './ResetPsdDialog'
 
   import {
     logoutApi
@@ -11,8 +13,12 @@
 
   export default {
     name: 'TopBar',
+    components: {
+      ResetPsdDialog
+    },
     data () {
       return {
+        resetPsdDialogVisible: false
       }
     },
     computed: {
@@ -37,6 +43,19 @@
             message: '退出成功'
           })
         })
+      },
+      // 打开重置密码弹框
+      openResetPsdDialog () {
+        this.resetPsdDialogVisible = true
+      },
+      submitResetPsd (formData, resolveDialog) {
+        console.log(formData)
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolveDialog()
+            this.resetPsdDialogVisible = false
+          }, 2000)
+        })
       }
     }
   }
@@ -53,9 +72,13 @@
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
+          <el-dropdown-item @click.native="openResetPsdDialog">修改密码</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <ResetPsdDialog 
+      v-model="resetPsdDialogVisible"
+      @submit="submitResetPsd"></ResetPsdDialog>
   </div>
 </template>
 

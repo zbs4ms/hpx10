@@ -30,7 +30,7 @@ export default {
     }
     this.columnData = [{
       attrs: {
-        'prop': 'userName',
+        'prop': 'account',
         'label': '用户名',
         'width': '120'
       }
@@ -49,7 +49,7 @@ export default {
         let content = data.content || {}
         this.tableData = (content.list || []).map((item) => ({
           id: item.id,
-          userName: item.account,
+          account: item.account,
           auth: item.permissionList.map(item => item.name).join('/'),
           permissionList: item.permissionList,
           psd: item.password
@@ -164,7 +164,7 @@ export default {
         权限管理
       </div>
     </div>
-    <div class="table-tools flex--vcenter">
+    <div class="table-tools flex--vcenter" v-if="$store.state.accountInfo.account === 'admin'">
       <div class="btn-wrap">
         <el-button
           class="btn--add"
@@ -180,19 +180,17 @@ export default {
       :column-data="columnData"
       :list-api="listApi"
       :api-keys-map="apiKeysMap">
-      <template slot="column-operate">
+      <template slot="column-operate" v-if="$store.state.accountInfo.account === 'admin'">
         <el-table-column
           width="140"
           label="操作">
           <template scope="scope">
-            <div class="flex--center operations">
+            <div class="flex--center operations" v-if="scope.row.account !== 'admin'">
               <span
-                :style="{visibility: $store.state.accountInfo.account === 'admin' || $store.state.accountInfo.account === scope.row.userName ? 'visible' : 'hidden'}"
                 class="operate-item el-icon-edit"
                 @click="openEditDialog(scope.row)">
               </span>
               <span
-                :style="{visibility: $store.state.accountInfo.account === 'admin' && $store.state.accountInfo.account !== scope.row.userName ? 'visible' : 'hidden'}"
                 class="operate-item el-icon-delete"
                 @click="delRow(scope.row)">
               </span>
