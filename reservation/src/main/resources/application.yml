@@ -72,12 +72,12 @@ spring:
             name: ReadAndWrite
             url: jdbc:mysql://rm-wz96u1z25sua002ln.mysql.rds.aliyuncs.com:3306/jinxinapp?useUnicode=true&characterEncoding=utf-8&useSSL=false
             username: root
-            password: root
+            password: Jskj1010
         slave1:
             name: ReadAndWrite
             url: jdbc:mysql://rm-wz96u1z25sua002ln.mysql.rds.aliyuncs.com:3306/jinxinapp?useUnicode=true&characterEncoding=utf-8&useSSL=false
             username: root
-            password: root
+            password: Jskj1010
 # 等待新的
 redis:
     host: r-wz911707093dd3a4
