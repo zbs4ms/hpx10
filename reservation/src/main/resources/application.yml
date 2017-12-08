@@ -19,9 +19,9 @@ constant:
         change_phone_new: change_phone_new
 
 #开发环境
+---
 spring:
-    profiles:
-        active: dev
+    profiles: dev
     datasource:
         beanPath: com.jishi.reservation.dao.models
         mapperXmlPath: classpath:mapper/*.xml
@@ -42,8 +42,7 @@ redis:
 ---
 #测试环境
 spring:
-    profiles:
-        active: test
+    profiles: test
     datasource:
         beanPath: com.jishi.reservation.dao.models
         mapperXmlPath: classpath:mapper/*.xml
@@ -65,8 +64,7 @@ redis:
 #线上正式环境
 ---
 spring:
-    profiles:
-        active: pro
+    profiles: pro
     datasource:
         beanPath: com.jishi.reservation.dao.models
         mapperXmlPath: classpath:mapper/*.xml
