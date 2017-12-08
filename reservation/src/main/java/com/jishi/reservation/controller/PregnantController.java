@@ -10,7 +10,6 @@ import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.*;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
-import com.us.base.common.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

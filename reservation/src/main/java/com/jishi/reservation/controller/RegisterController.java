@@ -18,7 +18,6 @@ import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.support.JpushSupport;
 import com.jishi.reservation.util.Constant;
-import com.us.base.util.Common;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

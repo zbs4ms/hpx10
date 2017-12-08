@@ -1,6 +1,6 @@
 package com.jishi.reservation.service.pay.bean;
 
-import com.us.base.util.MD5Encryption;
+import com.doraemon.base.util.MD5Encryption;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;

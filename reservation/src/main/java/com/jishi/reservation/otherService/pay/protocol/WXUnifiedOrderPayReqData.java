@@ -1,8 +1,8 @@
 package com.jishi.reservation.otherService.pay.protocol;
 
+import com.doraemon.base.util.RandomUtil;
 import com.jishi.reservation.otherService.pay.WXSignature;
 import com.jishi.reservation.util.Constant;
-import com.us.base.util.tool.RandomTool;
 import lombok.Data;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.lang.reflect.Field;
@@ -27,7 +27,7 @@ public class WXUnifiedOrderPayReqData {
     //设备号
     private String device_info = "WEB";
     //随机字符串
-    private String nonce_str = RandomTool.getRandomStringByLength(32).toUpperCase();
+    private String nonce_str = RandomUtil.getRandomStringByLength(32).toUpperCase();
     //签名
     private String sign = "";
     //签名类型

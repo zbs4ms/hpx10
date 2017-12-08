@@ -1,8 +1,8 @@
 package com.jishi.reservation.otherService.pay;
 
+import com.doraemon.base.util.MD5Encryption;
+import com.doraemon.base.util.xml.XMLParser;
 import com.jishi.reservation.util.Constant;
-import com.us.base.util.MD5Encryption;
-import com.us.base.util.xml.XMLParser;
 import lombok.extern.log4j.Log4j;
 import org.xml.sax.SAXException;
 

@@ -8,7 +8,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.alibaba.fastjson.JSONObject;
-import com.jishi.reservation.controller.protocol.OrderGenerateVO;
+import com.doraemon.base.protocol.http.HttpAgent;
+import com.doraemon.base.util.RandomUtil;
+import com.doraemon.base.util.xml.XMLParser;
+import com.doraemon.base.wx.WXConfigure;
 import com.jishi.reservation.dao.mapper.OrderInfoMapper;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.otherService.pay.protocol.WXUnifiedOrderPayReqData;
@@ -18,10 +21,6 @@ import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.exception.BussinessException;
 import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
-import com.us.base.util.http.HttpAgent;
-import com.us.base.util.tool.RandomTool;
-import com.us.base.util.xml.XMLParser;
-import com.us.base.wx.WXConfigure;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -150,7 +149,7 @@ public class WeChatPay {
         map.put("appid", Constant.WECHAT_PAY_APPID);
         map.put("partnerid", Constant.WECHAT_PAY_MCHID);
         map.put("prepayid", prepay_id);
-        map.put("noncestr", RandomTool.getRandomStringByLength(32).toUpperCase());
+        map.put("noncestr", RandomUtil.getRandomStringByLength(32).toUpperCase());
         map.put("timestamp", String.valueOf(System.currentTimeMillis()).substring(0,10));
         map.put("package", "Sign=WXPay");
 

@@ -1,7 +1,7 @@
 package com.jishi.reservation.dao.mapper;
 
+import com.doraemon.base.dao.base.MyMapper;
 import com.jishi.reservation.dao.models.Account;
-import com.us.base.mybatis.base.MyMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AccountMapper extends MyMapper<Account>{
+public interface AccountMapper extends MyMapper<Account> {
 
 
     @Select({

@@ -2,6 +2,8 @@ package com.jishi.reservation.controller.base;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.doraemon.base.controller.BaseController;
+import com.doraemon.base.controller.Result;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.filter.BaseFilter;
 import com.jishi.reservation.controller.base.filter.user.VerifyLoginFilter;
@@ -9,8 +11,6 @@ import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.exception.BussinessException;
 import com.jishi.reservation.service.exception.ShowException;
 import com.jishi.reservation.util.Constant;
-import com.us.base.common.controller.BaseController;
-import com.us.base.util.datawapper.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -76,12 +76,17 @@ public class MyBaseController extends BaseController {
         return ResponseWrapperSuccess(null);
     }
 
-    @Override
-    protected Long getCurrentUserId() {
+
+    public Long getCurrentUserId() {
         Object accountObj = this.getCurrentRequest().getAttribute(Constant.ATTR_LOGIN_ACCOUNT_ID);
         if (accountObj != null && accountObj instanceof Long) {
             return (Long) accountObj;
         }
         return Constant.NOT_LOGIN_ACCOUNT_ID;
+    }
+
+    @Override
+    public String getToken() {
+        return null;
     }
 }

@@ -1,11 +1,11 @@
 package com.jishi.reservation.controller.base.filter.admin;
 
+import com.doraemon.base.controller.Result;
 import com.jishi.reservation.controller.base.filter.BaseFilter;
 import com.jishi.reservation.controller.base.filter.user.VerifyLoginFilter;
 import com.jishi.reservation.service.ManagerService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.util.Constant;
-import com.us.base.util.datawapper.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
