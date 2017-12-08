@@ -19,7 +19,6 @@ constant:
         change_phone_new: change_phone_new
 
 #开发环境
-
 spring:
     profiles:
         active: dev
@@ -82,5 +81,6 @@ spring:
             password: root
 # 等待新的
 redis:
-    host: 119.29.108.150
+    host: r-wz911707093dd3a4
     port: 6379
+    password: Jskj1010
