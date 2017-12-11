@@ -186,17 +186,56 @@ public class DoctorService {
             doctor.setType("0");
             doctor.setDj(hb.getDj());
             doctor.setHm(hb.getHm());
+            //如果不存在，就添加进去...
             if(!isExist(hb.getYsid())){
+                log.info(hb.getYs()+"不存在"+hb.getYsid());
                 list.add(doctor);
+            }else { //有了的话就修改...
+                log.info(hb.getYs()+"已经存在"+hb.getYsid()+",执行更新操作...");
+                Doctor existDoctor = doctorMapper.queryByHid(hb.getYsid());
+                existDoctor.setDj(hb.getDj());
+                existDoctor.setHm(hb.getHm());
+                existDoctor.setKsmc(hb.getKsmc());
+                existDoctor.setName(hb.getYs());
+                existDoctor.setDepartmentId(hb.getKsid());
+
+               // doctorMapper.updateByPrimaryKeySelective(existDoctor);
 
             }
 
         }
-        doctorMapper.insertList(list);
+
+      //  doctorMapper.insertList(list);
+
+
+
+        //如果库里有，但是his拉去过来的没有，那就软删除
+
+        List<Doctor> doctorList =  doctorMapper.queryAllValidDoctor();
+        for (Doctor doctor : doctorList) {
+            Boolean flag = false;
+            for (RegisteredNumberInfo.Hb hb : hbList) {
+                if(doctor.getHId().equals(hb.getYsid())){
+                    //有的话不管，没有的话，改变flag
+                    log.info(doctor.getHId()+"his 医生id存在于本地库中");
+                    flag = true;
+                    break;
+                }else {
+
+
+                }
+
+            }
+            if(!flag){
+                log.info("his 医生id是"+doctor.getHId()+"的医生在his里面拉去不到了，做软删除操作.");
+                doctor.setEnable(1);  //软删除...
+              //  doctorMapper.updateByPrimaryKeySelective(doctor);
+            }
+        }
     }
 
     private boolean isExist(String hId) {
-        return doctorMapper.queryByHid(hId) !=null;
+        return doctorMapper.queryByHid(hId) != null;
     }
 
 

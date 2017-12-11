@@ -53,7 +53,7 @@ public interface DoctorMapper extends MyMapper<Doctor> {
 
 
     @Select({
-            "select * from doctor where id = #{hId}"
+            "select * from doctor where h_id = #{hId}"
     })
     Doctor queryByHid(@Param("hId") String hId);
 
@@ -67,4 +67,10 @@ public interface DoctorMapper extends MyMapper<Doctor> {
             "select * from doctor where department_id = #{hId}"
     })
     List<Doctor> queryByDepartmentHid(@Param("hId") String hId);
+
+
+    @Select({
+            "select * from doctor where enable = 0"
+    })
+    List<Doctor> queryAllValidDoctor();
 }
