@@ -36,6 +36,10 @@ public class Constant {
     public final static String WECHAT_PAY_MCHID = "1492421162";
     public final static String WECHAT_PAY_APP_NAME = "锦欣通";
     public final static String WECHAT_PAY_KEY = "luzhoujinxinfuchan732902jishikej";
+    public final static String UNIFIED_ORDER_API = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+    public final static String PAY_API = "https://api.mch.weixin.qq.com/pay/micropay";
+    public final static String PAY_QUERY_API = "https://api.mch.weixin.qq.com/pay/orderquery";
+    public final static String REFUND_API = "https://api.mch.weixin.qq.com/secapi/pay/refund";
 
     public final static String HIS_TOKEN="359894CB16E4B68531A11083F2046B0E";
     public final static String HIS_KEYS = "929A715701492111";
@@ -116,6 +120,6 @@ public class Constant {
     public final static String ATTR_LOGIN_ACCOUNT_ID = "accountId";
     public static final String ATTR_ADMIN_LOGIN_ACCOUNT_ID = "adminAccountId";
     public final static String HEADER_TEST_ACCOUNT_ID = "x-access-accountId";
-    public static final List<Long> TEST_ACCOUNT_ID_LIST = Arrays.asList(30L, 24L, 27L);
+    public static final List<Long> TEST_ACCOUNT_ID_LIST = Arrays.asList(30L, 24L, 27L, 41L, 28L);
 
 }

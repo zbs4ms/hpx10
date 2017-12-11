@@ -11,7 +11,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.doraemon.base.protocol.http.HttpAgent;
 import com.doraemon.base.util.RandomUtil;
 import com.doraemon.base.util.xml.XMLParser;
-import com.doraemon.base.wx.WXConfigure;
 import com.jishi.reservation.dao.mapper.OrderInfoMapper;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.otherService.pay.protocol.WXUnifiedOrderPayReqData;
@@ -22,6 +21,7 @@ import com.jishi.reservation.service.exception.BussinessException;
 import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
@@ -70,12 +70,11 @@ public class WeChatPay {
         Helpers.assertFalse(orderInfo.getStatus().equals(OrderStatusEnum.CANCELED.getCode()), ReturnCodeEnum.ORDER_ERR_CANCLED);
 
         BigDecimal amount = new BigDecimal(totalFee);
-        amount = amount.divide(new BigDecimal(100)); // 微信支付返回的是分，这里转换成元
-        Helpers.assertTrue(orderInfo.getPrice().equals(amount), ReturnCodeEnum.ORDER_ERR_AMOUNT_NOT_MACH);
-        //todo  调取his的门诊号缴费单
+        amount = amount.divide(new BigDecimal("100"),2, BigDecimal.ROUND_HALF_UP); // 微信支付返回的是分，这里转换成元
+        BigDecimal price = orderInfo.getPrice().setScale(2, BigDecimal.ROUND_HALF_UP);
+        Helpers.assertTrue(price.equals(amount), ReturnCodeEnum.ORDER_ERR_AMOUNT_NOT_MACH);
 
         //改变订单状态和支付时间
-        //Preconditions.checkState(orderInfo.getStatus() == OrderStatusEnum.WAIT_PAYED.getCode(),"该订单不是待支付状态.");
         orderInfo.setStatus(OrderStatusEnum.PAYED.getCode());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         orderInfo.setPayTime(sdf.parse(time_end));
@@ -98,7 +97,7 @@ public class WeChatPay {
 
         //调用微信接口
         log.info("微信支付统一下单请求数据：" + postDataXML);
-        String response = HttpAgent.create().sendPost(WXConfigure.UNIFIED_ORDER_API, postDataXML);
+        String response = HttpAgent.create().sendPost(Constant.UNIFIED_ORDER_API, postDataXML);
         log.info("微信支付统一下单返回数据：" + response);
         //对返回结果进行解析
         Map<String,Object> resp = XMLParser.getMapFromXML(response);
