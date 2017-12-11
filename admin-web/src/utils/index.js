@@ -77,12 +77,10 @@ export const isEmptyObj = (obj, hasFn) => {
 import axios from 'axios'
 
 export const fetchApi = (opts) => {
-  return axios({
-    url: opts.url,
-    method: opts.type || 'get',
-    data: opts.data,
-    params: opts.params
-  })
+  const {type, ...cfg} = opts
+  return axios(Object.assign({}, cfg, {
+    method: type || 'get'
+  }))
   .then((response) => {
     let successCb = opts.success
     successCb && successCb(response.data)

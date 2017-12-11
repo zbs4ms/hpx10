@@ -24,6 +24,9 @@
   export default {
     name: 'EditDialog',
     props: {
+      data: {
+        type: Object
+      },
       value: {
         type: Boolean
       }
@@ -61,6 +64,8 @@
       }
     },
     watch: {
+      data (val) {
+      },
       visible (val) {
         if (!val) {
           deepAssign(this.$data, initialData)
@@ -73,7 +78,7 @@
 <template>
   <el-dialog
     title="编辑推送信息"
-    class="edit-dialog push__edit-dialog"
+    class="edit-dialog push__edit-dialog dialog--center"
     :visible.sync="visible">
     <el-form
       ref="ruleForm"

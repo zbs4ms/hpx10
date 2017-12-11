@@ -9,16 +9,20 @@
   import { Loading } from 'element-ui'
 
   import {
-    getListApi,
+    // getListApi,
     shelveApi,
     topApi,
     checkApi
   } from '../log/api'
+  import {
+    queryNotifyApi
+  } from './api'
 
   import {
     convertDate
   } from '@/utils/index'
 
+  let adding = false
   export default {
     name: 'Diary',
     components: {
@@ -115,7 +119,7 @@
                 <span
                   class="operate-item"
                   style="color: #20a0ff;"
-                  onClick={() => this.editRow(scope.row)}>
+                  onClick={() => this.openEditDialog(scope.row)}>
                   编辑
                 </span>
                 <span
@@ -134,7 +138,7 @@
         }
       }]
       this.listApi = {
-        requestFn: getListApi,
+        requestFn: queryNotifyApi,
         responseFn (data) {
           let content = data.content || {}
           this.tableData = (content.list || []).map((item) => ({
@@ -267,8 +271,11 @@
         })
       },
       // 编辑
-      editRow () {
+      openEditDialog (rowData, isAdd) {
         this.editDialogVisible = true
+        this.editData = rowData
+        adding = !!isAdd
+        console.log(adding)
       },
       // 删除
       handleDelRow (rowData) {
