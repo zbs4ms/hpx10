@@ -65,7 +65,9 @@ public class RegisterOverdueWorker {
                 register.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
                 register.setEnable(EnableEnum.INVALID.getCode());
                 log.info("过期信息同步到his，进行解锁操作..");
-                String unlockResult = hisOutpatient.unlockRegister(register.getHm(), sdf.format(register.getAgreedTime()), register.getHx());
+             //   String unlockResult = hisOutpatient.unlockRegister(register.getHm(), sdf.format(register.getAgreedTime()), register.getHx());
+               //todo  先不连his..
+                String unlockResult = "todo";
                 if(unlockResult!=null && !"".equals(unlockResult)){
 
                     orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
