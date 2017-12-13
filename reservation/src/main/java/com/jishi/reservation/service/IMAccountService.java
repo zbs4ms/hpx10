@@ -7,8 +7,11 @@ import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.dao.models.IMAccessRecord;
 import com.jishi.reservation.dao.models.IMAccount;
+import com.jishi.reservation.otherService.im.IMException;
 import com.jishi.reservation.otherService.im.neteasy.IMClientNeteasy;
 import com.jishi.reservation.otherService.im.neteasy.model.IMUser;
+import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.exception.BussinessException;
 import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +55,7 @@ public class IMAccountService {
             log.info("用户im token为空，刷新token。本地系统accId：" + accId);
             imAccount.setImToken(refreshToken(imAccount));
         }
-        log.info("用户accId：" + accId + " im token" + imAccount.getImToken());
+        log.info("用户accId：" + accId + " im token：" + imAccount.getImToken());
         return imAccount;
     }
 
@@ -179,12 +182,32 @@ public class IMAccountService {
             imAccount.setDoctorHisId(doctor.getHId());
             imAccount.setType(1); //医生
         }
-        IMUser resUser = imClientNeteasy.getUserOperation().createUser(imUser);
-        log.info("网易云信创建账号成功:  imaccid " + resUser.getAccid() + " token " + resUser.getToken());
 
-        imAccount.setImAccId(resUser.getAccid());
-        imAccount.setImToken(resUser.getToken());
-        imAccountMapper.insertReturnId(imAccount);
+        IMUser resUser = null;
+        try {
+            resUser = imClientNeteasy.getUserOperation().createUser(imUser);
+        } catch (IMException e) {
+            log.info(e.toString());
+            if (e.getCode() == 414) { // 网易IM参数错误，账号已存在
+                IMAccount record = new IMAccount();
+                record.setAccountId(accId);
+                record.setDoctorId(doctorId);
+                record.setDoctorHisId(doctorHisId);
+                imAccount = imAccountMapper.selectOne(record);
+                if (imAccount == null) {
+                    throw new BussinessException(ReturnCodeEnum.IM_ERR_GET_ACCOUNT_FAILED);
+                }
+            }
+            else {
+                throw new BussinessException(ReturnCodeEnum.IM_ERR_CREATE_ACCOUNT_FAILED);
+            }
+        }
+        if (resUser != null) {
+            log.info("网易云信创建账号成功:  imaccid " + resUser.getAccid() + " token " + resUser.getToken());
+            imAccount.setImAccId(resUser.getAccid());
+            imAccount.setImToken(resUser.getToken());
+            imAccountMapper.insertReturnId(imAccount);
+        }
 
         return imAccount;
     }
@@ -214,9 +237,9 @@ public class IMAccountService {
      * @throws Exception
     **/
     public void updateVisitRecord(Long accountId, Long doctorId) {
-        IMAccessRecord record = imAccessRecordMapper.selectAppointRecord(accountId, doctorId);
-        if (record == null) {
-            record = new IMAccessRecord();
+        List<IMAccessRecord> recordList = imAccessRecordMapper.selectAppointRecord(accountId, doctorId);
+        if (recordList == null || recordList.isEmpty()) {
+            IMAccessRecord record = new IMAccessRecord();
             record.setUserId(accountId);
             record.setDoctorId(doctorId);
             Date date = new Date();
@@ -224,6 +247,7 @@ public class IMAccountService {
             record.setLastAccessDate(date);
             imAccessRecordMapper.insertReturnId(record);
         } else {
+            IMAccessRecord record = recordList.get(0);
             record.setLastAccessDate(new Date());
             imAccessRecordMapper.updateByPrimaryKey(record);
         }
@@ -304,8 +328,9 @@ public class IMAccountService {
     }
 
     private IMUser generateIMUser(Account account) {
-        String identify = UUID.randomUUID().toString().replace("-", "");
-        return generateIMUser(identify, identify, account);
+        String identify = Constant.IM_ACCOUNT_PREFIX_USER + account.getId();
+        String imToken = UUID.randomUUID().toString().replace("-", "");
+        return generateIMUser(identify, imToken, account);
     }
 
     private IMUser generateIMUser(String imAccId, String imToken, Account account) {
@@ -321,8 +346,9 @@ public class IMAccountService {
     }
 
     private IMUser generateIMUser(Doctor doctor) {
-        String identify = UUID.randomUUID().toString().replace("-", "");
-        return generateIMUser(identify, identify, doctor);
+        String identify = Constant.IM_ACCOUNT_PREFIX_DOCTOR + doctor.getId();
+        String imToken = UUID.randomUUID().toString().replace("-", "");
+        return generateIMUser(identify, imToken, doctor);
     }
 
     private IMUser generateIMUser(String imAccId, String imToken, Doctor doctor) {

@@ -25,13 +25,13 @@ public class Helpers {
         }
     }
 
-    public static <T> void assertTrue(boolean o, ReturnCodeEnum r) throws BussinessException {
+    public static void assertTrue(boolean o, ReturnCodeEnum r) throws BussinessException {
         if (!o) {
             throw new BussinessException(r);
         }
     }
 
-    public static <T> void assertFalse(boolean o, ReturnCodeEnum r) throws BussinessException {
+    public static void assertFalse(boolean o, ReturnCodeEnum r) throws BussinessException {
         if (o) {
             throw new BussinessException(r);
         }

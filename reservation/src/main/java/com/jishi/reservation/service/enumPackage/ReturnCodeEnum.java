@@ -32,6 +32,10 @@ public enum ReturnCodeEnum {
     WEICHART_PAY_ERR_UNIFIEDORDER_FAILED(1251, "微信支付生成订单失败"),
     WEICHART_PAY_ERR_NOTIFY_RETURN_ERR(1252, "微信支付向通知接口返回失败"),
 
+    /** IM相关 5130-5139 **/
+    IM_ERR_GET_ACCOUNT_FAILED(5130, "生成IM账号失败"),
+    IM_ERR_CREATE_ACCOUNT_FAILED(5131, "生成IM账号失败"),
+
     UNKNOWN_ERR(1000, "未知错误");
 
     private int code;

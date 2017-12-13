@@ -51,7 +51,7 @@ public class RegisterOverdueWorker {
         log.info("==============开始执行预约订单过期扫描=====================");
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        //todo 因为之前有脏数据，所以就只找id>800的之后的数据
+
         List<OrderInfo> orderInfoList =  orderInfoMapper.queryAllWaitPayRegister();
         for (OrderInfo orderInfo : orderInfoList) {
             log.info("被检测的订单id:"+orderInfo.getId());
@@ -65,7 +65,8 @@ public class RegisterOverdueWorker {
                 register.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
                 register.setEnable(EnableEnum.INVALID.getCode());
                 log.info("过期信息同步到his，进行解锁操作..");
-                String unlockResult = hisOutpatient.unlockRegister(register.getHm(), sdf.format(register.getAgreedTime()), register.getHx());
+                //String unlockResult = hisOutpatient.unlockRegister(register.getHm(), sdf.format(register.getAgreedTime()), register.getHx());
+                String unlockResult = "todo";
                 if(unlockResult!=null && !"".equals(unlockResult)){
 
                     orderInfoMapper.updateByPrimaryKeySelective(orderInfo);

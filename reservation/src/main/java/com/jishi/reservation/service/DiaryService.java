@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -93,7 +95,7 @@ public class DiaryService {
     }
 
 
-    public void update(Long id, String title, String content,Integer lock) {
+    public void update(Long id, String title, String content,Integer lock) throws UnsupportedEncodingException {
 
 
         Diary diary = diaryMapper.queryById(id);
@@ -104,6 +106,7 @@ public class DiaryService {
         List<DiaryContentVO> contentList = gson.fromJson(content,
                 new TypeToken<List<DiaryContentVO>>() {
                 }.getType());
+
 
         String brief = "";
         for (DiaryContentVO diaryContentVO : contentList) {
@@ -131,6 +134,7 @@ public class DiaryService {
         return prefix+format+ RandomUtil.getRandomLetterAndNum(6);
     }
 
+
     public void publish(Long accountId,String title,String content,Integer lock) throws Exception {
 
         Gson gson = new Gson();
@@ -140,6 +144,8 @@ public class DiaryService {
         List<DiaryContentVO> contentList = gson.fromJson(content,
                 new TypeToken<List<DiaryContentVO>>() {
                 }.getType());
+
+
         for(int i = 0;i<contentList.size();i++){
             contentList.get(i).setContentId(generateRandomId());
         }
@@ -155,6 +161,7 @@ public class DiaryService {
             if(diaryContentVO.getType() == 1 && !diaryContentVO.getText().equals("")){
                 //长度待定,,
                 brief = diaryContentVO.getText();
+                log.info("brief："+brief);
                 break;
             }
         }
