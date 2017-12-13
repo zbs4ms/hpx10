@@ -133,10 +133,6 @@ public class DiaryService {
         return prefix+format+ RandomUtil.getRandomLetterAndNum(6);
     }
 
-    public static void main(String[] args) throws UnsupportedEncodingException {
-        String s = "陈释荣";
-        System.out.println(URLEncoder.encode(s,"UTF-8"));
-    }
 
     public void publish(Long accountId,String title,String content,Integer lock) throws Exception {
 
