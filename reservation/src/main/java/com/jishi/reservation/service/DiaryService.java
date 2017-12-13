@@ -150,6 +150,7 @@ public class DiaryService {
 
         for (DiaryContentVO vo : contentList) {
                 vo.setText(URLEncoder.encode(vo.getText(),"UTF-8"));
+                log.info("内容："+URLEncoder.encode(vo.getText(),"UTF-8"));
         }
         for(int i = 0;i<contentList.size();i++){
             contentList.get(i).setContentId(generateRandomId());
@@ -166,6 +167,7 @@ public class DiaryService {
             if(diaryContentVO.getType() == 1 && !diaryContentVO.getText().equals("")){
                 //长度待定,,
                 brief = diaryContentVO.getText();
+                log.info("brief："+brief);
                 break;
             }
         }
