@@ -137,7 +137,7 @@ public class HisOutpatient {
 
 
         StringBuffer sb = new StringBuffer();
-        sb.append("<GHHM>").append(ghhm).append("</GHHM>"); //挂号单号
+        sb.append("<<GHHM>").append(ghhm).append("</<GHHM>"); //挂号单号
         sb.append("<SFYY>").append("0").append("</SFYY>");  //是否预约
         sb.append("<YYFS>").append("").append("</YYFS>");  //预约方式
 

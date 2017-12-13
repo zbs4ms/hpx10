@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -131,6 +133,11 @@ public class DiaryService {
         return prefix+format+ RandomUtil.getRandomLetterAndNum(6);
     }
 
+    public static void main(String[] args) throws UnsupportedEncodingException {
+        String s = "陈释荣";
+        System.out.println(URLEncoder.encode(s,"UTF-8"));
+    }
+
     public void publish(Long accountId,String title,String content,Integer lock) throws Exception {
 
         Gson gson = new Gson();
@@ -140,6 +147,10 @@ public class DiaryService {
         List<DiaryContentVO> contentList = gson.fromJson(content,
                 new TypeToken<List<DiaryContentVO>>() {
                 }.getType());
+
+        for (DiaryContentVO vo : contentList) {
+                vo.setText(URLEncoder.encode(vo.getText(),"UTF-8"));
+        }
         for(int i = 0;i<contentList.size();i++){
             contentList.get(i).setContentId(generateRandomId());
         }
