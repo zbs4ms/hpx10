@@ -95,7 +95,7 @@ public class DiaryService {
     }
 
 
-    public void update(Long id, String title, String content,Integer lock) {
+    public void update(Long id, String title, String content,Integer lock) throws UnsupportedEncodingException {
 
 
         Diary diary = diaryMapper.queryById(id);
@@ -107,6 +107,9 @@ public class DiaryService {
                 new TypeToken<List<DiaryContentVO>>() {
                 }.getType());
 
+//        for (DiaryContentVO vo : contentList) {
+//            vo.setText(URLEncoder.encode(vo.getText(),"UTF-8"));
+//        }
         String brief = "";
         for (DiaryContentVO diaryContentVO : contentList) {
             if(diaryContentVO.getType() == 1){
@@ -144,10 +147,10 @@ public class DiaryService {
                 new TypeToken<List<DiaryContentVO>>() {
                 }.getType());
 
-        for (DiaryContentVO vo : contentList) {
-                vo.setText(URLEncoder.encode(vo.getText(),"UTF-8"));
-                log.info("内容："+URLEncoder.encode(vo.getText(),"UTF-8"));
-        }
+//        for (DiaryContentVO vo : contentList) {
+//                vo.setText(URLEncoder.encode(vo.getText(),"UTF-8"));
+//
+//        }
         for(int i = 0;i<contentList.size();i++){
             contentList.get(i).setContentId(generateRandomId());
         }
