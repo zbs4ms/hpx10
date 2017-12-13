@@ -137,7 +137,7 @@ public class HisOutpatient {
 
 
         StringBuffer sb = new StringBuffer();
-        sb.append("<<GHHM>").append(ghhm).append("</<GHHM>"); //挂号单号
+        sb.append("<GHDH>").append(ghhm).append("</GHDH>"); //挂号单号
         sb.append("<SFYY>").append("0").append("</SFYY>");  //是否预约
         sb.append("<YYFS>").append("").append("</YYFS>");  //预约方式
 
@@ -145,8 +145,13 @@ public class HisOutpatient {
         String reData = HisTool.toXMLString("Register.Cancel.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            HisTool.getHisDataparam(me,"Register.Cancel.Modify");
-            return true;
+            if(HisTool.getHisDataparam(me, "Register.Cancel.Modify") == null){
+                log.info("his处理失败");
+                return false;
+            }else {
+                return true;
+
+            }
         }
         return false;
     }
