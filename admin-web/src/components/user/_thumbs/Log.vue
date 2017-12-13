@@ -45,6 +45,14 @@
           'prop': 'title',
           'label': '日记标题',
           'min-width': '140'
+        },
+        'scopedSlots': {
+          default: (scope) => {
+            return (
+              scope.row.title ? (<a href={scope.row.url} target="_blank">{ decodeURIComponent(scope.row.title) }</a>)
+              : '--'
+            )
+          }
         }
       }, {
         attrs: {
