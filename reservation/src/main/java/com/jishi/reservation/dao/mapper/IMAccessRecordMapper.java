@@ -23,5 +23,5 @@ public interface IMAccessRecordMapper extends MyMapper<IMAccessRecord> {
     List<IMAccessRecord> selectByDoctorhisId(@Param("doctorHisd") long doctorHisd, @Param("size") long size);
 
     @Select({"SELECT * FROM im_access_record where user_id = ${userId} AND doctor_id = ${doctorId} ORDER BY last_access_date DESC"})
-    IMAccessRecord selectAppointRecord(@Param("userId") long userId, @Param("doctorId") long doctorId);
+    List<IMAccessRecord> selectAppointRecord(@Param("userId") long userId, @Param("doctorId") long doctorId);
 }

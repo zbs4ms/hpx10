@@ -1,5 +1,6 @@
 package com.jishi.reservation.otherService.im.neteasy;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jishi.reservation.otherService.im.HttpParam;
 import com.jishi.reservation.otherService.im.IMException;
 import org.slf4j.Logger;
@@ -102,10 +103,16 @@ public class IMHttpNeteasy {
             input = conn.getInputStream();
         } else {
             logger.error(url.toString() + " code: " + code);
-            throw new IMException(code, url.toString(), null);
+            throw new IMException(code, url.toString(), "网络错误");
         }
         String result = new String(readInputStream(input, url), "UTF-8");
         logger.debug(result);
+        JSONObject jsonObject = JSONObject.parseObject(result);
+        Integer rsltCode = jsonObject.getInteger("code");
+        if (rsltCode == null || rsltCode != 200) {
+            String desc = jsonObject.getString("desc");
+            throw new IMException(rsltCode, url.toString(), desc == null ? result : desc);
+        }
         return result;
     }
 

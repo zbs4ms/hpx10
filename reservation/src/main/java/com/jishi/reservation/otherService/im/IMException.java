@@ -34,4 +34,13 @@ public class IMException extends Exception {
     public void setUrl(String url) {
         this.url = url;
     }
+
+    @Override
+    public String toString() {
+        return "IMException{" +
+            "code=" + code +
+            ", url='" + url +
+            "'，message='" + getMessage() +
+            "'}";
+    }
 }
