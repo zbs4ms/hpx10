@@ -43,4 +43,15 @@ public interface RegisterMapper extends MyMapper<Register> {
             "select * from register where br_id = #{brid} and agreed_time = #{agreeDate} and doctor_id = #{doctorId} and status = 1"
     })
     List<Register> queryByBrIdTimeDoctorId(@Param("brid") String brid,@Param("agreeDate") Date agreeDate,@Param("doctorId") String doctorId);
+
+
+    @Select({
+            " <script> select * from register where 1  = 1 " +
+                    "<if test = \"accountId != null \"> and account_id = #{accountId} </if>"+
+                    "<if test = \"registerId != null \"> and id = #{registerId} </if>"+
+                    "<if test = \"status != null \"> and status = #{status} </if>"+
+                    "<if test = \"enable != null \"> and enable = #{enable} </if>"+
+                    "</script>"
+    })
+    List<Register> selectCondition(@Param("accountId") Long accountId,@Param("registerId") Long registerId,@Param("status") Integer status,@Param("enable") Integer enable);
 }

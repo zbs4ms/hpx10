@@ -163,7 +163,14 @@ public class RegisterController extends MyBaseController {
                                     @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
 
         List<RegisterVO> registerVOList = new ArrayList<>();
-        PageInfo pageInfo = registerService.queryRegisterPageInfo(registerId, accountId, status, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum, pageSize, "id", true));
+        PageInfo pageInfo = null;
+        if( status != null && status  == 2){
+            pageInfo =  registerService.queryRegisterPageInfo(registerId, accountId, status, EnableEnum.INVALID.getCode(), Paging.create(pageNum, pageSize, "id", true));
+
+        }else {
+            pageInfo =  registerService.queryRegisterPageInfo(registerId, accountId, status, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum, pageSize, "id", true));
+
+        }
         List<Register> registerList = pageInfo.getList();
 
         List<Account> accountList = accountService.queryAccount(accountId, null, null);

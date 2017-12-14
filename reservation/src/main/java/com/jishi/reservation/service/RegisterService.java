@@ -1,5 +1,6 @@
 package com.jishi.reservation.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
@@ -321,12 +322,10 @@ public class RegisterService {
     public List<Register> queryRegister(Long registerId,Long accountId ,Integer status,Integer enable) throws Exception {
         if(Helpers.isNullOrEmpty(accountId) && Helpers.isNullOrEmpty(registerId))
             throw new Exception("查询条件不能都为空");
-        Register queryRegister = new Register();
-        queryRegister.setAccountId(accountId);
-        queryRegister.setId(registerId);
-        queryRegister.setStatus(status);
-        queryRegister.setEnable(enable);
-        return registerMapper.select(queryRegister);
+
+        List<Register> list = registerMapper.selectCondition(accountId, registerId, status, enable);
+        log.info("~~~:"+ JSONObject.toJSONString(list));
+        return list;
     }
 
     /**
