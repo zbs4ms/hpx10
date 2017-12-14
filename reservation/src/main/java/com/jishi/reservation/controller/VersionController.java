@@ -1,12 +1,8 @@
 package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
-import com.jishi.reservation.controller.protocol.OrderGenerateVO;
 import com.jishi.reservation.dao.models.AndroidVersion;
-import com.jishi.reservation.otherService.pay.AlibabaPay;
-import com.jishi.reservation.otherService.pay.protocol.AliPayCallbackModel;
 import com.jishi.reservation.service.VersionService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import io.swagger.annotations.Api;
@@ -15,8 +11,6 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
 
 
 /**

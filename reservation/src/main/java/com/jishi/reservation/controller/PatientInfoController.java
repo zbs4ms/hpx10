@@ -5,7 +5,6 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
-import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.PatientInfoService;

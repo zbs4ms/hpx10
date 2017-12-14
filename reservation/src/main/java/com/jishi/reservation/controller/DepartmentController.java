@@ -1,7 +1,6 @@
 package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.service.DepartmentService;

@@ -107,11 +107,4 @@ public class HisUserManager {
         return service.userManager(reData);
     }
 
-
-//    public static void main(String[] args) throws Exception {
-//        HisUserManager hisUserManager = new HisUserManager();
-//       // hisUserManager.addUserInfo("513823198408130042","二代身份证","周彬杉","13678113250");
-//        //System.out.print(hisUserManager.getUserInfoByCode("510902198203193972","二代身份证"));
-//        //System.out.print(hisUserManager.getUserInfoByRegNO("510902198203193972","二代身份证","尹勇","8696615","遂宁市医保"));
-//    }
 }

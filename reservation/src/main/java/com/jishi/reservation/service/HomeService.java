@@ -77,11 +77,6 @@ public class HomeService {
 
         return bannerMapper.queryBanner(bannerId,name,enable);
 
-//        Banner queryBanner = new Banner();
-//        queryBanner.setName(name);
-//        queryBanner.setEnable(enable);
-//        queryBanner.setId(bannerId);
-//        return bannerMapper.select(queryBanner);
     }
 
     /**
@@ -137,10 +132,8 @@ public class HomeService {
 
         if( Helpers.isNull(select))
             return;
-       // Integer maxTop = bannerMapper.queryMaxTop();
         select.setOrderNumber(sort);
         bannerMapper.updateByPrimaryKeySelective(select);
-
 
     }
 }

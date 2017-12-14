@@ -19,22 +19,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.*;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
@@ -72,7 +63,6 @@ public class AdminController extends MyBaseController {
 
         Manager manager = managerService.findAccountByAccount(account);
         password = MD5Encryption.getMD5(password);
-        //Preconditions.checkState(password.equals(account.getPassword()), "用户名或密码错误,请重新登录");
         if (!password.equals(manager.getPassword())) {
             return ResponseWrapper().addMessage("用户名或密码错误,请重新登录").ExeFaild();
         } else {
@@ -101,10 +91,6 @@ public class AdminController extends MyBaseController {
     }
 
 
-
-
-
-
     @ApiOperation(value = "返回所有权限接口")
     @RequestMapping(value = "all_permission", method = RequestMethod.GET)
     @ResponseBody
@@ -131,7 +117,6 @@ public class AdminController extends MyBaseController {
         return ResponseWrapper().addMessage("创建成功").ExeSuccess(200);
 
     }
-
 
 
     @ApiOperation(value = "人员列表接口")
@@ -164,6 +149,7 @@ public class AdminController extends MyBaseController {
 
     }
 
+
     @ApiOperation(value = " 删除某个账号")
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     @ResponseBody
@@ -175,7 +161,6 @@ public class AdminController extends MyBaseController {
         return ResponseWrapper().addMessage("删除成功").ExeSuccess(200);
 
     }
-
 
 
 
@@ -195,10 +180,7 @@ public class AdminController extends MyBaseController {
 
         return ResponseWrapper().addMessage("退出成功").ExeSuccess(200);
 
-
     }
-
-
 
 
 

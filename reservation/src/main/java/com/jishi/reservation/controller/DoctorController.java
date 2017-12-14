@@ -2,25 +2,19 @@ package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
-import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.DateVO;
 import com.jishi.reservation.controller.protocol.DoctorVO;
 import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.dao.models.Doctor;
-import com.jishi.reservation.service.DepartmentService;
 import com.jishi.reservation.service.DoctorService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
-import com.jishi.reservation.service.enumPackage.ReturnMessageEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.bean.RegisteredNumberInfo;
 import com.jishi.reservation.service.support.AliOssSupport;
 import com.jishi.reservation.service.support.DateSupport;
-import com.jishi.reservation.service.support.FileSupport;
-import com.jishi.reservation.util.Constant;
-import com.jishi.reservation.util.FileCheckUtil;
 import com.jishi.reservation.util.Helpers;
 
 import io.swagger.annotations.Api;
@@ -29,7 +23,6 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -115,9 +108,6 @@ public class DoctorController extends MyBaseController {
         return ResponseWrapper().addData(doctors).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
-
-
-
     @ApiOperation(value = "返回时间列表  最近五天的（暂时）")
     @RequestMapping(value = "dateList", method = RequestMethod.GET)
     @ResponseBody
@@ -137,25 +127,16 @@ public class DoctorController extends MyBaseController {
     public JSONObject dateList(@ApiParam(value = "医生ID", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId){
 
         List<DateVO> dateVOList = DateSupport.generateTimeInteval();
-
-
         return ResponseWrapper().addMessage("返回时间列表").addData(dateVOList).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
     }
-
-
-
-
-
 
     @ApiOperation(value = "返回所有科室的所有医生",response = Department.class)
     @RequestMapping(value = "queryDepDoc", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryDepartmentAndDoctor() throws Exception {
 
-
         List<Department> departmentList = doctorService.queryDepartmentAndDoctor();
-
         return ResponseWrapper().addMessage("查询成功！").addData(departmentList).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
     }
@@ -173,13 +154,8 @@ public class DoctorController extends MyBaseController {
 
             doctorService.getDoctorFromHis(hbList);
         }
-
         return ResponseWrapper().addMessage("操作成功！").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
     }
-
-
-
-
 
 }

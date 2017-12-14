@@ -236,7 +236,6 @@ public class HospitalizationService {
         private String lbmc;
 
         private List<MedicItem> detailList;
-        //DepositBalanceDailyPayDetail detail;
     }
 
     @Data

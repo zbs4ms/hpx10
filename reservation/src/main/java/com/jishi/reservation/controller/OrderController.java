@@ -9,7 +9,6 @@ import com.jishi.reservation.controller.protocol.*;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.*;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
-import com.jishi.reservation.service.enumPackage.PayEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.bean.ConfirmOrder;
@@ -21,12 +20,9 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -62,7 +58,6 @@ public class OrderController extends MyBaseController {
 
         //执行his确认订单操作..
         //confirm.modify
-
         OrderVO orderVO = orderInfoService.queryOrderVoById(orderId,orderNumber);
 
         ConfirmRegister confirmRegister = orderInfoService.returnConfirmRegister(orderId,orderNumber);
@@ -95,7 +90,6 @@ public class OrderController extends MyBaseController {
             ) throws Exception {
 
         Preconditions.checkNotNull(orderId,"请传入合适的参数：orderId");
-
         OrderVO orderVO = orderInfoService.queryOrderVoById(orderId,null);
 
         return ResponseWrapper().addData(orderVO).addMessage("查询成功").ExeSuccess(200);
@@ -134,13 +128,5 @@ public class OrderController extends MyBaseController {
         return ResponseWrapper().addData(voList).addMessage("查询成功").ExeSuccess(200);
 
     }
-
-
-
-
-
-
-
-
 
 }

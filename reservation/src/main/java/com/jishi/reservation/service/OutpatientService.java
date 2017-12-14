@@ -118,25 +118,6 @@ public class OutpatientService {
                             fee.setFeeAmount(new BigDecimal(fm.getJe()));
                             fee.setFeeStatus(Integer.parseInt(fm.getZfzt()));
 
-                            /** 暂时不提供明细
-                            // 费目明细列表
-                            List<OutpatientPaymentInfo.Mx> mxlists = fm.getMxlists();
-                            if (mxlists!= null && !mxlists.isEmpty()) {
-                                List<OutpatientFeeVO.OutpatientFeeItemVO> itemList = new ArrayList<OutpatientFeeVO.OutpatientFeeItemVO>();
-                                for (OutpatientPaymentInfo.Mx mx : mxlists) {
-                                    OutpatientFeeVO.OutpatientFeeItemVO item = new OutpatientFeeVO.OutpatientFeeItemVO();
-                                    item.setItemName(mx.getMc());
-                                    item.setItemAdvance(new BigDecimal(mx.getDj()));
-                                    item.setItemFormat(mx.getGg());
-                                    item.setItemNumber(Integer.parseInt(mx.getSl()));
-                                    item.setItemUnit(mx.getDw());
-
-                                    itemList.add(item);
-                                }
-
-                                fee.setFeeItemList(itemList);
-                            }**/
-
                             feeList.add(fee);
                         }
                         advice.setFeeList(feeList);

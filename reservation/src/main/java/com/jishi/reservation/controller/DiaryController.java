@@ -4,12 +4,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
-import com.jishi.reservation.controller.base.Paging;
 
 import com.jishi.reservation.controller.protocol.DiaryContentVO;
 import com.jishi.reservation.dao.models.Diary;
 
-import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.DiaryService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 
@@ -34,10 +32,6 @@ public class DiaryController extends MyBaseController {
 
 
     @Autowired
-    private AccountService accountService;
-
-
-    @Autowired
     private DiaryService diaryService;
 
 
@@ -49,12 +43,10 @@ public class DiaryController extends MyBaseController {
     ){
 
         log.info("查看日记 id:"+id);
-
         Diary diary = diaryService.queryById(id);
         return ResponseWrapper().addMessage("查询成功").addData(diary).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
     }
-
 
 
     @ApiOperation(value = "app 用户发布日记/支持修改 传diaryId就是修改")
@@ -71,19 +63,13 @@ public class DiaryController extends MyBaseController {
         if(diaryId ==null ){
             diaryService.publish(accountId,title,content,isLock);
 
-        }else {
+        } else {
 
             Preconditions.checkNotNull(diaryService.queryById(diaryId),"该id没有对应的日记");
             diaryService.update(diaryId,title,content,isLock);
         }
-
-
-
         return ResponseWrapper().addMessage("添加成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-
     }
-
-
 
 
     @ApiOperation(value = "app app的日记列表  日记圈/我的日记",response = Diary.class)
@@ -91,23 +77,14 @@ public class DiaryController extends MyBaseController {
     @ResponseBody
     public JSONObject queryPage(@ApiIgnore() @RequestAttribute(value= Constant.ATTR_LOGIN_ACCOUNT_ID) Long accountId,
             @ApiParam(value = "是否查\"我的日记\" 0 查，1 不查", required = false) @RequestParam(value = "isMy", defaultValue = "1") Integer isMy,
-
             @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
-
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize
-
-
-    ) throws Exception {
-
-
+            ) throws Exception {
 
         PageInfo<Diary> page = diaryService.queryPage(accountId,isMy,startPage,pageSize);
-
-
         return ResponseWrapper().addMessage("查询成功").addData(page).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
     }
-
 
 
     @ApiOperation(value = "app 给日记点赞/取消点赞")
@@ -124,7 +101,6 @@ public class DiaryController extends MyBaseController {
     }
 
 
-
     @ApiOperation(value = "app 给日记增加浏览次数")
     @RequestMapping(value = "addScanNum", method = RequestMethod.POST)
     @ResponseBody
@@ -136,7 +112,6 @@ public class DiaryController extends MyBaseController {
 
         return ResponseWrapper().addMessage("增加成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
-
 
 
     @ApiOperation(value = "app 删除 日记 token传递，如果不是发布者删除，会提示错误信息")
@@ -153,10 +128,7 @@ public class DiaryController extends MyBaseController {
                 return ResponseWrapper().addMessage("您无权执行该操作").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
 
         }
-
-
         return null;
-
     }
 
 
@@ -174,10 +146,7 @@ public class DiaryController extends MyBaseController {
                 return ResponseWrapper().addMessage("您无权执行该操作").ExeSuccess(ReturnCodeEnum.FAILED.getCode());
 
         }
-
-
         return null;
-
     }
 
 }

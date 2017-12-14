@@ -2,19 +2,10 @@ package com.jishi.reservation.controller.admin;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
-import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.base.Paging;
-import com.jishi.reservation.controller.protocol.AdminLogInfoData;
-import com.jishi.reservation.controller.protocol.SystemInfo;
 import com.jishi.reservation.dao.models.Diary;
-import com.jishi.reservation.dao.models.Manager;
-import com.jishi.reservation.dao.models.Permission;
 import com.jishi.reservation.service.DiaryService;
-import com.jishi.reservation.service.ManagerService;
-import com.jishi.reservation.service.PermissionService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,11 +13,6 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.List;
 
 
 /**

@@ -3,7 +3,6 @@ package com.jishi.reservation.service;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.RegisterAdminVO;
 import com.jishi.reservation.controller.protocol.RegisterCompleteVO;
@@ -17,7 +16,6 @@ import com.jishi.reservation.service.his.bean.LastPrice;
 import com.jishi.reservation.service.his.bean.LockRegister;
 import com.jishi.reservation.util.Helpers;
 import com.jishi.reservation.util.NewRandomUtil;
-import io.swagger.annotations.ApiModel;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +27,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by zbs on 2017/8/10.
@@ -362,41 +359,6 @@ public class RegisterService {
         return registerMapper.select(queryRegister);
     }
 
-//    /**
-//     * 修改预约信心
-//     * @param registerId
-//     * @param accountId
-//     * @param patientinfoId
-//     * @param departmentId
-//     * @param doctorId
-//     * @param status
-//     * @param agreedTime
-//     * @param enable
-//     * @throws Exception
-//     */
-//    public void modifyRegister(Long registerId,Long accountId,Long patientinfoId,String departmentId,String doctorId,Integer status,Date agreedTime,Integer enable) throws Exception {
-//        if(Helpers.isNullOrEmpty(registerId) || queryRegister(registerId,null,null,null) == null)
-//            throw new Exception("预约信息为空.");
-//        if(!Helpers.isNullOrEmpty(accountId) && accountService.queryAccount(accountId,null, EnableEnum.EFFECTIVE.getCode()) == null)
-//            throw new Exception("账户信息为空.");
-//        if(!Helpers.isNullOrEmpty(patientinfoId) && patientInfoService.queryPatientInfo(patientinfoId,null, EnableEnum.EFFECTIVE.getCode()) == null)
-//            throw new Exception("就诊人信息为空.");
-//        if(!Helpers.isNullOrEmpty(departmentId) && departmentService.queryDepartment(departmentId,null) == null)
-//            throw new Exception("科室信息为空.");
-//        if(!Helpers.isNullOrEmpty(doctorId) && doctorService.queryDoctor(null,doctorId,null,null,null, EnableEnum.EFFECTIVE.getCode()) == null)
-//            throw new Exception("医生信息为空.");
-//        Register newRegister = new Register();
-//        newRegister.setId(registerId);
-//        newRegister.setAccountId(accountId);
-//        newRegister.setDepartmentId(departmentId);
-//        newRegister.setDoctorId(doctorId);
-//        newRegister.setBrId(String.valueOf(patientinfoId));
-//        newRegister.setStatus(status);
-//        newRegister.setAgreedTime(agreedTime);
-//        newRegister.setStatus(StatusEnum.REGISTER_STATUS_NO_PAYMENT.getCode());
-//        newRegister.setEnable(enable);
-//        Preconditions.checkState(registerMapper.updateByPrimaryKeySelective(newRegister) == 1,"更新失败!");
-//    }
 
     /**
      * 把就诊信息置为无效

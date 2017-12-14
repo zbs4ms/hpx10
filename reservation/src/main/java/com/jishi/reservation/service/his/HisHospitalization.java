@@ -188,37 +188,6 @@ public class HisHospitalization {
     }
 
 
-//    public static void main(String[] args) throws Exception {
-//        HisHospitalization hisHospitalization = new HisHospitalization();
-//        String l1 = hisHospitalization.selectDepositBalance("264", "1");
-//        System.out.println("费用余额" + l1);
-//        DepositBalanceLog l = hisHospitalization.selectDepositBalanceLog("264");
-//        for (DepositBalanceLog.DB3 db3 : l.getGroup().getItem()) {
-//            System.out.println(db3.getJksh());
-//            System.out.println(db3.getLx());
-//            System.out.println(db3.getJe());
-//        }
-//
-//        TotalDepositBalancePayDetail totalDepositBalancePayDetail = hisHospitalization.selectTotalPayDetail("264","1","1");
-//        System.out.println(totalDepositBalancePayDetail.toString());
-//        DateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd");
-//        Date date = dateFormat1.parse("2015-10-25");
-//        long time = date.getTime();
-//        for(int i = 26 ;i<=30;i++) {
-//
-//                System.out.println("\n----------------    2015-10-" + i + " --------------------");
-//                hisHospitalization.selectDailyPayDetail("264", "2015-10-" + i, "1");
-//
-//
-//        }
-//
-//
-     //  DepositBalanceHistoryDetail depositBalanceHistoryDetail = hisHospitalization.selectHistoryDetail("3987", "1","100","1");
-      //  System.out.println(depositBalanceHistoryDetail);
-//       hisHospitalization.pay("3987","3","支付宝","1000","111111","1234567","杨杨");
-//        hisHospitalization.selectDepositBalanceLog("3987");
-//    }
-
     private HospitalizationResponseHospitalizationResult execute(String reData) throws RemoteException, ServiceException {
         ZL_InformationServiceLocator locator = new ZL_InformationServiceLocator();
         ZL_InformationServiceSoap_PortType service = locator.getZL_InformationServiceSoap();

@@ -8,7 +8,6 @@ import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.models.Banner;
 import com.jishi.reservation.service.HomeService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
-import com.jishi.reservation.service.enumPackage.ReturnMessageEnum;
 import com.jishi.reservation.service.support.AliOssSupport;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,7 +15,6 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -36,7 +34,6 @@ public class HomeController extends MyBaseController {
     AliOssSupport ossSupport;
 
 
-
     @ApiOperation(value = "查询单个banner", response = Banner.class)
     @RequestMapping(value = "queryBanner", method = RequestMethod.GET)
     @ResponseBody
@@ -50,6 +47,7 @@ public class HomeController extends MyBaseController {
         return ResponseWrapper().addData(banner).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
+
     @ApiOperation(value = "查询全部banner", response = Banner.class)
     @RequestMapping(value = "queryAllBanner", method = RequestMethod.GET)
     @ResponseBody
@@ -59,17 +57,10 @@ public class HomeController extends MyBaseController {
             @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
             @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
-            @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception
+            @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception{
 
-    {
         PageInfo<Banner> bannerList = homeService.queryBannerPageInfo(null,name,enable, Paging.create(pageNum,pageSize,orderBy,desc));
         return ResponseWrapper().addData(bannerList).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
-
-
-
-
-
-
 
 }

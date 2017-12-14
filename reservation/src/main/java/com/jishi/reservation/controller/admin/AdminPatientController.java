@@ -1,26 +1,16 @@
 package com.jishi.reservation.controller.admin;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.PageInfo;
-import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
-import com.jishi.reservation.controller.base.Paging;
-import com.jishi.reservation.dao.models.Banner;
 import com.jishi.reservation.dao.models.PatientInfo;
-import com.jishi.reservation.service.HomeService;
 import com.jishi.reservation.service.PatientInfoService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
-import com.jishi.reservation.service.enumPackage.ReturnMessageEnum;
-import com.jishi.reservation.service.support.AliOssSupport;
-import com.jishi.reservation.service.support.FileSupport;
-import com.jishi.reservation.util.Constant;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

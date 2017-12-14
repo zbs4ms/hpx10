@@ -6,8 +6,6 @@ import com.jishi.reservation.controller.protocol.*;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.service.OutpatientQueueService;
 import com.jishi.reservation.service.OutpatientService;
-import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
-import com.jishi.reservation.service.exception.BussinessException;
 import com.jishi.reservation.util.Constant;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -117,7 +115,6 @@ public class OutpatientController extends MyBaseController {
                                  @ApiParam(value = "brId(his病人ID)", required = false) @RequestParam(value = "brId", required = false) String brId) throws Exception {
 
         List<OutpatientQueueDetailVO> visitQueueInfoList = outpatientQueueService.generateTestData(4);
-
         //List<OutpatientQueueDetailVO> visitQueueInfoList = outpatientQueueService.queryVisitQueueInfo(accountId, brId);
         return ResponseWrapperSuccess(visitQueueInfoList);
     }

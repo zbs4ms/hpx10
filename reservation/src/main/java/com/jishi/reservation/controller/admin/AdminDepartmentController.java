@@ -1,14 +1,10 @@
 package com.jishi.reservation.controller.admin;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
-import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.models.Department;
-import com.jishi.reservation.dao.models.Diary;
 import com.jishi.reservation.service.DepartmentService;
-import com.jishi.reservation.service.DiaryService;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -87,16 +83,4 @@ public class AdminDepartmentController extends MyBaseController {
     }
 
 
-
-//    @ApiOperation(value = "拉去his的科室信息到我们自己的系统")
-//    @RequestMapping(value = "pullFromHis", method = RequestMethod.POST)
-//    @ResponseBody
-//    public JSONObject pullFromHis(
-//    ) throws Exception {
-//
-//
-//
-//        departmentService.pullFromHis();
-//        return ResponseWrapper().addData("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-//    }
 }

@@ -1,15 +1,12 @@
 package com.jishi.reservation.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.mapper.DepartmentMapper;
 import com.jishi.reservation.dao.mapper.DoctorMapper;
-import com.jishi.reservation.dao.models.Banner;
 import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
@@ -83,9 +80,6 @@ public class DoctorService {
         log.info("查询医生 doctorId:"+doctorId+" doctorName:"+doctorName+" type:"+type +" enable:"+enable);
         Doctor queryDoctor = new Doctor();
         queryDoctor.setType(type);
-//        if(departmentId!=null &&!"null".equals(departmentId)&& !"".equals(departmentId)){
-//            queryDoctor.setDepartmentIds("\""+departmentId+"\"");
-//        }
         queryDoctor.setName(doctorName);
         queryDoctor.setId(doctorId);
         queryDoctor.setEnable(enable);
@@ -204,10 +198,6 @@ public class DoctorService {
             }
 
         }
-
-      //  doctorMapper.insertList(list);
-
-
 
         //如果库里有，但是his拉去过来的没有，那就软删除
 

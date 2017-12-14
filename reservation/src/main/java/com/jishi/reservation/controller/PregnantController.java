@@ -1,11 +1,8 @@
 package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
-import com.jishi.reservation.controller.base.Paging;
-import com.jishi.reservation.controller.protocol.RegisterVO;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.*;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
@@ -17,8 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,27 +27,6 @@ public class PregnantController extends MyBaseController {
 
     @Autowired
     PregnantService pregnantService;
-//
-//    @ApiOperation(value = "添加孕妇信息")
-//    @RequestMapping(value = "addPregnant", method ={RequestMethod.PUT,RequestMethod.POST} )
-//    @ResponseBody
-//    public JSONObject addPregnant(
-//            @ApiIgnore() @RequestAttribute(value= Constant.ATTR_LOGIN_ACCOUNT_ID) Long accountId,
-//            @ApiParam(value = "病人ID", required = true) @RequestParam(value = "patientinfoId", required = true) Long patientinfoId,
-//            @ApiParam(value = "孕妇姓名", required = true) @RequestParam(value = "name", required = true) String  name,
-//            @ApiParam(value = "出生年月", required = true) @RequestParam(value = "birth", required = true) Long birth,
-//            @ApiParam(value = "现居地址", required = true) @RequestParam(value = "livingAddress", required = true) String livingAddress,
-//            @ApiParam(value = "末次月经时间", required = true) @RequestParam(value = "lastMenses", required = true) Long lastMenses,
-//            @ApiParam(value = "联系电话", required = true) @RequestParam(value = "telephone", required = true) String telephone,
-//            @ApiParam(value = "丈夫姓名", required = true) @RequestParam(value = "husbandName", required = true) String  husbandName,
-//            @ApiParam(value = "丈夫电话", required = true) @RequestParam(value = "husbandTelephone", required = true) String husbandTelephone,
-//            @ApiParam(value = "备注", required = false) @RequestParam(value = "remark", required = false) String remark
-//            ) throws Exception {
-//
-//        pregnantService.addPregnant(accountId,patientinfoId,name,new Date(birth),livingAddress,new Date(lastMenses),telephone,husbandName,husbandTelephone,remark);
-//
-//        return  ResponseWrapper().addMessage("孕妇信息添加成功.").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-//    }
 
 
     @ApiOperation(value = "更新孕妇信息")
@@ -102,7 +76,6 @@ public class PregnantController extends MyBaseController {
 
         return  ResponseWrapper().addMessage("操作成功.").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
-
 
 
 }

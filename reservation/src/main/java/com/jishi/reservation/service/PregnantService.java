@@ -4,7 +4,6 @@ package com.jishi.reservation.service;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.dao.mapper.PregnantMapper;
 
-import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.dao.models.Pregnant;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.util.Helpers;
