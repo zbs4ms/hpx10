@@ -104,7 +104,7 @@ public class AccountService {
             String code = redisOperation.get(prefix + "_" + phone);
 
             if (!dynamicCode.equals(code))
-                throw new Exception("验证码错误");
+                return null;
             List<Account> account = queryAccount(null, phone, null);
 
             if (account.size() == 0){

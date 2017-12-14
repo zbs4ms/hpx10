@@ -67,7 +67,7 @@ public class AccountController extends MyBaseController {
 
         LoginData loginData = accountService.loginOrRegisterThroughPhone(phone,loginOrRegister ,dynamicCode);
         if(loginData==null)
-            return ResponseWrapper().addMessage("登录失败!").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+            return ResponseWrapper().addMessage("验证码错误,登录失败!").ExeFaild(ReturnCodeEnum.VALID_CODE_WRONG.getCode());
         return ResponseWrapper().addData(loginData).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 

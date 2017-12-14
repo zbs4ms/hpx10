@@ -36,8 +36,10 @@ public enum ReturnCodeEnum {
     IM_ERR_GET_ACCOUNT_FAILED(5130, "生成IM账号失败"),
     IM_ERR_CREATE_ACCOUNT_FAILED(5131, "生成IM账号失败"),
 
-    UNKNOWN_ERR(1000, "未知错误");
+    /** 账号相关  **/
 
+    UNKNOWN_ERR(1000, "未知错误"),
+    VALID_CODE_WRONG(5109,"验证码错误");
     private int code;
     private String desc;
 
