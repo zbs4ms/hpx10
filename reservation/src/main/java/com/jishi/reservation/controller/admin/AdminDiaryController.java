@@ -45,7 +45,7 @@ public class AdminDiaryController extends MyBaseController {
 
 
 
-    @ApiOperation(value = "admin 查询日记列表  分页")
+    @ApiOperation(value = "admin 查询日记列表  分页 只查公开的")
     @RequestMapping(value = "query", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject query(

@@ -13,7 +13,7 @@ public interface DiaryMapper extends MyMapper<Diary>{
 
 
     @Select({
-            "<script>select  * from diary where 1 =1 " +
+            "<script>select  * from diary where 1 =1 and is_lock = 1 " +
                     "<if test = \"name != null \"> AND (nick like CONCAT('%',#{name},'%') or title like CONCAT('%',#{name},'%') or account_id like CONCAT('%',#{name},'%')  )</if> " +
                     "<if test = \"status != null\"> AND status = #{status}</if>" +
                     "<if test =\"startTime!=null\">and create_time &gt;  #{startTime}  </if>" +
