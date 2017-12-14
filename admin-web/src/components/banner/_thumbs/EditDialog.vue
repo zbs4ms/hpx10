@@ -6,10 +6,12 @@
 let fileObj = ''
 let initData = {
   submitLoading: false,
-  fileInputValid: true
+  fileInputValid: true, // 上传的文件有效性
+  activePanelIndex: 0 // 当前激活的栏目（banner基本信息 / banner内容）
 }
 
 import ImgUploader from '@/components/_common/imgUploader/ImgUploader.vue'
+import RichText from '@/components/_common/richText/RichText'
 
 export default {
   name: 'EditDialog',
@@ -22,14 +24,16 @@ export default {
     }
   },
   components: {
-    ImgUploader
+    ImgUploader,
+    RichText
   },
   data () {
     return Object.assign({}, {
       form: {
         name: '',
         no: '',
-        link: ''
+        link: '',
+        richText: '' // 富文本html
       }
     }, initData)
   },
@@ -54,6 +58,20 @@ export default {
     handleCancel () {
       this.visible = false
       this.$emit('cancel')
+    },
+    // 验证基本信息表单
+    validForm () {
+      return new Promise((resolve, reject) => {
+        this.$refs.ruleForm.validate((valid) => {
+          // 验证上传图片
+          let checkFileExist = this.$refs.imgUploader.checkFileExist(fileObj)
+          if (valid) {
+            checkFileExist.then(resolve).catch(reject)
+          } else {
+            reject()
+          }
+        })
+      })
     },
     handleSubmit () {
       this.$refs.ruleForm.validate((valid) => {
@@ -82,12 +100,19 @@ export default {
       this.form = {
         name: '',
         no: '',
-        link: ''
+        link: '',
+        richText: ''
       }
       this.$refs.imgUploader.clearFileInput()
     },
     handleFileChange (newFile) {
       fileObj = newFile
+    },
+    // 下一步
+    toNext () {
+      this.validForm().then(() => {
+        this.activePanelIndex = 1
+      })
     }
   }
 }
@@ -101,6 +126,7 @@ export default {
       :visible.sync="visible"
       @close="handleClose">
       <el-form
+        v-show="activePanelIndex === 0"
         ref="ruleForm"
         :model="form"
         label-position="top">
@@ -142,7 +168,7 @@ export default {
           required
           :rules="[
             { required: true, message: '跳转链接不能为空'},
-            { pattern: /^(https?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?$/, message: '请输入正确的链接地址', trigger: 'blur'}
+            { pattern: /^(https?:\/\/)?[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?$/, message: '请输入正确的链接地址', trigger: 'blur'}
           ]">
           <el-input
             v-model.trim="form.link"
@@ -158,19 +184,42 @@ export default {
             @file-change="handleFileChange"></img-uploader>
         </el-form-item>
       </el-form>
+      <div v-show="activePanelIndex === 1">
+        <h4 style="margin-top: 0;">banner内容</h4>
+        <div class="flex--hcenter">
+          <rich-text 
+            style="width: 375px;"
+            v-model="form.richText"
+            upload-img-server="/upload">
+          </rich-text>
+        </div>
+      </div>
       <div slot="footer" class="dialog-footer">
-        <el-button
-          @click="handleCancel"
-          :disabled="submitLoading">
-          取 消
-        </el-button>
-        <el-button
-          type="primary"
-          :disabled="submitLoading"
-          v-loading="submitLoading"
-          @click="handleSubmit">
-          确 定
-        </el-button>
+        <template v-if="activePanelIndex === 0">
+          <el-button
+            @click="handleCancel"
+            :disabled="submitLoading">
+            取 消
+          </el-button>
+          <el-button 
+            type="primary"
+            @click="toNext">
+            下一步
+          </el-button>
+        </template>
+        <template v-else>
+          <el-button
+            @click="activePanelIndex = 0">
+            上一步
+          </el-button>
+          <el-button
+            type="primary"
+            :disabled="submitLoading"
+            v-loading="submitLoading"
+            @click="handleSubmit">
+            提交
+          </el-button>
+        </template>
       </div>
     </el-dialog>
   </div>

@@ -82,9 +82,17 @@ export default {
       },
       scopedSlots: {
         default: (scope) => {
-          return (
-            <a href={scope.row.link} target="_blank">{ scope.row.link }</a>
-          )
+          let link = scope.row.link
+          if (!link) {
+            return '--'
+          } else {
+            if (link.indexOf('http') === -1) {
+              link = '//' + link
+            }
+            return (
+              <a href={link} target="_blank">{ scope.row.link }</a>
+            )
+          }
         }
       }
     }, {
