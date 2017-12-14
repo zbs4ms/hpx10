@@ -477,8 +477,11 @@ public class RegisterService {
             vo.setPhone(account.getPhone());
             //todo  状态..
             vo.setStatus("2");
-            vo.setIdCard(patientInfo.getIdCard());
-            vo.setJjkh(patientInfo.getMzh());
+            if(patientInfo !=null){
+                vo.setIdCard(patientInfo.getIdCard());
+                vo.setJjkh(patientInfo.getMzh());
+            }
+
             voList.add(vo);
 
         }
