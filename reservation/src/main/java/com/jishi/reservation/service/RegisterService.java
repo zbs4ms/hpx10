@@ -476,7 +476,7 @@ public class RegisterService {
             PatientInfo patientInfo = patientInfoMapper.queryByById(register.getBrId(),orderInfo.getAccountId());
             vo.setPhone(account.getPhone());
             //todo  状态..
-            vo.setStatus("2");
+            vo.setStatus(String.valueOf(orderInfo.getStatus()));
             if(patientInfo !=null){
                 vo.setIdCard(patientInfo.getIdCard());
                 vo.setJjkh(patientInfo.getMzh());
