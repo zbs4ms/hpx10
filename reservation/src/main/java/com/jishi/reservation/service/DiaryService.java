@@ -14,6 +14,7 @@ import com.jishi.reservation.dao.mapper.AccountMapper;
 import com.jishi.reservation.dao.mapper.DiaryLikedMapper;
 import com.jishi.reservation.dao.mapper.DiaryMapper;
 import com.jishi.reservation.dao.mapper.DiaryScanMapper;
+import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.dao.models.Diary;
 import com.jishi.reservation.dao.models.DiaryLiked;
 import com.jishi.reservation.dao.models.DiaryScan;
@@ -193,12 +194,14 @@ public class DiaryService {
                 new TypeToken<List<DiaryContentVO>>() {
                 }.getType());
 
+        Account account = accountMapper.queryById(diary.getAccountId());
         diary.setContentVOList(contentList);
         diary.setContent(null);
         diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));
         diary.setLikedNum(diaryLikedMapper.queryCountByDiaryId(diary.getId()));
-        diary.setAvatar(accountMapper.queryById(diary.getAccountId()).getHeadPortrait());
+        diary.setAvatar(account.getHeadPortrait());
 
+        diary.setNick(account.getNick());
         return diary;
     }
 

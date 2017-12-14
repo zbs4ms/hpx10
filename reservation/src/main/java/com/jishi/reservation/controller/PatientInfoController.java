@@ -54,6 +54,9 @@ public class PatientInfoController extends MyBaseController
         Preconditions.checkNotNull(phone,"请传入必须的参数：phone");
         Preconditions.checkNotNull(idCard,"请传入必须的参数：idCard");
 
+        if("".equals(name) || "".equals(phone)){
+           return ResponseWrapper().addMessage("姓名或手机不能为空").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+        }
        Long id =  patientInfoService.addPatientInfo(accountId, name, phone, idCard,idCardTpye);
         return ResponseWrapper().addData(id).addMessage("添加成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
