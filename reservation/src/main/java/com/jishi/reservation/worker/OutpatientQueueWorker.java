@@ -68,7 +68,7 @@ public class OutpatientQueueWorker {
                 }
                 String pushMessage = PushData.create().msgType(PushData.PushDataMsgTypeDef.PUSH_DATA_OUTPATIENT_QUEUE).content(detail).toJSON();
                 log.info("accountId: " + account.getId() + " msg: " + pushMessage);
-                pushPayloadList.add(JpushSupport.buildPushObj(account.getPushId(), pushMessage));
+                pushPayloadList.add(JpushSupport.buildPushObjMessage(account.getPushId(), pushMessage));
             }
             // 批量异步推送
             jpushSupport.sendPush(pushPayloadList);
@@ -80,23 +80,22 @@ public class OutpatientQueueWorker {
     //  测试推送接口
     //@Scheduled(cron = "0 0/2 8-22 * * ? ")
     public void doWorkTest() throws Exception {
-        List<OutpatientQueueDetailVO> queueDetailList = outpatientQueueService.generateTestData(4);
+        List<OutpatientQueueDetailVO> queueDetailList = outpatientQueueService.generateTestData(2);
         if (queueDetailList == null || queueDetailList.isEmpty()) {
           return;
         }
         log.info("=================OutpatientQueueWorker begin=====================");
         log.info("BeginTime: " + new Date() + " queueDetailList: " + queueDetailList.size());
 
-        Account account = accountMapper.queryById(24L);
+        Account account = accountMapper.queryById(30L);//26
+        //Account account1 = accountMapper.queryById(24L);//24
         List<PushPayload> pushPayloadList = new ArrayList<PushPayload>();
 
         for (OutpatientQueueDetailVO detail : queueDetailList) {
-
-            //PatientInfo patientInfo = patientInfoService.queryByBrIdAndAccountId(detail.getBrId(),detail.getAccountId());
-            //Account account = accountMapper.queryById(patientInfo.getAccountId());
             String pushMessage = PushData.create().msgType(PushData.PushDataMsgTypeDef.PUSH_DATA_OUTPATIENT_QUEUE).content(detail).toJSON();
             log.info("accountId: " + account.getId() + " msg: " + pushMessage);
-            pushPayloadList.add(JpushSupport.buildPushObj(account.getPushId(), pushMessage));
+            pushPayloadList.add(JpushSupport.buildPushObjMessage(account.getPushId(), pushMessage));
+            //pushPayloadList.add(JpushSupport.buildPushObjMessage(account1.getPushId(), pushMessage));
         }
         jpushSupport.sendPush(pushPayloadList);
         log.info("EndTime: " + new Date());

@@ -47,18 +47,6 @@ public class IMAccountController extends MyBaseController {
         return ResponseWrapperSuccess(imAccountVO);
     }
 
-    @ApiOperation(value = "获取医生im账号，token可用于im客户端登录，没有则创建", response = IMAccountVO.class)
-    @RequestMapping(value = "/doctor/getDoctorAccount", method = RequestMethod.GET)
-    @ResponseBody
-    public JSONObject getDoctorAccount(
-                  @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
-        IMAccount imAccount = imAccountService.getDoctorIMAccount(doctorId);
-        IMAccountVO imAccountVO =new IMAccountVO();
-        imAccountVO.setImAccId(imAccount.getImAccId());
-        imAccountVO.setImToken(imAccount.getImToken());
-        return ResponseWrapperSuccess(imAccountVO);
-    }
-
     @ApiOperation(value = "不建议使用的接口，获取普通用户im token", response = String.class)
     @RequestMapping(value = "/getUserToken", method = RequestMethod.GET)
     @ResponseBody
@@ -73,15 +61,6 @@ public class IMAccountController extends MyBaseController {
     @ResponseBody
     public JSONObject refreshUserToken(@ApiIgnore() @RequestAttribute(value= Constant.ATTR_LOGIN_ACCOUNT_ID) Long accountId) throws Exception {
         String imToken = imAccountService.refreshUserToken(accountId);
-        return ResponseWrapperSuccess(imToken);
-    }
-
-    @ApiOperation(value = "更新医生im token，token失效时调用", response = String.class)
-    @RequestMapping(value = "/doctor/refreshDoctorToken", method = RequestMethod.POST)
-    @ResponseBody
-    public JSONObject refreshDoctorToken(
-                                 @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
-        String imToken = imAccountService.refreshDoctorToken(doctorId);
         return ResponseWrapperSuccess(imToken);
     }
 
@@ -116,17 +95,6 @@ public class IMAccountController extends MyBaseController {
     @ResponseBody
     public JSONObject getUserDetail(@ApiIgnore() @RequestAttribute(value= Constant.ATTR_LOGIN_ACCOUNT_ID) Long accountId) throws Exception {
         IMUser imUserVO = imAccountService.queryUser(accountId, false);
-        return ResponseWrapperSuccess(imUserVO);
-    }
-
-    @ApiOperation(value = "获取医生IM账号信息", response = IMUser.class)
-    @RequestMapping(value = "/doctor/getDoctorIMDetail", method = RequestMethod.GET)
-    @ResponseBody
-    public JSONObject getDoctorDetail(
-                          @ApiParam(value = "doctorId", required = true) @RequestParam(value = "doctorId", required = true) Long doctorId) throws Exception {
-
-        // TODO 医生账号怎么验证账号已登录
-        IMUser imUserVO = imAccountService.queryUser(doctorId, true);
         return ResponseWrapperSuccess(imUserVO);
     }
 }
