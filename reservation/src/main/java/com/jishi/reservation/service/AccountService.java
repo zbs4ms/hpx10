@@ -6,19 +6,11 @@ import com.doraemon.base.util.MD5Encryption;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.jishi.reservation.controller.protocol.AccountDetailVO;
-import com.jishi.reservation.controller.protocol.BridAndMzh;
-import com.jishi.reservation.controller.protocol.DiaryContentVO;
 import com.jishi.reservation.controller.protocol.LoginData;
 import com.jishi.reservation.dao.mapper.*;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 
-import com.jishi.reservation.service.enumPackage.SmsEnum;
-import com.jishi.reservation.service.his.HisUserManager;
-import com.jishi.reservation.service.his.bean.PatientsList;
 import com.jishi.reservation.service.support.AliDayuSupport;
 import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
@@ -26,7 +18,6 @@ import com.jishi.reservation.util.NewRandomUtil;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
@@ -51,24 +42,9 @@ public class AccountService {
     private AliDayuSupport dayuSupport;
 
     @Autowired
-    private HisUserManager hisUserManager;
-
-    @Autowired
     private IdentityInfoMapper identityInfoMapper;
     @Autowired
     private CredentialsMapper credentialsMapper;
-
-    @Autowired
-    private PatientInfoMapper patientInfoMapper;
-
-    @Autowired
-    private DiaryMapper diaryMapper;
-
-    @Autowired
-    private DiaryScanMapper diaryScanMapper;
-
-    @Autowired
-    private DiaryLikedMapper diaryLikedMapper;
 
     @Autowired
     private IMAccountService imAccountService;
@@ -83,12 +59,8 @@ public class AccountService {
 
     //保存登陆信息
     public final static String ADD_TOKEN = ""
-            + " local token = redis.call('get', KEYS[1]); "
-//            + " if token then "
-//            + "     redis.call('del',token); "
-//            + " end "
-            + " redis.call('set',KEYS[1],KEYS[2]); "
-            + " redis.call('set',KEYS[2],KEYS[1]); "
+            + " redis.call('set',KEYS[1],KEYS[2],'ex'," + Constant.EXPIRE_TIME_LOGIN_TOKEN + "); "
+            + " redis.call('set',KEYS[2],KEYS[1],'ex'," + Constant.EXPIRE_TIME_LOGIN_TOKEN + "); "
             + " return 1 ";
 
     //注销用户
@@ -111,7 +83,7 @@ public class AccountService {
         String code = NewRandomUtil.getRandomNum(6);
         log.info("redis key:"+prefix + "_" + phone+",value:"+code);
         redisOperation.set(prefix + "_" + phone, code);
-        redisOperation.expire(prefix + "_" + phone,15 * 60);
+        redisOperation.expire(prefix + "_" + phone, Constant.EXPIRE_TIME_DYNAMIC_CODE);
         dayuSupport.sendynamicCode(phone, code,templateCode);
         return code;
     }
@@ -132,7 +104,7 @@ public class AccountService {
             String code = redisOperation.get(prefix + "_" + phone);
 
             if (!dynamicCode.equals(code))
-                return null;
+                throw new Exception("验证码错误");
             List<Account> account = queryAccount(null, phone, null);
 
             if (account.size() == 0){
@@ -145,7 +117,6 @@ public class AccountService {
             //删除已核对的验证码
             redisOperation.del(prefix + "_" + phone);
             log.info("删除已核对的验证码："+prefix + "_" + phone);
-
 
         }else {
             //如果是测试账号
@@ -209,6 +180,7 @@ public class AccountService {
     private String login(String phone) throws Exception {
 
         Account account = accountMapper.queryByTelephone(phone);
+        checkLoginState(account.getId());
 
         String token = Constant.TOKEN_HEADER + createToken(account.getId());
         List<String> keys = new ArrayList<String>();
@@ -217,6 +189,17 @@ public class AccountService {
         Preconditions.checkState(Integer.valueOf(String.valueOf(redisOperation.eval(ADD_TOKEN,keys,new ArrayList<String>()))) == 1,"保存登陆信息失败.");
         return token;
 
+    }
+
+    // 检查是否是重复登录
+    private void checkLoginState(Long accountId) throws Exception {
+        String token = redisOperation.usePool().get(accountId.toString());
+        if (token == null || token.isEmpty()) {
+            return;
+        }
+        List<String> keys = new ArrayList<String>();
+        keys.add(token);
+        redisOperation.eval(DEL_TOKEN,keys,new ArrayList<String>());
     }
 
     /**
@@ -384,11 +367,6 @@ public class AccountService {
     }
 
     public Account loginByTelephoneAndPassword(String accountInput, String password) throws NoSuchAlgorithmException {
-
-//        Account account = new Account();
-//        account.setPasswd(MD5Encryption.getMD5(password));
-//        account.setAccount(accountInput);
-        String md5 = MD5Encryption.getMD5(password);
         Account queryAccount = accountMapper.selectByAccountAndPassword(accountInput,MD5Encryption.getMD5(password));
 
         log.info("查询结果"+ JSONObject.toJSONString(queryAccount));
@@ -550,12 +528,8 @@ public class AccountService {
     }
 
     public Account queryUserDetail(Long accountId) {
-
-        //AccountDetailVO vo = new AccountDetailVO();
         Account account = accountMapper.queryById(accountId);
         account.setPasswd(null);
-
-
         return account;
 
     }
@@ -564,9 +538,5 @@ public class AccountService {
 
         return Pattern.matches(REGEX_MOBILE, phone);
     }
-
-//    public static void main(String[] args) {
-//        System.out.println(        Pattern.matches(REGEX_MOBILE, "18349226649"));
-//    }
 
 }
