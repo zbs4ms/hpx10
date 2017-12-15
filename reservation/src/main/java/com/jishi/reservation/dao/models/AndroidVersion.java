@@ -22,8 +22,10 @@ public class AndroidVersion {
     @Id
     @ApiModelProperty("主键id")
     private Long id;
-    @ApiModelProperty("版本号")
-    private String version;
+    @ApiModelProperty("上个版本号")
+    private String lastVersion;
+    @ApiModelProperty("当前版本号")
+    private String currentVersion;
     @ApiModelProperty("版本名称")
     private String versionName;
     @ApiModelProperty("更新内容")

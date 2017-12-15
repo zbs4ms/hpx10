@@ -42,7 +42,7 @@ public class VersionController extends MyBaseController {
 
     ) throws Exception {
 
-        AndroidVersion androidVersion = versionService.checkUpdateForAndroid();
+        AndroidVersion androidVersion = versionService.checkUpdateForAndroid(version);
 
 
         return ResponseWrapper().addData(androidVersion).addMessage("请求成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());

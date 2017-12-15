@@ -19,17 +19,25 @@ public class VersionService {
     @Autowired
     AndroidVersionMapper androidVersionMapper;
 
-    public AndroidVersion checkUpdateForAndroid() {
+    public AndroidVersion checkUpdateForAndroid(String version) {
 
         AndroidVersion androidVersion = androidVersionMapper.checkUpdateForAndroid();
 
-        Gson gson = new Gson();
+        //如果当前版本和给的版本一致，就不更新；不一致就返回
+        if(!androidVersion.getCurrentVersion().equals(version)){
 
-        List<String> list = gson.fromJson(androidVersion.getUpdateContent(),
-                new TypeToken<List<String>>() {
-                }.getType());
-        androidVersion.setContentList(list);
-        androidVersion.setUpdateContent(null);
-        return androidVersion;
+            Gson gson = new Gson();
+
+            List<String> list = gson.fromJson(androidVersion.getUpdateContent(),
+                    new TypeToken<List<String>>() {
+                    }.getType());
+            androidVersion.setContentList(list);
+            androidVersion.setUpdateContent(null);
+            return androidVersion;
+        }else {
+            return null;
+        }
+
+
     }
 }
