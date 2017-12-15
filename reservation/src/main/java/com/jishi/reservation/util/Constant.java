@@ -8,8 +8,6 @@ import java.util.List;
  */
 public class Constant {
 
-    public final static String BASE_SERVER_URL = "http://doc.hpx10.com:50002";
-
 
     /****------------   支付类型   ---------------------------
     /** 订单支付类型 --> 1 : 阿里 **/

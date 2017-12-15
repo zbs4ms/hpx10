@@ -2,8 +2,10 @@ package com.jishi.reservation.service.his;
 
 import com.jishi.reservation.mypackage.*;
 import com.jishi.reservation.service.his.bean.*;
+import com.jishi.reservation.conf.HisConfiguration;
 import lombok.extern.log4j.Log4j;
 import org.apache.axis.message.MessageElement;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
@@ -19,6 +21,8 @@ import java.rmi.RemoteException;
 public class HisOutpatient {
 
 
+    @Autowired
+    private HisConfiguration hisConfiguration;
 
 
     /**
@@ -591,6 +595,8 @@ public class HisOutpatient {
 
     private OutPatientResponseOutPatientResult execute(String reData) throws RemoteException, ServiceException {
         ZL_InformationServiceLocator locator = new ZL_InformationServiceLocator();
+        locator.setZL_InformationServiceSoapEndpointAddress(hisConfiguration.getHisBaseUrl());
+        locator.setZL_InformationServiceSoap12EndpointAddress(hisConfiguration.getHisBaseUrl());
         ZL_InformationServiceSoap_PortType service = locator.getZL_InformationServiceSoap();
         return service.outPatient(reData);
     }
