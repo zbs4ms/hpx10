@@ -107,7 +107,9 @@ public class AlibabaPay {
         model.setProductCode(PayConstant.QUICK_MSECURITY_PAY);
         log.info("生成的订单请求对象："+JSONObject.toJSONString(model));
         request.setBizModel(model);
-        request.setNotifyUrl(payConfiguration.getPayCallbackBaseUrl() + "/pay/aliPayCallBack");
+        String notifyUrl = payConfiguration.getPayCallbackBaseUrl() + "/pay/aliPayCallBack";
+        log.info("支付成功通知地址：" + notifyUrl);
+        request.setNotifyUrl(notifyUrl);
         try {
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = client.sdkExecute(request);

@@ -173,6 +173,7 @@ public class PayController extends MyBaseController {
         Preconditions.checkNotNull(price,"缺少参数：price");
 
         String notifyUrl = payConfiguration.getPayCallbackBaseUrl() + "/pay/wxPayCallBack";
+        log.info("支付成功通知地址：" + notifyUrl);
         Map map = weChatPay.generateOrder(notifyUrl, orderNumber,subject, price, spbillCreateIp);
 
         return ResponseWrapper().addData(map).addMessage("请求成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
