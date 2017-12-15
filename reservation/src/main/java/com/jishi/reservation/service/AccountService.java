@@ -120,8 +120,9 @@ public class AccountService {
 
         }else {
             //如果是测试账号
-            List<Account> accounts = queryAccount(null, phone, null);
-            accountLogin = accounts.get(0);
+
+
+            accountLogin = accountMapper.queryByTelephone(phone);
 
         }
         String token = login(phone);
