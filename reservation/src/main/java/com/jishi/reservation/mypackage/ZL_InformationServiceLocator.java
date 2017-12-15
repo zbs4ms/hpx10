@@ -67,7 +67,6 @@ public class ZL_InformationServiceLocator extends org.apache.axis.client.Service
 
 
     // Use to get a proxy class for ZL_InformationServiceSoap12
-    //private String ZL_InformationServiceSoap12_address = "http://192.168.100.13:8086/ExternalServices/ZL_InformationService.asmx";
     private String ZL_InformationServiceSoap12_address = "http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx";
     public String getZL_InformationServiceSoap12Address() {
         return ZL_InformationServiceSoap12_address;

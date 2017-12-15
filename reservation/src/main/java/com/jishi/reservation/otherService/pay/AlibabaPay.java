@@ -12,6 +12,7 @@ import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.doraemon.base.util.RandomUtil;
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.conf.PayConfiguration;
 import com.jishi.reservation.controller.protocol.OrderGenerateVO;
 import com.jishi.reservation.dao.mapper.OrderInfoMapper;
 import com.jishi.reservation.dao.models.OrderInfo;
@@ -42,6 +43,9 @@ public class AlibabaPay {
 
     @Autowired
     OrderInfoMapper orderInfoMapper;
+
+    @Autowired
+    private PayConfiguration payConfiguration;
 
 
     /**
@@ -103,7 +107,7 @@ public class AlibabaPay {
         model.setProductCode(PayConstant.QUICK_MSECURITY_PAY);
         log.info("生成的订单请求对象："+JSONObject.toJSONString(model));
         request.setBizModel(model);
-        request.setNotifyUrl(Constant.BASE_SERVER_URL + "/reservation/pay/aliPayCallBack");
+        request.setNotifyUrl(payConfiguration.getPayCallbackBaseUrl() + "/pay/aliPayCallBack");
         try {
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = client.sdkExecute(request);

@@ -3,6 +3,7 @@ package com.jishi.reservation.controller;
 import com.alibaba.fastjson.JSONObject;
 
 import com.google.common.base.Preconditions;
+import com.jishi.reservation.conf.PayConfiguration;
 import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.protocol.OrderGenerateVO;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
@@ -17,6 +18,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,12 +40,14 @@ import java.util.Map;
 public class PayController extends MyBaseController {
 
 
-
     @Autowired
     private AlibabaPay alibabaPay;
 
     @Autowired
     private WeChatPay weChatPay;
+
+    @Autowired
+    private PayConfiguration payConfiguration;
 
     /**
      * @param
@@ -168,7 +172,7 @@ public class PayController extends MyBaseController {
         Preconditions.checkNotNull(orderNumber,"缺少参数：orderNumber");
         Preconditions.checkNotNull(price,"缺少参数：price");
 
-        String notifyUrl = Constant.BASE_SERVER_URL + "/reservation/pay/wxPayCallBack";
+        String notifyUrl = payConfiguration.getPayCallbackBaseUrl() + "/pay/wxPayCallBack";
         Map map = weChatPay.generateOrder(notifyUrl, orderNumber,subject, price, spbillCreateIp);
 
         return ResponseWrapper().addData(map).addMessage("请求成功!").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());

@@ -1,18 +1,14 @@
 package com.jishi.reservation.service.his;
 
-import com.jishi.reservation.controller.protocol.BridAndMzh;
-import com.jishi.reservation.mypackage.PublicResponsePublicResult;
 import com.jishi.reservation.mypackage.UserManagerResponseUserManagerResult;
 import com.jishi.reservation.mypackage.ZL_InformationServiceLocator;
 import com.jishi.reservation.mypackage.ZL_InformationServiceSoap_PortType;
 import com.jishi.reservation.service.his.bean.Credentials;
-import com.jishi.reservation.service.his.bean.DepositBalanceHistoryDetail;
 import com.jishi.reservation.service.his.bean.PatientsList;
-import com.jishi.reservation.service.his.bean.UserBindCard;
-import com.thoughtworks.xstream.XStream;
-import lombok.Data;
+import com.jishi.reservation.conf.HisConfiguration;
 import lombok.extern.log4j.Log4j;
 import org.apache.axis.message.MessageElement;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.xml.rpc.ServiceException;
@@ -24,6 +20,9 @@ import java.rmi.RemoteException;
 @Service
 @Log4j
 public class HisUserManager {
+
+    @Autowired
+    private HisConfiguration hisConfiguration;
 
     /**
      * 获取用户信息
@@ -103,6 +102,8 @@ public class HisUserManager {
 
     private UserManagerResponseUserManagerResult execute(String reData) throws RemoteException, ServiceException {
         ZL_InformationServiceLocator locator = new ZL_InformationServiceLocator();
+        locator.setZL_InformationServiceSoapEndpointAddress(hisConfiguration.getHisBaseUrl());
+        locator.setZL_InformationServiceSoap12EndpointAddress(hisConfiguration.getHisBaseUrl());
         ZL_InformationServiceSoap_PortType service = locator.getZL_InformationServiceSoap();
         return service.userManager(reData);
     }
