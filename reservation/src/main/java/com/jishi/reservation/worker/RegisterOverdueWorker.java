@@ -44,7 +44,7 @@ public class RegisterOverdueWorker {
     /**
      * 每30分钟扫描一次
      */
-    @Scheduled(cron = "0 0/30 * * * ?")
+    @Scheduled(cron = "0 0/3 * * * ?")
     @Transactional
     public void setRegisterOverdue() throws Exception {
 
