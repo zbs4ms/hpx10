@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * 用户登录验证父类
@@ -35,15 +32,15 @@ public class VerifyLoginFilter extends BaseFilter {
             accountId = accountService.returnIdByToken((HttpServletRequest) request);
         } catch (Exception e) {
             e.printStackTrace();
+            logger.info("*******验证失败，服务器异常*******");
+            returnFailed(response, ReturnCodeEnum.ERR);
         }
 
         if (accountId == null || accountId.equals(Constant.NOT_LOGIN_ACCOUNT_ID)) {
             Long testAccount = getTestAccountId(request);
             if (testAccount == null || testAccount.equals(Constant.NOT_LOGIN_ACCOUNT_ID)) {
-                Result result = new Result();
-                logger.info("*******验证失败，未登录");
-                response.setContentType("application/json;charset=utf-8");
-                response.getWriter().print(result.addMessage(ReturnCodeEnum.NOT_LOGIN.getDesc()).ExeFaild(ReturnCodeEnum.NOT_LOGIN.getCode()));
+                logger.info("*******验证失败，未登录*******");
+                returnFailed(response, ReturnCodeEnum.NOT_LOGIN);
                 return;
             } else {
                 accountId = testAccount;
@@ -51,9 +48,15 @@ public class VerifyLoginFilter extends BaseFilter {
             }
         }
 
-        logger.info("*******进行登录验证，登录用户: " + accountId + "  uri：" + ((HttpServletRequest) request).getRequestURI());
+        logger.info("*******登录验证成功，登录用户: " + accountId + "  uri：" + ((HttpServletRequest) request).getRequestURI());
         request.setAttribute(Constant.ATTR_LOGIN_ACCOUNT_ID, accountId);
         filterChain.doFilter(request, response);
+    }
+
+    private void returnFailed(ServletResponse response, ReturnCodeEnum rslt) throws IOException {
+        Result result = new Result();
+        response.setContentType("application/json;charset=utf-8");
+        response.getWriter().print(result.addMessage(rslt.getDesc()).ExeFaild(rslt.getCode()));
     }
 
     //获取测试账号
