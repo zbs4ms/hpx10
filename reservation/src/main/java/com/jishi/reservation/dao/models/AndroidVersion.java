@@ -39,4 +39,8 @@ public class AndroidVersion {
 
     @Transient
     private List<String> contentList;
+
+    @Transient
+    @ApiModelProperty("是否需要更新")
+    private Boolean isNeedUpdate;
 }
