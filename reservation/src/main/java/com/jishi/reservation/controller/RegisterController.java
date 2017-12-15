@@ -96,6 +96,8 @@ public class RegisterController extends MyBaseController {
             @ApiParam(value = "预约时间", required = false) @RequestParam(value = "agreedTime", required = false) Long agreedTime
             ) throws Exception {
 
+
+
         //验证br_id 是否存在..
         if(brid!=null && !"".equals(brid)){
             if(patientInfoService.queryByBrIdAndAccountId(brid,accountId) == null)

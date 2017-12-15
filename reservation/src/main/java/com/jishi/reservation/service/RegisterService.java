@@ -84,12 +84,15 @@ public class RegisterService {
                                           Long agreedTime,String timeInterval,String doctorName,
                                           String price,String subject,String brName,String department,String hm) throws Exception {
 
+        log.info("开始预约，预约病人id："+brid);
+
 
         RegisterCompleteVO completeVO = new RegisterCompleteVO();
         if(orderNumber == null || "".equals(orderNumber)){
 
 
             //检查病人信息和挂号信息是否匹配
+            log.info("检查病人信息和挂号信息是否匹配");
             if(!hisOutpatient.checkIsPatientMatchRegister(brid, hm)){
                 completeVO.setState(RegisterErrCodeEnum.PATIENT_NOT_MATCH.getCode());
                 return completeVO;
@@ -100,6 +103,7 @@ public class RegisterService {
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
+            log.info("检测本地是否存在挂号记录");
             if(!this.canRegister(brid,agreeDate,doctorId)){
                 log.info("挂号检查失败,库里面已存在该记录,不能挂号.");
 
@@ -108,6 +112,7 @@ public class RegisterService {
             }
 
             //挂号检查
+            log.info("去his检查是否能挂号");
             if(!hisOutpatient.checkIsRegisterLimit(brid,hm,sdf.format(agreeDate),departmentId)){
 
                 log.info("挂号检查失败，不能挂号.");
