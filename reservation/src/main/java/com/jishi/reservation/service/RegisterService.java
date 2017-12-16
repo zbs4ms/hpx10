@@ -294,7 +294,10 @@ public class RegisterService {
 
         log.info("开始检测本地的库.....");
         log.info("病人ID："+brid+",预约时间："+agreeDate.getTime()+",医生id:"+doctorId);
-        List<Register> registerList = registerMapper.queryByBrIdTimeDoctorId(brid, agreeDate, doctorId);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh");
+        String timeStr = sdf.format(agreeDate);
+        log.info("转换后的预约时间："+timeStr);
+        List<Register> registerList = registerMapper.queryByBrIdTimeDoctorId(brid, timeStr, doctorId);
         log.info("本地的查询预约列表："+JSONObject.toJSONString(registerList));
         if(registerList == null || registerList.size() == 0){
             log.info("为空了。。。");
