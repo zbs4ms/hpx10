@@ -15,6 +15,13 @@ public class HisConfiguration {
     @Value("${his.port}")
     private String port;
 
+    @Value("${his.token}")
+    private String token;
+
+    @Value("${his.key}")
+    private String key;
+
+
     private static final String ROOT_PATH = "/ExternalServices/ZL_InformationService.asmx";
 
     public String getHisBaseUrl() {
@@ -22,5 +29,13 @@ public class HisConfiguration {
             return host + ROOT_PATH;
         }
         return host + ":" + port + ROOT_PATH;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public String getKey() {
+        return key;
     }
 }

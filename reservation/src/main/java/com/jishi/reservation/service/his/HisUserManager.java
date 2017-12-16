@@ -24,6 +24,10 @@ public class HisUserManager {
     @Autowired
     private HisConfiguration hisConfiguration;
 
+    @Autowired
+    private HisTool hisTool;
+
+
     /**
      * 获取用户信息
      *
@@ -34,11 +38,11 @@ public class HisUserManager {
         StringBuffer sb = new StringBuffer();
         sb.append("<ZJH>").append(idNumber).append("</ZJH>");
         sb.append("<ZJLX>").append(idNumberType).append("</ZJLX>");
-        String reData = HisTool.toXMLString("BindCard.UserInfoByCardNO.Query", sb.toString());
+        String reData = hisTool.toXMLString("BindCard.UserInfoByCardNO.Query", sb.toString());
         UserManagerResponseUserManagerResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"BindCard.UserInfoByCardNO.Query");
-            return (PatientsList)HisTool.toBean(PatientsList.class,xml);
+            String xml = hisTool.getHisDataparam(me,"BindCard.UserInfoByCardNO.Query");
+            return (PatientsList)hisTool.toBean(PatientsList.class,xml);
         }
         return null;
     }
@@ -60,12 +64,12 @@ public class HisUserManager {
         sb.append("<XM>").append(name).append("</XM>");
         sb.append("<KH>").append(code).append("</KH>");
         sb.append("<KLB>").append(codeType).append("</KLB>");
-        String reData = HisTool.toXMLString("BindCard.UserInfoByRegNO.Query", sb.toString());
+        String reData = hisTool.toXMLString("BindCard.UserInfoByRegNO.Query", sb.toString());
         UserManagerResponseUserManagerResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            String xml = HisTool.getHisDataparam(me,"BindCard.UserInfoByRegNO.Query");
-            return (Credentials)HisTool.toBean(Credentials.class,xml);
+            String xml = hisTool.getHisDataparam(me,"BindCard.UserInfoByRegNO.Query");
+            return (Credentials)hisTool.toBean(Credentials.class,xml);
         }
         return null;
     }
@@ -87,13 +91,13 @@ public class HisUserManager {
         sb.append("<ZJLX>").append(idNumberType).append("</ZJLX>");
         sb.append("<XM>").append(name).append("</XM>");
         sb.append("<SJH>").append(phone).append("</SJH>");
-        String reData = HisTool.toXMLString("BindCard.CreateUser.Modify", sb.toString());
+        String reData = hisTool.toXMLString("BindCard.CreateUser.Modify", sb.toString());
         UserManagerResponseUserManagerResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
 
-            String xml = HisTool.getHisDataparam(me,"BindCard.CreateUser.Modify");
-            return (Credentials)HisTool.toBean(Credentials.class,xml);
+            String xml = hisTool.getHisDataparam(me,"BindCard.CreateUser.Modify");
+            return (Credentials)hisTool.toBean(Credentials.class,xml);
 
         }
        return null;
