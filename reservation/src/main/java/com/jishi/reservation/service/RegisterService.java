@@ -359,7 +359,8 @@ public class RegisterService {
             if(paging.getPageSize() == 0){
                 paging.setPageSize(queryRegister(registerId,accountId,status,enable).size());
             }
-            PageHelper.startPage(paging.getPageNum(),paging.getPageSize(),paging.getOrderBy());
+            //PageHelper.startPage(paging.getPageNum(),paging.getPageSize(),paging.getOrderBy());
+            PageHelper.startPage(paging.getPageNum(),paging.getPageSize()).setOrderBy("id desc");
 
         }
         return new PageInfo(queryRegister(registerId,accountId,status,enable));
