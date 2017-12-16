@@ -51,7 +51,21 @@ public interface RegisterMapper extends MyMapper<Register> {
                     "<if test = \"registerId != null \"> and id = #{registerId} </if>"+
                     "<if test = \"status != null \"> and status = #{status} </if>"+
                     "<if test = \"enable != null \"> and enable = #{enable} </if>"+
+                    //无效病人的就不返回了。
+
                     "</script>"
     })
     List<Register> selectCondition(@Param("accountId") Long accountId,@Param("registerId") Long registerId,@Param("status") Integer status,@Param("enable") Integer enable);
+
+    @Select({
+            " <script> select * from register where 1  = 1 and br_id in " +
+                    "<foreach item = 'item' index = 'index' collection = 'idList' open = '(' separator = ',' close = ')'>#{item}</foreach>" +
+                    "<if test = \"registerId != null \"> and id = #{registerId} </if>"+
+                    "<if test = \"status != null \"> and status = #{status} </if>"+
+                    "<if test = \"enable != null \"> and enable = #{enable} </if>"+
+                    //无效病人的就不返回了。
+
+                    "</script>"
+    })
+    List<Register> selectConditionByBridList(@Param("idList") List<String> idList,@Param("registerId") Long registerId,@Param("status") Integer status,@Param("enable") Integer enable);
 }

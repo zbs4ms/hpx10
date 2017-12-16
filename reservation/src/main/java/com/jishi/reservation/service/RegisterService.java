@@ -325,9 +325,18 @@ public class RegisterService {
         if(Helpers.isNullOrEmpty(accountId) && Helpers.isNullOrEmpty(registerId))
             throw new Exception("查询条件不能都为空");
 
-        List<Register> list = registerMapper.selectCondition(accountId, registerId, status, enable);
-        log.info("~~~:"+ JSONObject.toJSONString(list));
-        return list;
+        //找到所有有效的病人
+        List<String> patientIdList =  patientInfoMapper.queryValidPatientHisId(accountId);
+        if(patientIdList != null && patientIdList.size() != 0){
+            return registerMapper.selectConditionByBridList(patientIdList, registerId, status, enable);
+
+
+        }else{
+            return null;
+        }
+
+
+       // List<Register> list = registerMapper.selectCondition(accountId, registerId, status, enable);
     }
 
     /**
