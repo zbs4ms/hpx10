@@ -25,6 +25,9 @@ public class HisOutpatient {
     private HisConfiguration hisConfiguration;
 
 
+    @Autowired
+    private HisTool hisTool;
+
     /**
      * 	获取挂号号源
      * @param brid 病人ID
@@ -48,11 +51,11 @@ public class HisOutpatient {
         sb.append("<YSXM>").append(ysxm).append("</YSXM>");
         sb.append("<HZDW>").append(hzdw).append("</HZDW>");
         sb.append("<SJJG>").append(sjjg).append("</SJJG>");
-        String reData = HisTool.toXMLString("Register.SignalSource.Query", sb.toString());
+        String reData = hisTool.toXMLString("Register.SignalSource.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"Register.SignalSource.Query");
-            return (RegisteredNumberInfo) HisTool.toBean(RegisteredNumberInfo.class, xml);
+            String xml = hisTool.getHisDataparam(me,"Register.SignalSource.Query");
+            return (RegisteredNumberInfo) hisTool.toBean(RegisteredNumberInfo.class, xml);
         }
         return null;
     }
@@ -70,11 +73,11 @@ public class HisOutpatient {
         sb.append("<XMID>").append(xmid).append("</XMID>");
         sb.append("<BRID>").append(brid).append("</BRID>");
         log.info("获取挂号项目最后得金额请求参数:\n"+sb.toString());
-        String reData = HisTool.toXMLString("Register.Preferential.Query", sb.toString());
+        String reData = hisTool.toXMLString("Register.Preferential.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"Register.Preferential.Query");
-            return (LastPrice)HisTool.toBean(LastPrice.class,xml);
+            String xml = hisTool.getHisDataparam(me,"Register.Preferential.Query");
+            return (LastPrice)hisTool.toBean(LastPrice.class,xml);
         }
         return null;
     }
@@ -97,10 +100,10 @@ public class HisOutpatient {
         sb.append("<BRID>").append(brid).append("</BRID>");
         sb.append("<GHHM>").append(ghhm).append("</GHHM>");
 
-        String reData = HisTool.toXMLString("Register.LimitInfo.Query", sb.toString());
+        String reData = hisTool.toXMLString("Register.LimitInfo.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            HisTool.getHisDataparam(me,"Register.LimitInfo.Query");
+            hisTool.getHisDataparam(me,"Register.LimitInfo.Query");
             return true;
         }
         return false;
@@ -122,10 +125,10 @@ public class HisOutpatient {
         sb.append("<SFYY>").append("0").append("</SFYY>");  //是否预约
         sb.append("<YYFS>").append("").append("</YYFS>");  //预约方式
 
-        String reData = HisTool.toXMLString("Register.CancelCheck.Query", sb.toString());
+        String reData = hisTool.toXMLString("Register.CancelCheck.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            HisTool.getHisDataparam(me,"Register.CancelCheck.Query");
+            hisTool.getHisDataparam(me,"Register.CancelCheck.Query");
             return true;
         }
         return false;
@@ -146,10 +149,10 @@ public class HisOutpatient {
         sb.append("<YYFS>").append("").append("</YYFS>");  //预约方式
 
         log.info("请求参数：\n"+sb.toString());
-        String reData = HisTool.toXMLString("Register.Cancel.Modify", sb.toString());
+        String reData = hisTool.toXMLString("Register.Cancel.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            if(HisTool.getHisDataparam(me, "Register.Cancel.Modify") == null){
+            if(hisTool.getHisDataparam(me, "Register.Cancel.Modify") == null){
                 log.info("his处理失败");
                 return false;
             }else {
@@ -174,10 +177,10 @@ public class HisOutpatient {
         sb.append("<KSID>").append(departmentId).append("</KSID>");
         log.info("请求数据:"+sb.toString());
 
-        String reData = HisTool.toXMLString("Register.RegisterCheck.Query", sb.toString());
+        String reData = hisTool.toXMLString("Register.RegisterCheck.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            HisTool.getHisDataparam(me,"Register.RegisterCheck.Query");
+            hisTool.getHisDataparam(me,"Register.RegisterCheck.Query");
             return true;
         }
         return false;
@@ -205,14 +208,14 @@ public class HisOutpatient {
         sb.append("<HZDW>").append(hzdw).append("</HZDW>");
         sb.append("<JQM>").append(jqm).append("</JQM>");
 
-        String reData = HisTool.toXMLString("Register.Lock.Modify", sb.toString());
+        String reData = hisTool.toXMLString("Register.Lock.Modify", sb.toString());
 
 
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            String xml = HisTool.getHisDataparam(me,"Register.Lock.Modify");
-            return (LockRegister)HisTool.toBean(LockRegister.class,xml);
+            String xml = hisTool.getHisDataparam(me,"Register.Lock.Modify");
+            return (LockRegister)hisTool.toBean(LockRegister.class,xml);
         }
 
         return null;
@@ -235,10 +238,10 @@ public class HisOutpatient {
         sb.append("<LSH>").append("").append("</LSH>");
         sb.append("<SFYY>").append("1").append("</SFYY>");
         sb.append("<YYFS>").append(yyfs).append("</YYFS>");
-        String reData = HisTool.toXMLString("Register.SubScribeCancel.Modify", sb.toString());
+        String reData = hisTool.toXMLString("Register.SubScribeCancel.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            HisTool.getHisDataparam(me,"Register.SubScribeCancel.Modify");
+            hisTool.getHisDataparam(me,"Register.SubScribeCancel.Modify");
             return true;
         }
         return false;
@@ -277,11 +280,11 @@ public class HisOutpatient {
         sb.append("<JYLR>").append(confirmRegister.getJylr()).append("</JYLR>");
         sb.append("</EXPEND></EXPENDLIST>");
         sb.append("</JS></JSLIST>");
-        String reData = HisTool.toXMLString("Register.Subscribe.Modify", sb.toString());
+        String reData = hisTool.toXMLString("Register.Subscribe.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"Register.Subscribe.Modify");
-            return HisTool.getXmlAttribute(xml,"GHDH");
+            String xml = hisTool.getHisDataparam(me,"Register.Subscribe.Modify");
+            return hisTool.getXmlAttribute(xml,"GHDH");
         }
         return null;
     }
@@ -323,14 +326,14 @@ public class HisOutpatient {
         sb.append("</JS></JSLIST>");
 
         log.info("請求的數據：\n"+sb.toString());
-        String reData = HisTool.toXMLString("Register.Confirm.Modify", sb.toString());
+        String reData = hisTool.toXMLString("Register.Confirm.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"Register.Confirm.Modify");
+            String xml = hisTool.getHisDataparam(me,"Register.Confirm.Modify");
             if(xml == null || "".equals(xml))
                 return null;
             //失败返回null
-            return (ConfirmOrder) HisTool.toBean(ConfirmOrder.class,xml);
+            return (ConfirmOrder) hisTool.toBean(ConfirmOrder.class,xml);
         }
         return null;
     }
@@ -347,12 +350,12 @@ public class HisOutpatient {
         sb.append("<HZDW>").append(hzdw).append("</HZDW>");
         sb.append("<CXTS>").append(cxts).append("</CXTS>");
         sb.append("<ZD>").append(zd).append("</ZD>");
-        String reData = HisTool.toXMLString("Register.Depart.Query", sb.toString());
+        String reData = hisTool.toXMLString("Register.Depart.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            String xml = HisTool.getHisDataparam(me,"Register.Depart.Query");
-            return (DepartmentList)HisTool.toBean(DepartmentList.class,xml);
+            String xml = hisTool.getHisDataparam(me,"Register.Depart.Query");
+            return (DepartmentList)hisTool.toBean(DepartmentList.class,xml);
         }
         return null;
     }
@@ -371,13 +374,13 @@ public class HisOutpatient {
         sb.append("<HZDW>").append("").append("</HZDW>");
         sb.append("<JQM>").append("JQM"+hm).append("</JQM>");
         log.info("取消挂号请求数据：\n"+sb.toString());
-        String reData = HisTool.toXMLString("Register.UnLock.Modify", sb.toString());
+        String reData = hisTool.toXMLString("Register.UnLock.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            String xml = HisTool.getHisDataparam(me,"Register.UnLock.Modify");
+            String xml = hisTool.getHisDataparam(me,"Register.UnLock.Modify");
             if(xml != null && !"".equals(xml)){
-                return HisTool.getXmlAttribute(xml,"GHDH");
+                return hisTool.getXmlAttribute(xml,"GHDH");
 
             }else {
                 return null;
@@ -400,11 +403,11 @@ public class HisOutpatient {
         StringBuffer sb = new StringBuffer();
         sb.append("<BRID>").append(brid).append("</BRID>");
         sb.append("<CXTS>").append(cxts).append("</CXTS>");
-        String reData = HisTool.toXMLString("Register.RegReceipt.Query", sb.toString());
+        String reData = hisTool.toXMLString("Register.RegReceipt.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"Register.RegReceipt.Query");
-            return (RegisterRegReceiptInfo)HisTool.toBean(RegisterRegReceiptInfo.class,xml);
+            String xml = hisTool.getHisDataparam(me,"Register.RegReceipt.Query");
+            return (RegisterRegReceiptInfo)hisTool.toBean(RegisterRegReceiptInfo.class,xml);
         }
         return null;
     }
@@ -431,11 +434,11 @@ public class HisOutpatient {
         sb.append("<CXTS>").append(cxts).append("</CXTS>");
         sb.append("<JSKLB>").append(jsklb).append("</JSKLB>");
         sb.append("<ZD>").append(zd).append("</ZD>");
-        String reData = HisTool.toXMLString("Payment.PayReceipt.Query", sb.toString());
+        String reData = hisTool.toXMLString("Payment.PayReceipt.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"Payment.PayReceipt.Query");
-            return (OutpatientPaymentInfo)HisTool.toBean(OutpatientPaymentInfo.class,xml);
+            String xml = hisTool.getHisDataparam(me,"Payment.PayReceipt.Query");
+            return (OutpatientPaymentInfo)hisTool.toBean(OutpatientPaymentInfo.class,xml);
         }
         return null;
     }
@@ -476,11 +479,11 @@ public class HisOutpatient {
         sb.append("</JS>");
         sb.append("</JSLIST>");
         log.info("Payment.Pay.Modify: " + sb.toString());
-        String reData = HisTool.toXMLString("Payment.Pay.Modify", sb.toString());
+        String reData = hisTool.toXMLString("Payment.Pay.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"Payment.Pay.Modify");
-            return HisTool.getXmlAttribute(xml,"JZID");
+            String xml = hisTool.getHisDataparam(me,"Payment.Pay.Modify");
+            return hisTool.getXmlAttribute(xml,"JZID");
         }
         return null;
     }
@@ -520,11 +523,11 @@ public class HisOutpatient {
         sb.append("</JS>");
         sb.append("</JSLIST>");
         log.info("Payment.BatchPay.Modify: " + sb.toString());
-        String reData = HisTool.toXMLString("Payment.BatchPay.Modify", sb.toString());
+        String reData = hisTool.toXMLString("Payment.BatchPay.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"Payment.BatchPay.Modify");
-            return HisTool.getXmlAttribute(xml,"CZSJ");
+            String xml = hisTool.getHisDataparam(me,"Payment.BatchPay.Modify");
+            return hisTool.getXmlAttribute(xml,"CZSJ");
         }
         return null;
     }
@@ -544,12 +547,12 @@ public class HisOutpatient {
         sb.append("<DQYS>").append(dqys).append("</DQYS>");
         sb.append("<JLTS>").append(jlts).append("</JLTS>");
         sb.append("<ZD>").append(zd).append("</ZD>");
-        String reData = HisTool.toXMLString("Visit.Record.Query", sb.toString());
+        String reData = hisTool.toXMLString("Visit.Record.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            String xml = HisTool.getHisDataparam(me, "Visit.Record.Query");
-            return (OutpatientVisitRecord)HisTool.toBean(OutpatientVisitRecord.class, xml);
+            String xml = hisTool.getHisDataparam(me, "Visit.Record.Query");
+            return (OutpatientVisitRecord)hisTool.toBean(OutpatientVisitRecord.class, xml);
         }
         return null;
     }
@@ -562,12 +565,12 @@ public class HisOutpatient {
     public OutpatientVisitPrescription queryOutpatientVisitPrescription(String ghdh) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<GHDH>").append(ghdh).append("</GHDH>");
-        String reData = HisTool.toXMLString("Visit.Prescription.Query", sb.toString());
+        String reData = hisTool.toXMLString("Visit.Prescription.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            String xml = HisTool.getHisDataparam(me, "Visit.Prescription.Query");
-            return (OutpatientVisitPrescription)HisTool.toBean(OutpatientVisitPrescription.class, xml);
+            String xml = hisTool.getHisDataparam(me, "Visit.Prescription.Query");
+            return (OutpatientVisitPrescription)hisTool.toBean(OutpatientVisitPrescription.class, xml);
         }
         return null;
     }
@@ -580,12 +583,12 @@ public class HisOutpatient {
     public OutpatientVisitReceipt queryOutpatientVisitReceipt(String ghdh) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<GHDH>").append(ghdh).append("</GHDH>");
-        String reData = HisTool.toXMLString("Visit.Receipt.Query", sb.toString());
+        String reData = hisTool.toXMLString("Visit.Receipt.Query", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
             log.info(me.getAsString());
-            String xml = HisTool.getHisDataparam(me, "Visit.Receipt.Query");
-            return (OutpatientVisitReceipt)HisTool.toBean(OutpatientVisitReceipt.class, xml);
+            String xml = hisTool.getHisDataparam(me, "Visit.Receipt.Query");
+            return (OutpatientVisitReceipt)hisTool.toBean(OutpatientVisitReceipt.class, xml);
         }
         return null;
     }

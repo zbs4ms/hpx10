@@ -24,6 +24,10 @@ public class HisHospitalization {
     @Autowired
     private HisConfiguration hisConfiguration;
 
+    @Autowired
+    private HisTool hisTool;
+
+
     /**
      * 获取预交款余额
      *
@@ -36,11 +40,11 @@ public class HisHospitalization {
         StringBuffer sb = new StringBuffer();
         sb.append("<BRID>").append(brid).append("</BRID>");
         sb.append("<ZYCS>").append(zycs).append("</ZYCS>");
-        String reData = HisTool.toXMLString("PrePayment.Balance.Query", sb.toString());
+        String reData = hisTool.toXMLString("PrePayment.Balance.Query", sb.toString());
         HospitalizationResponseHospitalizationResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"PrePayment.Balance.Query");
-            return HisTool.getXmlAttribute(xml, "FYYE");
+            String xml = hisTool.getHisDataparam(me,"PrePayment.Balance.Query");
+            return hisTool.getXmlAttribute(xml, "FYYE");
         }
         return null;
     }
@@ -55,11 +59,11 @@ public class HisHospitalization {
     public DepositBalanceLog selectDepositBalanceLog(String brid) throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append("<BRID>").append(brid).append("</BRID>");
-        String reData = HisTool.toXMLString("PrePayment.Record.Query", sb.toString());
+        String reData = hisTool.toXMLString("PrePayment.Record.Query", sb.toString());
         HospitalizationResponseHospitalizationResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"PrePayment.Record.Query");
-            return (DepositBalanceLog) HisTool.toBean(DepositBalanceLog.class, xml);
+            String xml = hisTool.getHisDataparam(me,"PrePayment.Record.Query");
+            return (DepositBalanceLog) hisTool.toBean(DepositBalanceLog.class, xml);
         }
         return null;
     }
@@ -78,11 +82,11 @@ public class HisHospitalization {
         sb.append("<BRID>").append(brid).append("</BRID>");
         sb.append("<ZYCS>").append(zycs).append("</ZYCS>");
         sb.append("<FLLX>").append(fllx).append("</FLLX>");
-        String reData = HisTool.toXMLString("Information.PayDetail.Query", sb.toString());
+        String reData = hisTool.toXMLString("Information.PayDetail.Query", sb.toString());
         HospitalizationResponseHospitalizationResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"Information.PayDetail.Query");
-            return (TotalDepositBalancePayDetail) HisTool.toBean(TotalDepositBalancePayDetail.class, xml);
+            String xml = hisTool.getHisDataparam(me,"Information.PayDetail.Query");
+            return (TotalDepositBalancePayDetail) hisTool.toBean(TotalDepositBalancePayDetail.class, xml);
         }
         return null;
     }
@@ -101,11 +105,11 @@ public class HisHospitalization {
         sb.append("<BRID>").append(brid).append("</BRID>");
         sb.append("<RQ>").append(rq).append("</RQ>");
         sb.append("<ZYCS>").append(zycs).append("</ZYCS>");
-        String reData = HisTool.toXMLString("Information.DailyPayDetail.Query", sb.toString());
+        String reData = hisTool.toXMLString("Information.DailyPayDetail.Query", sb.toString());
         HospitalizationResponseHospitalizationResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparamNoLog(me,"Information.DailyPayDetail.Query");
-            return (DepositBalanceDailyPayDetail) HisTool.toBean(DepositBalanceDailyPayDetail.class, xml);
+            String xml = hisTool.getHisDataparamNoLog(me,"Information.DailyPayDetail.Query");
+            return (DepositBalanceDailyPayDetail) hisTool.toBean(DepositBalanceDailyPayDetail.class, xml);
         }
         return null;
     }
@@ -122,11 +126,11 @@ public class HisHospitalization {
         StringBuffer sb = new StringBuffer();
         sb.append("<BRID>").append(brid).append("</BRID>");
         sb.append("<ZYCS>").append(zycs).append("</ZYCS>");
-        String reData = HisTool.toXMLString("Information.Detail.Query", sb.toString());
+        String reData = hisTool.toXMLString("Information.Detail.Query", sb.toString());
         HospitalizationResponseHospitalizationResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"Information.Detail.Query");
-            return (DepositBalanceDetail) HisTool.toBean(DepositBalanceDetail.class, xml);
+            String xml = hisTool.getHisDataparam(me,"Information.Detail.Query");
+            return (DepositBalanceDetail) hisTool.toBean(DepositBalanceDetail.class, xml);
         }
         return null;
     }
@@ -147,11 +151,11 @@ public class HisHospitalization {
         sb.append("<DQYS>").append(dqys).append("</DQYS>");
         sb.append("<JLTS>").append(jlts).append("</JLTS>");
         sb.append("<ZD>").append(zd).append("</ZD>");
-        String reData = HisTool.toXMLString("Information.Record.Query", sb.toString());
+        String reData = hisTool.toXMLString("Information.Record.Query", sb.toString());
         HospitalizationResponseHospitalizationResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"Information.Record.Query");
-            return (DepositBalanceHistoryDetail) HisTool.toBean(DepositBalanceHistoryDetail.class, xml);
+            String xml = hisTool.getHisDataparam(me,"Information.Record.Query");
+            return (DepositBalanceHistoryDetail) hisTool.toBean(DepositBalanceHistoryDetail.class, xml);
         }
         return null;
     }
@@ -183,11 +187,11 @@ public class HisHospitalization {
         sb.append("<JYLR>").append(zfbzh+"|"+zfbxm).append("</JYLR>");
         sb.append("</EXPEND></EXPENDLIST>");
         sb.append("</JS></JSLIST>");
-        String reData = HisTool.toXMLString("PrePayment.Pay.Modify", sb.toString());
+        String reData = hisTool.toXMLString("PrePayment.Pay.Modify", sb.toString());
         HospitalizationResponseHospitalizationResult result = execute(reData);
         for (MessageElement me : result.get_any()) {
-            String xml = HisTool.getHisDataparam(me,"PrePayment.Pay.Modify");
-            return HisTool.getXmlAttribute(xml,"YJDH");
+            String xml = hisTool.getHisDataparam(me,"PrePayment.Pay.Modify");
+            return hisTool.getXmlAttribute(xml,"YJDH");
         }
         return null;
     }
