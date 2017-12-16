@@ -162,6 +162,8 @@ public class RegisterController extends MyBaseController {
 
         List<RegisterVO> registerVOList = new ArrayList<>();
         PageInfo pageInfo = null;
+
+        log.info("查询的状态："+status);
         if( status != null && status  == 2){
             pageInfo =  registerService.queryRegisterPageInfo(registerId, accountId, status, EnableEnum.INVALID.getCode(), Paging.create(pageNum, pageSize, "id", true));
 
