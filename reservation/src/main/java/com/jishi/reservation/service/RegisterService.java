@@ -387,8 +387,8 @@ public class RegisterService {
 
     @Transactional
     public Integer failureRegister(Long registerId) throws Exception {
-        if(Helpers.isNullOrEmpty(registerId) || queryRegister(registerId,null,null,null) == null)
-            throw new Exception("预约信息为空.");
+ /*       if(Helpers.isNullOrEmpty(registerId) || queryRegister(registerId,null,null,null) == null)
+            throw new Exception("预约信息为空.");*/
 
 
         Register register = registerMapper.queryById(registerId);
