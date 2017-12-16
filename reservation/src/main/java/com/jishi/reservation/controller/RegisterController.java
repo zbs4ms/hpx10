@@ -168,7 +168,7 @@ public class RegisterController extends MyBaseController {
             pageInfo =  registerService.queryRegisterPageInfo(registerId, accountId, status, EnableEnum.INVALID.getCode(), Paging.create(pageNum, pageSize, "id", true));
 
         }else {
-            pageInfo =  registerService.queryRegisterPageInfo(registerId, accountId, status, EnableEnum.EFFECTIVE.getCode(), Paging.create(pageNum, pageSize, "id", true));
+            pageInfo =  registerService.queryRegisterPageInfo(registerId, accountId, status, null, Paging.create(pageNum, pageSize, "id", true));
 
         }
         List<Register> registerList = pageInfo.getList();
