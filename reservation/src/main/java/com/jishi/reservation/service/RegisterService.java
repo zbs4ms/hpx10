@@ -293,7 +293,9 @@ public class RegisterService {
     private boolean canRegister(String brid, Date agreeDate, String doctorId) {
 
         log.info("开始检测本地的库.....");
+        log.info("病人ID："+brid+",预约时间："+agreeDate.getTime()+",医生id:"+doctorId);
         List<Register> registerList = registerMapper.queryByBrIdTimeDoctorId(brid, agreeDate, doctorId);
+        log.info("本地的查询预约列表："+JSONObject.toJSONString(registerList));
         if(registerList == null || registerList.size() == 0){
             log.info("为空了。。。");
         }else{
