@@ -212,7 +212,7 @@ public class DiaryService {
 
         }
 
-        PageHelper.startPage(startPage,pageSize).setOrderBy("create_time desc");
+        PageHelper.startPage(startPage,pageSize).setOrderBy("sort desc,id desc");
         List<Diary> list =  diaryMapper.queryEnableAndVerified(accountId,isMy);
         PageInfo<Diary> pageInfo = new PageInfo<>(list);
         log.info("返回日记长度："+list.size());
