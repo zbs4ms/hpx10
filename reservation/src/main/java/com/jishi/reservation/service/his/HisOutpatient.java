@@ -217,7 +217,8 @@ public class HisOutpatient {
             String xml = hisTool.getHisDataparam(me,"Register.Lock.Modify");
 
             //todo ...返回数据：<ROOT><OUTPUT/></ROOT>这样的话，解析出错
-            if(xml.contains("HX"))
+            if(!xml.contains("HX"))
+                return null;
 
             return (LockRegister)hisTool.toBean(LockRegister.class,xml);
         }
