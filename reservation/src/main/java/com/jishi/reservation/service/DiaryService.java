@@ -88,8 +88,10 @@ public class DiaryService {
         Diary diary = diaryMapper.queryById(id);
         Preconditions.checkNotNull(diary,"该id没有对应的日记信息");
         Integer maxSort =  diaryMapper.queryMaxSort();
-        diary.setSort(maxSort+1);
+
+        diary.setSort(diary.getSort() == 0?maxSort+1:0);
         diaryMapper.updateByPrimaryKeySelective(diary);
+
 
     }
 
@@ -212,7 +214,7 @@ public class DiaryService {
 
         }
 
-        PageHelper.startPage(startPage,pageSize).setOrderBy("sort desc,id desc");
+        PageHelper.startPage(startPage,pageSize).setOrderBy("create_time desc");
         List<Diary> list =  diaryMapper.queryEnableAndVerified(accountId,isMy);
         PageInfo<Diary> pageInfo = new PageInfo<>(list);
         log.info("返回日记长度："+list.size());
